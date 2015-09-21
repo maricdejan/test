@@ -1,0 +1,10 @@
+<Transfer xmls="http://schema.mp-gruppe.de/NAVconnect/Webshop/">
+                                             <Header shopID="1" object="RemoteProcedureCall" action="Response"/>
+                                             <Body>
+                                                            <CreateAccountResponse>
+                                                                           <Account no="KG1790407">
+                                                                                          <CustomerNo>1000220569</CustomerNo>
+                                                                           </Account>
+                                                            </CreateAccountResponse>
+                                             </Body>
+                              </Transfer>
