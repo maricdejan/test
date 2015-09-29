@@ -1,0 +1,3588 @@
+OBJECT Report 5005351 Posted Phys. Invt. Order Diff.
+{
+  OBJECT-PROPERTIES
+  {
+    Date=05.11.08;
+    Time=12:00:00;
+    Version List=NAVDACH6.00;
+  }
+  PROPERTIES
+  {
+    CaptionML=[DEU=Geb. Inventurauftr.-Diff.;
+               ENU=Posted Phys. Invt. Order Diff.];
+    Orientation=Landscape;
+  }
+  DATAITEMS
+  {
+    { PROPERTIES
+      {
+        DataItemTable=Table5005354;
+        NewPagePerRecord=Yes;
+        ReqFilterFields=No.;
+      }
+      SECTIONS
+      {
+      }
+       }
+    { PROPERTIES
+      {
+        DataItemIndent=1;
+        DataItemTable=Table2000000026;
+        DataItemTableView=SORTING(Number)
+                          WHERE(Number=CONST(1));
+        DataItemVarName=PageCounter;
+      }
+      SECTIONS
+      {
+        { PROPERTIES
+          {
+            SectionType=Header;
+            PrintOnEveryPage=Yes;
+            SectionWidth=25050;
+            SectionHeight=1269;
+          }
+          CONTROLS
+          {
+            { 6   ;TextBox      ;22800;846  ;2250 ;423  ;HorzAlign=Right;
+                                                         SourceExpr=USERID;
+                                                         DataSetFieldName=USERID }
+            { 3   ;TextBox      ;0    ;423  ;7500 ;423  ;SourceExpr=COMPANYNAME;
+                                                         DataSetFieldName=COMPANYNAME }
+            { 4   ;TextBox      ;24600;423  ;450  ;423  ;CaptionML=[DEU=Seite;
+                                                                    ENU=Page];
+                                                         SourceExpr=CurrReport.PAGENO;
+                                                         DataSetFieldName=CurrReport_PAGENO }
+            { 5   ;Label        ;23850;423  ;750  ;423  ;ParentControl=4;
+                                                         DataSetFieldName=CurrReport_PAGENOCaption }
+            { 1   ;Label        ;0    ;0    ;7500 ;423  ;FontSize=8;
+                                                         FontBold=Yes;
+                                                         CaptionML=[DEU=Geb. Inventurauftrag Differenz Liste;
+                                                                    ENU=Posted Phys. Inventory Order Difference List];
+                                                         DataSetFieldName=Posted_Phys__Inventory_Order_Difference_ListCaption }
+            { 2   ;TextBox      ;21900;0    ;3150 ;423  ;HorzAlign=Right;
+                                                         SourceExpr=FORMAT(TODAY,0,4);
+                                                         DataSetFieldName=FORMAT_TODAY_0_4_ }
+            { 1140002;TextBox   ;22350;846  ;150  ;423  ;Name=ShowDim;
+                                                         Visible=No;
+                                                         ForeColor=65535;
+                                                         SourceExpr=ShowDim;
+                                                         DataSetFieldName=ShowDim }
+          }
+           }
+        { PROPERTIES
+          {
+            SectionType=Body;
+            SectionWidth=25050;
+            SectionHeight=1692;
+            KeepWithNext=No;
+          }
+          CONTROLS
+          {
+            { 17  ;TextBox      ;11100;423  ;1200 ;423  ;HorzAlign=Left;
+                                                         SourceExpr=FORMAT("Post. Phys. Invt. Order Header"."Posting Date");
+                                                         DataSetFieldName=Post__Phys__Invt__Order_Header___Posting_Date_ }
+            { 18  ;Label        ;7950 ;423  ;3000 ;423  ;ParentControl=17;
+                                                         CaptionML=[DEU=Buchungsdatum;
+                                                                    ENU=Posting Date];
+                                                         DataSetFieldName=Post__Phys__Invt__Order_Header___Posting_Date_Caption }
+            { 8   ;TextBox      ;3150 ;0    ;1500 ;423  ;HorzAlign=Left;
+                                                         SourceExpr="Post. Phys. Invt. Order Header"."No.";
+                                                         DataSetFieldName=Post__Phys__Invt__Order_Header___No__ }
+            { 9   ;Label        ;0    ;0    ;3000 ;423  ;ParentControl=8;
+                                                         DataSetFieldName=Post__Phys__Invt__Order_Header___No__Caption }
+            { 14  ;TextBox      ;11100;0    ;1500 ;423  ;HorzAlign=Left;
+                                                         SourceExpr="Post. Phys. Invt. Order Header"."Person Responsible";
+                                                         DataSetFieldName=Post__Phys__Invt__Order_Header___Person_Responsible_ }
+            { 15  ;Label        ;7950 ;0    ;3000 ;423  ;ParentControl=14;
+                                                         DataSetFieldName=Post__Phys__Invt__Order_Header___Person_Responsible_Caption }
+            { 47  ;TextBox      ;3150 ;846  ;1500 ;423  ;HorzAlign=Left;
+                                                         SourceExpr="Post. Phys. Invt. Order Header"."No. Finished Recordings";
+                                                         DataSetFieldName=Post__Phys__Invt__Order_Header___No__Finished_Recordings_ }
+            { 48  ;Label        ;0    ;846  ;3000 ;423  ;ParentControl=47;
+                                                         DataSetFieldName=Post__Phys__Invt__Order_Header___No__Finished_Recordings_Caption }
+            { 56  ;Label        ;0    ;423  ;3000 ;423  ;ParentControl=57;
+                                                         DataSetFieldName=Post__Phys__Invt__Order_Header__DescriptionCaption }
+            { 57  ;TextBox      ;3150 ;423  ;4350 ;423  ;HorzAlign=Left;
+                                                         SourceExpr="Post. Phys. Invt. Order Header".Description;
+                                                         DataSetFieldName=Post__Phys__Invt__Order_Header__Description }
+          }
+           }
+      }
+       }
+    { PROPERTIES
+      {
+        DataItemIndent=2;
+        DataItemTable=Table5005355;
+        DataItemTableView=SORTING(Document No.,Line No.);
+        OnPreDataItem=BEGIN
+                        CurrReport.CREATETOTALS(AmountPos, AmountNeg);
+                        IF ISSERVICETIER THEN BEGIN
+                          NewAmountPos := 0;
+                          NewAmountNeg := 0;
+                        END;
+                      END;
+
+        OnAfterGetRecord=BEGIN
+                           LineIsEmpty := EmptyLine;
+
+                           QtyPos := 0;
+                           QtyNeg := 0;
+                           AmountPos := 0;
+                           AmountNeg := 0;
+
+                           IF NOT LineIsEmpty THEN BEGIN
+                             CASE "Entry Type" OF
+                               "Entry Type"::"Positive Adjmt.":
+                                 BEGIN
+                                   QtyPos := "Quantity (Base)";
+                                   AmountPos := "Unit Amount" * QtyPos;
+                                 END;
+                               "Entry Type"::"Negative Adjmt.":
+                                 BEGIN
+                                   QtyNeg := "Quantity (Base)";
+                                   AmountNeg := "Unit Amount" * QtyNeg;
+                                 END;
+                             END;
+                           END;
+
+                           // Tracking Information:
+                           TempPhysInvtDiffListBuffer.DELETEALL;
+                           NoOfBufferLines := 0;
+                           IF NOT LineIsEmpty AND "Use Tracking Lines" THEN
+                             CreateDiffListBuffer("Posted Phys. Invt. Order Line", NoOfBufferLines);
+
+                           PrintAnEmptyLine := NoOfBufferLines > 0;
+                           IF ISSERVICETIER THEN BEGIN
+                             NewAmountPos += AmountPos;
+                             NewAmountNeg += AmountNeg;
+                           END;
+                         END;
+
+        DataItemLinkReference=Post. Phys. Invt. Order Header;
+        DataItemLink=Document No.=FIELD(No.);
+      }
+      SECTIONS
+      {
+        { PROPERTIES
+          {
+            SectionType=Header;
+            SectionWidth=25050;
+            SectionHeight=1269;
+          }
+          CONTROLS
+          {
+            { 19  ;Label        ;0    ;0    ;1500 ;846  ;ParentControl=16;
+                                                         VertAlign=Bottom;
+                                                         FontBold=Yes;
+                                                         MultiLine=Yes;
+                                                         DataSetFieldName=Posted_Phys__Invt__Order_Line__Item_No__Caption }
+            { 23  ;Label        ;3300 ;0    ;1500 ;846  ;ParentControl=22;
+                                                         VertAlign=Bottom;
+                                                         FontBold=Yes;
+                                                         MultiLine=Yes;
+                                                         DataSetFieldName=Posted_Phys__Invt__Order_Line__Location_Code_Caption }
+            { 25  ;Label        ;4950 ;0    ;1500 ;846  ;ParentControl=24;
+                                                         VertAlign=Bottom;
+                                                         FontBold=Yes;
+                                                         MultiLine=Yes;
+                                                         DataSetFieldName=Posted_Phys__Invt__Order_Line__Bin_Code_Caption }
+            { 27  ;Label        ;6600 ;0    ;3750 ;846  ;ParentControl=26;
+                                                         VertAlign=Bottom;
+                                                         FontBold=Yes;
+                                                         MultiLine=Yes;
+                                                         DataSetFieldName=Posted_Phys__Invt__Order_Line_DescriptionCaption }
+            { 29  ;Label        ;10500;0    ;1500 ;846  ;ParentControl=28;
+                                                         VertAlign=Bottom;
+                                                         FontBold=Yes;
+                                                         MultiLine=Yes;
+                                                         DataSetFieldName=Posted_Phys__Invt__Order_Line__Base_Unit_of_Measure_Code_Caption }
+            { 31  ;Label        ;12150;0    ;1500 ;846  ;ParentControl=30;
+                                                         HorzAlign=Right;
+                                                         VertAlign=Bottom;
+                                                         FontBold=Yes;
+                                                         MultiLine=Yes;
+                                                         DataSetFieldName=Posted_Phys__Invt__Order_Line__Qty__Expected__Base__Caption }
+            { 13  ;Label        ;1650 ;0    ;1500 ;846  ;ParentControl=10;
+                                                         VertAlign=Bottom;
+                                                         FontBold=Yes;
+                                                         MultiLine=Yes;
+                                                         DataSetFieldName=Posted_Phys__Invt__Order_Line__Variant_Code_Caption }
+            { 20  ;Label        ;13800;0    ;1800 ;846  ;ParentControl=7;
+                                                         HorzAlign=Right;
+                                                         VertAlign=Bottom;
+                                                         FontBold=Yes;
+                                                         MultiLine=Yes;
+                                                         DataSetFieldName=Posted_Phys__Invt__Order_Line__Qty__Recorded__Base__Caption }
+            { 34  ;Label        ;17400;0    ;1800 ;846  ;ParentControl=33;
+                                                         HorzAlign=Right;
+                                                         VertAlign=Bottom;
+                                                         FontBold=Yes;
+                                                         MultiLine=Yes;
+                                                         DataSetFieldName=QtyPosCaption }
+            { 32  ;Label        ;19350;0    ;1800 ;846  ;ParentControl=21;
+                                                         HorzAlign=Right;
+                                                         VertAlign=Bottom;
+                                                         FontBold=Yes;
+                                                         MultiLine=Yes;
+                                                         DataSetFieldName=QtyNegCaption }
+            { 36  ;Label        ;21300;0    ;1800 ;846  ;ParentControl=35;
+                                                         HorzAlign=Right;
+                                                         VertAlign=Bottom;
+                                                         FontBold=Yes;
+                                                         MultiLine=Yes;
+                                                         DataSetFieldName=AmountPosCaption }
+            { 38  ;Label        ;23250;0    ;1800 ;846  ;ParentControl=37;
+                                                         HorzAlign=Right;
+                                                         VertAlign=Bottom;
+                                                         FontBold=Yes;
+                                                         MultiLine=Yes;
+                                                         DataSetFieldName=AmountNegCaption }
+            { 40  ;Label        ;15750;0    ;1050 ;846  ;ParentControl=39;
+                                                         HorzAlign=Right;
+                                                         VertAlign=Bottom;
+                                                         FontBold=Yes;
+                                                         MultiLine=Yes;
+                                                         DataSetFieldName=Posted_Phys__Invt__Order_Line__No__Finished_Rec__Lines_Caption }
+            { 45  ;Label        ;16950;0    ;300  ;846  ;ParentControl=41;
+                                                         VertAlign=Bottom;
+                                                         FontBold=Yes;
+                                                         MultiLine=Yes;
+                                                         CaptionML=[DEU=Ohne Auftrag erfasst;
+                                                                    ENU=Recorded without Order];
+                                                         DataSetFieldName=Posted_Phys__Invt__Order_Line__Recorded_without_Order_Caption }
+          }
+           }
+        { PROPERTIES
+          {
+            SectionType=Body;
+            SectionWidth=25050;
+            SectionHeight=423;
+          }
+          CONTROLS
+          {
+            { 16  ;TextBox      ;0    ;0    ;1500 ;423  ;HorzAlign=Left;
+                                                         SourceExpr="Item No.";
+                                                         DataSetFieldName=Posted_Phys__Invt__Order_Line__Item_No__ }
+            { 22  ;TextBox      ;3300 ;0    ;1500 ;423  ;HorzAlign=Left;
+                                                         SourceExpr="Location Code";
+                                                         DataSetFieldName=Posted_Phys__Invt__Order_Line__Location_Code_ }
+            { 24  ;TextBox      ;4950 ;0    ;1500 ;423  ;HorzAlign=Left;
+                                                         SourceExpr="Bin Code";
+                                                         DataSetFieldName=Posted_Phys__Invt__Order_Line__Bin_Code_ }
+            { 26  ;TextBox      ;6600 ;0    ;3750 ;423  ;SourceExpr=Description;
+                                                         DataSetFieldName=Posted_Phys__Invt__Order_Line_Description }
+            { 28  ;TextBox      ;10500;0    ;1500 ;423  ;SourceExpr="Base Unit of Measure Code";
+                                                         DataSetFieldName=Posted_Phys__Invt__Order_Line__Base_Unit_of_Measure_Code_ }
+            { 30  ;TextBox      ;12150;0    ;1500 ;423  ;SourceExpr="Qty. Expected (Base)";
+                                                         DataSetFieldName=Posted_Phys__Invt__Order_Line__Qty__Expected__Base__ }
+            { 10  ;TextBox      ;1650 ;0    ;1500 ;423  ;HorzAlign=Left;
+                                                         SourceExpr="Variant Code";
+                                                         DataSetFieldName=Posted_Phys__Invt__Order_Line__Variant_Code_ }
+            { 7   ;TextBox      ;13800;0    ;1800 ;423  ;SourceExpr="Qty. Recorded (Base)";
+                                                         DataSetFieldName=Posted_Phys__Invt__Order_Line__Qty__Recorded__Base__ }
+            { 35  ;TextBox      ;21300;0    ;1800 ;423  ;CaptionML=[DEU=Pos. Betrag;
+                                                                    ENU=Amount Pos.];
+                                                         BlankZero=Yes;
+                                                         SourceExpr=AmountPos;
+                                                         DataSetFieldName=AmountPos }
+            { 37  ;TextBox      ;23250;0    ;1800 ;423  ;CaptionML=[DEU=Neg. Betrag;
+                                                                    ENU=Amount Neg.];
+                                                         BlankZero=Yes;
+                                                         SourceExpr=AmountNeg;
+                                                         DataSetFieldName=AmountNeg }
+            { 33  ;TextBox      ;17400;0    ;1800 ;423  ;CaptionML=[DEU=Pos. Menge;
+                                                                    ENU=Qty. Pos.];
+                                                         DecimalPlaces=0:5;
+                                                         BlankZero=Yes;
+                                                         SourceExpr=QtyPos;
+                                                         DataSetFieldName=QtyPos }
+            { 21  ;TextBox      ;19350;0    ;1800 ;423  ;CaptionML=[DEU=Neg. Menge;
+                                                                    ENU=Qty. Neg.];
+                                                         DecimalPlaces=0:5;
+                                                         BlankZero=Yes;
+                                                         SourceExpr=QtyNeg;
+                                                         DataSetFieldName=QtyNeg }
+            { 39  ;TextBox      ;15750;0    ;1050 ;423  ;SourceExpr="No. Finished Rec.-Lines";
+                                                         DataSetFieldName=Posted_Phys__Invt__Order_Line__No__Finished_Rec__Lines_ }
+            { 41  ;TextBox      ;16950;0    ;300  ;423  ;SourceExpr=FORMAT("Recorded without Order");
+                                                         DataSetFieldName=Posted_Phys__Invt__Order_Line__Recorded_without_Order_ }
+          }
+           }
+        { PROPERTIES
+          {
+            SectionType=Body;
+            SectionWidth=25050;
+            SectionHeight=423;
+            OnPreSection=BEGIN
+                           CurrReport.SHOWOUTPUT(PrintAnEmptyLine);
+                         END;
+
+          }
+          CONTROLS
+          {
+            { 1140000;TextBox   ;0    ;0    ;150  ;423  ;Name=PrintAnEmptyLine;
+                                                         Visible=No;
+                                                         ForeColor=65535;
+                                                         SourceExpr=PrintAnEmptyLine;
+                                                         DataSetFieldName=PrintAnEmptyLine }
+          }
+           }
+        { PROPERTIES
+          {
+            SectionType=Footer;
+            SectionWidth=25050;
+            SectionHeight=846;
+          }
+          CONTROLS
+          {
+            { 46  ;Label        ;0    ;423  ;3750 ;423  ;FontBold=Yes;
+                                                         CaptionML=[DEU=Summen;
+                                                                    ENU=Totals];
+                                                         DataSetFieldName=TotalsCaption }
+            { 49  ;TextBox      ;21300;423  ;1800 ;423  ;FontBold=Yes;
+                                                         CaptionML=[DEU=Pos. Betrag;
+                                                                    ENU=Amount Pos.];
+                                                         BlankZero=Yes;
+                                                         SourceExpr=AmountPos;
+                                                         DataSetFieldName=AmountPos_Control49 }
+            { 50  ;TextBox      ;23250;423  ;1800 ;423  ;FontBold=Yes;
+                                                         CaptionML=[DEU=Neg. Betrag;
+                                                                    ENU=Amount Neg.];
+                                                         BlankZero=Yes;
+                                                         SourceExpr=AmountNeg;
+                                                         DataSetFieldName=AmountNeg_Control50 }
+            { 1140003;TextBox   ;24900;0    ;150  ;423  ;Visible=No;
+                                                         ForeColor=65535;
+                                                         SourceExpr=NewAmountPos;
+                                                         DataSetFieldName=NewAmountPos }
+            { 1140004;TextBox   ;24750;0    ;150  ;423  ;Visible=No;
+                                                         ForeColor=65535;
+                                                         SourceExpr=NewAmountNeg;
+                                                         DataSetFieldName=NewAmountNeg }
+          }
+           }
+      }
+       }
+    { PROPERTIES
+      {
+        DataItemIndent=3;
+        DataItemTable=Table2000000026;
+        DataItemTableView=SORTING(Number)
+                          WHERE(Number=FILTER(1..));
+        DataItemVarName=DiffListBufferLoop;
+        OnPreDataItem=BEGIN
+                        IF NoOfBufferLines = 0 THEN
+                          CurrReport.BREAK;
+
+                        LineCount := 0;
+
+                        TempPhysInvtDiffListBuffer.RESET;
+
+                        CurrReport.CREATETOTALS(
+                          TempPhysInvtDiffListBuffer."Exp. Qty. (Base)",
+                          TempPhysInvtDiffListBuffer."Rec. Qty. (Base)",
+                          TempPhysInvtDiffListBuffer."Track. Qty. Neg. (Base)",
+                          TempPhysInvtDiffListBuffer."Track. Qty. Pos. (Base)");
+                      END;
+
+        OnAfterGetRecord=BEGIN
+                           LineCount := LineCount +1;
+                           IF LineCount > NoOfBufferLines THEN
+                             CurrReport.BREAK;
+
+                           IF LineCount = 1 THEN
+                             TempPhysInvtDiffListBuffer.FIND('-')
+                           ELSE
+                             TempPhysInvtDiffListBuffer.NEXT;
+                         END;
+
+      }
+      SECTIONS
+      {
+        { PROPERTIES
+          {
+            SectionType=Header;
+            SectionWidth=25050;
+            SectionHeight=1269;
+          }
+          CONTROLS
+          {
+            { 12  ;Shape        ;20400;0    ;150  ;1269 ;ShapeStyle=VertLine }
+            { 52  ;Label        ;13350;0    ;7050 ;423  ;HorzAlign=Center;
+                                                         VertAlign=Bottom;
+                                                         CaptionML=[DEU=Artikelverfolgungszeilen;
+                                                                    ENU=Item Tracking Lines];
+                                                         DataSetFieldName=Item_Tracking_LinesCaption }
+            { 53  ;Label        ;18600;423  ;1800 ;846  ;ParentControl=51;
+                                                         HorzAlign=Right;
+                                                         VertAlign=Bottom;
+                                                         FontBold=Yes;
+                                                         MultiLine=Yes;
+                                                         DataSetFieldName=TempPhysInvtDiffListBuffer__Track__Qty__Pos___Base__Caption }
+            { 55  ;Label        ;16650;423  ;1800 ;846  ;ParentControl=54;
+                                                         HorzAlign=Right;
+                                                         VertAlign=Bottom;
+                                                         FontBold=Yes;
+                                                         MultiLine=Yes;
+                                                         DataSetFieldName=TempPhysInvtDiffListBuffer__Track__Qty__Neg___Base__Caption }
+            { 59  ;Label        ;15000;423  ;1500 ;846  ;ParentControl=58;
+                                                         VertAlign=Bottom;
+                                                         FontBold=Yes;
+                                                         MultiLine=Yes;
+                                                         DataSetFieldName=TempPhysInvtDiffListBuffer__Track__Lot_No__Caption }
+            { 61  ;Label        ;13350;423  ;1500 ;846  ;ParentControl=60;
+                                                         VertAlign=Bottom;
+                                                         FontBold=Yes;
+                                                         MultiLine=Yes;
+                                                         DataSetFieldName=TempPhysInvtDiffListBuffer__Track__Serial_No__Caption }
+            { 63  ;Shape        ;13200;0    ;150  ;1269 ;ShapeStyle=VertLine }
+            { 65  ;Label        ;11400;423  ;1800 ;846  ;ParentControl=64;
+                                                         HorzAlign=Right;
+                                                         VertAlign=Bottom;
+                                                         FontBold=Yes;
+                                                         MultiLine=Yes;
+                                                         DataSetFieldName=TempPhysInvtDiffListBuffer__Rec__Qty___Base__Caption }
+            { 66  ;Label        ;6900 ;0    ;6300 ;423  ;HorzAlign=Center;
+                                                         VertAlign=Bottom;
+                                                         CaptionML=[DEU=Erfassung Zeilen;
+                                                                    ENU=Recording Lines];
+                                                         DataSetFieldName=Recording_LinesCaption }
+            { 68  ;Label        ;9750 ;423  ;1500 ;846  ;ParentControl=67;
+                                                         VertAlign=Bottom;
+                                                         FontBold=Yes;
+                                                         MultiLine=Yes;
+                                                         DataSetFieldName=TempPhysInvtDiffListBuffer__Rec__Lot_No__Caption }
+            { 70  ;Label        ;8100 ;423  ;1500 ;846  ;ParentControl=69;
+                                                         VertAlign=Bottom;
+                                                         FontBold=Yes;
+                                                         MultiLine=Yes;
+                                                         DataSetFieldName=TempPhysInvtDiffListBuffer__Rec__Serial_No__Caption }
+            { 72  ;Label        ;6900 ;423  ;1050 ;846  ;ParentControl=71;
+                                                         HorzAlign=Right;
+                                                         VertAlign=Bottom;
+                                                         FontBold=Yes;
+                                                         MultiLine=Yes;
+                                                         DataSetFieldName=TempPhysInvtDiffListBuffer__Rec__No__Caption }
+            { 75  ;Label        ;4950 ;423  ;1800 ;846  ;ParentControl=73;
+                                                         HorzAlign=Right;
+                                                         VertAlign=Bottom;
+                                                         FontBold=Yes;
+                                                         MultiLine=Yes;
+                                                         DataSetFieldName=TempPhysInvtDiffListBuffer__Exp__Qty___Base__Caption }
+            { 76  ;Label        ;1650 ;0    ;5100 ;423  ;HorzAlign=Center;
+                                                         VertAlign=Bottom;
+                                                         CaptionML=[DEU=Erwartete Verfolgungszeilen;
+                                                                    ENU=Expected Tracking Lines];
+                                                         DataSetFieldName=Expected_Tracking_LinesCaption }
+            { 77  ;Shape        ;6750 ;0    ;150  ;1269 ;ShapeStyle=VertLine }
+            { 79  ;Label        ;3300 ;423  ;1500 ;846  ;ParentControl=78;
+                                                         VertAlign=Bottom;
+                                                         FontBold=Yes;
+                                                         MultiLine=Yes;
+                                                         DataSetFieldName=TempPhysInvtDiffListBuffer__Exp__Lot_No__Caption }
+            { 81  ;Label        ;1650 ;423  ;1500 ;846  ;ParentControl=80;
+                                                         VertAlign=Bottom;
+                                                         FontBold=Yes;
+                                                         MultiLine=Yes;
+                                                         DataSetFieldName=TempPhysInvtDiffListBuffer__Exp__Serial_No__Caption }
+            { 83  ;Shape        ;1500 ;0    ;150  ;1269 ;ShapeStyle=VertLine }
+          }
+           }
+        { PROPERTIES
+          {
+            SectionType=Body;
+            SectionWidth=25050;
+            SectionHeight=423;
+          }
+          CONTROLS
+          {
+            { 11  ;Shape        ;20400;0    ;150  ;423  ;ShapeStyle=VertLine }
+            { 51  ;TextBox      ;18600;0    ;1800 ;423  ;CaptionML=[DEU=Pos. Menge (Basis);
+                                                                    ENU=Qty. Pos. (Base)];
+                                                         DecimalPlaces=0:5;
+                                                         BlankZero=Yes;
+                                                         SourceExpr=TempPhysInvtDiffListBuffer."Track. Qty. Pos. (Base)";
+                                                         DataSetFieldName=TempPhysInvtDiffListBuffer__Track__Qty__Pos___Base__ }
+            { 54  ;TextBox      ;16650;0    ;1800 ;423  ;CaptionML=[DEU=Neg. Menge (Basis);
+                                                                    ENU=Qty Neg. (Base)];
+                                                         DecimalPlaces=0:5;
+                                                         BlankZero=Yes;
+                                                         SourceExpr=TempPhysInvtDiffListBuffer."Track. Qty. Neg. (Base)";
+                                                         DataSetFieldName=TempPhysInvtDiffListBuffer__Track__Qty__Neg___Base__ }
+            { 58  ;TextBox      ;15000;0    ;1500 ;423  ;HorzAlign=Left;
+                                                         CaptionML=[DEU=Chargennr.;
+                                                                    ENU=Lot No.];
+                                                         SourceExpr=TempPhysInvtDiffListBuffer."Track. Lot No.";
+                                                         DataSetFieldName=TempPhysInvtDiffListBuffer__Track__Lot_No__ }
+            { 60  ;TextBox      ;13350;0    ;1500 ;423  ;HorzAlign=Left;
+                                                         CaptionML=[DEU=Seriennr.;
+                                                                    ENU=Serial No.];
+                                                         SourceExpr=TempPhysInvtDiffListBuffer."Track. Serial No.";
+                                                         DataSetFieldName=TempPhysInvtDiffListBuffer__Track__Serial_No__ }
+            { 62  ;Shape        ;13200;0    ;150  ;423  ;ShapeStyle=VertLine }
+            { 64  ;TextBox      ;11400;0    ;1800 ;423  ;CaptionML=[DEU=Aufg. Menge (Basis);
+                                                                    ENU=Recorded Qty. (Base)];
+                                                         DecimalPlaces=0:5;
+                                                         BlankZero=Yes;
+                                                         SourceExpr=TempPhysInvtDiffListBuffer."Rec. Qty. (Base)";
+                                                         DataSetFieldName=TempPhysInvtDiffListBuffer__Rec__Qty___Base__ }
+            { 67  ;TextBox      ;9750 ;0    ;1500 ;423  ;HorzAlign=Left;
+                                                         CaptionML=[DEU=Chargennr.;
+                                                                    ENU=Lot No.];
+                                                         SourceExpr=TempPhysInvtDiffListBuffer."Rec. Lot No.";
+                                                         DataSetFieldName=TempPhysInvtDiffListBuffer__Rec__Lot_No__ }
+            { 69  ;TextBox      ;8100 ;0    ;1500 ;423  ;HorzAlign=Left;
+                                                         CaptionML=[DEU=Seriennr.;
+                                                                    ENU=Serial No.];
+                                                         SourceExpr=TempPhysInvtDiffListBuffer."Rec. Serial No.";
+                                                         DataSetFieldName=TempPhysInvtDiffListBuffer__Rec__Serial_No__ }
+            { 71  ;TextBox      ;6900 ;0    ;1050 ;423  ;CaptionML=[DEU=Erfassungsnr.;
+                                                                    ENU=Recording No.];
+                                                         BlankZero=Yes;
+                                                         SourceExpr=TempPhysInvtDiffListBuffer."Rec. No.";
+                                                         DataSetFieldName=TempPhysInvtDiffListBuffer__Rec__No__ }
+            { 73  ;TextBox      ;4950 ;0    ;1800 ;423  ;CaptionML=[DEU=Erw. Menge (Basis);
+                                                                    ENU=Exp. Qty. (Base)];
+                                                         DecimalPlaces=0:5;
+                                                         BlankZero=Yes;
+                                                         SourceExpr=TempPhysInvtDiffListBuffer."Exp. Qty. (Base)";
+                                                         DataSetFieldName=TempPhysInvtDiffListBuffer__Exp__Qty___Base__ }
+            { 74  ;Shape        ;6750 ;0    ;150  ;423  ;ShapeStyle=VertLine }
+            { 78  ;TextBox      ;3300 ;0    ;1500 ;423  ;HorzAlign=Left;
+                                                         CaptionML=[DEU=Chargennr.;
+                                                                    ENU=Lot No.];
+                                                         SourceExpr=TempPhysInvtDiffListBuffer."Exp. Lot No.";
+                                                         DataSetFieldName=TempPhysInvtDiffListBuffer__Exp__Lot_No__ }
+            { 80  ;TextBox      ;1650 ;0    ;1500 ;423  ;HorzAlign=Left;
+                                                         CaptionML=[DEU=Seriennr.;
+                                                                    ENU=Serial No.];
+                                                         SourceExpr=TempPhysInvtDiffListBuffer."Exp. Serial No.";
+                                                         DataSetFieldName=TempPhysInvtDiffListBuffer__Exp__Serial_No__ }
+            { 82  ;Shape        ;1500 ;0    ;150  ;423  ;ShapeStyle=VertLine }
+          }
+           }
+        { PROPERTIES
+          {
+            SectionType=Footer;
+            SectionWidth=25050;
+            SectionHeight=423;
+          }
+          CONTROLS
+          {
+            { 84  ;Shape        ;20400;0    ;150  ;423  ;ShapeStyle=VertLine }
+            { 85  ;TextBox      ;18600;0    ;1800 ;423  ;FontBold=Yes;
+                                                         CaptionML=[DEU=Pos. Menge (Basis);
+                                                                    ENU=Qty. Pos. (Base)];
+                                                         DecimalPlaces=0:5;
+                                                         BlankZero=Yes;
+                                                         SourceExpr=TempPhysInvtDiffListBuffer."Track. Qty. Pos. (Base)";
+                                                         DataSetFieldName=TempPhysInvtDiffListBuffer__Track__Qty__Pos___Base___Control85 }
+            { 86  ;TextBox      ;16650;0    ;1800 ;423  ;FontBold=Yes;
+                                                         CaptionML=[DEU=Neg. Menge (Basis);
+                                                                    ENU=Qty Neg. (Base)];
+                                                         DecimalPlaces=0:5;
+                                                         BlankZero=Yes;
+                                                         SourceExpr=TempPhysInvtDiffListBuffer."Track. Qty. Neg. (Base)";
+                                                         DataSetFieldName=TempPhysInvtDiffListBuffer__Track__Qty__Neg___Base___Control86 }
+            { 87  ;TextBox      ;11400;0    ;1800 ;423  ;FontBold=Yes;
+                                                         CaptionML=[DEU=Aufg. Menge (Basis);
+                                                                    ENU=Recorded Qty. (Base)];
+                                                         DecimalPlaces=0:5;
+                                                         BlankZero=Yes;
+                                                         SourceExpr=TempPhysInvtDiffListBuffer."Rec. Qty. (Base)";
+                                                         DataSetFieldName=TempPhysInvtDiffListBuffer__Rec__Qty___Base___Control87 }
+            { 88  ;Shape        ;13200;0    ;150  ;423  ;ShapeStyle=VertLine }
+            { 89  ;Shape        ;6750 ;0    ;150  ;423  ;ShapeStyle=VertLine }
+            { 90  ;TextBox      ;4950 ;0    ;1800 ;423  ;FontBold=Yes;
+                                                         CaptionML=[DEU=Erw. Menge (Basis);
+                                                                    ENU=Exp. Qty. (Base)];
+                                                         DecimalPlaces=0:5;
+                                                         BlankZero=Yes;
+                                                         SourceExpr=TempPhysInvtDiffListBuffer."Exp. Qty. (Base)";
+                                                         DataSetFieldName=TempPhysInvtDiffListBuffer__Exp__Qty___Base___Control90 }
+            { 91  ;Label        ;1650 ;0    ;3150 ;423  ;FontBold=Yes;
+                                                         CaptionML=[DEU=Summen;
+                                                                    ENU=Totals];
+                                                         DataSetFieldName=TotalsCaption_Control91 }
+            { 92  ;Shape        ;1500 ;0    ;150  ;423  ;ShapeStyle=VertLine }
+          }
+           }
+      }
+       }
+    { PROPERTIES
+      {
+        DataItemIndent=3;
+        DataItemTable=Table2000000026;
+        DataItemTableView=SORTING(Number)
+                          WHERE(Number=FILTER(1..));
+        DataItemVarName=LineDimensionLoop;
+        OnPreDataItem=BEGIN
+                        IF ISSERVICETIER THEN BEGIN
+                          AmountPos := 0;
+                          AmountNeg := 0;
+                          QtyPos := 0;
+                          QtyNeg := 0;
+                        END;
+
+                        IF NOT ShowDim THEN
+                          CurrReport.BREAK;
+
+                        IF LineIsEmpty THEN
+                          CurrReport.BREAK;
+
+                        PostedDocDim2.SETRANGE("Table ID",DATABASE::"Posted Phys. Invt. Order Line");
+                        PostedDocDim2.SETRANGE("Document No.","Posted Phys. Invt. Order Line"."Document No.");
+                        PostedDocDim2.SETRANGE("Line No.","Posted Phys. Invt. Order Line"."Line No.");
+                      END;
+
+        OnAfterGetRecord=BEGIN
+                           IF Number = 1 THEN BEGIN
+                             IF NOT PostedDocDim2.FIND('-') THEN
+                               CurrReport.BREAK;
+                           END ELSE
+                             IF NOT Continue THEN
+                               CurrReport.BREAK;
+
+                           CLEAR(DimText);
+                           Continue := FALSE;
+                           REPEAT
+                             OldDimText := DimText;
+                             IF DimText = '' THEN
+                               DimText := STRSUBSTNO(
+                                 '%1 %2',PostedDocDim2."Dimension Code",PostedDocDim2."Dimension Value Code")
+                             ELSE
+                               DimText :=
+                                 STRSUBSTNO(
+                                   '%1, %2 %3',DimText,
+                                   PostedDocDim2."Dimension Code",PostedDocDim2."Dimension Value Code");
+                             IF STRLEN(DimText) > MAXSTRLEN(OldDimText) THEN BEGIN
+                               DimText := OldDimText;
+                               Continue := TRUE;
+                               EXIT;
+                             END;
+                           UNTIL (PostedDocDim2.NEXT = 0);
+                         END;
+
+      }
+      SECTIONS
+      {
+        { PROPERTIES
+          {
+            SectionType=Body;
+            SectionWidth=25050;
+            SectionHeight=423;
+            OnPreSection=BEGIN
+                           CurrReport.SHOWOUTPUT(Number = 1);
+                         END;
+
+          }
+          CONTROLS
+          {
+            { 42  ;TextBox      ;4950 ;0    ;20100;423  ;CaptionML=[DEU=Zeilendimensionen;
+                                                                    ENU=Line Dimensions];
+                                                         SourceExpr=DimText;
+                                                         DataSetFieldName=DimText }
+            { 43  ;Label        ;1650 ;0    ;3150 ;423  ;ParentControl=42;
+                                                         DataSetFieldName=DimTextCaption }
+          }
+           }
+        { PROPERTIES
+          {
+            SectionType=Body;
+            SectionWidth=25050;
+            SectionHeight=423;
+            OnPreSection=BEGIN
+                           CurrReport.SHOWOUTPUT(Number > 1);
+                         END;
+
+          }
+          CONTROLS
+          {
+            { 44  ;TextBox      ;4950 ;0    ;19950;423  ;SourceExpr=DimText;
+                                                         DataSetFieldName=DimText_Control44 }
+            { 1140001;TextBox   ;0    ;0    ;150  ;423  ;Name=Number;
+                                                         Visible=No;
+                                                         ForeColor=65535;
+                                                         SourceExpr=Number;
+                                                         DataSetFieldName=Number }
+          }
+           }
+      }
+       }
+    { PROPERTIES
+      {
+        DataItemIndent=3;
+        DataItemTable=Table2000000026;
+        DataItemTableView=SORTING(Number)
+                          WHERE(Number=CONST(1));
+        OnPreDataItem=BEGIN
+                        IF ISSERVICETIER THEN BEGIN
+                          AmountPos := 0;
+                          AmountNeg := 0;
+                          QtyPos := 0;
+                          QtyNeg := 0;
+                        END;
+                      END;
+
+      }
+      SECTIONS
+      {
+        { PROPERTIES
+          {
+            SectionType=Body;
+            SectionWidth=25050;
+            SectionHeight=423;
+            OnPreSection=BEGIN
+                           CurrReport.SHOWOUTPUT(PrintAnEmptyLine);
+                         END;
+
+          }
+          CONTROLS
+          {
+          }
+           }
+      }
+       }
+  }
+  REQUESTFORM
+  {
+    PROPERTIES
+    {
+      Width=4180;
+      Height=440;
+      SaveValues=Yes;
+    }
+    CONTROLS
+    {
+      { 1   ;Label        ;0    ;0    ;3630 ;440  ;ParentControl=2 }
+      { 2   ;CheckBox     ;3740 ;0    ;440  ;440  ;ShowCaption=No;
+                                                   CaptionML=[DEU=Dimensionen anzeigen;
+                                                              ENU=Show Dimensions];
+                                                   SourceExpr=ShowDim }
+    }
+  }
+  REQUESTPAGE
+  {
+    PROPERTIES
+    {
+      SaveValues=Yes;
+    }
+    CONTROLS
+    {
+      { 1900000001;0;Container;
+                  ContainerType=ContentArea }
+
+      { 1900000002;1;Group  ;
+                  CaptionML=[DEU=Optionen;
+                             ENU=Options] }
+
+      { 2   ;2   ;Field     ;
+                  CaptionML=[DEU=Dimensionen anzeigen;
+                             ENU=Show Dimensions];
+                  SourceExpr=ShowDim }
+
+    }
+  }
+  CODE
+  {
+    VAR
+      PostedDocDim1@1140000 : Record 359;
+      PostedDocDim2@1140001 : Record 359;
+      TempPhysInvtDiffListBuffer@1140002 : TEMPORARY Record 5005363;
+      DimMgt@1140003 : Codeunit 408;
+      DimText@1140004 : Text[120];
+      OldDimText@1140005 : Text[75];
+      Text1000@1140006 : TextConst 'DEU=Inventurauftrag: %1;ENU=Phys. Invt. Order: %1';
+      NoOfBufferLines@1140007 : Integer;
+      LineCount@1140008 : Integer;
+      QtyPos@1140009 : Decimal;
+      QtyNeg@1140010 : Decimal;
+      AmountPos@1140011 : Decimal;
+      AmountNeg@1140012 : Decimal;
+      ShowDim@1140013 : Boolean;
+      Continue@1140014 : Boolean;
+      LineIsEmpty@1140015 : Boolean;
+      PrintAnEmptyLine@1140016 : Boolean;
+      NewAmountPos@1140017 : Decimal;
+      NewAmountNeg@1140018 : Decimal;
+
+    PROCEDURE CreateDiffListBuffer@1140000(PostedPhysInvtOrderLine@1140000 : Record 5005355;VAR NoOfBufferLines@1140001 : Integer);
+    VAR
+      PostedExpPhysInvtTrackLine@1140002 : Record 5005362;
+      PostedPhysInvtRecordingLine@1140003 : Record 5005357;
+      ItemEntryRelation@1140004 : Record 6507;
+      ItemLedgEntry@1140005 : Record 32;
+      NextLineNo@1140006 : Integer;
+      TempPhysInvtDiffListBuffer2@1140007 : Record 5005363;
+      LastLineNo@1140008 : Integer;
+    BEGIN
+      WITH PostedPhysInvtOrderLine DO BEGIN
+        NoOfBufferLines := 0;
+
+        NextLineNo := 1;
+        PostedExpPhysInvtTrackLine.RESET;
+        PostedExpPhysInvtTrackLine.SETRANGE("Order No", "Document No.");
+        PostedExpPhysInvtTrackLine.SETRANGE("Order Line No.", "Line No.");
+        IF PostedExpPhysInvtTrackLine.FIND('-') THEN REPEAT
+          FindOrCreateDiffListBuffer(NoOfBufferLines, NextLineNo);
+          TempPhysInvtDiffListBuffer."Exp. Serial No." := PostedExpPhysInvtTrackLine."Serial No.";
+          TempPhysInvtDiffListBuffer."Exp. Lot No." := PostedExpPhysInvtTrackLine."Lot No.";
+          TempPhysInvtDiffListBuffer."Exp. Qty. (Base)" := PostedExpPhysInvtTrackLine."Quantity (Base)";
+          TempPhysInvtDiffListBuffer.MODIFY;
+        UNTIL PostedExpPhysInvtTrackLine.NEXT = 0;
+
+        NextLineNo := 1;
+        PostedPhysInvtRecordingLine.RESET;
+        PostedPhysInvtRecordingLine.SETCURRENTKEY("Order No.", "Order Line No.");
+        PostedPhysInvtRecordingLine.SETRANGE("Order No.", "Document No.");
+        PostedPhysInvtRecordingLine.SETRANGE("Order Line No.", "Line No.");
+        IF PostedPhysInvtRecordingLine.FIND('-') THEN REPEAT
+          FindOrCreateDiffListBuffer(NoOfBufferLines, NextLineNo);
+          TempPhysInvtDiffListBuffer."Rec. No." := PostedPhysInvtRecordingLine."Recording No.";
+          TempPhysInvtDiffListBuffer."Rec. Line No." := PostedPhysInvtRecordingLine."Line No.";
+          TempPhysInvtDiffListBuffer."Rec. Serial No." := PostedPhysInvtRecordingLine."Serial No.";
+          TempPhysInvtDiffListBuffer."Rec. Lot No." := PostedPhysInvtRecordingLine."Lot No.";
+          TempPhysInvtDiffListBuffer."Rec. Qty. (Base)" := PostedPhysInvtRecordingLine."Quantity (Base)";
+          TempPhysInvtDiffListBuffer.MODIFY;
+        UNTIL PostedPhysInvtRecordingLine.NEXT = 0;
+
+      END;
+
+      LastLineNo := NextLineNo - 1;
+      TempPhysInvtDiffListBuffer2.SETFILTER("Line No.",'%1..%2',0,LastLineNo);
+      IF TempPhysInvtDiffListBuffer2.FIND('-') THEN REPEAT
+
+        IF TempPhysInvtDiffListBuffer2."Exp. Serial No." <> '' THEN
+          TempPhysInvtDiffListBuffer.SETRANGE("Rec. Serial No.",TempPhysInvtDiffListBuffer2."Exp. Serial No.");
+        IF TempPhysInvtDiffListBuffer2."Exp. Lot No." <> '' THEN
+          TempPhysInvtDiffListBuffer.SETRANGE("Rec. Lot No.",TempPhysInvtDiffListBuffer2."Exp. Lot No.");
+        IF TempPhysInvtDiffListBuffer.FIND('-') THEN BEGIN
+          CASE TRUE OF
+            TempPhysInvtDiffListBuffer2."Rec. Qty. (Base)" - TempPhysInvtDiffListBuffer."Exp. Qty. (Base)" < 0 :
+              BEGIN
+                TempPhysInvtDiffListBuffer."Track. Serial No." := TempPhysInvtDiffListBuffer2."Exp. Serial No.";
+                TempPhysInvtDiffListBuffer."Track. Lot No." := TempPhysInvtDiffListBuffer2."Exp. Lot No.";
+                TempPhysInvtDiffListBuffer."Track. Qty. Neg. (Base)" :=
+                  TempPhysInvtDiffListBuffer2."Rec. Qty. (Base)" - TempPhysInvtDiffListBuffer."Exp. Qty. (Base)";
+                TempPhysInvtDiffListBuffer."Track. Qty. Pos. (Base)" := 0;
+                TempPhysInvtDiffListBuffer.MODIFY;
+              END;
+            TempPhysInvtDiffListBuffer2."Rec. Qty. (Base)" - TempPhysInvtDiffListBuffer."Exp. Qty. (Base)" > 0 :
+              BEGIN
+                TempPhysInvtDiffListBuffer."Track. Serial No." := TempPhysInvtDiffListBuffer2."Exp. Serial No.";
+                TempPhysInvtDiffListBuffer."Track. Lot No." := TempPhysInvtDiffListBuffer2."Exp. Lot No.";
+                TempPhysInvtDiffListBuffer."Track. Qty. Pos. (Base)" :=
+                  TempPhysInvtDiffListBuffer2."Rec. Qty. (Base)" - TempPhysInvtDiffListBuffer."Exp. Qty. (Base)";
+                TempPhysInvtDiffListBuffer."Track. Qty. Neg. (Base)" := 0;
+                TempPhysInvtDiffListBuffer.MODIFY;
+              END;
+          END;
+        END ELSE BEGIN
+          TempPhysInvtDiffListBuffer.SETRANGE("Rec. Serial No.");
+          TempPhysInvtDiffListBuffer.SETRANGE("Rec. Lot No.");
+          TempPhysInvtDiffListBuffer.SETRANGE("Track. Serial No.",'');
+          TempPhysInvtDiffListBuffer.SETRANGE("Track. Lot No.",'');
+          IF TempPhysInvtDiffListBuffer.FIND('-') THEN BEGIN
+            TempPhysInvtDiffListBuffer."Track. Serial No." := TempPhysInvtDiffListBuffer2."Exp. Serial No.";
+            TempPhysInvtDiffListBuffer."Track. Lot No." := TempPhysInvtDiffListBuffer2."Exp. Lot No.";
+            TempPhysInvtDiffListBuffer."Track. Qty. Neg. (Base)" := -TempPhysInvtDiffListBuffer2."Exp. Qty. (Base)";
+            TempPhysInvtDiffListBuffer."Track. Qty. Pos. (Base)" := 0;
+            TempPhysInvtDiffListBuffer.MODIFY;
+          END ELSE BEGIN
+            TempPhysInvtDiffListBuffer.INIT;
+            TempPhysInvtDiffListBuffer."Line No." := NextLineNo;
+            TempPhysInvtDiffListBuffer."Track. Serial No." := TempPhysInvtDiffListBuffer2."Exp. Serial No.";
+            TempPhysInvtDiffListBuffer."Track. Lot No." := TempPhysInvtDiffListBuffer2."Exp. Lot No.";
+            TempPhysInvtDiffListBuffer."Track. Qty. Neg. (Base)" := -TempPhysInvtDiffListBuffer2."Exp. Qty. (Base)";
+            TempPhysInvtDiffListBuffer."Track. Qty. Pos. (Base)" := 0;
+            TempPhysInvtDiffListBuffer.INSERT;
+            NextLineNo := NextLineNo + 1;
+            NoOfBufferLines := NoOfBufferLines + 1;
+          END;
+        END;
+      UNTIL TempPhysInvtDiffListBuffer2.NEXT = 0;
+
+      TempPhysInvtDiffListBuffer.RESET;
+      TempPhysInvtDiffListBuffer2.SETFILTER("Line No.", '%1..%2',0,LastLineNo);
+      IF TempPhysInvtDiffListBuffer2.FIND('-') THEN REPEAT
+        IF TempPhysInvtDiffListBuffer2."Rec. Serial No." <> '' THEN
+          TempPhysInvtDiffListBuffer.SETRANGE("Exp. Serial No.",TempPhysInvtDiffListBuffer2."Rec. Serial No.");
+        IF TempPhysInvtDiffListBuffer2."Rec. Lot No." <> '' THEN
+          TempPhysInvtDiffListBuffer.SETRANGE("Exp. Lot No.",TempPhysInvtDiffListBuffer2."Rec. Lot No.");
+
+        IF TempPhysInvtDiffListBuffer.FIND('-') THEN BEGIN
+          CASE TRUE OF
+            TempPhysInvtDiffListBuffer2."Rec. Qty. (Base)" - TempPhysInvtDiffListBuffer."Exp. Qty. (Base)" < 0 :
+              BEGIN
+                TempPhysInvtDiffListBuffer."Track. Serial No." := TempPhysInvtDiffListBuffer2."Exp. Serial No.";
+                TempPhysInvtDiffListBuffer."Track. Lot No." := TempPhysInvtDiffListBuffer2."Exp. Lot No.";
+                TempPhysInvtDiffListBuffer."Track. Qty. Neg. (Base)" :=
+                  TempPhysInvtDiffListBuffer2."Rec. Qty. (Base)" - TempPhysInvtDiffListBuffer."Exp. Qty. (Base)";
+                TempPhysInvtDiffListBuffer."Track. Qty. Pos. (Base)" := 0;
+                TempPhysInvtDiffListBuffer.MODIFY;
+              END;
+            TempPhysInvtDiffListBuffer2."Rec. Qty. (Base)" - TempPhysInvtDiffListBuffer."Exp. Qty. (Base)" > 0 :
+              BEGIN
+                TempPhysInvtDiffListBuffer."Track. Serial No." := TempPhysInvtDiffListBuffer2."Exp. Serial No.";
+                TempPhysInvtDiffListBuffer."Track. Lot No." := TempPhysInvtDiffListBuffer2."Exp. Lot No.";
+                TempPhysInvtDiffListBuffer."Track. Qty. Pos. (Base)" :=
+                  TempPhysInvtDiffListBuffer2."Rec. Qty. (Base)" - TempPhysInvtDiffListBuffer."Exp. Qty. (Base)";
+                TempPhysInvtDiffListBuffer."Track. Qty. Neg. (Base)" := 0;
+                TempPhysInvtDiffListBuffer.MODIFY;
+              END;
+          END;
+        END ELSE BEGIN
+          TempPhysInvtDiffListBuffer.SETRANGE("Exp. Serial No.");
+          TempPhysInvtDiffListBuffer.SETRANGE("Exp. Lot No.");
+          TempPhysInvtDiffListBuffer.SETRANGE("Track. Serial No.",'');
+          TempPhysInvtDiffListBuffer.SETRANGE("Track. Lot No.",'');
+          IF TempPhysInvtDiffListBuffer.FIND('-') THEN BEGIN
+            TempPhysInvtDiffListBuffer."Track. Serial No." := TempPhysInvtDiffListBuffer2."Rec. Serial No.";
+            TempPhysInvtDiffListBuffer."Track. Lot No." := TempPhysInvtDiffListBuffer2."Rec. Lot No.";
+            TempPhysInvtDiffListBuffer."Track. Qty. Neg. (Base)" := 0;
+            TempPhysInvtDiffListBuffer."Track. Qty. Pos. (Base)" := TempPhysInvtDiffListBuffer2."Rec. Qty. (Base)";
+            TempPhysInvtDiffListBuffer.MODIFY;
+          END ELSE BEGIN
+            TempPhysInvtDiffListBuffer.INIT;
+            TempPhysInvtDiffListBuffer."Line No." := NextLineNo;
+            TempPhysInvtDiffListBuffer."Track. Serial No." := TempPhysInvtDiffListBuffer2."Rec. Serial No.";
+            TempPhysInvtDiffListBuffer."Track. Lot No." := TempPhysInvtDiffListBuffer2."Rec. Lot No.";
+            TempPhysInvtDiffListBuffer."Track. Qty. Neg. (Base)" := 0;
+            TempPhysInvtDiffListBuffer."Track. Qty. Pos. (Base)" := TempPhysInvtDiffListBuffer2."Rec. Qty. (Base)";
+            TempPhysInvtDiffListBuffer.INSERT;
+            NextLineNo := NextLineNo + 1;
+            NoOfBufferLines := NoOfBufferLines + 1;
+          END;
+        END;
+      UNTIL TempPhysInvtDiffListBuffer2.NEXT = 0;
+    END;
+
+    PROCEDURE FindOrCreateDiffListBuffer@114001(VAR NoOfBufferLines@1140000 : Integer;VAR NextLineNo@1140001 : Integer);
+    BEGIN
+      IF NextLineNo > NoOfBufferLines THEN BEGIN
+        TempPhysInvtDiffListBuffer.INIT;
+        TempPhysInvtDiffListBuffer."Line No." := NextLineNo;
+        TempPhysInvtDiffListBuffer.INSERT;
+        NoOfBufferLines := NoOfBufferLines +1;
+      END ELSE BEGIN
+        IF NextLineNo = 1 THEN
+          TempPhysInvtDiffListBuffer.FIND('-')
+        ELSE
+          TempPhysInvtDiffListBuffer.NEXT;
+      END;
+      NextLineNo := NextLineNo +1;
+    END;
+
+    BEGIN
+    END.
+  }
+  RDLDATA
+  {
+    <?xml version="1.0" encoding="utf-8"?>
+<Report xmlns="http://schemas.microsoft.com/sqlserver/reporting/2005/01/reportdefinition" xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner">
+  <Body>
+    <Height>7.68937cm</Height>
+    <ReportItems>
+      <Table Name="table1">
+        <DataSetName>DataSet_Result</DataSetName>
+        <Details>
+          <Sorting>
+            <SortBy>
+              <Direction>Ascending</Direction>
+              <SortExpression>=Fields!Post__Phys__Invt__Order_Header___No__.Value</SortExpression>
+            </SortBy>
+            <SortBy>
+              <Direction>Ascending</Direction>
+              <SortExpression>=Fields!Posted_Phys__Invt__Order_Line_Line_No_.Value</SortExpression>
+            </SortBy>
+          </Sorting>
+          <TableRows>
+            <TableRow>
+              <Height>0.423cm</Height>
+              <TableCells>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="textbox31">
+                      <Style>
+                        <BorderColor>
+                          <Right>Black</Right>
+                        </BorderColor>
+                        <BorderStyle>
+                          <Right>Solid</Right>
+                        </BorderStyle>
+                        <BorderWidth>
+                          <Right>0.25pt</Right>
+                        </BorderWidth>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                      </Style>
+                      <Value />
+                      <ZIndex>16</ZIndex>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="TempPhysInvtDiffListBuffer__Exp__Serial_No__">
+                      <Style>
+                        <BorderColor>
+                          <Left>Black</Left>
+                        </BorderColor>
+                        <BorderStyle>
+                          <Left>Solid</Left>
+                        </BorderStyle>
+                        <BorderWidth>
+                          <Left>0.25pt</Left>
+                        </BorderWidth>
+                        <FontSize>7pt</FontSize>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                      </Style>
+                      <Value>=Fields!TempPhysInvtDiffListBuffer__Exp__Serial_No__.Value</Value>
+                      <ZIndex>15</ZIndex>
+                      <rd:DefaultName>TempPhysInvtDiffListBuffer__Exp__Serial_No__</rd:DefaultName>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="TempPhysInvtDiffListBuffer__Exp__Lot_No__">
+                      <Style>
+                        <FontSize>7pt</FontSize>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                      </Style>
+                      <Value>=Fields!TempPhysInvtDiffListBuffer__Exp__Lot_No__.Value</Value>
+                      <ZIndex>14</ZIndex>
+                      <rd:DefaultName>TempPhysInvtDiffListBuffer__Exp__Lot_No__</rd:DefaultName>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="TempPhysInvtDiffListBuffer__Exp__Qty___Base__">
+                      <Style>
+                        <BorderColor>
+                          <Right>Black</Right>
+                        </BorderColor>
+                        <BorderStyle>
+                          <Right>Solid</Right>
+                        </BorderStyle>
+                        <BorderWidth>
+                          <Right>0.25pt</Right>
+                        </BorderWidth>
+                        <FontSize>7pt</FontSize>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>0.075cm</PaddingLeft>
+                        <PaddingRight>0.075cm</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <TextAlign>Right</TextAlign>
+                        <VerticalAlign>Middle</VerticalAlign>
+                      </Style>
+                      <Value>=Code.BlankZero(Fields!TempPhysInvtDiffListBuffer__Exp__Qty___Base__.Value)</Value>
+                      <ZIndex>13</ZIndex>
+                      <rd:DefaultName>TempPhysInvtDiffListBuffer__Exp__Qty___Base__</rd:DefaultName>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="TempPhysInvtDiffListBuffer__Rec__No__">
+                      <Style>
+                        <BorderColor>
+                          <Left>Black</Left>
+                        </BorderColor>
+                        <BorderStyle>
+                          <Left>Solid</Left>
+                        </BorderStyle>
+                        <BorderWidth>
+                          <Left>0.25pt</Left>
+                        </BorderWidth>
+                        <FontSize>7pt</FontSize>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>0.075cm</PaddingLeft>
+                        <PaddingRight>0.075cm</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <TextAlign>Right</TextAlign>
+                        <VerticalAlign>Middle</VerticalAlign>
+                      </Style>
+                      <Value>=Code.BlankZero(Fields!TempPhysInvtDiffListBuffer__Rec__No__.Value)</Value>
+                      <ZIndex>12</ZIndex>
+                      <rd:DefaultName>TempPhysInvtDiffListBuffer__Rec__No__</rd:DefaultName>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="TempPhysInvtDiffListBuffer__Rec__Serial_No__">
+                      <Style>
+                        <FontSize>7pt</FontSize>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>0.075cm</PaddingLeft>
+                        <PaddingRight>0.075cm</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <VerticalAlign>Middle</VerticalAlign>
+                      </Style>
+                      <Value>=Fields!TempPhysInvtDiffListBuffer__Rec__Serial_No__.Value</Value>
+                      <ZIndex>11</ZIndex>
+                      <rd:DefaultName>TempPhysInvtDiffListBuffer__Rec__Serial_No__</rd:DefaultName>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="TempPhysInvtDiffListBuffer__Rec__No___1">
+                      <Style>
+                        <FontSize>7pt</FontSize>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>0.075cm</PaddingLeft>
+                        <PaddingRight>0.075cm</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <TextAlign>Left</TextAlign>
+                        <VerticalAlign>Middle</VerticalAlign>
+                      </Style>
+                      <Value>=Fields!TempPhysInvtDiffListBuffer__Rec__Lot_No__.Value</Value>
+                      <ZIndex>10</ZIndex>
+                      <rd:DefaultName>TempPhysInvtDiffListBuffer__Rec__No___1</rd:DefaultName>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="TempPhysInvtDiffListBuffer__Rec__Qty___Base__">
+                      <Style>
+                        <BorderColor>
+                          <Right>Black</Right>
+                        </BorderColor>
+                        <BorderStyle>
+                          <Right>Solid</Right>
+                        </BorderStyle>
+                        <BorderWidth>
+                          <Right>0.25pt</Right>
+                        </BorderWidth>
+                        <FontSize>7pt</FontSize>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>0.075cm</PaddingLeft>
+                        <PaddingRight>0.075cm</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <TextAlign>Right</TextAlign>
+                        <VerticalAlign>Middle</VerticalAlign>
+                      </Style>
+                      <Value>=Code.BlankZero(Fields!TempPhysInvtDiffListBuffer__Rec__Qty___Base__.Value)</Value>
+                      <ZIndex>9</ZIndex>
+                      <rd:DefaultName>TempPhysInvtDiffListBuffer__Rec__Qty___Base__</rd:DefaultName>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="TempPhysInvtDiffListBuffer__Track__Serial_No__">
+                      <Style>
+                        <BorderColor>
+                          <Left>Black</Left>
+                        </BorderColor>
+                        <BorderStyle>
+                          <Left>Solid</Left>
+                        </BorderStyle>
+                        <BorderWidth>
+                          <Left>0.25pt</Left>
+                        </BorderWidth>
+                        <FontSize>7pt</FontSize>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>0.075cm</PaddingLeft>
+                        <PaddingRight>0.075cm</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <VerticalAlign>Middle</VerticalAlign>
+                      </Style>
+                      <Value>=Fields!TempPhysInvtDiffListBuffer__Track__Serial_No__.Value</Value>
+                      <ZIndex>8</ZIndex>
+                      <rd:DefaultName>TempPhysInvtDiffListBuffer__Track__Serial_No__</rd:DefaultName>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="TempPhysInvtDiffListBuffer__Track__Lot_No__">
+                      <Style>
+                        <FontSize>7pt</FontSize>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>0.075cm</PaddingLeft>
+                        <PaddingRight>0.075cm</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <VerticalAlign>Middle</VerticalAlign>
+                      </Style>
+                      <Value>=Fields!TempPhysInvtDiffListBuffer__Track__Lot_No__.Value</Value>
+                      <ZIndex>7</ZIndex>
+                      <rd:DefaultName>TempPhysInvtDiffListBuffer__Track__Lot_No__</rd:DefaultName>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ColSpan>2</ColSpan>
+                  <ReportItems>
+                    <Textbox Name="TempPhysInvtDiffListBuffer__Track__Qty__Neg___Base__">
+                      <Style>
+                        <FontSize>7pt</FontSize>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>0.075cm</PaddingLeft>
+                        <PaddingRight>0.075cm</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <TextAlign>Right</TextAlign>
+                        <VerticalAlign>Middle</VerticalAlign>
+                      </Style>
+                      <Value>=Code.BlankZero(Fields!TempPhysInvtDiffListBuffer__Track__Qty__Neg___Base__.Value)</Value>
+                      <ZIndex>6</ZIndex>
+                      <rd:DefaultName>TempPhysInvtDiffListBuffer__Track__Qty__Neg___Base__</rd:DefaultName>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="TempPhysInvtDiffListBuffer__Track__Qty__Pos___Base__">
+                      <Style>
+                        <BorderColor>
+                          <Right>Black</Right>
+                        </BorderColor>
+                        <BorderStyle>
+                          <Right>Solid</Right>
+                        </BorderStyle>
+                        <BorderWidth>
+                          <Right>0.25pt</Right>
+                        </BorderWidth>
+                        <FontSize>7pt</FontSize>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>0.075cm</PaddingLeft>
+                        <PaddingRight>0.075cm</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <TextAlign>Right</TextAlign>
+                        <VerticalAlign>Middle</VerticalAlign>
+                      </Style>
+                      <Value>=Code.BlankZero(Fields!TempPhysInvtDiffListBuffer__Track__Qty__Pos___Base__.Value)</Value>
+                      <ZIndex>5</ZIndex>
+                      <rd:DefaultName>TempPhysInvtDiffListBuffer__Track__Qty__Pos___Base__</rd:DefaultName>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ColSpan>2</ColSpan>
+                  <ReportItems>
+                    <Textbox Name="textbox44">
+                      <Style>
+                        <FontSize>7pt</FontSize>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>0.075cm</PaddingLeft>
+                        <PaddingRight>0.075cm</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <VerticalAlign>Middle</VerticalAlign>
+                      </Style>
+                      <Value />
+                      <ZIndex>4</ZIndex>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+              </TableCells>
+              <Visibility>
+                <Hidden>=IIF(Fields!TempPhysInvtDiffListBuffer__Exp__Serial_No__Caption.Value="",True,False)</Hidden>
+              </Visibility>
+            </TableRow>
+          </TableRows>
+        </Details>
+        <TableColumns>
+          <TableColumn>
+            <Width>1.65cm</Width>
+          </TableColumn>
+          <TableColumn>
+            <Width>1.65cm</Width>
+          </TableColumn>
+          <TableColumn>
+            <Width>1.65cm</Width>
+          </TableColumn>
+          <TableColumn>
+            <Width>1.65cm</Width>
+          </TableColumn>
+          <TableColumn>
+            <Width>1.775cm</Width>
+          </TableColumn>
+          <TableColumn>
+            <Width>1.775cm</Width>
+          </TableColumn>
+          <TableColumn>
+            <Width>1.65cm</Width>
+          </TableColumn>
+          <TableColumn>
+            <Width>1.85cm</Width>
+          </TableColumn>
+          <TableColumn>
+            <Width>1.775cm</Width>
+          </TableColumn>
+          <TableColumn>
+            <Width>1.8cm</Width>
+          </TableColumn>
+          <TableColumn>
+            <Width>0.8cm</Width>
+          </TableColumn>
+          <TableColumn>
+            <Width>1.65cm</Width>
+          </TableColumn>
+          <TableColumn>
+            <Width>1.775cm</Width>
+          </TableColumn>
+          <TableColumn>
+            <Width>1.8cm</Width>
+          </TableColumn>
+          <TableColumn>
+            <Width>1.8cm</Width>
+          </TableColumn>
+        </TableColumns>
+        <TableGroups>
+          <TableGroup>
+            <Footer>
+              <TableRows>
+                <TableRow>
+                  <Height>0.423cm</Height>
+                  <TableCells>
+                    <TableCell>
+                      <ColSpan>15</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="textbox2">
+                          <CanGrow>true</CanGrow>
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <FontWeight>700</FontWeight>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>0.075cm</PaddingLeft>
+                            <PaddingRight>0.075cm</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <VerticalAlign>Middle</VerticalAlign>
+                          </Style>
+                          <Value />
+                          <rd:DefaultName>textbox2</rd:DefaultName>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                  </TableCells>
+                </TableRow>
+                <TableRow>
+                  <Height>0.423cm</Height>
+                  <TableCells>
+                    <TableCell>
+                      <ColSpan>2</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="textbox55">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <FontWeight>700</FontWeight>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>0.075cm</PaddingLeft>
+                            <PaddingRight>0.075cm</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <VerticalAlign>Middle</VerticalAlign>
+                          </Style>
+                          <Value>=First(Fields!TotalsCaption.Value)</Value>
+                          <ZIndex>66</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ColSpan>11</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="textbox45">
+                          <Style>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <Value />
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ReportItems>
+                        <Textbox Name="textbox81">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <FontWeight>700</FontWeight>
+                            <Format>=First(Fields!NewAmountPosFormat.Value)</Format>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>0.075cm</PaddingLeft>
+                            <PaddingRight>0.075cm</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <VerticalAlign>Middle</VerticalAlign>
+                          </Style>
+                          <Value>=Code.BlankZero(Last(Fields!NewAmountPos.Value))</Value>
+                          <ZIndex>54</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ReportItems>
+                        <Textbox Name="textbox82">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <FontWeight>700</FontWeight>
+                            <Format>=First(Fields!NewAmountNegFormat.Value)</Format>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>0.075cm</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <VerticalAlign>Middle</VerticalAlign>
+                          </Style>
+                          <Value>=Code.BlankZero(Last(Fields!NewAmountNeg.Value))</Value>
+                          <ZIndex>53</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                  </TableCells>
+                </TableRow>
+              </TableRows>
+            </Footer>
+            <Grouping Name="table1_Group1">
+              <GroupExpressions>
+                <GroupExpression>=Fields!Post__Phys__Invt__Order_Header_No_.Value</GroupExpression>
+              </GroupExpressions>
+              <PageBreakAtEnd>true</PageBreakAtEnd>
+            </Grouping>
+            <Header>
+              <TableRows>
+                <TableRow>
+                  <Height>0.423cm</Height>
+                  <TableCells>
+                    <TableCell>
+                      <ColSpan>2</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="textbox300">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <TextAlign>Left</TextAlign>
+                            <VerticalAlign>Middle</VerticalAlign>
+                          </Style>
+                          <Value>=First(Fields!Post__Phys__Invt__Order_Header___No__Caption.Value)</Value>
+                          <ZIndex>185</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ColSpan>3</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="textbox306">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <TextAlign>Left</TextAlign>
+                            <VerticalAlign>Middle</VerticalAlign>
+                          </Style>
+                          <Value>=Fields!Post__Phys__Invt__Order_Header___No__.Value</Value>
+                          <ZIndex>184</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ColSpan>2</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="textbox302">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <TextAlign>Left</TextAlign>
+                            <VerticalAlign>Middle</VerticalAlign>
+                          </Style>
+                          <Value>=First(Fields!Post__Phys__Invt__Order_Header___Person_Responsible_Caption.Value)</Value>
+                          <ZIndex>181</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ReportItems>
+                        <Textbox Name="Post__Phys__Invt__Order_Header___Person_Responsible_">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <TextAlign>Left</TextAlign>
+                          </Style>
+                          <Value>=Fields!Post__Phys__Invt__Order_Header___Person_Responsible_.Value</Value>
+                          <ZIndex>180</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ColSpan>7</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="textbox50">
+                          <Style>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <Value />
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                  </TableCells>
+                </TableRow>
+                <TableRow>
+                  <Height>0.423cm</Height>
+                  <TableCells>
+                    <TableCell>
+                      <ColSpan>2</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="Posted_Phys__Invt__Order_Header__DescriptionCaption">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <TextAlign>Left</TextAlign>
+                            <VerticalAlign>Middle</VerticalAlign>
+                          </Style>
+                          <Value>=First(Fields!Post__Phys__Invt__Order_Header__DescriptionCaption.Value)</Value>
+                          <ZIndex>176</ZIndex>
+                          <rd:DefaultName>Posted_Phys__Invt__Order_Header__DescriptionCaption</rd:DefaultName>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ColSpan>3</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="Posted_Phys__Invt__Order_Header__Description">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <TextAlign>Left</TextAlign>
+                            <VerticalAlign>Middle</VerticalAlign>
+                          </Style>
+                          <Value>=Fields!Post__Phys__Invt__Order_Header__Description.Value</Value>
+                          <ZIndex>175</ZIndex>
+                          <rd:DefaultName>Posted_Phys__Invt__Order_Header__Description</rd:DefaultName>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ColSpan>2</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="Posted_Phys__Invt__Order_Header___Posting_Date_Caption">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <TextAlign>Left</TextAlign>
+                            <VerticalAlign>Middle</VerticalAlign>
+                          </Style>
+                          <Value>=First(Fields!Post__Phys__Invt__Order_Header___Posting_Date_Caption.Value)</Value>
+                          <ZIndex>172</ZIndex>
+                          <rd:DefaultName>Posted_Phys__Invt__Order_Header___Posting_Date_Caption</rd:DefaultName>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ReportItems>
+                        <Textbox Name="Posted_Phys__Invt__Order_Header___Posting_Date_">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <Format>d</Format>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>0.075cm</PaddingLeft>
+                            <PaddingRight>0.075cm</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <TextAlign>Left</TextAlign>
+                            <VerticalAlign>Bottom</VerticalAlign>
+                          </Style>
+                          <Value>=Fields!Post__Phys__Invt__Order_Header___Posting_Date_.Value</Value>
+                          <ZIndex>171</ZIndex>
+                          <rd:DefaultName>Posted_Phys__Invt__Order_Header___Posting_Date_</rd:DefaultName>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ColSpan>7</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="textbox64">
+                          <Style>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <Value />
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                  </TableCells>
+                </TableRow>
+                <TableRow>
+                  <Height>0.423cm</Height>
+                  <TableCells>
+                    <TableCell>
+                      <ColSpan>2</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="Posted_Phys__Invt__Order_Header___No__Finished_Recordings_Caption">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <TextAlign>Left</TextAlign>
+                            <VerticalAlign>Middle</VerticalAlign>
+                          </Style>
+                          <Value>=First(Fields!Post__Phys__Invt__Order_Header___No__Finished_Recordings_Caption.Value)</Value>
+                          <ZIndex>165</ZIndex>
+                          <rd:DefaultName>Posted_Phys__Invt__Order_Header___No__Finished_Recordings_Caption</rd:DefaultName>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ColSpan>3</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="Posted_Phys__Invt__Order_Header___No__Finished_Recordings_">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <TextAlign>Left</TextAlign>
+                            <VerticalAlign>Middle</VerticalAlign>
+                          </Style>
+                          <Value>=Fields!Post__Phys__Invt__Order_Header___No__Finished_Recordings_.Value</Value>
+                          <ZIndex>164</ZIndex>
+                          <rd:DefaultName>Posted_Phys__Invt__Order_Header___No__Finished_Recordings_</rd:DefaultName>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ColSpan>2</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="textbox284">
+                          <Style>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <Value />
+                          <rd:DefaultName>textbox284</rd:DefaultName>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ReportItems>
+                        <Textbox Name="textbox285">
+                          <Style>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <Value />
+                          <rd:DefaultName>textbox285</rd:DefaultName>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ColSpan>7</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="textbox67">
+                          <Style>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <Value />
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                  </TableCells>
+                </TableRow>
+                <TableRow>
+                  <Height>0.423cm</Height>
+                  <TableCells>
+                    <TableCell>
+                      <ColSpan>15</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="textbox68">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <FontWeight>700</FontWeight>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>0.075cm</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <VerticalAlign>Bottom</VerticalAlign>
+                          </Style>
+                          <Value />
+                          <ZIndex>213</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                  </TableCells>
+                </TableRow>
+                <TableRow>
+                  <Height>0.842cm</Height>
+                  <TableCells>
+                    <TableCell>
+                      <ReportItems>
+                        <Textbox Name="Posted_Phys__Invt__Order_Line__Item_No__Caption">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <FontWeight>700</FontWeight>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>0.075cm</PaddingRight>
+                            <VerticalAlign>Bottom</VerticalAlign>
+                          </Style>
+                          <Value>=First(Fields!Posted_Phys__Invt__Order_Line__Item_No__Caption.Value)</Value>
+                          <ZIndex>136</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ReportItems>
+                        <Textbox Name="Posted_Phys__Invt__Order_Line__Variant_Code_Caption">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <FontWeight>700</FontWeight>
+                            <PaddingLeft>0.075cm</PaddingLeft>
+                            <PaddingRight>0.075cm</PaddingRight>
+                            <VerticalAlign>Bottom</VerticalAlign>
+                          </Style>
+                          <Value>=First(Fields!Posted_Phys__Invt__Order_Line__Variant_Code_Caption.Value)</Value>
+                          <ZIndex>135</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ReportItems>
+                        <Textbox Name="Posted_Phys__Invt__Order_Line__Location_Code_Caption">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <FontWeight>700</FontWeight>
+                            <PaddingLeft>0.075cm</PaddingLeft>
+                            <PaddingRight>0.075cm</PaddingRight>
+                            <VerticalAlign>Bottom</VerticalAlign>
+                          </Style>
+                          <Value>=First(Fields!Posted_Phys__Invt__Order_Line__Location_Code_Caption.Value)</Value>
+                          <ZIndex>134</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ReportItems>
+                        <Textbox Name="Posted_Phys__Invt__Order_Line__Bin_Code_Caption">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <FontWeight>700</FontWeight>
+                            <PaddingLeft>0.075cm</PaddingLeft>
+                            <PaddingRight>0.075cm</PaddingRight>
+                            <VerticalAlign>Bottom</VerticalAlign>
+                          </Style>
+                          <Value>=First(Fields!Posted_Phys__Invt__Order_Line__Bin_Code_Caption.Value)</Value>
+                          <ZIndex>133</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ColSpan>2</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="Posted_Phys__Invt__Order_Line_DescriptionCaption">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <FontWeight>700</FontWeight>
+                            <PaddingLeft>0.075cm</PaddingLeft>
+                            <PaddingRight>0.075cm</PaddingRight>
+                            <VerticalAlign>Bottom</VerticalAlign>
+                          </Style>
+                          <Value>=First(Fields!Posted_Phys__Invt__Order_Line_DescriptionCaption.Value)</Value>
+                          <ZIndex>132</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ReportItems>
+                        <Textbox Name="Posted_Phys__Invt__Order_Line__Base_Unit_of_Measure_Code_Caption">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <FontWeight>700</FontWeight>
+                            <PaddingLeft>0.075cm</PaddingLeft>
+                            <PaddingRight>0.075cm</PaddingRight>
+                            <VerticalAlign>Bottom</VerticalAlign>
+                          </Style>
+                          <Value>=First(Fields!Posted_Phys__Invt__Order_Line__Base_Unit_of_Measure_Code_Caption.Value)</Value>
+                          <ZIndex>131</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ReportItems>
+                        <Textbox Name="Posted_Phys__Invt__Order_Line__Qty__Expected__Base__Caption">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <FontWeight>700</FontWeight>
+                            <PaddingLeft>0.075cm</PaddingLeft>
+                            <PaddingRight>0.075cm</PaddingRight>
+                            <TextAlign>Right</TextAlign>
+                            <VerticalAlign>Bottom</VerticalAlign>
+                          </Style>
+                          <Value>=First(Fields!Posted_Phys__Invt__Order_Line__Qty__Expected__Base__Caption.Value)</Value>
+                          <ZIndex>130</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ReportItems>
+                        <Textbox Name="Posted_Phys__Invt__Order_Line__Qty__Recorded__Base__Caption">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <FontWeight>700</FontWeight>
+                            <PaddingLeft>0.075cm</PaddingLeft>
+                            <PaddingRight>0.075cm</PaddingRight>
+                            <TextAlign>Right</TextAlign>
+                            <VerticalAlign>Bottom</VerticalAlign>
+                          </Style>
+                          <Value>=First(Fields!Posted_Phys__Invt__Order_Line__Qty__Recorded__Base__Caption.Value)</Value>
+                          <ZIndex>129</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ReportItems>
+                        <Textbox Name="Posted_Phys__Invt__Order_Line__No__Finished_Rec__Lines_Caption">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <FontWeight>700</FontWeight>
+                            <PaddingLeft>0.075cm</PaddingLeft>
+                            <PaddingRight>0.075cm</PaddingRight>
+                            <TextAlign>Right</TextAlign>
+                            <VerticalAlign>Bottom</VerticalAlign>
+                          </Style>
+                          <Value>=First(Fields!Posted_Phys__Invt__Order_Line__No__Finished_Rec__Lines_Caption.Value)</Value>
+                          <ZIndex>128</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ReportItems>
+                        <Textbox Name="Posted_Phys__Invt__Order_Line__Recorded_without_Order_Caption">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <FontWeight>700</FontWeight>
+                            <PaddingLeft>0.075cm</PaddingLeft>
+                            <PaddingRight>0.075cm</PaddingRight>
+                            <VerticalAlign>Bottom</VerticalAlign>
+                          </Style>
+                          <Value>=First(Fields!Posted_Phys__Invt__Order_Line__Recorded_without_Order_Caption.Value)</Value>
+                          <ZIndex>127</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ReportItems>
+                        <Textbox Name="QtyPosCaption">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <FontWeight>700</FontWeight>
+                            <PaddingLeft>0.075cm</PaddingLeft>
+                            <PaddingRight>0.075cm</PaddingRight>
+                            <TextAlign>Right</TextAlign>
+                            <VerticalAlign>Bottom</VerticalAlign>
+                          </Style>
+                          <Value>=First(Fields!QtyPosCaption.Value)</Value>
+                          <ZIndex>126</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ReportItems>
+                        <Textbox Name="QtyNegCaption">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <FontWeight>700</FontWeight>
+                            <PaddingLeft>0.075cm</PaddingLeft>
+                            <PaddingRight>0.075cm</PaddingRight>
+                            <TextAlign>Right</TextAlign>
+                            <VerticalAlign>Bottom</VerticalAlign>
+                          </Style>
+                          <Value>=First(Fields!QtyNegCaption.Value)</Value>
+                          <ZIndex>125</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ReportItems>
+                        <Textbox Name="AmountPosCaption">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <FontWeight>700</FontWeight>
+                            <PaddingLeft>0.075cm</PaddingLeft>
+                            <PaddingRight>0.075cm</PaddingRight>
+                            <TextAlign>Right</TextAlign>
+                            <VerticalAlign>Bottom</VerticalAlign>
+                          </Style>
+                          <Value>=First(Fields!AmountPosCaption.Value)</Value>
+                          <ZIndex>124</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ReportItems>
+                        <Textbox Name="AmountNegCaption">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <FontWeight>700</FontWeight>
+                            <PaddingLeft>0.075cm</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <TextAlign>Right</TextAlign>
+                            <VerticalAlign>Bottom</VerticalAlign>
+                          </Style>
+                          <Value>=First(Fields!AmountNegCaption.Value)</Value>
+                          <ZIndex>123</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                  </TableCells>
+                </TableRow>
+                <TableRow>
+                  <Height>0.423cm</Height>
+                  <TableCells>
+                    <TableCell>
+                      <ColSpan>15</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="textbox19">
+                          <CanGrow>true</CanGrow>
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <FontWeight>700</FontWeight>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>0.075cm</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <VerticalAlign>Bottom</VerticalAlign>
+                          </Style>
+                          <Value />
+                          <rd:DefaultName>textbox19</rd:DefaultName>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                  </TableCells>
+                </TableRow>
+              </TableRows>
+            </Header>
+          </TableGroup>
+          <TableGroup>
+            <Grouping Name="table1_Group5">
+              <GroupExpressions>
+                <GroupExpression>=Fields!Post__Phys__Invt__Order_Header_No_.Value</GroupExpression>
+              </GroupExpressions>
+            </Grouping>
+            <Header>
+              <RepeatOnNewPage>true</RepeatOnNewPage>
+              <TableRows>
+                <TableRow>
+                  <Height>0.03125in</Height>
+                  <TableCells>
+                    <TableCell>
+                      <ColSpan>12</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="textbox1">
+                          <CanGrow>true</CanGrow>
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <FontWeight>700</FontWeight>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>0.075cm</PaddingRight>
+                            <VerticalAlign>Bottom</VerticalAlign>
+                          </Style>
+                          <Value />
+                          <rd:DefaultName>textbox1</rd:DefaultName>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ReportItems>
+                        <Textbox Name="COMPANYNAME">
+                          <Style>
+                            <Color>#ff0000</Color>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <VerticalAlign>Middle</VerticalAlign>
+                          </Style>
+                          <Value>=Fields!COMPANYNAME.Value</Value>
+                          <Visibility>
+                            <Hidden>true</Hidden>
+                          </Visibility>
+                          <ZIndex>168</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ReportItems>
+                        <Textbox Name="CurrReport_PAGENOCaption">
+                          <Style>
+                            <Color>#ff0000</Color>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <VerticalAlign>Middle</VerticalAlign>
+                          </Style>
+                          <Value>=Fields!CurrReport_PAGENOCaption.Value</Value>
+                          <Visibility>
+                            <Hidden>true</Hidden>
+                          </Visibility>
+                          <ZIndex>167</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ReportItems>
+                        <Textbox Name="Posted_Phys__Invt__Order_Difference_ListCaption">
+                          <Style>
+                            <Color>#ff0000</Color>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <VerticalAlign>Middle</VerticalAlign>
+                          </Style>
+                          <Value>=Fields!Posted_Phys__Inventory_Order_Difference_ListCaption.Value</Value>
+                          <Visibility>
+                            <Hidden>true</Hidden>
+                          </Visibility>
+                          <ZIndex>166</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                  </TableCells>
+                </TableRow>
+              </TableRows>
+            </Header>
+          </TableGroup>
+          <TableGroup>
+            <Footer>
+              <TableRows>
+                <TableRow>
+                  <Height>0.423cm</Height>
+                  <TableCells>
+                    <TableCell>
+                      <ColSpan>15</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="textbox3">
+                          <CanGrow>true</CanGrow>
+                          <Style>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <Value />
+                          <rd:DefaultName>textbox3</rd:DefaultName>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                  </TableCells>
+                  <Visibility>
+                    <Hidden>=IIF((Fields!PrintAnEmptyLine.Value),False,true)</Hidden>
+                  </Visibility>
+                </TableRow>
+              </TableRows>
+            </Footer>
+            <Grouping Name="table1_Group2">
+              <GroupExpressions>
+                <GroupExpression>=Fields!Post__Phys__Invt__Order_Header___No__.Value</GroupExpression>
+                <GroupExpression>=Fields!Posted_Phys__Invt__Order_Line_Line_No_.Value</GroupExpression>
+              </GroupExpressions>
+            </Grouping>
+            <Header>
+              <TableRows>
+                <TableRow>
+                  <Height>0.423cm</Height>
+                  <TableCells>
+                    <TableCell>
+                      <ReportItems>
+                        <Textbox Name="textbox190">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>0.075cm</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <TextAlign>Left</TextAlign>
+                            <VerticalAlign>Middle</VerticalAlign>
+                          </Style>
+                          <Value>=Fields!Posted_Phys__Invt__Order_Line__Item_No__.Value</Value>
+                          <ZIndex>119</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ReportItems>
+                        <Textbox Name="textbox191">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>0.075cm</PaddingLeft>
+                            <PaddingRight>0.075cm</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <TextAlign>Left</TextAlign>
+                            <VerticalAlign>Middle</VerticalAlign>
+                          </Style>
+                          <Value>=Fields!Posted_Phys__Invt__Order_Line__Variant_Code_.Value</Value>
+                          <ZIndex>118</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ReportItems>
+                        <Textbox Name="textbox192">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>0.075cm</PaddingLeft>
+                            <PaddingRight>0.075cm</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <TextAlign>Left</TextAlign>
+                            <VerticalAlign>Middle</VerticalAlign>
+                          </Style>
+                          <Value>=Fields!Posted_Phys__Invt__Order_Line__Location_Code_.Value</Value>
+                          <ZIndex>117</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ReportItems>
+                        <Textbox Name="textbox193">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>0.075cm</PaddingLeft>
+                            <PaddingRight>0.075cm</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <TextAlign>Left</TextAlign>
+                            <VerticalAlign>Middle</VerticalAlign>
+                          </Style>
+                          <Value>=Fields!Posted_Phys__Invt__Order_Line__Bin_Code_.Value</Value>
+                          <ZIndex>116</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ColSpan>2</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="textbox194">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>0.075cm</PaddingLeft>
+                            <PaddingRight>0.075cm</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <VerticalAlign>Middle</VerticalAlign>
+                          </Style>
+                          <Value>=Fields!Posted_Phys__Invt__Order_Line_Description.Value</Value>
+                          <ZIndex>115</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ReportItems>
+                        <Textbox Name="textbox195">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>0.075cm</PaddingLeft>
+                            <PaddingRight>0.075cm</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <VerticalAlign>Middle</VerticalAlign>
+                          </Style>
+                          <Value>=Fields!Posted_Phys__Invt__Order_Line__Base_Unit_of_Measure_Code_.Value</Value>
+                          <ZIndex>114</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ReportItems>
+                        <Textbox Name="textbox196">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <Format>=Fields!Posted_Phys__Invt__Order_Line__Qty__Expected__Base__Format.Value</Format>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>0.075cm</PaddingLeft>
+                            <PaddingRight>0.075cm</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <VerticalAlign>Middle</VerticalAlign>
+                          </Style>
+                          <Value>=Fields!Posted_Phys__Invt__Order_Line__Qty__Expected__Base__.Value</Value>
+                          <ZIndex>113</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ReportItems>
+                        <Textbox Name="textbox197">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <Format>=Fields!Posted_Phys__Invt__Order_Line__Qty__Recorded__Base__Format.Value</Format>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>0.075cm</PaddingLeft>
+                            <PaddingRight>0.075cm</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <VerticalAlign>Middle</VerticalAlign>
+                          </Style>
+                          <Value>=Fields!Posted_Phys__Invt__Order_Line__Qty__Recorded__Base__.Value</Value>
+                          <ZIndex>112</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ReportItems>
+                        <Textbox Name="textbox198">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>0.075cm</PaddingLeft>
+                            <PaddingRight>0.075cm</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <VerticalAlign>Middle</VerticalAlign>
+                          </Style>
+                          <Value>=Fields!Posted_Phys__Invt__Order_Line__No__Finished_Rec__Lines_.Value</Value>
+                          <ZIndex>111</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ReportItems>
+                        <Textbox Name="textbox199">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>0.075cm</PaddingLeft>
+                            <PaddingRight>0.075cm</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <VerticalAlign>Middle</VerticalAlign>
+                          </Style>
+                          <Value>=Fields!Posted_Phys__Invt__Order_Line__Recorded_without_Order_.Value</Value>
+                          <ZIndex>110</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ReportItems>
+                        <Textbox Name="textbox200">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <Format>=Fields!QtyPosFormat.Value</Format>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>0.075cm</PaddingLeft>
+                            <PaddingRight>0.075cm</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <VerticalAlign>Middle</VerticalAlign>
+                          </Style>
+                          <Value>=Code.BlankZero(Fields!QtyPos.Value)</Value>
+                          <ZIndex>109</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ReportItems>
+                        <Textbox Name="textbox201">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <Format>=Fields!QtyNegFormat.Value</Format>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>0.075cm</PaddingLeft>
+                            <PaddingRight>0.075cm</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <VerticalAlign>Middle</VerticalAlign>
+                          </Style>
+                          <Value>=Code.BlankZero(Fields!QtyNeg.Value)</Value>
+                          <ZIndex>108</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ReportItems>
+                        <Textbox Name="textbox202">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <Format>=Fields!AmountPosFormat.Value</Format>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>0.075cm</PaddingLeft>
+                            <PaddingRight>0.075cm</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <VerticalAlign>Middle</VerticalAlign>
+                          </Style>
+                          <Value>=Code.BlankZero(Fields!AmountPos.Value)</Value>
+                          <ZIndex>107</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ReportItems>
+                        <Textbox Name="textbox203">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <Format>=Fields!AmountNegFormat.Value</Format>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>0.075cm</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <VerticalAlign>Middle</VerticalAlign>
+                          </Style>
+                          <Value>=Code.BlankZero(Fields!AmountNeg.Value)</Value>
+                          <ZIndex>106</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                  </TableCells>
+                </TableRow>
+                <TableRow>
+                  <Height>0.423cm</Height>
+                  <TableCells>
+                    <TableCell>
+                      <ColSpan>15</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="textbox124">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>0.075cm</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <TextAlign>Left</TextAlign>
+                            <VerticalAlign>Middle</VerticalAlign>
+                          </Style>
+                          <Value />
+                          <ZIndex>101</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                  </TableCells>
+                  <Visibility>
+                    <Hidden>=IIF((Fields!PrintAnEmptyLine.Value),False,true)</Hidden>
+                  </Visibility>
+                </TableRow>
+              </TableRows>
+            </Header>
+          </TableGroup>
+          <TableGroup>
+            <Footer>
+              <TableRows>
+                <TableRow>
+                  <Height>0.423cm</Height>
+                  <TableCells>
+                    <TableCell>
+                      <ReportItems>
+                        <Textbox Name="textbox125">
+                          <Style>
+                            <BorderColor>
+                              <Right>Black</Right>
+                            </BorderColor>
+                            <BorderStyle>
+                              <Right>Solid</Right>
+                            </BorderStyle>
+                            <BorderWidth>
+                              <Right>0.25pt</Right>
+                            </BorderWidth>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <Value />
+                          <ZIndex>33</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ReportItems>
+                        <Textbox Name="TotalsCaption_1">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <FontWeight>700</FontWeight>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <Value>=First(Fields!TotalsCaption.Value)</Value>
+                          <ZIndex>32</ZIndex>
+                          <rd:DefaultName>TotalsCaption_1</rd:DefaultName>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ReportItems>
+                        <Textbox Name="textbox127">
+                          <Style>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <Value />
+                          <ZIndex>31</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ReportItems>
+                        <Textbox Name="textbox106">
+                          <Style>
+                            <BorderColor>
+                              <Right>Black</Right>
+                            </BorderColor>
+                            <BorderStyle>
+                              <Right>Solid</Right>
+                            </BorderStyle>
+                            <BorderWidth>
+                              <Right>0.25pt</Right>
+                            </BorderWidth>
+                            <FontSize>7pt</FontSize>
+                            <FontWeight>700</FontWeight>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>0.075cm</PaddingLeft>
+                            <PaddingRight>0.075cm</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <TextAlign>Right</TextAlign>
+                            <VerticalAlign>Middle</VerticalAlign>
+                          </Style>
+                          <Value>=Code.BlankZero(Sum(Fields!TempPhysInvtDiffListBuffer__Exp__Qty___Base__.Value))</Value>
+                          <ZIndex>30</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ColSpan>3</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="textbox129">
+                          <Style>
+                            <BorderColor>
+                              <Left>Black</Left>
+                            </BorderColor>
+                            <BorderStyle>
+                              <Left>Solid</Left>
+                            </BorderStyle>
+                            <BorderWidth>
+                              <Left>0.25pt</Left>
+                            </BorderWidth>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <Value />
+                          <ZIndex>29</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ReportItems>
+                        <Textbox Name="textbox109">
+                          <Style>
+                            <BorderColor>
+                              <Right>Black</Right>
+                            </BorderColor>
+                            <BorderStyle>
+                              <Right>Solid</Right>
+                            </BorderStyle>
+                            <BorderWidth>
+                              <Right>0.25pt</Right>
+                            </BorderWidth>
+                            <FontSize>7pt</FontSize>
+                            <FontWeight>700</FontWeight>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>0.075cm</PaddingLeft>
+                            <PaddingRight>0.075cm</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <TextAlign>Right</TextAlign>
+                            <VerticalAlign>Middle</VerticalAlign>
+                          </Style>
+                          <Value>=Code.BlankZero(Sum(Fields!TempPhysInvtDiffListBuffer__Rec__Qty___Base__.Value))</Value>
+                          <ZIndex>26</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ColSpan>2</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="textbox131">
+                          <Style>
+                            <BorderColor>
+                              <Left>Black</Left>
+                            </BorderColor>
+                            <BorderStyle>
+                              <Left>Solid</Left>
+                            </BorderStyle>
+                            <BorderWidth>
+                              <Left>0.25pt</Left>
+                            </BorderWidth>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <Value />
+                          <ZIndex>25</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ColSpan>2</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="textbox107">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <FontWeight>700</FontWeight>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>0.075cm</PaddingLeft>
+                            <PaddingRight>0.075cm</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <TextAlign>Right</TextAlign>
+                            <VerticalAlign>Middle</VerticalAlign>
+                          </Style>
+                          <Value>=Code.BlankZero(Sum(Fields!TempPhysInvtDiffListBuffer__Track__Qty__Neg___Base__.Value))</Value>
+                          <ZIndex>23</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ReportItems>
+                        <Textbox Name="textbox108">
+                          <Style>
+                            <BorderColor>
+                              <Right>Black</Right>
+                            </BorderColor>
+                            <BorderStyle>
+                              <Right>Solid</Right>
+                            </BorderStyle>
+                            <BorderWidth>
+                              <Right>0.25pt</Right>
+                            </BorderWidth>
+                            <FontSize>7pt</FontSize>
+                            <FontWeight>700</FontWeight>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>0.075cm</PaddingLeft>
+                            <PaddingRight>0.075cm</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <TextAlign>Right</TextAlign>
+                            <VerticalAlign>Middle</VerticalAlign>
+                          </Style>
+                          <Value>=Code.BlankZero(Sum(Fields!TempPhysInvtDiffListBuffer__Track__Qty__Pos___Base__.Value))</Value>
+                          <ZIndex>22</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ColSpan>2</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="textbox137">
+                          <Style>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <Value />
+                          <ZIndex>21</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                  </TableCells>
+                  <Visibility>
+                    <Hidden>=IIF(Fields!TempPhysInvtDiffListBuffer__Exp__Serial_No__Caption.Value="",True,False)</Hidden>
+                  </Visibility>
+                </TableRow>
+              </TableRows>
+            </Footer>
+            <Grouping Name="table1_Group3">
+              <GroupExpressions>
+                <GroupExpression>=Fields!Post__Phys__Invt__Order_Header___No__.Value</GroupExpression>
+                <GroupExpression>=Fields!Posted_Phys__Invt__Order_Line_Line_No_.Value</GroupExpression>
+                <GroupExpression>=Fields!TempPhysInvtDiffListBuffer__Exp__Serial_No__Caption.Value</GroupExpression>
+              </GroupExpressions>
+            </Grouping>
+            <Header>
+              <TableRows>
+                <TableRow>
+                  <Height>0.423cm</Height>
+                  <TableCells>
+                    <TableCell>
+                      <ReportItems>
+                        <Textbox Name="textbox142">
+                          <Style>
+                            <BorderColor>
+                              <Right>Black</Right>
+                            </BorderColor>
+                            <BorderStyle>
+                              <Right>Solid</Right>
+                            </BorderStyle>
+                            <BorderWidth>
+                              <Right>0.25pt</Right>
+                            </BorderWidth>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <Value />
+                          <ZIndex>97</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ColSpan>3</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="textbox53">
+                          <Style>
+                            <BorderColor>
+                              <Left>Black</Left>
+                              <Right>Black</Right>
+                            </BorderColor>
+                            <BorderStyle>
+                              <Left>Solid</Left>
+                              <Right>Solid</Right>
+                            </BorderStyle>
+                            <BorderWidth>
+                              <Left>0.25pt</Left>
+                              <Right>0.25pt</Right>
+                            </BorderWidth>
+                            <FontSize>7pt</FontSize>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>0.075cm</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <TextAlign>Center</TextAlign>
+                            <VerticalAlign>Bottom</VerticalAlign>
+                          </Style>
+                          <Value>=Fields!Expected_Tracking_LinesCaption.Value</Value>
+                          <ZIndex>97</ZIndex>
+                          <rd:DefaultName>textbox53</rd:DefaultName>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ColSpan>4</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="textbox60">
+                          <Style>
+                            <BorderColor>
+                              <Left>Black</Left>
+                              <Right>Black</Right>
+                            </BorderColor>
+                            <BorderStyle>
+                              <Left>Solid</Left>
+                              <Right>Solid</Right>
+                            </BorderStyle>
+                            <BorderWidth>
+                              <Left>0.25pt</Left>
+                              <Right>0.25pt</Right>
+                            </BorderWidth>
+                            <FontSize>7pt</FontSize>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>0.075cm</PaddingLeft>
+                            <PaddingRight>0.075cm</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <TextAlign>Center</TextAlign>
+                            <VerticalAlign>Bottom</VerticalAlign>
+                          </Style>
+                          <Value>=Fields!Recording_LinesCaption.Value</Value>
+                          <ZIndex>96</ZIndex>
+                          <rd:DefaultName>textbox60</rd:DefaultName>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ColSpan>5</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="textbox63">
+                          <Style>
+                            <BorderColor>
+                              <Left>Black</Left>
+                            </BorderColor>
+                            <BorderStyle>
+                              <Left>Solid</Left>
+                              <Right>Solid</Right>
+                            </BorderStyle>
+                            <BorderWidth>
+                              <Left>0.25pt</Left>
+                              <Right>0.25pt</Right>
+                            </BorderWidth>
+                            <FontSize>7pt</FontSize>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>0.075cm</PaddingLeft>
+                            <PaddingRight>0.075cm</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <TextAlign>Center</TextAlign>
+                            <VerticalAlign>Bottom</VerticalAlign>
+                          </Style>
+                          <Value>=Fields!Item_Tracking_LinesCaption.Value</Value>
+                          <ZIndex>95</ZIndex>
+                          <rd:DefaultName>textbox63</rd:DefaultName>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ColSpan>2</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="textbox147">
+                          <Style>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <Value />
+                          <ZIndex>93</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                  </TableCells>
+                  <Visibility>
+                    <Hidden>=IIF(Fields!TempPhysInvtDiffListBuffer__Exp__Serial_No__Caption.Value="",True,False)</Hidden>
+                  </Visibility>
+                </TableRow>
+                <TableRow>
+                  <Height>0.846cm</Height>
+                  <TableCells>
+                    <TableCell>
+                      <ReportItems>
+                        <Textbox Name="textbox152">
+                          <Style>
+                            <BorderColor>
+                              <Right>Black</Right>
+                            </BorderColor>
+                            <BorderStyle>
+                              <Right>Solid</Right>
+                            </BorderStyle>
+                            <BorderWidth>
+                              <Right>0.25pt</Right>
+                            </BorderWidth>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <VerticalAlign>Bottom</VerticalAlign>
+                          </Style>
+                          <Value />
+                          <ZIndex>88</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ReportItems>
+                        <Textbox Name="textbox159">
+                          <Style>
+                            <BorderColor>
+                              <Left>Black</Left>
+                            </BorderColor>
+                            <BorderStyle>
+                              <Left>Solid</Left>
+                            </BorderStyle>
+                            <BorderWidth>
+                              <Left>0.25pt</Left>
+                            </BorderWidth>
+                            <FontSize>7pt</FontSize>
+                            <FontWeight>700</FontWeight>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>0.075cm</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <VerticalAlign>Bottom</VerticalAlign>
+                          </Style>
+                          <Value>=First(Fields!TempPhysInvtDiffListBuffer__Exp__Serial_No__Caption.Value)</Value>
+                          <ZIndex>88</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ReportItems>
+                        <Textbox Name="textbox160">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <FontWeight>700</FontWeight>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>0.075cm</PaddingLeft>
+                            <PaddingRight>0.075cm</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <VerticalAlign>Bottom</VerticalAlign>
+                          </Style>
+                          <Value>=First(Fields!TempPhysInvtDiffListBuffer__Exp__Lot_No__Caption.Value)</Value>
+                          <ZIndex>87</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ReportItems>
+                        <Textbox Name="textbox161">
+                          <Style>
+                            <BorderColor>
+                              <Right>Black</Right>
+                            </BorderColor>
+                            <BorderStyle>
+                              <Right>Solid</Right>
+                            </BorderStyle>
+                            <BorderWidth>
+                              <Right>0.25pt</Right>
+                            </BorderWidth>
+                            <FontSize>7pt</FontSize>
+                            <FontWeight>700</FontWeight>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>0.075cm</PaddingLeft>
+                            <PaddingRight>0.075cm</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <VerticalAlign>Bottom</VerticalAlign>
+                          </Style>
+                          <Value>=First(Fields!TempPhysInvtDiffListBuffer__Exp__Qty___Base__Caption.Value)</Value>
+                          <ZIndex>86</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ReportItems>
+                        <Textbox Name="textbox162">
+                          <Style>
+                            <BorderColor>
+                              <Left>Black</Left>
+                            </BorderColor>
+                            <BorderStyle>
+                              <Left>Solid</Left>
+                            </BorderStyle>
+                            <BorderWidth>
+                              <Left>0.25pt</Left>
+                            </BorderWidth>
+                            <FontSize>7pt</FontSize>
+                            <FontWeight>700</FontWeight>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>0.075cm</PaddingLeft>
+                            <PaddingRight>0.075cm</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <TextAlign>Right</TextAlign>
+                            <VerticalAlign>Bottom</VerticalAlign>
+                          </Style>
+                          <Value>=First(Fields!TempPhysInvtDiffListBuffer__Rec__No__Caption.Value)</Value>
+                          <ZIndex>85</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ReportItems>
+                        <Textbox Name="textbox165">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <FontWeight>700</FontWeight>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>0.075cm</PaddingLeft>
+                            <PaddingRight>0.075cm</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <VerticalAlign>Bottom</VerticalAlign>
+                          </Style>
+                          <Value>=First(Fields!TempPhysInvtDiffListBuffer__Rec__Serial_No__Caption.Value)</Value>
+                          <ZIndex>84</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ReportItems>
+                        <Textbox Name="textbox166">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <FontWeight>700</FontWeight>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>0.075cm</PaddingLeft>
+                            <PaddingRight>0.075cm</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <VerticalAlign>Bottom</VerticalAlign>
+                          </Style>
+                          <Value>=First(Fields!TempPhysInvtDiffListBuffer__Rec__Lot_No__Caption.Value)</Value>
+                          <ZIndex>83</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ReportItems>
+                        <Textbox Name="textbox167">
+                          <Style>
+                            <BorderColor>
+                              <Right>Black</Right>
+                            </BorderColor>
+                            <BorderStyle>
+                              <Right>Solid</Right>
+                            </BorderStyle>
+                            <BorderWidth>
+                              <Right>0.25pt</Right>
+                            </BorderWidth>
+                            <FontSize>7pt</FontSize>
+                            <FontWeight>700</FontWeight>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>0.075cm</PaddingLeft>
+                            <PaddingRight>0.075cm</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <TextAlign>Right</TextAlign>
+                            <VerticalAlign>Bottom</VerticalAlign>
+                          </Style>
+                          <Value>=First(Fields!TempPhysInvtDiffListBuffer__Rec__Qty___Base__Caption.Value)</Value>
+                          <ZIndex>82</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ReportItems>
+                        <Textbox Name="textbox168">
+                          <Style>
+                            <BorderColor>
+                              <Left>Black</Left>
+                            </BorderColor>
+                            <BorderStyle>
+                              <Left>Solid</Left>
+                            </BorderStyle>
+                            <BorderWidth>
+                              <Left>0.25pt</Left>
+                            </BorderWidth>
+                            <FontSize>7pt</FontSize>
+                            <FontWeight>700</FontWeight>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>0.075cm</PaddingLeft>
+                            <PaddingRight>0.075cm</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <VerticalAlign>Bottom</VerticalAlign>
+                          </Style>
+                          <Value>=First(Fields!TempPhysInvtDiffListBuffer__Track__Serial_No__Caption.Value)</Value>
+                          <ZIndex>81</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ReportItems>
+                        <Textbox Name="textbox169">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <FontWeight>700</FontWeight>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>0.075cm</PaddingLeft>
+                            <PaddingRight>0.075cm</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <VerticalAlign>Bottom</VerticalAlign>
+                          </Style>
+                          <Value>=First(Fields!TempPhysInvtDiffListBuffer__Track__Lot_No__Caption.Value)</Value>
+                          <ZIndex>80</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ColSpan>2</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="TempPhysInvtDiffListBuffer__Track__Qty__Neg___Base__Caption">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <FontWeight>700</FontWeight>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <VerticalAlign>Bottom</VerticalAlign>
+                          </Style>
+                          <Value>=First(Fields!TempPhysInvtDiffListBuffer__Track__Qty__Neg___Base__Caption.Value)</Value>
+                          <ZIndex>79</ZIndex>
+                          <rd:DefaultName>TempPhysInvtDiffListBuffer__Track__Qty__Neg___Base__Caption</rd:DefaultName>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ReportItems>
+                        <Textbox Name="TempPhysInvtDiffListBuffer__Track__Qty__Pos___Base__Caption">
+                          <Style>
+                            <BorderColor>
+                              <Right>Black</Right>
+                            </BorderColor>
+                            <BorderStyle>
+                              <Right>Solid</Right>
+                            </BorderStyle>
+                            <BorderWidth>
+                              <Right>0.25pt</Right>
+                            </BorderWidth>
+                            <FontSize>7pt</FontSize>
+                            <FontWeight>700</FontWeight>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <VerticalAlign>Bottom</VerticalAlign>
+                          </Style>
+                          <Value>=First(Fields!TempPhysInvtDiffListBuffer__Track__Qty__Pos___Base__Caption.Value)</Value>
+                          <ZIndex>78</ZIndex>
+                          <rd:DefaultName>TempPhysInvtDiffListBuffer__Track__Qty__Pos___Base__Caption</rd:DefaultName>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ColSpan>2</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="textbox255">
+                          <Style>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <VerticalAlign>Bottom</VerticalAlign>
+                          </Style>
+                          <Value />
+                          <ZIndex>76</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                  </TableCells>
+                  <Visibility>
+                    <Hidden>=IIF(Fields!TempPhysInvtDiffListBuffer__Exp__Serial_No__Caption.Value="",True,False)</Hidden>
+                  </Visibility>
+                </TableRow>
+              </TableRows>
+            </Header>
+          </TableGroup>
+          <TableGroup>
+            <Grouping Name="table1_Group4">
+              <GroupExpressions>
+                <GroupExpression>=Fields!Post__Phys__Invt__Order_Header___No__.Value</GroupExpression>
+                <GroupExpression>=Fields!Posted_Phys__Invt__Order_Line_Line_No_.Value</GroupExpression>
+                <GroupExpression>=Fields!DimTextCaption.Value</GroupExpression>
+              </GroupExpressions>
+            </Grouping>
+            <Header>
+              <TableRows>
+                <TableRow>
+                  <Height>0.423cm</Height>
+                  <TableCells>
+                    <TableCell>
+                      <ReportItems>
+                        <Textbox Name="textbox270">
+                          <Style>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <Value />
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ColSpan>2</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="textbox176">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <Value>=Fields!DimTextCaption.Value</Value>
+                          <ZIndex>72</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ColSpan>12</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="textbox276">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <Value>=Fields!DimText.Value</Value>
+                          <ZIndex>70</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                  </TableCells>
+                  <Visibility>
+                    <Hidden>=IIF((Fields!DimTextCaption.Value="") or (NOT Fields!ShowDim.Value),True,False)</Hidden>
+                  </Visibility>
+                </TableRow>
+              </TableRows>
+            </Header>
+          </TableGroup>
+        </TableGroups>
+      </Table>
+    </ReportItems>
+  </Body>
+  <BottomMargin>2cm</BottomMargin>
+  <Code>Public Function BlankZero(ByVal Value As Decimal)
+    if Value = 0 then
+        Return ""
+    end if
+    Return Value
+End Function
+
+Public Function BlankPos(ByVal Value As Decimal)
+    if Value &gt; 0 then
+        Return ""
+    end if
+    Return Value
+End Function
+
+Public Function BlankZeroAndPos(ByVal Value As Decimal)
+    if Value &gt;= 0 then
+        Return ""
+    end if
+    Return Value
+End Function
+
+Public Function BlankNeg(ByVal Value As Decimal)
+    if Value &lt; 0 then
+        Return ""
+    end if
+    Return Value
+End Function
+
+Public Function BlankNegAndZero(ByVal Value As Decimal)
+    if Value &lt;= 0 then
+        Return ""
+    end if
+    Return Value
+End Function
+</Code>
+  <DataSets>
+    <DataSet Name="DataSet_Result">
+      <Query>
+        <CommandText />
+        <DataSourceName>DummyDataSource</DataSourceName>
+      </Query>
+      <Fields>
+        <Field Name="Post__Phys__Invt__Order_Header_No_">
+          <DataField>Post__Phys__Invt__Order_Header_No_</DataField>
+        </Field>
+        <Field Name="USERID">
+          <DataField>USERID</DataField>
+        </Field>
+        <Field Name="COMPANYNAME">
+          <DataField>COMPANYNAME</DataField>
+        </Field>
+        <Field Name="CurrReport_PAGENO">
+          <DataField>CurrReport_PAGENO</DataField>
+        </Field>
+        <Field Name="CurrReport_PAGENOCaption">
+          <DataField>CurrReport_PAGENOCaption</DataField>
+        </Field>
+        <Field Name="Posted_Phys__Inventory_Order_Difference_ListCaption">
+          <DataField>Posted_Phys__Inventory_Order_Difference_ListCaption</DataField>
+        </Field>
+        <Field Name="FORMAT_TODAY_0_4_">
+          <DataField>FORMAT_TODAY_0_4_</DataField>
+        </Field>
+        <Field Name="ShowDim">
+          <DataField>ShowDim</DataField>
+        </Field>
+        <Field Name="Post__Phys__Invt__Order_Header___Posting_Date_">
+          <DataField>Post__Phys__Invt__Order_Header___Posting_Date_</DataField>
+        </Field>
+        <Field Name="Post__Phys__Invt__Order_Header___Posting_Date_Caption">
+          <DataField>Post__Phys__Invt__Order_Header___Posting_Date_Caption</DataField>
+        </Field>
+        <Field Name="Post__Phys__Invt__Order_Header___No__">
+          <DataField>Post__Phys__Invt__Order_Header___No__</DataField>
+        </Field>
+        <Field Name="Post__Phys__Invt__Order_Header___No__Caption">
+          <DataField>Post__Phys__Invt__Order_Header___No__Caption</DataField>
+        </Field>
+        <Field Name="Post__Phys__Invt__Order_Header___Person_Responsible_">
+          <DataField>Post__Phys__Invt__Order_Header___Person_Responsible_</DataField>
+        </Field>
+        <Field Name="Post__Phys__Invt__Order_Header___Person_Responsible_Caption">
+          <DataField>Post__Phys__Invt__Order_Header___Person_Responsible_Caption</DataField>
+        </Field>
+        <Field Name="Post__Phys__Invt__Order_Header___No__Finished_Recordings_">
+          <DataField>Post__Phys__Invt__Order_Header___No__Finished_Recordings_</DataField>
+        </Field>
+        <Field Name="Post__Phys__Invt__Order_Header___No__Finished_Recordings_Caption">
+          <DataField>Post__Phys__Invt__Order_Header___No__Finished_Recordings_Caption</DataField>
+        </Field>
+        <Field Name="Post__Phys__Invt__Order_Header__DescriptionCaption">
+          <DataField>Post__Phys__Invt__Order_Header__DescriptionCaption</DataField>
+        </Field>
+        <Field Name="Post__Phys__Invt__Order_Header__Description">
+          <DataField>Post__Phys__Invt__Order_Header__Description</DataField>
+        </Field>
+        <Field Name="Posted_Phys__Invt__Order_Line__Item_No__Caption">
+          <DataField>Posted_Phys__Invt__Order_Line__Item_No__Caption</DataField>
+        </Field>
+        <Field Name="Posted_Phys__Invt__Order_Line__Location_Code_Caption">
+          <DataField>Posted_Phys__Invt__Order_Line__Location_Code_Caption</DataField>
+        </Field>
+        <Field Name="Posted_Phys__Invt__Order_Line__Bin_Code_Caption">
+          <DataField>Posted_Phys__Invt__Order_Line__Bin_Code_Caption</DataField>
+        </Field>
+        <Field Name="Posted_Phys__Invt__Order_Line_DescriptionCaption">
+          <DataField>Posted_Phys__Invt__Order_Line_DescriptionCaption</DataField>
+        </Field>
+        <Field Name="Posted_Phys__Invt__Order_Line__Base_Unit_of_Measure_Code_Caption">
+          <DataField>Posted_Phys__Invt__Order_Line__Base_Unit_of_Measure_Code_Caption</DataField>
+        </Field>
+        <Field Name="Posted_Phys__Invt__Order_Line__Qty__Expected__Base__Caption">
+          <DataField>Posted_Phys__Invt__Order_Line__Qty__Expected__Base__Caption</DataField>
+        </Field>
+        <Field Name="Posted_Phys__Invt__Order_Line__Variant_Code_Caption">
+          <DataField>Posted_Phys__Invt__Order_Line__Variant_Code_Caption</DataField>
+        </Field>
+        <Field Name="Posted_Phys__Invt__Order_Line__Qty__Recorded__Base__Caption">
+          <DataField>Posted_Phys__Invt__Order_Line__Qty__Recorded__Base__Caption</DataField>
+        </Field>
+        <Field Name="QtyPosCaption">
+          <DataField>QtyPosCaption</DataField>
+        </Field>
+        <Field Name="QtyNegCaption">
+          <DataField>QtyNegCaption</DataField>
+        </Field>
+        <Field Name="AmountPosCaption">
+          <DataField>AmountPosCaption</DataField>
+        </Field>
+        <Field Name="AmountNegCaption">
+          <DataField>AmountNegCaption</DataField>
+        </Field>
+        <Field Name="Posted_Phys__Invt__Order_Line__No__Finished_Rec__Lines_Caption">
+          <DataField>Posted_Phys__Invt__Order_Line__No__Finished_Rec__Lines_Caption</DataField>
+        </Field>
+        <Field Name="Posted_Phys__Invt__Order_Line__Recorded_without_Order_Caption">
+          <DataField>Posted_Phys__Invt__Order_Line__Recorded_without_Order_Caption</DataField>
+        </Field>
+        <Field Name="Posted_Phys__Invt__Order_Line__Item_No__">
+          <DataField>Posted_Phys__Invt__Order_Line__Item_No__</DataField>
+        </Field>
+        <Field Name="Posted_Phys__Invt__Order_Line__Location_Code_">
+          <DataField>Posted_Phys__Invt__Order_Line__Location_Code_</DataField>
+        </Field>
+        <Field Name="Posted_Phys__Invt__Order_Line__Bin_Code_">
+          <DataField>Posted_Phys__Invt__Order_Line__Bin_Code_</DataField>
+        </Field>
+        <Field Name="Posted_Phys__Invt__Order_Line_Description">
+          <DataField>Posted_Phys__Invt__Order_Line_Description</DataField>
+        </Field>
+        <Field Name="Posted_Phys__Invt__Order_Line__Base_Unit_of_Measure_Code_">
+          <DataField>Posted_Phys__Invt__Order_Line__Base_Unit_of_Measure_Code_</DataField>
+        </Field>
+        <Field Name="Posted_Phys__Invt__Order_Line__Qty__Expected__Base__">
+          <DataField>Posted_Phys__Invt__Order_Line__Qty__Expected__Base__</DataField>
+        </Field>
+        <Field Name="Posted_Phys__Invt__Order_Line__Qty__Expected__Base__Format">
+          <DataField>Posted_Phys__Invt__Order_Line__Qty__Expected__Base__Format</DataField>
+        </Field>
+        <Field Name="Posted_Phys__Invt__Order_Line__Variant_Code_">
+          <DataField>Posted_Phys__Invt__Order_Line__Variant_Code_</DataField>
+        </Field>
+        <Field Name="Posted_Phys__Invt__Order_Line__Qty__Recorded__Base__">
+          <DataField>Posted_Phys__Invt__Order_Line__Qty__Recorded__Base__</DataField>
+        </Field>
+        <Field Name="Posted_Phys__Invt__Order_Line__Qty__Recorded__Base__Format">
+          <DataField>Posted_Phys__Invt__Order_Line__Qty__Recorded__Base__Format</DataField>
+        </Field>
+        <Field Name="AmountPos">
+          <DataField>AmountPos</DataField>
+        </Field>
+        <Field Name="AmountPosFormat">
+          <DataField>AmountPosFormat</DataField>
+        </Field>
+        <Field Name="AmountNeg">
+          <DataField>AmountNeg</DataField>
+        </Field>
+        <Field Name="AmountNegFormat">
+          <DataField>AmountNegFormat</DataField>
+        </Field>
+        <Field Name="QtyPos">
+          <DataField>QtyPos</DataField>
+        </Field>
+        <Field Name="QtyPosFormat">
+          <DataField>QtyPosFormat</DataField>
+        </Field>
+        <Field Name="QtyNeg">
+          <DataField>QtyNeg</DataField>
+        </Field>
+        <Field Name="QtyNegFormat">
+          <DataField>QtyNegFormat</DataField>
+        </Field>
+        <Field Name="Posted_Phys__Invt__Order_Line__No__Finished_Rec__Lines_">
+          <DataField>Posted_Phys__Invt__Order_Line__No__Finished_Rec__Lines_</DataField>
+        </Field>
+        <Field Name="Posted_Phys__Invt__Order_Line__Recorded_without_Order_">
+          <DataField>Posted_Phys__Invt__Order_Line__Recorded_without_Order_</DataField>
+        </Field>
+        <Field Name="PrintAnEmptyLine">
+          <DataField>PrintAnEmptyLine</DataField>
+        </Field>
+        <Field Name="TotalsCaption">
+          <DataField>TotalsCaption</DataField>
+        </Field>
+        <Field Name="AmountPos_Control49Format">
+          <DataField>AmountPos_Control49Format</DataField>
+        </Field>
+        <Field Name="AmountNeg_Control50Format">
+          <DataField>AmountNeg_Control50Format</DataField>
+        </Field>
+        <Field Name="NewAmountPos">
+          <DataField>NewAmountPos</DataField>
+        </Field>
+        <Field Name="NewAmountPosFormat">
+          <DataField>NewAmountPosFormat</DataField>
+        </Field>
+        <Field Name="NewAmountNeg">
+          <DataField>NewAmountNeg</DataField>
+        </Field>
+        <Field Name="NewAmountNegFormat">
+          <DataField>NewAmountNegFormat</DataField>
+        </Field>
+        <Field Name="Posted_Phys__Invt__Order_Line_Document_No_">
+          <DataField>Posted_Phys__Invt__Order_Line_Document_No_</DataField>
+        </Field>
+        <Field Name="Posted_Phys__Invt__Order_Line_Line_No_">
+          <DataField>Posted_Phys__Invt__Order_Line_Line_No_</DataField>
+        </Field>
+        <Field Name="Item_Tracking_LinesCaption">
+          <DataField>Item_Tracking_LinesCaption</DataField>
+        </Field>
+        <Field Name="TempPhysInvtDiffListBuffer__Track__Qty__Pos___Base__Caption">
+          <DataField>TempPhysInvtDiffListBuffer__Track__Qty__Pos___Base__Caption</DataField>
+        </Field>
+        <Field Name="TempPhysInvtDiffListBuffer__Track__Qty__Neg___Base__Caption">
+          <DataField>TempPhysInvtDiffListBuffer__Track__Qty__Neg___Base__Caption</DataField>
+        </Field>
+        <Field Name="TempPhysInvtDiffListBuffer__Track__Lot_No__Caption">
+          <DataField>TempPhysInvtDiffListBuffer__Track__Lot_No__Caption</DataField>
+        </Field>
+        <Field Name="TempPhysInvtDiffListBuffer__Track__Serial_No__Caption">
+          <DataField>TempPhysInvtDiffListBuffer__Track__Serial_No__Caption</DataField>
+        </Field>
+        <Field Name="TempPhysInvtDiffListBuffer__Rec__Qty___Base__Caption">
+          <DataField>TempPhysInvtDiffListBuffer__Rec__Qty___Base__Caption</DataField>
+        </Field>
+        <Field Name="Recording_LinesCaption">
+          <DataField>Recording_LinesCaption</DataField>
+        </Field>
+        <Field Name="TempPhysInvtDiffListBuffer__Rec__Lot_No__Caption">
+          <DataField>TempPhysInvtDiffListBuffer__Rec__Lot_No__Caption</DataField>
+        </Field>
+        <Field Name="TempPhysInvtDiffListBuffer__Rec__Serial_No__Caption">
+          <DataField>TempPhysInvtDiffListBuffer__Rec__Serial_No__Caption</DataField>
+        </Field>
+        <Field Name="TempPhysInvtDiffListBuffer__Rec__No__Caption">
+          <DataField>TempPhysInvtDiffListBuffer__Rec__No__Caption</DataField>
+        </Field>
+        <Field Name="TempPhysInvtDiffListBuffer__Exp__Qty___Base__Caption">
+          <DataField>TempPhysInvtDiffListBuffer__Exp__Qty___Base__Caption</DataField>
+        </Field>
+        <Field Name="Expected_Tracking_LinesCaption">
+          <DataField>Expected_Tracking_LinesCaption</DataField>
+        </Field>
+        <Field Name="TempPhysInvtDiffListBuffer__Exp__Lot_No__Caption">
+          <DataField>TempPhysInvtDiffListBuffer__Exp__Lot_No__Caption</DataField>
+        </Field>
+        <Field Name="TempPhysInvtDiffListBuffer__Exp__Serial_No__Caption">
+          <DataField>TempPhysInvtDiffListBuffer__Exp__Serial_No__Caption</DataField>
+        </Field>
+        <Field Name="TempPhysInvtDiffListBuffer__Track__Qty__Pos___Base__">
+          <DataField>TempPhysInvtDiffListBuffer__Track__Qty__Pos___Base__</DataField>
+        </Field>
+        <Field Name="TempPhysInvtDiffListBuffer__Track__Qty__Pos___Base__Format">
+          <DataField>TempPhysInvtDiffListBuffer__Track__Qty__Pos___Base__Format</DataField>
+        </Field>
+        <Field Name="TempPhysInvtDiffListBuffer__Track__Qty__Neg___Base__">
+          <DataField>TempPhysInvtDiffListBuffer__Track__Qty__Neg___Base__</DataField>
+        </Field>
+        <Field Name="TempPhysInvtDiffListBuffer__Track__Qty__Neg___Base__Format">
+          <DataField>TempPhysInvtDiffListBuffer__Track__Qty__Neg___Base__Format</DataField>
+        </Field>
+        <Field Name="TempPhysInvtDiffListBuffer__Track__Lot_No__">
+          <DataField>TempPhysInvtDiffListBuffer__Track__Lot_No__</DataField>
+        </Field>
+        <Field Name="TempPhysInvtDiffListBuffer__Track__Serial_No__">
+          <DataField>TempPhysInvtDiffListBuffer__Track__Serial_No__</DataField>
+        </Field>
+        <Field Name="TempPhysInvtDiffListBuffer__Rec__Qty___Base__">
+          <DataField>TempPhysInvtDiffListBuffer__Rec__Qty___Base__</DataField>
+        </Field>
+        <Field Name="TempPhysInvtDiffListBuffer__Rec__Qty___Base__Format">
+          <DataField>TempPhysInvtDiffListBuffer__Rec__Qty___Base__Format</DataField>
+        </Field>
+        <Field Name="TempPhysInvtDiffListBuffer__Rec__Lot_No__">
+          <DataField>TempPhysInvtDiffListBuffer__Rec__Lot_No__</DataField>
+        </Field>
+        <Field Name="TempPhysInvtDiffListBuffer__Rec__Serial_No__">
+          <DataField>TempPhysInvtDiffListBuffer__Rec__Serial_No__</DataField>
+        </Field>
+        <Field Name="TempPhysInvtDiffListBuffer__Rec__No__">
+          <DataField>TempPhysInvtDiffListBuffer__Rec__No__</DataField>
+        </Field>
+        <Field Name="TempPhysInvtDiffListBuffer__Exp__Qty___Base__">
+          <DataField>TempPhysInvtDiffListBuffer__Exp__Qty___Base__</DataField>
+        </Field>
+        <Field Name="TempPhysInvtDiffListBuffer__Exp__Qty___Base__Format">
+          <DataField>TempPhysInvtDiffListBuffer__Exp__Qty___Base__Format</DataField>
+        </Field>
+        <Field Name="TempPhysInvtDiffListBuffer__Exp__Lot_No__">
+          <DataField>TempPhysInvtDiffListBuffer__Exp__Lot_No__</DataField>
+        </Field>
+        <Field Name="TempPhysInvtDiffListBuffer__Exp__Serial_No__">
+          <DataField>TempPhysInvtDiffListBuffer__Exp__Serial_No__</DataField>
+        </Field>
+        <Field Name="TempPhysInvtDiffListBuffer__Track__Qty__Pos___Base___Control85Format">
+          <DataField>TempPhysInvtDiffListBuffer__Track__Qty__Pos___Base___Control85Format</DataField>
+        </Field>
+        <Field Name="TempPhysInvtDiffListBuffer__Track__Qty__Neg___Base___Control86Format">
+          <DataField>TempPhysInvtDiffListBuffer__Track__Qty__Neg___Base___Control86Format</DataField>
+        </Field>
+        <Field Name="TempPhysInvtDiffListBuffer__Rec__Qty___Base___Control87Format">
+          <DataField>TempPhysInvtDiffListBuffer__Rec__Qty___Base___Control87Format</DataField>
+        </Field>
+        <Field Name="TempPhysInvtDiffListBuffer__Exp__Qty___Base___Control90Format">
+          <DataField>TempPhysInvtDiffListBuffer__Exp__Qty___Base___Control90Format</DataField>
+        </Field>
+        <Field Name="TotalsCaption_Control91">
+          <DataField>TotalsCaption_Control91</DataField>
+        </Field>
+        <Field Name="DimText">
+          <DataField>DimText</DataField>
+        </Field>
+        <Field Name="DimTextCaption">
+          <DataField>DimTextCaption</DataField>
+        </Field>
+        <Field Name="Number">
+          <DataField>Number</DataField>
+        </Field>
+      </Fields>
+      <rd:DataSetInfo>
+        <rd:DataSetName>DataSet</rd:DataSetName>
+        <rd:TableName>Result</rd:TableName>
+      </rd:DataSetInfo>
+    </DataSet>
+  </DataSets>
+  <DataSources>
+    <DataSource Name="DummyDataSource">
+      <ConnectionProperties>
+        <ConnectString />
+        <DataProvider>SQL</DataProvider>
+      </ConnectionProperties>
+      <rd:DataSourceID>42a5e8af-d3de-4639-8c4b-f607e791c8c4</rd:DataSourceID>
+    </DataSource>
+  </DataSources>
+  <InteractiveHeight>11in</InteractiveHeight>
+  <InteractiveWidth>8.5in</InteractiveWidth>
+  <Language>=User!Language</Language>
+  <LeftMargin>1.5cm</LeftMargin>
+  <PageHeader>
+    <Height>1.37538cm</Height>
+    <PrintOnFirstPage>true</PrintOnFirstPage>
+    <PrintOnLastPage>true</PrintOnLastPage>
+    <ReportItems>
+      <Textbox Name="PageNumberTextBox">
+        <Height>0.423cm</Height>
+        <Left>24.44444cm</Left>
+        <Style>
+          <FontSize>7pt</FontSize>
+          <TextAlign>Right</TextAlign>
+          <VerticalAlign>Middle</VerticalAlign>
+        </Style>
+        <Top>0.423cm</Top>
+        <Value>=Globals!PageNumber</Value>
+        <Width>0.17719in</Width>
+        <ZIndex>5</ZIndex>
+      </Textbox>
+      <Textbox Name="UserIdTextBox">
+        <Height>0.423cm</Height>
+        <Left>21.64444cm</Left>
+        <Style>
+          <FontSize>7pt</FontSize>
+          <TextAlign>Right</TextAlign>
+          <VerticalAlign>Middle</VerticalAlign>
+        </Style>
+        <Top>0.846cm</Top>
+        <Value>=User!UserID</Value>
+        <Width>1.27969in</Width>
+        <ZIndex>4</ZIndex>
+      </Textbox>
+      <Textbox Name="ExecutionTimeTextBox">
+        <Height>0.423cm</Height>
+        <Left>21.74444cm</Left>
+        <Style>
+          <FontSize>7pt</FontSize>
+          <Format>g</Format>
+          <TextAlign>Right</TextAlign>
+          <VerticalAlign>Middle</VerticalAlign>
+        </Style>
+        <Value>=Globals!ExecutionTime</Value>
+        <Width>1.24031in</Width>
+        <ZIndex>3</ZIndex>
+      </Textbox>
+      <Textbox Name="COMPANYNAME1">
+        <Height>0.423cm</Height>
+        <Style>
+          <FontSize>7pt</FontSize>
+          <VerticalAlign>Middle</VerticalAlign>
+        </Style>
+        <Top>0.423cm</Top>
+        <Value>=ReportItems!COMPANYNAME.Value</Value>
+        <Width>7.5cm</Width>
+        <ZIndex>2</ZIndex>
+      </Textbox>
+      <Textbox Name="CurrReport_PAGENOCaption1">
+        <Height>0.423cm</Height>
+        <Left>23.69445cm</Left>
+        <Style>
+          <FontSize>7pt</FontSize>
+          <VerticalAlign>Middle</VerticalAlign>
+        </Style>
+        <Top>0.423cm</Top>
+        <Value>=ReportItems!CurrReport_PAGENOCaption.Value</Value>
+        <Width>0.75cm</Width>
+        <ZIndex>1</ZIndex>
+      </Textbox>
+      <Textbox Name="Posted_Phys__Invt__Order_Difference_ListCaption1">
+        <Height>0.423cm</Height>
+        <Style>
+          <FontSize>8pt</FontSize>
+          <FontWeight>700</FontWeight>
+          <VerticalAlign>Middle</VerticalAlign>
+        </Style>
+        <Value>=ReportItems!Posted_Phys__Invt__Order_Difference_ListCaption.Value</Value>
+        <Width>7.5cm</Width>
+      </Textbox>
+    </ReportItems>
+  </PageHeader>
+  <PageHeight>21cm</PageHeight>
+  <PageWidth>29.7cm</PageWidth>
+  <TopMargin>2cm</TopMargin>
+  <Width>25.05cm</Width>
+  <rd:DrawGrid>true</rd:DrawGrid>
+  <rd:ReportID>bb69f657-a2ab-462a-88fa-205dba130a7e</rd:ReportID>
+  <rd:SnapToGrid>true</rd:SnapToGrid>
+</Report>
+    END_OF_RDLDatA
+  }
+}
+

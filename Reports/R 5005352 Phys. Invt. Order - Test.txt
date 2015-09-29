@@ -1,0 +1,1911 @@
+OBJECT Report 5005352 Phys. Invt. Order - Test
+{
+  OBJECT-PROPERTIES
+  {
+    Date=05.11.08;
+    Time=12:00:00;
+    Version List=NAVDACH6.00;
+  }
+  PROPERTIES
+  {
+    CaptionML=[DEU=Inventurauftrag - Test;
+               ENU=Phys. Invt. Order - Test];
+  }
+  DATAITEMS
+  {
+    { PROPERTIES
+      {
+        DataItemTable=Table5005350;
+        DataItemTableView=SORTING(No.);
+        NewPagePerRecord=Yes;
+        OnAfterGetRecord=BEGIN
+                           IF Status <> Status::Finished THEN
+                             AddError(STRSUBSTNO(Text1140002, FIELDCAPTION(Status), Text1140004));
+
+                           IF "Posting Date" = 0D THEN
+                             AddError(STRSUBSTNO(Text1140001, FIELDCAPTION("Posting Date")))
+                           ELSE
+                             IF "Posting Date" <> NORMALDATE("Posting Date") THEN
+                               AddError(STRSUBSTNO(Text1140003,FIELDCAPTION("Posting Date")))
+                             ELSE BEGIN
+                               IF (AllowPostingFrom = 0D) AND (AllowPostingTo = 0D) THEN BEGIN
+                                 IF USERID <> '' THEN
+                                   IF UserSetup.GET(USERID) THEN BEGIN
+                                     AllowPostingFrom := UserSetup."Allow Posting From";
+                                     AllowPostingTo := UserSetup."Allow Posting To";
+                                   END;
+                                 IF (AllowPostingFrom = 0D) AND (AllowPostingTo = 0D) THEN BEGIN
+                                   AllowPostingFrom := GLSetup."Allow Posting From";
+                                   AllowPostingTo := GLSetup."Allow Posting To";
+                                 END;
+                                 IF AllowPostingTo = 0D THEN
+                                   AllowPostingTo := 31129999D;
+                               END;
+                               IF ("Posting Date" < AllowPostingFrom) OR ("Posting Date" > AllowPostingTo) THEN
+                                 AddError(
+                                   STRSUBSTNO(
+                                     Text1140005,FIELDCAPTION("Posting Date")));
+                             END;
+
+                           IF "Posting No." = '' THEN
+                             IF "No. Series" <> '' THEN
+                               IF "Posting No. Series" = '' THEN
+                                 AddError(
+                                   STRSUBSTNO(
+                                     Text1140001,
+                                     FIELDCAPTION("Posting No. Series")));
+
+                           PhysInvtOrderLine.RESET;
+                           PhysInvtOrderLine.SETRANGE("Document No.", "No.");
+                           IF NOT PhysInvtOrderLine.FIND('-') THEN
+                             AddError(Text1140006);
+                         END;
+
+        ReqFilterFields=No.;
+      }
+      SECTIONS
+      {
+      }
+       }
+    { PROPERTIES
+      {
+        DataItemIndent=1;
+        DataItemTable=Table2000000026;
+        DataItemTableView=SORTING(Number)
+                          WHERE(Number=CONST(1));
+        DataItemVarName=PageCounter;
+      }
+      SECTIONS
+      {
+        { PROPERTIES
+          {
+            SectionType=Header;
+            PrintOnEveryPage=Yes;
+            SectionWidth=18150;
+            SectionHeight=1269;
+          }
+          CONTROLS
+          {
+            { 6   ;TextBox      ;15900;846  ;2250 ;423  ;HorzAlign=Right;
+                                                         SourceExpr=USERID;
+                                                         DataSetFieldName=USERID }
+            { 3   ;TextBox      ;0    ;423  ;7500 ;423  ;SourceExpr=COMPANYNAME;
+                                                         DataSetFieldName=COMPANYNAME }
+            { 4   ;TextBox      ;17700;423  ;450  ;423  ;CaptionML=[DEU=Seite;
+                                                                    ENU=Page];
+                                                         SourceExpr=CurrReport.PAGENO;
+                                                         DataSetFieldName=CurrReport_PAGENO }
+            { 5   ;Label        ;16950;423  ;750  ;423  ;ParentControl=4;
+                                                         DataSetFieldName=CurrReport_PAGENOCaption }
+            { 1   ;Label        ;0    ;0    ;7500 ;423  ;FontSize=8;
+                                                         FontBold=Yes;
+                                                         CaptionML=[DEU=Inventurauftragskopf - Test;
+                                                                    ENU=Phys. Inventory Order Header - Test];
+                                                         DataSetFieldName=Phys__Inventory_Order_Header___TestCaption }
+            { 2   ;TextBox      ;15000;0    ;3150 ;423  ;HorzAlign=Right;
+                                                         SourceExpr=FORMAT(TODAY,0,4);
+                                                         DataSetFieldName=FORMAT_TODAY_0_4_ }
+          }
+           }
+        { PROPERTIES
+          {
+            SectionType=Body;
+            SectionWidth=18150;
+            SectionHeight=1692;
+            KeepWithNext=No;
+          }
+          CONTROLS
+          {
+            { 17  ;TextBox      ;11100;423  ;1200 ;423  ;HorzAlign=Left;
+                                                         SourceExpr=FORMAT("Phys. Inventory Order Header"."Posting Date");
+                                                         DataSetFieldName=Phys__Inventory_Order_Header___Posting_Date_ }
+            { 18  ;Label        ;7950 ;423  ;3000 ;423  ;ParentControl=17;
+                                                         CaptionML=[DEU=Buchungsdatum;
+                                                                    ENU=Posting Date];
+                                                         DataSetFieldName=Phys__Inventory_Order_Header___Posting_Date_Caption }
+            { 8   ;TextBox      ;3150 ;0    ;1500 ;423  ;HorzAlign=Left;
+                                                         SourceExpr="Phys. Inventory Order Header"."No.";
+                                                         DataSetFieldName=Phys__Inventory_Order_Header___No__ }
+            { 9   ;Label        ;0    ;0    ;3000 ;423  ;ParentControl=8;
+                                                         DataSetFieldName=Phys__Inventory_Order_Header___No__Caption }
+            { 11  ;TextBox      ;11100;846  ;1200 ;423  ;HorzAlign=Left;
+                                                         SourceExpr="Phys. Inventory Order Header".Status;
+                                                         DataSetFieldName=Phys__Inventory_Order_Header__Status }
+            { 12  ;Label        ;7950 ;846  ;3000 ;423  ;ParentControl=11;
+                                                         DataSetFieldName=Phys__Inventory_Order_Header__StatusCaption }
+            { 14  ;TextBox      ;11100;0    ;1500 ;423  ;HorzAlign=Left;
+                                                         SourceExpr="Phys. Inventory Order Header"."Person Responsible";
+                                                         DataSetFieldName=Phys__Inventory_Order_Header___Person_Responsible_ }
+            { 15  ;Label        ;7950 ;0    ;3000 ;423  ;ParentControl=14;
+                                                         DataSetFieldName=Phys__Inventory_Order_Header___Person_Responsible_Caption }
+            { 7   ;Label        ;0    ;423  ;3000 ;423  ;ParentControl=45;
+                                                         DataSetFieldName=Phys__Inventory_Order_Header__DescriptionCaption }
+            { 45  ;TextBox      ;3150 ;423  ;4350 ;423  ;HorzAlign=Left;
+                                                         SourceExpr="Phys. Inventory Order Header".Description;
+                                                         DataSetFieldName=Phys__Inventory_Order_Header__Description }
+            { 1140010;TextBox   ;12600;846  ;150  ;423  ;Name=ShowDim;
+                                                         Visible=No;
+                                                         HorzAlign=Left;
+                                                         ForeColor=65535;
+                                                         SourceExpr=ShowDim;
+                                                         DataSetFieldName=ShowDim }
+          }
+           }
+      }
+       }
+    { PROPERTIES
+      {
+        DataItemIndent=2;
+        DataItemTable=Table2000000026;
+        DataItemTableView=SORTING(Number);
+        DataItemVarName=HeaderErrorCounter;
+        OnPreDataItem=BEGIN
+                        SETRANGE(Number, 1, ErrorCounter);
+                      END;
+
+        OnPostDataItem=BEGIN
+                         ErrorCounter := 0;
+                       END;
+
+      }
+      SECTIONS
+      {
+        { PROPERTIES
+          {
+            SectionType=Body;
+            SectionWidth=18150;
+            SectionHeight=423;
+          }
+          CONTROLS
+          {
+            { 10  ;TextBox      ;1650 ;0    ;16500;423  ;CaptionML=[DEU=Warnung!;
+                                                                    ENU=Warning!];
+                                                         SourceExpr=ErrorText[Number];
+                                                         DataSetFieldName=ErrorText_Number_ }
+            { 13  ;Label        ;0    ;0    ;1500 ;423  ;ParentControl=10;
+                                                         FontBold=Yes;
+                                                         DataSetFieldName=ErrorText_Number_Caption }
+          }
+           }
+      }
+       }
+    { PROPERTIES
+      {
+        DataItemIndent=2;
+        DataItemTable=Table5005351;
+        DataItemTableView=SORTING(Document No.,Line No.);
+        OnAfterGetRecord=BEGIN
+                           LineIsEmpty := EmptyLine;
+                           IF NOT LineIsEmpty THEN BEGIN
+                             DocDim2.SETRANGE("Table ID",DATABASE::"Phys. Inventory Order Line");
+                             DocDim2.SETRANGE("Document Type",DocDim2."Document Type"::" ");
+                             DocDim2.SETRANGE("Document No.", "Document No.");
+                             DocDim2.SETRANGE("Line No.", "Line No.");
+                             DimMgt.CopyDocDimToDocDim(DocDim2,TempDocDim);
+
+                             IF NOT "Qty. Exp. Calculated" THEN
+                               AddError(STRSUBSTNO(Text1140002, FIELDCAPTION("Qty. Exp. Calculated"), TRUE));
+                             IF NOT "In Recording Lines" THEN
+                               AddError(STRSUBSTNO(Text1140002, FIELDCAPTION("In Recording Lines"), TRUE));
+
+                             IF Item.GET("Item No.") THEN BEGIN
+                               IF Item.Blocked THEN
+                                 AddError(
+                                   STRSUBSTNO(
+                                     Text1140007,
+                                     Item.FIELDCAPTION(Blocked), FALSE, Item.TABLECAPTION,"Item No."));
+                             END ELSE BEGIN
+                               AddError(
+                                 STRSUBSTNO(
+                                 Text1140009,
+                                 Item.TABLECAPTION, "Item No."));
+                             END;
+
+                             IF "Gen. Prod. Posting Group" = '' THEN
+                               AddError(STRSUBSTNO(Text1140001, FIELDCAPTION("Gen. Prod. Posting Group")));
+                             IF "Inventory Posting Group" = '' THEN
+                               AddError(STRSUBSTNO(Text1140001, FIELDCAPTION("Inventory Posting Group")));
+
+                             IF "Phys. Inventory Order Header".GetSamePhysInvtOrderLine(
+                               "Item No.", "Variant Code",
+                               "Location Code", "Bin Code",
+                               ErrorText2,
+                               PhysInvtOrderLine) > 1
+                             THEN
+                               AddError(
+                                 ErrorText2);
+
+                             IF NOT DimMgt.CheckDocDimComb(DocDim2) THEN
+                               AddError(DimMgt.GetDimCombErr);
+                           END;
+                         END;
+
+        DataItemLinkReference=Phys. Inventory Order Header;
+        DataItemLink=Document No.=FIELD(No.);
+      }
+      SECTIONS
+      {
+        { PROPERTIES
+          {
+            SectionType=Header;
+            SectionWidth=18150;
+            SectionHeight=846;
+          }
+          CONTROLS
+          {
+            { 19  ;Label        ;0    ;0    ;1500 ;846  ;ParentControl=16;
+                                                         VertAlign=Bottom;
+                                                         FontBold=Yes;
+                                                         MultiLine=Yes;
+                                                         DataSetFieldName=Phys__Inventory_Order_Line__Item_No__Caption }
+            { 23  ;Label        ;1650 ;0    ;1500 ;846  ;ParentControl=22;
+                                                         VertAlign=Bottom;
+                                                         FontBold=Yes;
+                                                         MultiLine=Yes;
+                                                         DataSetFieldName=Phys__Inventory_Order_Line__Location_Code_Caption }
+            { 25  ;Label        ;3300 ;0    ;1500 ;846  ;ParentControl=24;
+                                                         VertAlign=Bottom;
+                                                         FontBold=Yes;
+                                                         MultiLine=Yes;
+                                                         DataSetFieldName=Phys__Inventory_Order_Line__Bin_Code_Caption }
+            { 27  ;Label        ;4950 ;0    ;3750 ;846  ;ParentControl=26;
+                                                         VertAlign=Bottom;
+                                                         FontBold=Yes;
+                                                         MultiLine=Yes;
+                                                         DataSetFieldName=Phys__Inventory_Order_Line_DescriptionCaption }
+            { 29  ;Label        ;8850 ;0    ;1500 ;846  ;ParentControl=28;
+                                                         VertAlign=Bottom;
+                                                         FontBold=Yes;
+                                                         MultiLine=Yes;
+                                                         DataSetFieldName=Phys__Inventory_Order_Line__Base_Unit_of_Measure_Code_Caption }
+            { 31  ;Label        ;10500;0    ;1500 ;846  ;ParentControl=30;
+                                                         HorzAlign=Right;
+                                                         VertAlign=Bottom;
+                                                         FontBold=Yes;
+                                                         MultiLine=Yes;
+                                                         DataSetFieldName=Phys__Inventory_Order_Line__Qty__Expected__Base__Caption }
+            { 21  ;Label        ;12150;0    ;1500 ;846  ;ParentControl=20;
+                                                         HorzAlign=Right;
+                                                         VertAlign=Bottom;
+                                                         FontBold=Yes;
+                                                         MultiLine=Yes;
+                                                         DataSetFieldName=Phys__Inventory_Order_Line__Qty__Recorded__Base__Caption }
+            { 33  ;Label        ;13800;0    ;1500 ;846  ;ParentControl=32;
+                                                         HorzAlign=Right;
+                                                         VertAlign=Bottom;
+                                                         FontBold=Yes;
+                                                         MultiLine=Yes;
+                                                         DataSetFieldName=Phys__Inventory_Order_Line__Quantity__Base__Caption }
+            { 35  ;Label        ;15450;0    ;300  ;846  ;ParentControl=34;
+                                                         VertAlign=Bottom;
+                                                         FontBold=Yes;
+                                                         MultiLine=Yes;
+                                                         DataSetFieldName=Phys__Inventory_Order_Line__Entry_Type_Caption }
+            { 37  ;Label        ;15900;0    ;300  ;846  ;ParentControl=36;
+                                                         VertAlign=Bottom;
+                                                         FontBold=Yes;
+                                                         MultiLine=Yes;
+                                                         CaptionML=[DEU=Ohne Auftrag erfasst;
+                                                                    ENU=Recorded without Order];
+                                                         DataSetFieldName=Phys__Inventory_Order_Line__Recorded_without_Order_Caption }
+            { 39  ;Label        ;16350;0    ;1800 ;846  ;ParentControl=38;
+                                                         HorzAlign=Right;
+                                                         VertAlign=Bottom;
+                                                         FontBold=Yes;
+                                                         MultiLine=Yes;
+                                                         DataSetFieldName=Phys__Inventory_Order_Line__Unit_Amount_Caption }
+          }
+           }
+        { PROPERTIES
+          {
+            SectionType=Body;
+            SectionWidth=18150;
+            SectionHeight=423;
+          }
+          CONTROLS
+          {
+            { 16  ;TextBox      ;0    ;0    ;1500 ;423  ;SourceExpr="Item No.";
+                                                         DataSetFieldName=Phys__Inventory_Order_Line__Item_No__ }
+            { 22  ;TextBox      ;1650 ;0    ;1500 ;423  ;SourceExpr="Location Code";
+                                                         DataSetFieldName=Phys__Inventory_Order_Line__Location_Code_ }
+            { 24  ;TextBox      ;3300 ;0    ;1500 ;423  ;SourceExpr="Bin Code";
+                                                         DataSetFieldName=Phys__Inventory_Order_Line__Bin_Code_ }
+            { 26  ;TextBox      ;4950 ;0    ;3750 ;423  ;SourceExpr=Description;
+                                                         DataSetFieldName=Phys__Inventory_Order_Line_Description }
+            { 28  ;TextBox      ;8850 ;0    ;1500 ;423  ;SourceExpr="Base Unit of Measure Code";
+                                                         DataSetFieldName=Phys__Inventory_Order_Line__Base_Unit_of_Measure_Code_ }
+            { 30  ;TextBox      ;10500;0    ;1500 ;423  ;SourceExpr="Qty. Expected (Base)";
+                                                         DataSetFieldName=Phys__Inventory_Order_Line__Qty__Expected__Base__ }
+            { 20  ;TextBox      ;12150;0    ;1500 ;423  ;SourceExpr="Qty. Recorded (Base)";
+                                                         DataSetFieldName=Phys__Inventory_Order_Line__Qty__Recorded__Base__ }
+            { 32  ;TextBox      ;13800;0    ;1500 ;423  ;SourceExpr="Quantity (Base)";
+                                                         DataSetFieldName=Phys__Inventory_Order_Line__Quantity__Base__ }
+            { 34  ;TextBox      ;15450;0    ;300  ;423  ;SourceExpr="Entry Type";
+                                                         DataSetFieldName=Phys__Inventory_Order_Line__Entry_Type_ }
+            { 36  ;TextBox      ;15900;0    ;300  ;423  ;SourceExpr=FORMAT("Recorded without Order");
+                                                         DataSetFieldName=Phys__Inventory_Order_Line__Recorded_without_Order_ }
+            { 38  ;TextBox      ;16350;0    ;1800 ;423  ;SourceExpr="Unit Amount";
+                                                         DataSetFieldName=Phys__Inventory_Order_Line__Unit_Amount_ }
+          }
+           }
+      }
+       }
+    { PROPERTIES
+      {
+        DataItemIndent=3;
+        DataItemTable=Table2000000026;
+        DataItemTableView=SORTING(Number)
+                          WHERE(Number=FILTER(1..));
+        DataItemVarName=LineDimensionLoop;
+        OnPreDataItem=BEGIN
+                        IF NOT ShowDim THEN
+                          CurrReport.BREAK;
+
+                        IF LineIsEmpty THEN
+                          CurrReport.BREAK;
+                      END;
+
+        OnAfterGetRecord=BEGIN
+                           IF Number = 1 THEN BEGIN
+                             IF NOT DocDim2.FIND('-') THEN
+                               CurrReport.BREAK;
+                           END ELSE
+                             IF NOT Continue THEN
+                               CurrReport.BREAK;
+
+                           CLEAR(DimText);
+                           Continue := FALSE;
+                           REPEAT
+                             OldDimText := DimText;
+                             IF DimText = '' THEN
+                               DimText := STRSUBSTNO('%1 - %2',DocDim2."Dimension Code",DocDim2."Dimension Value Code")
+                             ELSE
+                               DimText :=
+                                 STRSUBSTNO(
+                                   '%1; %2 - %3',DimText,DocDim2."Dimension Code",DocDim2."Dimension Value Code");
+                             IF STRLEN(DimText) > MAXSTRLEN(OldDimText) THEN BEGIN
+                               DimText := OldDimText;
+                               Continue := TRUE;
+                               EXIT;
+                             END;
+                           UNTIL (DocDim2.NEXT = 0);
+                         END;
+
+      }
+      SECTIONS
+      {
+        { PROPERTIES
+          {
+            SectionType=Body;
+            SectionWidth=18150;
+            SectionHeight=423;
+            OnPreSection=BEGIN
+                           CurrReport.SHOWOUTPUT(Number = 1);
+                         END;
+
+          }
+          CONTROLS
+          {
+            { 42  ;TextBox      ;3150 ;0    ;15000;423  ;CaptionML=[DEU=Zeilendimensionen;
+                                                                    ENU=Line Dimensions];
+                                                         SourceExpr=DimText;
+                                                         DataSetFieldName=DimText }
+            { 43  ;Label        ;0    ;0    ;3000 ;423  ;ParentControl=42;
+                                                         DataSetFieldName=DimTextCaption }
+            { 1140006;TextBox   ;0    ;0    ;150  ;423  ;Name=Number;
+                                                         Visible=No;
+                                                         ForeColor=65535;
+                                                         SourceExpr=Number;
+                                                         DataSetFieldName=Number }
+          }
+           }
+        { PROPERTIES
+          {
+            SectionType=Body;
+            SectionWidth=18150;
+            SectionHeight=423;
+            OnPreSection=BEGIN
+                           CurrReport.SHOWOUTPUT(Number > 1);
+                         END;
+
+          }
+          CONTROLS
+          {
+            { 44  ;TextBox      ;3150 ;0    ;15000;423  ;SourceExpr=DimText;
+                                                         DataSetFieldName=DimText_Control44 }
+          }
+           }
+      }
+       }
+    { PROPERTIES
+      {
+        DataItemIndent=3;
+        DataItemTable=Table2000000026;
+        DataItemTableView=SORTING(Number);
+        DataItemVarName=LineErrorCounter;
+        OnPreDataItem=BEGIN
+                        SETRANGE(Number,1,ErrorCounter);
+                      END;
+
+        OnPostDataItem=BEGIN
+                         ErrorCounter := 0;
+                       END;
+
+      }
+      SECTIONS
+      {
+        { PROPERTIES
+          {
+            SectionType=Body;
+            SectionWidth=18150;
+            SectionHeight=423;
+          }
+          CONTROLS
+          {
+            { 40  ;Label        ;0    ;0    ;1500 ;423  ;ParentControl=41;
+                                                         FontBold=Yes;
+                                                         DataSetFieldName=ErrorText_Number__Control41Caption }
+            { 41  ;TextBox      ;1650 ;0    ;16500;423  ;CaptionML=[DEU=Warnung!;
+                                                                    ENU=Warning!];
+                                                         SourceExpr=ErrorText[Number];
+                                                         DataSetFieldName=ErrorText_Number__Control41 }
+          }
+           }
+      }
+       }
+  }
+  REQUESTFORM
+  {
+    PROPERTIES
+    {
+      Width=4180;
+      Height=440;
+    }
+    CONTROLS
+    {
+      { 1   ;Label        ;0    ;0    ;3630 ;440  ;ParentControl=2 }
+      { 2   ;CheckBox     ;3740 ;0    ;440  ;440  ;ShowCaption=No;
+                                                   CaptionML=[DEU=Dimensionen anzeigen;
+                                                              ENU=Show Dimensions];
+                                                   SourceExpr=ShowDim }
+    }
+  }
+  REQUESTPAGE
+  {
+    PROPERTIES
+    {
+    }
+    CONTROLS
+    {
+      { 1900000001;0;Container;
+                  ContainerType=ContentArea }
+
+      { 1900000002;1;Group  ;
+                  CaptionML=[DEU=Optionen;
+                             ENU=Options] }
+
+      { 2   ;2   ;Field     ;
+                  CaptionML=[DEU=Dimensionen anzeigen;
+                             ENU=Show Dimensions];
+                  SourceExpr=ShowDim }
+
+    }
+  }
+  CODE
+  {
+    VAR
+      Text1140000@1140000 : TextConst 'DEU=Inventurauftrag: %1;ENU=Phys. Invt. Order: %1';
+      Text1140001@1140001 : TextConst 'DEU=%1 muss angegeben werden.;ENU=%1 must be specified.';
+      Text1140002@1140002 : TextConst 'DEU=%1 muss %2 sein.;ENU=%1 must be %2.';
+      Text1140003@1140003 : TextConst 'DEU=%1 darf kein Ultimodatum sein.;ENU=%1 must not be a closing date.';
+      Text1140004@1140004 : TextConst 'DEU=Beendet;ENU=Finished';
+      Text1140005@1140005 : TextConst 'DEU=%1 ist nicht innerhalb des zugelassenen Buchungszeitraums.;ENU=%1 is not within your allowed range of posting dates.';
+      Text1140006@1140006 : TextConst 'DEU=Es gibt nichts zu buchen.;ENU=There is nothing to post.';
+      Text1140007@1140007 : TextConst 'DEU=%1 muss %2 sein fÅr %3 %4.;ENU=%1 must be %2 for %3 %4.';
+      Text1140008@1140008 : TextConst;
+      Text1140009@1140009 : TextConst 'DEU=%1 %2 existiert nicht.;ENU=%1 %2 does not exist.';
+      GLSetup@1140010 : Record 98;
+      UserSetup@1140011 : Record 91;
+      PhysInvtOrderLine@1140012 : Record 5005351;
+      Item@1140013 : Record 27;
+      DocDim1@1140014 : Record 357;
+      DocDim2@1140015 : Record 357;
+      TempDocDim@1140016 : TEMPORARY Record 357;
+      DimMgt@1140017 : Codeunit 408;
+      ErrorText@1140018 : ARRAY [99] OF Text[250];
+      ErrorText2@1140019 : Text[250];
+      DimText@11400201 : Text[120];
+      OldDimText@1140021 : Text[75];
+      AllowPostingFrom@1140022 : Date;
+      AllowPostingTo@1140023 : Date;
+      ErrorCounter@1140024 : Integer;
+      ShowDim@1140025 : Boolean;
+      Continue@1140026 : Boolean;
+      LineIsEmpty@1140027 : Boolean;
+
+    LOCAL PROCEDURE AddError@1140000(Text@1140000 : Text[250]);
+    BEGIN
+      ErrorCounter := ErrorCounter + 1;
+      ErrorText[ErrorCounter] := Text;
+    END;
+
+    BEGIN
+    END.
+  }
+  RDLDATA
+  {
+    <?xml version="1.0" encoding="utf-8"?>
+<Report xmlns="http://schemas.microsoft.com/sqlserver/reporting/2005/01/reportdefinition" xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner">
+  <Body>
+    <Height>4.30937cm</Height>
+    <ReportItems>
+      <Table Name="MainTable">
+        <DataSetName>DataSet_Result</DataSetName>
+        <Details>
+          <Sorting>
+            <SortBy>
+              <Direction>Ascending</Direction>
+              <SortExpression>=Fields!Phys__Inventory_Order_Header___No__.Value</SortExpression>
+            </SortBy>
+            <SortBy>
+              <Direction>Ascending</Direction>
+              <SortExpression>=Fields!Phys__Inventory_Order_Header__Status.Value</SortExpression>
+            </SortBy>
+            <SortBy>
+              <Direction>Ascending</Direction>
+              <SortExpression>=Fields!Phys__Inventory_Order_Line_Line_No_.Value</SortExpression>
+            </SortBy>
+          </Sorting>
+          <TableRows>
+            <TableRow>
+              <Height>0.423cm</Height>
+              <TableCells>
+                <TableCell>
+                  <ColSpan>2</ColSpan>
+                  <ReportItems>
+                    <Textbox Name="textbox176">
+                      <Style>
+                        <FontSize>7pt</FontSize>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <TextAlign>Left</TextAlign>
+                      </Style>
+                      <Value>=Fields!DimTextCaption.Value</Value>
+                      <Visibility>
+                        <Hidden>=IIF(Fields!Number.Value=1,False,True)</Hidden>
+                      </Visibility>
+                      <ZIndex>9</ZIndex>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ColSpan>9</ColSpan>
+                  <ReportItems>
+                    <Textbox Name="textbox275">
+                      <Style>
+                        <FontSize>7pt</FontSize>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <TextAlign>Left</TextAlign>
+                      </Style>
+                      <Value>=Fields!DimText.Value</Value>
+                      <ZIndex>8</ZIndex>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+              </TableCells>
+              <Visibility>
+                <Hidden>=IIF(Fields!DimTextCaption.Value="",True,False)</Hidden>
+              </Visibility>
+            </TableRow>
+            <TableRow>
+              <Height>0.423cm</Height>
+              <TableCells>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="textbox52">
+                      <Style>
+                        <FontSize>7pt</FontSize>
+                        <FontWeight>700</FontWeight>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                      </Style>
+                      <Value>=Fields!ErrorText_Number_Caption.Value</Value>
+                      <ZIndex>50</ZIndex>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ColSpan>10</ColSpan>
+                  <ReportItems>
+                    <Textbox Name="textbox53">
+                      <Style>
+                        <FontSize>7pt</FontSize>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <TextAlign>Left</TextAlign>
+                      </Style>
+                      <Value>=Fields!ErrorText_Number_.Value</Value>
+                      <ZIndex>49</ZIndex>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+              </TableCells>
+              <Visibility>
+                <Hidden>=IIF(Fields!ErrorText_Number_.Value="",True,False)</Hidden>
+              </Visibility>
+            </TableRow>
+            <TableRow>
+              <Height>0.423cm</Height>
+              <TableCells>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="ErrorText_Number__Control41Caption">
+                      <Style>
+                        <FontSize>7pt</FontSize>
+                        <FontWeight>700</FontWeight>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                      </Style>
+                      <Value>=Fields!ErrorText_Number__Control41Caption.Value</Value>
+                      <ZIndex>4</ZIndex>
+                      <rd:DefaultName>ErrorText_Number__Control41Caption</rd:DefaultName>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ColSpan>10</ColSpan>
+                  <ReportItems>
+                    <Textbox Name="ErrorText_Number__Control41">
+                      <Style>
+                        <FontSize>7pt</FontSize>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                      </Style>
+                      <Value>=Fields!ErrorText_Number__Control41.Value</Value>
+                      <ZIndex>3</ZIndex>
+                      <rd:DefaultName>ErrorText_Number__Control41</rd:DefaultName>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+              </TableCells>
+              <Visibility>
+                <Hidden>=IIF(Fields!ErrorText_Number__Control41.Value="",True,False)</Hidden>
+              </Visibility>
+            </TableRow>
+          </TableRows>
+        </Details>
+        <TableColumns>
+          <TableColumn>
+            <Width>1.65cm</Width>
+          </TableColumn>
+          <TableColumn>
+            <Width>1.65cm</Width>
+          </TableColumn>
+          <TableColumn>
+            <Width>1.65cm</Width>
+          </TableColumn>
+          <TableColumn>
+            <Width>3.75cm</Width>
+          </TableColumn>
+          <TableColumn>
+            <Width>1.5cm</Width>
+          </TableColumn>
+          <TableColumn>
+            <Width>1.65cm</Width>
+          </TableColumn>
+          <TableColumn>
+            <Width>1.65cm</Width>
+          </TableColumn>
+          <TableColumn>
+            <Width>1.65cm</Width>
+          </TableColumn>
+          <TableColumn>
+            <Width>0.6cm</Width>
+          </TableColumn>
+          <TableColumn>
+            <Width>0.6cm</Width>
+          </TableColumn>
+          <TableColumn>
+            <Width>1.8cm</Width>
+          </TableColumn>
+        </TableColumns>
+        <TableGroups>
+          <TableGroup>
+            <Grouping Name="HeaderBreak_Group">
+              <Filters>
+                <Filter>
+                  <FilterExpression>=CSTR(Fields!Phys__Inventory_Order_Header_No_.Value)</FilterExpression>
+                  <FilterValues>
+                    <FilterValue />
+                  </FilterValues>
+                  <Operator>GreaterThan</Operator>
+                </Filter>
+                <Filter>
+                  <FilterExpression>=Fields!Phys__Inventory_Order_Header__DescriptionCaption.Value</FilterExpression>
+                  <FilterValues>
+                    <FilterValue />
+                  </FilterValues>
+                  <Operator>GreaterThan</Operator>
+                </Filter>
+              </Filters>
+              <GroupExpressions>
+                <GroupExpression>=Fields!Phys__Inventory_Order_Header_No_.Value</GroupExpression>
+              </GroupExpressions>
+              <PageBreakAtEnd>true</PageBreakAtEnd>
+            </Grouping>
+            <Header>
+              <TableRows>
+                <TableRow>
+                  <Height>0.423cm</Height>
+                  <TableCells>
+                    <TableCell>
+                      <ColSpan>2</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="TextBox111">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <TextAlign>Left</TextAlign>
+                            <VerticalAlign>Middle</VerticalAlign>
+                          </Style>
+                          <Value>=First(Fields!Phys__Inventory_Order_Header___No__Caption.Value)</Value>
+                          <ZIndex>93</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ColSpan>2</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="TextBox113">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <TextAlign>Left</TextAlign>
+                            <VerticalAlign>Middle</VerticalAlign>
+                          </Style>
+                          <Value>=Fields!Phys__Inventory_Order_Header___No__.Value</Value>
+                          <ZIndex>92</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ColSpan>2</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="TextBox115">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <TextAlign>Left</TextAlign>
+                            <VerticalAlign>Middle</VerticalAlign>
+                          </Style>
+                          <Value>=First(Fields!Phys__Inventory_Order_Header___Person_Responsible_Caption.Value)</Value>
+                          <ZIndex>90</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ColSpan>2</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="Phys__Inventory_Order_Header___Person_Responsible_">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <TextAlign>Left</TextAlign>
+                          </Style>
+                          <Value>=Fields!Phys__Inventory_Order_Header___Person_Responsible_.Value</Value>
+                          <ZIndex>89</ZIndex>
+                          <rd:DefaultName>Phys__Inventory_Order_Header___Person_Responsible_</rd:DefaultName>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ReportItems>
+                        <Textbox Name="textbox12">
+                          <Style>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <Value />
+                          <rd:DefaultName>textbox12</rd:DefaultName>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ReportItems>
+                        <Textbox Name="textbox13">
+                          <Style>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <Value />
+                          <rd:DefaultName>textbox13</rd:DefaultName>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ReportItems>
+                        <Textbox Name="textbox14">
+                          <Style>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <Value />
+                          <rd:DefaultName>textbox14</rd:DefaultName>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                  </TableCells>
+                </TableRow>
+                <TableRow>
+                  <Height>0.423cm</Height>
+                  <TableCells>
+                    <TableCell>
+                      <ColSpan>2</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="Phys__Inventory_Order_Header__DescriptionCaption">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <TextAlign>Left</TextAlign>
+                            <VerticalAlign>Middle</VerticalAlign>
+                          </Style>
+                          <Value>=First(Fields!Phys__Inventory_Order_Header__DescriptionCaption.Value)</Value>
+                          <ZIndex>85</ZIndex>
+                          <rd:DefaultName>Phys__Inventory_Order_Header__DescriptionCaption</rd:DefaultName>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ColSpan>2</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="Phys__Inventory_Order_Header__Description">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <TextAlign>Left</TextAlign>
+                            <VerticalAlign>Middle</VerticalAlign>
+                          </Style>
+                          <Value>=Fields!Phys__Inventory_Order_Header__Description.Value</Value>
+                          <ZIndex>84</ZIndex>
+                          <rd:DefaultName>Phys__Inventory_Order_Header__Description</rd:DefaultName>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ColSpan>2</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="Phys__Inventory_Order_Header___Posting_Date_Caption">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <TextAlign>Left</TextAlign>
+                            <VerticalAlign>Middle</VerticalAlign>
+                          </Style>
+                          <Value>=First(Fields!Phys__Inventory_Order_Header___Posting_Date_Caption.Value)</Value>
+                          <ZIndex>82</ZIndex>
+                          <rd:DefaultName>Phys__Inventory_Order_Header___Posting_Date_Caption</rd:DefaultName>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ColSpan>2</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="Phys__Inventory_Order_Header___Posting_Date_">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>0.075cm</PaddingLeft>
+                            <PaddingRight>0.075cm</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <TextAlign>Left</TextAlign>
+                            <VerticalAlign>Bottom</VerticalAlign>
+                          </Style>
+                          <Value>=Fields!Phys__Inventory_Order_Header___Posting_Date_.Value</Value>
+                          <ZIndex>81</ZIndex>
+                          <rd:DefaultName>Phys__Inventory_Order_Header___Posting_Date_</rd:DefaultName>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ColSpan>3</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="textbox6">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>0.075cm</PaddingLeft>
+                            <PaddingRight>0.075cm</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <TextAlign>Left</TextAlign>
+                            <VerticalAlign>Bottom</VerticalAlign>
+                          </Style>
+                          <Value />
+                          <rd:DefaultName>textbox6</rd:DefaultName>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                  </TableCells>
+                </TableRow>
+                <TableRow>
+                  <Height>0.423cm</Height>
+                  <TableCells>
+                    <TableCell>
+                      <ColSpan>4</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="textbox124">
+                          <Style>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <Value />
+                          <ZIndex>75</ZIndex>
+                          <rd:DefaultName>textbox124</rd:DefaultName>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ColSpan>2</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="Phys__Inventory_Order_Header__StatusCaption">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <TextAlign>Left</TextAlign>
+                            <VerticalAlign>Middle</VerticalAlign>
+                          </Style>
+                          <Value>=First(Fields!Phys__Inventory_Order_Header__StatusCaption.Value)</Value>
+                          <ZIndex>72</ZIndex>
+                          <rd:DefaultName>Phys__Inventory_Order_Header__StatusCaption</rd:DefaultName>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ColSpan>2</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="Phys__Inventory_Order_Header__Status">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>0.075cm</PaddingLeft>
+                            <PaddingRight>0.075cm</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <TextAlign>Left</TextAlign>
+                            <VerticalAlign>Bottom</VerticalAlign>
+                          </Style>
+                          <Value>=Fields!Phys__Inventory_Order_Header__Status.Value</Value>
+                          <ZIndex>71</ZIndex>
+                          <rd:DefaultName>Phys__Inventory_Order_Header__Status</rd:DefaultName>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ColSpan>3</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="textbox8">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>0.075cm</PaddingLeft>
+                            <PaddingRight>0.075cm</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <TextAlign>Left</TextAlign>
+                            <VerticalAlign>Bottom</VerticalAlign>
+                          </Style>
+                          <Value />
+                          <rd:DefaultName>textbox8</rd:DefaultName>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                  </TableCells>
+                </TableRow>
+                <TableRow>
+                  <Height>0.423cm</Height>
+                  <TableCells>
+                    <TableCell>
+                      <ColSpan>11</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="textbox10">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <FontWeight>700</FontWeight>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <Value />
+                          <ZIndex>65</ZIndex>
+                          <rd:DefaultName>textbox10</rd:DefaultName>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                  </TableCells>
+                </TableRow>
+              </TableRows>
+            </Header>
+            <Sorting>
+              <SortBy>
+                <Direction>Ascending</Direction>
+                <SortExpression>=Fields!Phys__Inventory_Order_Header_No_.Value</SortExpression>
+              </SortBy>
+              <SortBy>
+                <Direction>Descending</Direction>
+                <SortExpression>=Fields!Phys__Inventory_Order_Header__DescriptionCaption.Value</SortExpression>
+              </SortBy>
+              <SortBy>
+                <Direction>Ascending</Direction>
+                <SortExpression>=Fields!Phys__Inventory_Order_Line_Line_No_.Value</SortExpression>
+              </SortBy>
+            </Sorting>
+          </TableGroup>
+          <TableGroup>
+            <Grouping Name="MainTable_Group5">
+              <GroupExpressions>
+                <GroupExpression>=Fields!Phys__Inventory_Order_Header_No_.Value</GroupExpression>
+              </GroupExpressions>
+            </Grouping>
+            <Header>
+              <RepeatOnNewPage>true</RepeatOnNewPage>
+              <TableRows>
+                <TableRow>
+                  <Height>0.03125in</Height>
+                  <TableCells>
+                    <TableCell>
+                      <ColSpan>8</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="textbox2">
+                          <Style>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <Value />
+                          <rd:DefaultName>textbox2</rd:DefaultName>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ReportItems>
+                        <Textbox Name="COMPANYNAME">
+                          <Style>
+                            <Color>#ff0000</Color>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <VerticalAlign>Middle</VerticalAlign>
+                          </Style>
+                          <Value>=Fields!COMPANYNAME.Value</Value>
+                          <Visibility>
+                            <Hidden>true</Hidden>
+                          </Visibility>
+                          <ZIndex>78</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ReportItems>
+                        <Textbox Name="CurrReport_PAGENOCaption">
+                          <Style>
+                            <Color>#ff0000</Color>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <VerticalAlign>Middle</VerticalAlign>
+                          </Style>
+                          <Value>=Fields!CurrReport_PAGENOCaption.Value</Value>
+                          <Visibility>
+                            <Hidden>true</Hidden>
+                          </Visibility>
+                          <ZIndex>77</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ReportItems>
+                        <Textbox Name="Phys__Inventory_Order_TestCaption">
+                          <Style>
+                            <Color>#ff0000</Color>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <VerticalAlign>Middle</VerticalAlign>
+                          </Style>
+                          <Value>=Fields!Phys__Inventory_Order_Header___TestCaption.Value</Value>
+                          <Visibility>
+                            <Hidden>true</Hidden>
+                          </Visibility>
+                          <ZIndex>76</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                  </TableCells>
+                </TableRow>
+              </TableRows>
+            </Header>
+          </TableGroup>
+          <TableGroup>
+            <Grouping Name="Header_ItemGroup">
+              <GroupExpressions>
+                <GroupExpression>=Fields!Phys__Inventory_Order_Header___No__.Value</GroupExpression>
+                <GroupExpression>=Fields!Phys__Inventory_Order_Line_DescriptionCaption.Value</GroupExpression>
+              </GroupExpressions>
+            </Grouping>
+            <Header>
+              <TableRows>
+                <TableRow>
+                  <Height>0.846cm</Height>
+                  <TableCells>
+                    <TableCell>
+                      <ReportItems>
+                        <Textbox Name="Phys__Inventory_Order_Line__Item_No__Caption">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <FontWeight>700</FontWeight>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>0.075cm</PaddingRight>
+                            <VerticalAlign>Bottom</VerticalAlign>
+                          </Style>
+                          <Value>=(Fields!Phys__Inventory_Order_Line__Item_No__Caption.Value)</Value>
+                          <ZIndex>37</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ReportItems>
+                        <Textbox Name="Phys__Inventory_Order_Line__Location_Code_Caption">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <FontWeight>700</FontWeight>
+                            <PaddingLeft>0.075cm</PaddingLeft>
+                            <PaddingRight>0.075cm</PaddingRight>
+                            <VerticalAlign>Bottom</VerticalAlign>
+                          </Style>
+                          <Value>=(Fields!Phys__Inventory_Order_Line__Location_Code_Caption.Value)</Value>
+                          <ZIndex>36</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ReportItems>
+                        <Textbox Name="Phys__Inventory_Order_Line__Bin_Code_Caption">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <FontWeight>700</FontWeight>
+                            <PaddingLeft>0.075cm</PaddingLeft>
+                            <PaddingRight>0.075cm</PaddingRight>
+                            <VerticalAlign>Bottom</VerticalAlign>
+                          </Style>
+                          <Value>=First(Fields!Phys__Inventory_Order_Line__Bin_Code_Caption.Value)</Value>
+                          <ZIndex>35</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ReportItems>
+                        <Textbox Name="Phys__Inventory_Order_Line_DescriptionCaption">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <FontWeight>700</FontWeight>
+                            <PaddingLeft>0.075cm</PaddingLeft>
+                            <PaddingRight>0.075cm</PaddingRight>
+                            <VerticalAlign>Bottom</VerticalAlign>
+                          </Style>
+                          <Value>=First(Fields!Phys__Inventory_Order_Line_DescriptionCaption.Value)</Value>
+                          <ZIndex>34</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ReportItems>
+                        <Textbox Name="Phys__Inventory_Order_Line__Base_Unit_of_Measure_Code_Caption">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <FontWeight>700</FontWeight>
+                            <PaddingLeft>0.075cm</PaddingLeft>
+                            <PaddingRight>0.075cm</PaddingRight>
+                            <VerticalAlign>Bottom</VerticalAlign>
+                          </Style>
+                          <Value>=First(Fields!Phys__Inventory_Order_Line__Base_Unit_of_Measure_Code_Caption.Value)</Value>
+                          <ZIndex>33</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ReportItems>
+                        <Textbox Name="Phys__Inventory_Order_Line__Qty__Expected__Base__Caption">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <FontWeight>700</FontWeight>
+                            <PaddingLeft>0.075cm</PaddingLeft>
+                            <PaddingRight>0.075cm</PaddingRight>
+                            <TextAlign>Right</TextAlign>
+                            <VerticalAlign>Bottom</VerticalAlign>
+                          </Style>
+                          <Value>=First(Fields!Phys__Inventory_Order_Line__Qty__Expected__Base__Caption.Value)</Value>
+                          <ZIndex>32</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ReportItems>
+                        <Textbox Name="Phys__Inventory_Order_Line__Qty__Recorded__Base__Caption">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <FontWeight>700</FontWeight>
+                            <PaddingLeft>0.075cm</PaddingLeft>
+                            <PaddingRight>0.075cm</PaddingRight>
+                            <TextAlign>Right</TextAlign>
+                            <VerticalAlign>Bottom</VerticalAlign>
+                          </Style>
+                          <Value>=First(Fields!Phys__Inventory_Order_Line__Qty__Recorded__Base__Caption.Value)</Value>
+                          <ZIndex>31</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ReportItems>
+                        <Textbox Name="Phys__Inventory_Order_Line__Quantity__Base__Caption">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <FontWeight>700</FontWeight>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <TextAlign>Right</TextAlign>
+                            <VerticalAlign>Bottom</VerticalAlign>
+                          </Style>
+                          <Value>=First(Fields!Phys__Inventory_Order_Line__Quantity__Base__Caption.Value)</Value>
+                          <ZIndex>30</ZIndex>
+                          <rd:DefaultName>Phys__Inventory_Order_Line__Quantity__Base__Caption</rd:DefaultName>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ReportItems>
+                        <Textbox Name="Phys__Inventory_Order_Line__Entry_Type_Caption">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <FontWeight>700</FontWeight>
+                            <PaddingLeft>0.075cm</PaddingLeft>
+                            <PaddingRight>0.075cm</PaddingRight>
+                            <VerticalAlign>Bottom</VerticalAlign>
+                          </Style>
+                          <Value>=First(Fields!Phys__Inventory_Order_Line__Entry_Type_Caption.Value)</Value>
+                          <ZIndex>29</ZIndex>
+                          <rd:DefaultName>Phys__Inventory_Order_Line__Entry_Type_Caption</rd:DefaultName>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ReportItems>
+                        <Textbox Name="Phys__Inventory_Order_Line__Recorded_without_Order_Caption">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <FontWeight>700</FontWeight>
+                            <PaddingLeft>0.075cm</PaddingLeft>
+                            <PaddingRight>0.075cm</PaddingRight>
+                            <VerticalAlign>Bottom</VerticalAlign>
+                          </Style>
+                          <Value>=First(Fields!Phys__Inventory_Order_Line__Recorded_without_Order_Caption.Value)</Value>
+                          <ZIndex>28</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ReportItems>
+                        <Textbox Name="Phys__Inventory_Order_Line__Unit_Amount_Caption">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <FontWeight>700</FontWeight>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <TextAlign>Right</TextAlign>
+                            <VerticalAlign>Bottom</VerticalAlign>
+                          </Style>
+                          <Value>=First(Fields!Phys__Inventory_Order_Line__Unit_Amount_Caption.Value)</Value>
+                          <ZIndex>27</ZIndex>
+                          <rd:DefaultName>Phys__Inventory_Order_Line__Unit_Amount_Caption</rd:DefaultName>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                  </TableCells>
+                  <Visibility>
+                    <Hidden>=Fields!Phys__Inventory_Order_Line_DescriptionCaption.Value=""</Hidden>
+                  </Visibility>
+                </TableRow>
+              </TableRows>
+            </Header>
+          </TableGroup>
+          <TableGroup>
+            <Grouping Name="Table1_Group3">
+              <GroupExpressions>
+                <GroupExpression>=Fields!Phys__Inventory_Order_Header___No__.Value</GroupExpression>
+                <GroupExpression>=Fields!Phys__Inventory_Order_Line_Line_No_.Value</GroupExpression>
+              </GroupExpressions>
+            </Grouping>
+            <Header>
+              <TableRows>
+                <TableRow>
+                  <Height>0.423cm</Height>
+                  <TableCells>
+                    <TableCell>
+                      <ReportItems>
+                        <Textbox Name="textbox190">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>0.075cm</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <TextAlign>Left</TextAlign>
+                            <VerticalAlign>Middle</VerticalAlign>
+                          </Style>
+                          <Value>=Fields!Phys__Inventory_Order_Line__Item_No__.Value</Value>
+                          <ZIndex>23</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ReportItems>
+                        <Textbox Name="textbox192">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>0.075cm</PaddingLeft>
+                            <PaddingRight>0.075cm</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <TextAlign>Left</TextAlign>
+                            <VerticalAlign>Middle</VerticalAlign>
+                          </Style>
+                          <Value>=Fields!Phys__Inventory_Order_Line__Location_Code_.Value</Value>
+                          <ZIndex>22</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ReportItems>
+                        <Textbox Name="textbox193">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>0.075cm</PaddingLeft>
+                            <PaddingRight>0.075cm</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <TextAlign>Left</TextAlign>
+                            <VerticalAlign>Middle</VerticalAlign>
+                          </Style>
+                          <Value>=Fields!Phys__Inventory_Order_Line__Bin_Code_.Value</Value>
+                          <ZIndex>21</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ReportItems>
+                        <Textbox Name="textbox194">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>0.075cm</PaddingLeft>
+                            <PaddingRight>0.075cm</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <VerticalAlign>Middle</VerticalAlign>
+                          </Style>
+                          <Value>=Fields!Phys__Inventory_Order_Line_Description.Value</Value>
+                          <ZIndex>20</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ReportItems>
+                        <Textbox Name="textbox195">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>0.075cm</PaddingLeft>
+                            <PaddingRight>0.075cm</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <VerticalAlign>Middle</VerticalAlign>
+                          </Style>
+                          <Value>=Fields!Phys__Inventory_Order_Line__Base_Unit_of_Measure_Code_.Value</Value>
+                          <ZIndex>19</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ReportItems>
+                        <Textbox Name="textbox196">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <Format>=Fields!Phys__Inventory_Order_Line__Qty__Expected__Base__Format.Value</Format>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>0.075cm</PaddingLeft>
+                            <PaddingRight>0.075cm</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <TextAlign>Right</TextAlign>
+                            <VerticalAlign>Middle</VerticalAlign>
+                          </Style>
+                          <Value>=Fields!Phys__Inventory_Order_Line__Qty__Expected__Base__.Value</Value>
+                          <ZIndex>18</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ReportItems>
+                        <Textbox Name="textbox197">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <Format>=Fields!Phys__Inventory_Order_Line__Qty__Recorded__Base__Format.Value</Format>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>0.075cm</PaddingLeft>
+                            <PaddingRight>0.075cm</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <TextAlign>Right</TextAlign>
+                            <VerticalAlign>Middle</VerticalAlign>
+                          </Style>
+                          <Value>=Fields!Phys__Inventory_Order_Line__Qty__Recorded__Base__.Value</Value>
+                          <ZIndex>17</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ReportItems>
+                        <Textbox Name="Phys__Inventory_Order_Line__Quantity__Base__">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <Format>=Fields!Phys__Inventory_Order_Line__Quantity__Base__Format.Value</Format>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <TextAlign>Right</TextAlign>
+                          </Style>
+                          <Value>=Fields!Phys__Inventory_Order_Line__Quantity__Base__.Value</Value>
+                          <ZIndex>16</ZIndex>
+                          <rd:DefaultName>Phys__Inventory_Order_Line__Quantity__Base__</rd:DefaultName>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ReportItems>
+                        <Textbox Name="Phys__Inventory_Order_Line__Entry_Type_">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>0.075cm</PaddingLeft>
+                            <PaddingRight>0.075cm</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <VerticalAlign>Middle</VerticalAlign>
+                          </Style>
+                          <Value>=Fields!Phys__Inventory_Order_Line__Entry_Type_.Value</Value>
+                          <ZIndex>15</ZIndex>
+                          <rd:DefaultName>Phys__Inventory_Order_Line__Entry_Type_</rd:DefaultName>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ReportItems>
+                        <Textbox Name="textbox199">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>0.075cm</PaddingLeft>
+                            <PaddingRight>0.075cm</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <VerticalAlign>Middle</VerticalAlign>
+                          </Style>
+                          <Value>=Fields!Phys__Inventory_Order_Line__Recorded_without_Order_.Value</Value>
+                          <ZIndex>14</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ReportItems>
+                        <Textbox Name="Phys__Inventory_Order_Line__Unit_Amount_">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <Format>=Fields!Phys__Inventory_Order_Line__Unit_Amount_Format.Value</Format>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <TextAlign>Right</TextAlign>
+                          </Style>
+                          <Value>=Fields!Phys__Inventory_Order_Line__Unit_Amount_.Value</Value>
+                          <ZIndex>13</ZIndex>
+                          <rd:DefaultName>Phys__Inventory_Order_Line__Unit_Amount_</rd:DefaultName>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                  </TableCells>
+                  <Visibility>
+                    <Hidden>=Fields!Phys__Inventory_Order_Line_DescriptionCaption.Value=""</Hidden>
+                  </Visibility>
+                </TableRow>
+              </TableRows>
+            </Header>
+          </TableGroup>
+        </TableGroups>
+      </Table>
+    </ReportItems>
+  </Body>
+  <BottomMargin>2cm</BottomMargin>
+  <Code>Public Function BlankZero(ByVal Value As Decimal)
+    if Value = 0 then
+        Return ""
+    end if
+    Return Value
+End Function
+
+Public Function BlankPos(ByVal Value As Decimal)
+    if Value &gt; 0 then
+        Return ""
+    end if
+    Return Value
+End Function
+
+Public Function BlankZeroAndPos(ByVal Value As Decimal)
+    if Value &gt;= 0 then
+        Return ""
+    end if
+    Return Value
+End Function
+
+Public Function BlankNeg(ByVal Value As Decimal)
+    if Value &lt; 0 then
+        Return ""
+    end if
+    Return Value
+End Function
+
+Public Function BlankNegAndZero(ByVal Value As Decimal)
+    if Value &lt;= 0 then
+        Return ""
+    end if
+    Return Value
+End Function
+</Code>
+  <DataSets>
+    <DataSet Name="DataSet_Result">
+      <Query>
+        <CommandText />
+        <DataSourceName>DummyDataSource</DataSourceName>
+      </Query>
+      <Fields>
+        <Field Name="Phys__Inventory_Order_Header_No_">
+          <DataField>Phys__Inventory_Order_Header_No_</DataField>
+        </Field>
+        <Field Name="USERID">
+          <DataField>USERID</DataField>
+        </Field>
+        <Field Name="COMPANYNAME">
+          <DataField>COMPANYNAME</DataField>
+        </Field>
+        <Field Name="CurrReport_PAGENO">
+          <DataField>CurrReport_PAGENO</DataField>
+        </Field>
+        <Field Name="CurrReport_PAGENOCaption">
+          <DataField>CurrReport_PAGENOCaption</DataField>
+        </Field>
+        <Field Name="Phys__Inventory_Order_Header___TestCaption">
+          <DataField>Phys__Inventory_Order_Header___TestCaption</DataField>
+        </Field>
+        <Field Name="FORMAT_TODAY_0_4_">
+          <DataField>FORMAT_TODAY_0_4_</DataField>
+        </Field>
+        <Field Name="Phys__Inventory_Order_Header___Posting_Date_">
+          <DataField>Phys__Inventory_Order_Header___Posting_Date_</DataField>
+        </Field>
+        <Field Name="Phys__Inventory_Order_Header___Posting_Date_Caption">
+          <DataField>Phys__Inventory_Order_Header___Posting_Date_Caption</DataField>
+        </Field>
+        <Field Name="Phys__Inventory_Order_Header___No__">
+          <DataField>Phys__Inventory_Order_Header___No__</DataField>
+        </Field>
+        <Field Name="Phys__Inventory_Order_Header___No__Caption">
+          <DataField>Phys__Inventory_Order_Header___No__Caption</DataField>
+        </Field>
+        <Field Name="Phys__Inventory_Order_Header__Status">
+          <DataField>Phys__Inventory_Order_Header__Status</DataField>
+        </Field>
+        <Field Name="Phys__Inventory_Order_Header__StatusCaption">
+          <DataField>Phys__Inventory_Order_Header__StatusCaption</DataField>
+        </Field>
+        <Field Name="Phys__Inventory_Order_Header___Person_Responsible_">
+          <DataField>Phys__Inventory_Order_Header___Person_Responsible_</DataField>
+        </Field>
+        <Field Name="Phys__Inventory_Order_Header___Person_Responsible_Caption">
+          <DataField>Phys__Inventory_Order_Header___Person_Responsible_Caption</DataField>
+        </Field>
+        <Field Name="Phys__Inventory_Order_Header__DescriptionCaption">
+          <DataField>Phys__Inventory_Order_Header__DescriptionCaption</DataField>
+        </Field>
+        <Field Name="Phys__Inventory_Order_Header__Description">
+          <DataField>Phys__Inventory_Order_Header__Description</DataField>
+        </Field>
+        <Field Name="ShowDim">
+          <DataField>ShowDim</DataField>
+        </Field>
+        <Field Name="ErrorText_Number_">
+          <DataField>ErrorText_Number_</DataField>
+        </Field>
+        <Field Name="ErrorText_Number_Caption">
+          <DataField>ErrorText_Number_Caption</DataField>
+        </Field>
+        <Field Name="Phys__Inventory_Order_Line__Item_No__Caption">
+          <DataField>Phys__Inventory_Order_Line__Item_No__Caption</DataField>
+        </Field>
+        <Field Name="Phys__Inventory_Order_Line__Location_Code_Caption">
+          <DataField>Phys__Inventory_Order_Line__Location_Code_Caption</DataField>
+        </Field>
+        <Field Name="Phys__Inventory_Order_Line__Bin_Code_Caption">
+          <DataField>Phys__Inventory_Order_Line__Bin_Code_Caption</DataField>
+        </Field>
+        <Field Name="Phys__Inventory_Order_Line_DescriptionCaption">
+          <DataField>Phys__Inventory_Order_Line_DescriptionCaption</DataField>
+        </Field>
+        <Field Name="Phys__Inventory_Order_Line__Base_Unit_of_Measure_Code_Caption">
+          <DataField>Phys__Inventory_Order_Line__Base_Unit_of_Measure_Code_Caption</DataField>
+        </Field>
+        <Field Name="Phys__Inventory_Order_Line__Qty__Expected__Base__Caption">
+          <DataField>Phys__Inventory_Order_Line__Qty__Expected__Base__Caption</DataField>
+        </Field>
+        <Field Name="Phys__Inventory_Order_Line__Qty__Recorded__Base__Caption">
+          <DataField>Phys__Inventory_Order_Line__Qty__Recorded__Base__Caption</DataField>
+        </Field>
+        <Field Name="Phys__Inventory_Order_Line__Quantity__Base__Caption">
+          <DataField>Phys__Inventory_Order_Line__Quantity__Base__Caption</DataField>
+        </Field>
+        <Field Name="Phys__Inventory_Order_Line__Entry_Type_Caption">
+          <DataField>Phys__Inventory_Order_Line__Entry_Type_Caption</DataField>
+        </Field>
+        <Field Name="Phys__Inventory_Order_Line__Recorded_without_Order_Caption">
+          <DataField>Phys__Inventory_Order_Line__Recorded_without_Order_Caption</DataField>
+        </Field>
+        <Field Name="Phys__Inventory_Order_Line__Unit_Amount_Caption">
+          <DataField>Phys__Inventory_Order_Line__Unit_Amount_Caption</DataField>
+        </Field>
+        <Field Name="Phys__Inventory_Order_Line__Item_No__">
+          <DataField>Phys__Inventory_Order_Line__Item_No__</DataField>
+        </Field>
+        <Field Name="Phys__Inventory_Order_Line__Location_Code_">
+          <DataField>Phys__Inventory_Order_Line__Location_Code_</DataField>
+        </Field>
+        <Field Name="Phys__Inventory_Order_Line__Bin_Code_">
+          <DataField>Phys__Inventory_Order_Line__Bin_Code_</DataField>
+        </Field>
+        <Field Name="Phys__Inventory_Order_Line_Description">
+          <DataField>Phys__Inventory_Order_Line_Description</DataField>
+        </Field>
+        <Field Name="Phys__Inventory_Order_Line__Base_Unit_of_Measure_Code_">
+          <DataField>Phys__Inventory_Order_Line__Base_Unit_of_Measure_Code_</DataField>
+        </Field>
+        <Field Name="Phys__Inventory_Order_Line__Qty__Expected__Base__">
+          <DataField>Phys__Inventory_Order_Line__Qty__Expected__Base__</DataField>
+        </Field>
+        <Field Name="Phys__Inventory_Order_Line__Qty__Expected__Base__Format">
+          <DataField>Phys__Inventory_Order_Line__Qty__Expected__Base__Format</DataField>
+        </Field>
+        <Field Name="Phys__Inventory_Order_Line__Qty__Recorded__Base__">
+          <DataField>Phys__Inventory_Order_Line__Qty__Recorded__Base__</DataField>
+        </Field>
+        <Field Name="Phys__Inventory_Order_Line__Qty__Recorded__Base__Format">
+          <DataField>Phys__Inventory_Order_Line__Qty__Recorded__Base__Format</DataField>
+        </Field>
+        <Field Name="Phys__Inventory_Order_Line__Quantity__Base__">
+          <DataField>Phys__Inventory_Order_Line__Quantity__Base__</DataField>
+        </Field>
+        <Field Name="Phys__Inventory_Order_Line__Quantity__Base__Format">
+          <DataField>Phys__Inventory_Order_Line__Quantity__Base__Format</DataField>
+        </Field>
+        <Field Name="Phys__Inventory_Order_Line__Entry_Type_">
+          <DataField>Phys__Inventory_Order_Line__Entry_Type_</DataField>
+        </Field>
+        <Field Name="Phys__Inventory_Order_Line__Recorded_without_Order_">
+          <DataField>Phys__Inventory_Order_Line__Recorded_without_Order_</DataField>
+        </Field>
+        <Field Name="Phys__Inventory_Order_Line__Unit_Amount_">
+          <DataField>Phys__Inventory_Order_Line__Unit_Amount_</DataField>
+        </Field>
+        <Field Name="Phys__Inventory_Order_Line__Unit_Amount_Format">
+          <DataField>Phys__Inventory_Order_Line__Unit_Amount_Format</DataField>
+        </Field>
+        <Field Name="Phys__Inventory_Order_Line_Document_No_">
+          <DataField>Phys__Inventory_Order_Line_Document_No_</DataField>
+        </Field>
+        <Field Name="Phys__Inventory_Order_Line_Line_No_">
+          <DataField>Phys__Inventory_Order_Line_Line_No_</DataField>
+        </Field>
+        <Field Name="DimText">
+          <DataField>DimText</DataField>
+        </Field>
+        <Field Name="DimTextCaption">
+          <DataField>DimTextCaption</DataField>
+        </Field>
+        <Field Name="Number">
+          <DataField>Number</DataField>
+        </Field>
+        <Field Name="ErrorText_Number__Control41Caption">
+          <DataField>ErrorText_Number__Control41Caption</DataField>
+        </Field>
+        <Field Name="ErrorText_Number__Control41">
+          <DataField>ErrorText_Number__Control41</DataField>
+        </Field>
+      </Fields>
+      <rd:DataSetInfo>
+        <rd:DataSetName>DataSet</rd:DataSetName>
+        <rd:TableName>Result</rd:TableName>
+      </rd:DataSetInfo>
+    </DataSet>
+  </DataSets>
+  <DataSources>
+    <DataSource Name="DummyDataSource">
+      <ConnectionProperties>
+        <ConnectString />
+        <DataProvider>SQL</DataProvider>
+      </ConnectionProperties>
+      <rd:DataSourceID>42a5e8af-d3de-4639-8c4b-f607e791c8c4</rd:DataSourceID>
+    </DataSource>
+  </DataSources>
+  <InteractiveHeight>11in</InteractiveHeight>
+  <InteractiveWidth>8.5in</InteractiveWidth>
+  <Language>=User!Language</Language>
+  <LeftMargin>1.5cm</LeftMargin>
+  <PageHeader>
+    <Height>1.37538cm</Height>
+    <PrintOnFirstPage>true</PrintOnFirstPage>
+    <PrintOnLastPage>true</PrintOnLastPage>
+    <ReportItems>
+      <Textbox Name="PageNumberTextBox">
+        <Height>0.423cm</Height>
+        <Left>17.64128cm</Left>
+        <Style>
+          <FontSize>7pt</FontSize>
+          <TextAlign>Right</TextAlign>
+          <VerticalAlign>Middle</VerticalAlign>
+        </Style>
+        <Top>0.52938cm</Top>
+        <Value>=Globals!PageNumber</Value>
+        <Width>0.17719in</Width>
+        <ZIndex>5</ZIndex>
+      </Textbox>
+      <Textbox Name="UserIdTextBox">
+        <Left>14.84126cm</Left>
+        <Style>
+          <FontSize>7pt</FontSize>
+          <TextAlign>Right</TextAlign>
+          <VerticalAlign>Middle</VerticalAlign>
+        </Style>
+        <Top>0.95238cm</Top>
+        <Value>=User!UserID</Value>
+        <Width>1.27969in</Width>
+        <ZIndex>4</ZIndex>
+      </Textbox>
+      <Textbox Name="ExecutionTimeTextBox">
+        <Height>0.423cm</Height>
+        <Left>14.94128cm</Left>
+        <Style>
+          <FontSize>7pt</FontSize>
+          <Format>g</Format>
+          <TextAlign>Right</TextAlign>
+          <VerticalAlign>Middle</VerticalAlign>
+        </Style>
+        <Top>0.10638cm</Top>
+        <Value>=Globals!ExecutionTime</Value>
+        <Width>1.24031in</Width>
+        <ZIndex>3</ZIndex>
+      </Textbox>
+      <Textbox Name="COMPANYNAME1">
+        <Height>0.423cm</Height>
+        <Style>
+          <FontSize>7pt</FontSize>
+          <VerticalAlign>Middle</VerticalAlign>
+        </Style>
+        <Top>0.423cm</Top>
+        <Value>=ReportItems!COMPANYNAME.Value</Value>
+        <Width>7.5cm</Width>
+        <ZIndex>2</ZIndex>
+      </Textbox>
+      <Textbox Name="CurrReport_PAGENOCaption1">
+        <Height>0.423cm</Height>
+        <Left>16.89128cm</Left>
+        <Style>
+          <FontSize>7pt</FontSize>
+          <VerticalAlign>Middle</VerticalAlign>
+        </Style>
+        <Top>0.52938cm</Top>
+        <Value>=ReportItems!CurrReport_PAGENOCaption.Value</Value>
+        <Width>0.75cm</Width>
+        <ZIndex>1</ZIndex>
+      </Textbox>
+      <Textbox Name="Phys__Inventory_Order_TestCaption1">
+        <Height>0.423cm</Height>
+        <Style>
+          <FontSize>8pt</FontSize>
+          <FontWeight>700</FontWeight>
+          <VerticalAlign>Middle</VerticalAlign>
+        </Style>
+        <Value>=ReportItems!Phys__Inventory_Order_TestCaption.Value</Value>
+        <Width>7.5cm</Width>
+      </Textbox>
+    </ReportItems>
+  </PageHeader>
+  <PageHeight>29.7cm</PageHeight>
+  <PageWidth>21cm</PageWidth>
+  <TopMargin>2cm</TopMargin>
+  <Width>18.15cm</Width>
+  <rd:DrawGrid>true</rd:DrawGrid>
+  <rd:ReportID>bb69f657-a2ab-462a-88fa-205dba130a7e</rd:ReportID>
+  <rd:SnapToGrid>true</rd:SnapToGrid>
+</Report>
+    END_OF_RDLDatA
+  }
+}
+

@@ -1,0 +1,1351 @@
+OBJECT Report 5005354 Posted Phys. Invt. Recording
+{
+  OBJECT-PROPERTIES
+  {
+    Date=05.11.08;
+    Time=12:00:00;
+    Version List=NAVDACH6.00;
+  }
+  PROPERTIES
+  {
+    CaptionML=[DEU=Geb. Inventurerfassung;
+               ENU=Posted Phys. Invt. Recording];
+  }
+  DATAITEMS
+  {
+    { PROPERTIES
+      {
+        DataItemTable=Table5005356;
+        DataItemTableView=SORTING(Order No.,Recording No.);
+        NewPagePerRecord=Yes;
+        ReqFilterFields=Order No.,Recording No.;
+      }
+      SECTIONS
+      {
+      }
+       }
+    { PROPERTIES
+      {
+        DataItemIndent=1;
+        DataItemTable=Table2000000026;
+        DataItemTableView=SORTING(Number)
+                          WHERE(Number=CONST(1));
+        DataItemVarName=PageCounter;
+      }
+      SECTIONS
+      {
+        { PROPERTIES
+          {
+            SectionType=Header;
+            PrintOnEveryPage=Yes;
+            SectionWidth=18150;
+            SectionHeight=1269;
+          }
+          CONTROLS
+          {
+            { 6   ;TextBox      ;15900;846  ;2250 ;423  ;HorzAlign=Right;
+                                                         SourceExpr=USERID;
+                                                         DataSetFieldName=USERID }
+            { 3   ;TextBox      ;0    ;423  ;7500 ;423  ;SourceExpr=COMPANYNAME;
+                                                         DataSetFieldName=COMPANYNAME }
+            { 4   ;TextBox      ;17700;423  ;450  ;423  ;CaptionML=[DEU=Seite;
+                                                                    ENU=Page];
+                                                         SourceExpr=CurrReport.PAGENO;
+                                                         DataSetFieldName=CurrReport_PAGENO }
+            { 5   ;Label        ;16950;423  ;750  ;423  ;ParentControl=4;
+                                                         DataSetFieldName=CurrReport_PAGENOCaption }
+            { 1   ;Label        ;0    ;0    ;7500 ;423  ;FontSize=8;
+                                                         FontBold=Yes;
+                                                         CaptionML=[DEU=Geb. Inventurerfassung;
+                                                                    ENU=Posted Phys. Inventory Recording];
+                                                         DataSetFieldName=Posted_Phys__Inventory_RecordingCaption }
+            { 2   ;TextBox      ;15000;0    ;3150 ;423  ;HorzAlign=Right;
+                                                         SourceExpr=FORMAT(TODAY,0,4);
+                                                         DataSetFieldName=FORMAT_TODAY_0_4_ }
+          }
+           }
+        { PROPERTIES
+          {
+            SectionType=Body;
+            SectionWidth=18150;
+            SectionHeight=2961;
+            KeepWithNext=No;
+          }
+          CONTROLS
+          {
+            { 8   ;TextBox      ;3150 ;0    ;1500 ;423  ;HorzAlign=Left;
+                                                         SourceExpr="Posted Phys. Invt. Rec. Header"."Order No.";
+                                                         DataSetFieldName=Posted_Phys__Invt__Rec__Header___Order_No__ }
+            { 9   ;Label        ;0    ;0    ;3000 ;423  ;ParentControl=8;
+                                                         DataSetFieldName=Posted_Phys__Invt__Rec__Header___Order_No__Caption }
+            { 11  ;TextBox      ;11100;0    ;1200 ;423  ;HorzAlign=Left;
+                                                         SourceExpr="Posted Phys. Invt. Rec. Header".Status;
+                                                         DataSetFieldName=Posted_Phys__Invt__Rec__Header__Status }
+            { 12  ;Label        ;7950 ;0    ;3000 ;423  ;ParentControl=11;
+                                                         DataSetFieldName=Posted_Phys__Invt__Rec__Header__StatusCaption }
+            { 14  ;TextBox      ;11100;423  ;1500 ;423  ;HorzAlign=Left;
+                                                         SourceExpr="Posted Phys. Invt. Rec. Header"."Person Responsible";
+                                                         DataSetFieldName=Posted_Phys__Invt__Rec__Header___Person_Responsible_ }
+            { 15  ;Label        ;7950 ;423  ;3000 ;423  ;ParentControl=14;
+                                                         DataSetFieldName=Posted_Phys__Invt__Rec__Header___Person_Responsible_Caption }
+            { 7   ;TextBox      ;3150 ;423  ;1500 ;423  ;HorzAlign=Left;
+                                                         SourceExpr="Posted Phys. Invt. Rec. Header"."Recording No.";
+                                                         DataSetFieldName=Posted_Phys__Invt__Rec__Header___Recording_No__ }
+            { 17  ;Label        ;0    ;423  ;3000 ;423  ;ParentControl=7;
+                                                         DataSetFieldName=Posted_Phys__Invt__Rec__Header___Recording_No__Caption }
+            { 21  ;TextBox      ;3150 ;846  ;4350 ;423  ;HorzAlign=Left;
+                                                         SourceExpr="Posted Phys. Invt. Rec. Header".Description;
+                                                         DataSetFieldName=Posted_Phys__Invt__Rec__Header__Description }
+            { 30  ;Label        ;0    ;846  ;3000 ;423  ;ParentControl=21;
+                                                         DataSetFieldName=Posted_Phys__Invt__Rec__Header__DescriptionCaption }
+            { 36  ;TextBox      ;3150 ;2115 ;1500 ;423  ;HorzAlign=Left;
+                                                         SourceExpr=FORMAT("Posted Phys. Invt. Rec. Header"."Time Recorded");
+                                                         DataSetFieldName=Posted_Phys__Invt__Rec__Header___Time_Recorded_ }
+            { 38  ;Label        ;0    ;2115 ;3000 ;423  ;ParentControl=36;
+                                                         CaptionML=[DEU=Erfassungszeit;
+                                                                    ENU=Time Recorded];
+                                                         DataSetFieldName=Posted_Phys__Invt__Rec__Header___Time_Recorded_Caption }
+            { 34  ;TextBox      ;3150 ;1692 ;1500 ;423  ;HorzAlign=Left;
+                                                         SourceExpr=FORMAT("Posted Phys. Invt. Rec. Header"."Date Recorded");
+                                                         DataSetFieldName=Posted_Phys__Invt__Rec__Header___Date_Recorded_ }
+            { 37  ;Label        ;0    ;1692 ;3000 ;423  ;ParentControl=34;
+                                                         CaptionML=[DEU=Erfassungsdatum;
+                                                                    ENU=Date Recorded];
+                                                         DataSetFieldName=Posted_Phys__Invt__Rec__Header___Date_Recorded_Caption }
+            { 41  ;TextBox      ;11100;1692 ;1500 ;423  ;HorzAlign=Left;
+                                                         SourceExpr="Posted Phys. Invt. Rec. Header"."Person Recorded";
+                                                         DataSetFieldName=Posted_Phys__Invt__Rec__Header___Person_Recorded_ }
+            { 42  ;Label        ;7950 ;1692 ;3000 ;423  ;ParentControl=41;
+                                                         DataSetFieldName=Posted_Phys__Invt__Rec__Header___Person_Recorded_Caption }
+          }
+           }
+      }
+       }
+    { PROPERTIES
+      {
+        DataItemIndent=2;
+        DataItemTable=Table5005357;
+        DataItemTableView=SORTING(Order No.,Recording No.,Line No.);
+        DataItemLinkReference=Posted Phys. Invt. Rec. Header;
+        DataItemLink=Order No.=FIELD(Order No.),
+                     Recording No.=FIELD(Recording No.);
+      }
+      SECTIONS
+      {
+        { PROPERTIES
+          {
+            SectionType=Header;
+            SectionWidth=18150;
+            SectionHeight=846;
+          }
+          CONTROLS
+          {
+            { 19  ;Label        ;0    ;0    ;1500 ;846  ;ParentControl=16;
+                                                         VertAlign=Bottom;
+                                                         FontBold=Yes;
+                                                         MultiLine=Yes;
+                                                         DataSetFieldName=Posted_Phys__Invt__Rec__Line__Item_No__Caption }
+            { 23  ;Label        ;3300 ;0    ;1500 ;846  ;ParentControl=22;
+                                                         VertAlign=Bottom;
+                                                         FontBold=Yes;
+                                                         MultiLine=Yes;
+                                                         DataSetFieldName=Posted_Phys__Invt__Rec__Line__Location_Code_Caption }
+            { 25  ;Label        ;4950 ;0    ;1500 ;846  ;ParentControl=24;
+                                                         VertAlign=Bottom;
+                                                         FontBold=Yes;
+                                                         MultiLine=Yes;
+                                                         DataSetFieldName=Posted_Phys__Invt__Rec__Line__Bin_Code_Caption }
+            { 27  ;Label        ;6600 ;0    ;3750 ;846  ;ParentControl=26;
+                                                         VertAlign=Bottom;
+                                                         FontBold=Yes;
+                                                         MultiLine=Yes;
+                                                         DataSetFieldName=Posted_Phys__Invt__Rec__Line_DescriptionCaption }
+            { 29  ;Label        ;10500;0    ;1500 ;846  ;ParentControl=28;
+                                                         VertAlign=Bottom;
+                                                         FontBold=Yes;
+                                                         MultiLine=Yes;
+                                                         DataSetFieldName=Posted_Phys__Invt__Rec__Line__Unit_of_Measure_Code_Caption }
+            { 13  ;Label        ;1650 ;0    ;1500 ;846  ;ParentControl=10;
+                                                         VertAlign=Bottom;
+                                                         FontBold=Yes;
+                                                         MultiLine=Yes;
+                                                         DataSetFieldName=Posted_Phys__Invt__Rec__Line__Variant_Code_Caption }
+            { 20  ;Label        ;12150;0    ;1800 ;846  ;ParentControl=18;
+                                                         HorzAlign=Right;
+                                                         VertAlign=Bottom;
+                                                         FontBold=Yes;
+                                                         MultiLine=Yes;
+                                                         DataSetFieldName=Posted_Phys__Invt__Rec__Line_QuantityCaption }
+          }
+           }
+        { PROPERTIES
+          {
+            SectionType=Body;
+            SectionWidth=18150;
+            SectionHeight=423;
+          }
+          CONTROLS
+          {
+            { 16  ;TextBox      ;0    ;0    ;1500 ;423  ;HorzAlign=Left;
+                                                         SourceExpr="Item No.";
+                                                         DataSetFieldName=Posted_Phys__Invt__Rec__Line__Item_No__ }
+            { 22  ;TextBox      ;3300 ;0    ;1500 ;423  ;HorzAlign=Left;
+                                                         SourceExpr="Location Code";
+                                                         DataSetFieldName=Posted_Phys__Invt__Rec__Line__Location_Code_ }
+            { 24  ;TextBox      ;4950 ;0    ;1500 ;423  ;HorzAlign=Left;
+                                                         SourceExpr="Bin Code";
+                                                         DataSetFieldName=Posted_Phys__Invt__Rec__Line__Bin_Code_ }
+            { 26  ;TextBox      ;6600 ;0    ;3750 ;423  ;SourceExpr=Description;
+                                                         DataSetFieldName=Posted_Phys__Invt__Rec__Line_Description }
+            { 28  ;TextBox      ;10500;0    ;1500 ;423  ;SourceExpr="Unit of Measure Code";
+                                                         DataSetFieldName=Posted_Phys__Invt__Rec__Line__Unit_of_Measure_Code_ }
+            { 10  ;TextBox      ;1650 ;0    ;1500 ;423  ;HorzAlign=Left;
+                                                         SourceExpr="Variant Code";
+                                                         DataSetFieldName=Posted_Phys__Invt__Rec__Line__Variant_Code_ }
+            { 18  ;TextBox      ;12150;0    ;1800 ;423  ;SourceExpr=Quantity;
+                                                         DataSetFieldName=Posted_Phys__Invt__Rec__Line_Quantity }
+          }
+           }
+      }
+       }
+  }
+  REQUESTFORM
+  {
+    PROPERTIES
+    {
+      Width=4180;
+      Height=440;
+      SaveValues=Yes;
+    }
+    CONTROLS
+    {
+    }
+  }
+  REQUESTPAGE
+  {
+    PROPERTIES
+    {
+      SaveValues=Yes;
+    }
+    CONTROLS
+    {
+    }
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+  RDLDATA
+  {
+    <?xml version="1.0" encoding="utf-8"?>
+<Report xmlns="http://schemas.microsoft.com/sqlserver/reporting/2005/01/reportdefinition" xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner">
+  <Body>
+    <Height>4.23cm</Height>
+    <ReportItems>
+      <Table Name="Table1">
+        <DataSetName>DataSet_Result</DataSetName>
+        <Details>
+          <TableRows>
+            <TableRow>
+              <Height>0.423cm</Height>
+              <TableCells>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="Posted_Phys__Invt__Rec__Line__Item_No__">
+                      <Style>
+                        <FontSize>7pt</FontSize>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>0.075cm</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <TextAlign>Left</TextAlign>
+                        <VerticalAlign>Middle</VerticalAlign>
+                      </Style>
+                      <Value>=Fields!Posted_Phys__Invt__Rec__Line__Item_No__.Value</Value>
+                      <ZIndex>9</ZIndex>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="Posted_Phys__Invt__Rec__Line__Variant_Code_">
+                      <Style>
+                        <FontSize>7pt</FontSize>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>0.075cm</PaddingLeft>
+                        <PaddingRight>0.075cm</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <TextAlign>Left</TextAlign>
+                        <VerticalAlign>Middle</VerticalAlign>
+                      </Style>
+                      <Value>=Fields!Posted_Phys__Invt__Rec__Line__Variant_Code_.Value</Value>
+                      <ZIndex>8</ZIndex>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="Posted_Phys__Invt__Rec__Line__Location_Code_">
+                      <Style>
+                        <FontSize>7pt</FontSize>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>0.075cm</PaddingLeft>
+                        <PaddingRight>0.075cm</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <TextAlign>Left</TextAlign>
+                        <VerticalAlign>Middle</VerticalAlign>
+                      </Style>
+                      <Value>=Fields!Posted_Phys__Invt__Rec__Line__Location_Code_.Value</Value>
+                      <ZIndex>7</ZIndex>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="Posted_Phys__Invt__Rec__Line__Bin_Code_">
+                      <Style>
+                        <FontSize>7pt</FontSize>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>0.075cm</PaddingLeft>
+                        <PaddingRight>0.075cm</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <TextAlign>Left</TextAlign>
+                        <VerticalAlign>Middle</VerticalAlign>
+                      </Style>
+                      <Value>=Fields!Posted_Phys__Invt__Rec__Line__Bin_Code_.Value</Value>
+                      <ZIndex>6</ZIndex>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ColSpan>2</ColSpan>
+                  <ReportItems>
+                    <Textbox Name="Posted_Phys__Invt__Rec__Line_Description">
+                      <Style>
+                        <FontSize>7pt</FontSize>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>0.075cm</PaddingLeft>
+                        <PaddingRight>0.075cm</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <VerticalAlign>Middle</VerticalAlign>
+                      </Style>
+                      <Value>=Fields!Posted_Phys__Invt__Rec__Line_Description.Value</Value>
+                      <ZIndex>5</ZIndex>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ColSpan>2</ColSpan>
+                  <ReportItems>
+                    <Textbox Name="Posted_Phys__Invt__Rec__Line__Unit_of_Measure_Code_">
+                      <Style>
+                        <FontSize>7pt</FontSize>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>0.075cm</PaddingLeft>
+                        <PaddingRight>0.075cm</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <VerticalAlign>Middle</VerticalAlign>
+                      </Style>
+                      <Value>=Fields!Posted_Phys__Invt__Rec__Line__Unit_of_Measure_Code_.Value</Value>
+                      <ZIndex>4</ZIndex>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="Posted_Phys__Invt__Rec__Line_Quantity">
+                      <Style>
+                        <FontSize>7pt</FontSize>
+                        <Format>=Fields!Posted_Phys__Invt__Rec__Line_QuantityFormat.Value</Format>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>0.075cm</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <VerticalAlign>Middle</VerticalAlign>
+                      </Style>
+                      <Value>=Fields!Posted_Phys__Invt__Rec__Line_Quantity.Value</Value>
+                      <ZIndex>3</ZIndex>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="COMPANYNAME">
+                      <Style>
+                        <Color>#ff0000</Color>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <VerticalAlign>Middle</VerticalAlign>
+                      </Style>
+                      <Value>=Fields!COMPANYNAME.Value</Value>
+                      <Visibility>
+                        <Hidden>true</Hidden>
+                      </Visibility>
+                      <ZIndex>2</ZIndex>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="CurrReport_PAGENOCaption">
+                      <Style>
+                        <Color>#ff0000</Color>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <VerticalAlign>Middle</VerticalAlign>
+                      </Style>
+                      <Value>=Fields!CurrReport_PAGENOCaption.Value</Value>
+                      <Visibility>
+                        <Hidden>true</Hidden>
+                      </Visibility>
+                      <ZIndex>1</ZIndex>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="Posted_Phys__Inventory_RecordingCaption">
+                      <Style>
+                        <Color>#ff0000</Color>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <VerticalAlign>Middle</VerticalAlign>
+                      </Style>
+                      <Value>=Fields!Posted_Phys__Inventory_RecordingCaption.Value</Value>
+                      <Visibility>
+                        <Hidden>true</Hidden>
+                      </Visibility>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+              </TableCells>
+            </TableRow>
+          </TableRows>
+        </Details>
+        <TableColumns>
+          <TableColumn>
+            <Width>1.65cm</Width>
+          </TableColumn>
+          <TableColumn>
+            <Width>1.65cm</Width>
+          </TableColumn>
+          <TableColumn>
+            <Width>1.65cm</Width>
+          </TableColumn>
+          <TableColumn>
+            <Width>1.65cm</Width>
+          </TableColumn>
+          <TableColumn>
+            <Width>1.2cm</Width>
+          </TableColumn>
+          <TableColumn>
+            <Width>2.7cm</Width>
+          </TableColumn>
+          <TableColumn>
+            <Width>0.45cm</Width>
+          </TableColumn>
+          <TableColumn>
+            <Width>1.2cm</Width>
+          </TableColumn>
+          <TableColumn>
+            <Width>1.8cm</Width>
+          </TableColumn>
+          <TableColumn>
+            <Width>0.2cm</Width>
+          </TableColumn>
+          <TableColumn>
+            <Width>0.2cm</Width>
+          </TableColumn>
+          <TableColumn>
+            <Width>0.2cm</Width>
+          </TableColumn>
+        </TableColumns>
+        <TableGroups>
+          <TableGroup>
+            <Grouping Name="Table1_Group">
+              <GroupExpressions>
+                <GroupExpression>=Fields!Posted_Phys__Invt__Rec__Header_Order_No_.Value</GroupExpression>
+                <GroupExpression>=Fields!Posted_Phys__Invt__Rec__Header_Recording_No_.Value</GroupExpression>
+              </GroupExpressions>
+              <PageBreakAtEnd>true</PageBreakAtEnd>
+            </Grouping>
+            <Header>
+              <TableRows>
+                <TableRow>
+                  <Height>0.423cm</Height>
+                  <TableCells>
+                    <TableCell>
+                      <ColSpan>2</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="Posted_Phys__Invt__Rec__Header___Date_Recorded_Caption">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <TextAlign>Left</TextAlign>
+                          </Style>
+                          <Value>=Fields!Posted_Phys__Invt__Rec__Header___Date_Recorded_Caption.Value</Value>
+                          <ZIndex>81</ZIndex>
+                          <rd:DefaultName>Posted_Phys__Invt__Rec__Header___Date_Recorded_Caption</rd:DefaultName>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ColSpan>3</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="Posted_Phys__Invt__Rec__Header___Order_No__">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <TextAlign>Left</TextAlign>
+                          </Style>
+                          <Value>=Fields!Posted_Phys__Invt__Rec__Header___Order_No__.Value</Value>
+                          <ZIndex>80</ZIndex>
+                          <rd:DefaultName>Posted_Phys__Invt__Rec__Header___Order_No__</rd:DefaultName>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ColSpan>2</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="Posted_Phys__Invt__Rec__Header__StatusCaption">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <TextAlign>Left</TextAlign>
+                          </Style>
+                          <Value>=Fields!Posted_Phys__Invt__Rec__Header__StatusCaption.Value</Value>
+                          <ZIndex>78</ZIndex>
+                          <rd:DefaultName>Posted_Phys__Invt__Rec__Header__StatusCaption</rd:DefaultName>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ColSpan>2</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="Posted_Phys__Invt__Rec__Header__Status">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <TextAlign>Left</TextAlign>
+                          </Style>
+                          <Value>=Fields!Posted_Phys__Invt__Rec__Header__Status.Value</Value>
+                          <ZIndex>77</ZIndex>
+                          <rd:DefaultName>Posted_Phys__Invt__Rec__Header__Status</rd:DefaultName>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ColSpan>3</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="textbox59">
+                          <Style>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <Value />
+                          <ZIndex>76</ZIndex>
+                          <rd:DefaultName>textbox59</rd:DefaultName>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                  </TableCells>
+                </TableRow>
+                <TableRow>
+                  <Height>0.423cm</Height>
+                  <TableCells>
+                    <TableCell>
+                      <ColSpan>2</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="Posted_Phys__Invt__Rec__Header___Recording_No__Caption">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <TextAlign>Left</TextAlign>
+                          </Style>
+                          <Value>=Fields!Posted_Phys__Invt__Rec__Header___Recording_No__Caption.Value</Value>
+                          <ZIndex>73</ZIndex>
+                          <rd:DefaultName>Posted_Phys__Invt__Rec__Header___Recording_No__Caption</rd:DefaultName>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ColSpan>3</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="Posted_Phys__Invt__Rec__Header___Recording_No__">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <TextAlign>Left</TextAlign>
+                          </Style>
+                          <Value>=Fields!Posted_Phys__Invt__Rec__Header___Recording_No__.Value</Value>
+                          <ZIndex>72</ZIndex>
+                          <rd:DefaultName>Posted_Phys__Invt__Rec__Header___Recording_No__</rd:DefaultName>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ColSpan>2</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="Posted_Phys__Invt__Rec__Header___Person_Responsible_Caption">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <TextAlign>Left</TextAlign>
+                          </Style>
+                          <Value>=Fields!Posted_Phys__Invt__Rec__Header___Person_Responsible_Caption.Value</Value>
+                          <ZIndex>70</ZIndex>
+                          <rd:DefaultName>Posted_Phys__Invt__Rec__Header___Person_Responsible_Caption</rd:DefaultName>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ColSpan>2</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="Posted_Phys__Invt__Rec__Header___Person_Responsible_">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <TextAlign>Left</TextAlign>
+                          </Style>
+                          <Value>=Fields!Posted_Phys__Invt__Rec__Header___Person_Responsible_.Value</Value>
+                          <ZIndex>69</ZIndex>
+                          <rd:DefaultName>Posted_Phys__Invt__Rec__Header___Person_Responsible_</rd:DefaultName>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ColSpan>3</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="textbox49">
+                          <Style>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <Value />
+                          <ZIndex>68</ZIndex>
+                          <rd:DefaultName>textbox49</rd:DefaultName>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                  </TableCells>
+                </TableRow>
+                <TableRow>
+                  <Height>0.423cm</Height>
+                  <TableCells>
+                    <TableCell>
+                      <ColSpan>2</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="Posted_Phys__Invt__Rec__Header__DescriptionCaption">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <TextAlign>Left</TextAlign>
+                          </Style>
+                          <Value>=Fields!Posted_Phys__Invt__Rec__Header__DescriptionCaption.Value</Value>
+                          <ZIndex>65</ZIndex>
+                          <rd:DefaultName>Posted_Phys__Invt__Rec__Header__DescriptionCaption</rd:DefaultName>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ColSpan>3</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="Posted_Phys__Invt__Rec__Header__Description">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <TextAlign>Left</TextAlign>
+                          </Style>
+                          <Value>=Fields!Posted_Phys__Invt__Rec__Header__Description.Value</Value>
+                          <ZIndex>64</ZIndex>
+                          <rd:DefaultName>Posted_Phys__Invt__Rec__Header__Description</rd:DefaultName>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ColSpan>7</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="textbox37">
+                          <Style>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <Value />
+                          <ZIndex>62</ZIndex>
+                          <rd:DefaultName>textbox37</rd:DefaultName>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                  </TableCells>
+                </TableRow>
+                <TableRow>
+                  <Height>0.423cm</Height>
+                  <TableCells>
+                    <TableCell>
+                      <ColSpan>12</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="textbox22">
+                          <Style>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <Value />
+                          <ZIndex>56</ZIndex>
+                          <rd:DefaultName>textbox22</rd:DefaultName>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                  </TableCells>
+                </TableRow>
+                <TableRow>
+                  <Height>0.423cm</Height>
+                  <TableCells>
+                    <TableCell>
+                      <ColSpan>2</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="Posted_Phys__Invt__Rec__Header___Date_Recorded_Caption_1">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <TextAlign>Left</TextAlign>
+                          </Style>
+                          <Value>=Fields!Posted_Phys__Invt__Rec__Header___Date_Recorded_Caption.Value</Value>
+                          <ZIndex>45</ZIndex>
+                          <rd:DefaultName>Posted_Phys__Invt__Rec__Header___Date_Recorded_Caption_1</rd:DefaultName>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ColSpan>2</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="Posted_Phys__Invt__Rec__Header___Date_Recorded_">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <Format>d</Format>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <TextAlign>Left</TextAlign>
+                          </Style>
+                          <Value>=Fields!Posted_Phys__Invt__Rec__Header___Date_Recorded_.Value</Value>
+                          <ZIndex>44</ZIndex>
+                          <rd:DefaultName>Posted_Phys__Invt__Rec__Header___Date_Recorded_</rd:DefaultName>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ReportItems>
+                        <Textbox Name="textbox16">
+                          <Style>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <Value />
+                          <ZIndex>43</ZIndex>
+                          <rd:DefaultName>textbox16</rd:DefaultName>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ColSpan>2</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="Posted_Phys__Invt__Rec__Header___Person_Recorded_Caption">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <TextAlign>Left</TextAlign>
+                          </Style>
+                          <Value>=Fields!Posted_Phys__Invt__Rec__Header___Person_Recorded_Caption.Value</Value>
+                          <ZIndex>42</ZIndex>
+                          <rd:DefaultName>Posted_Phys__Invt__Rec__Header___Person_Recorded_Caption</rd:DefaultName>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ColSpan>2</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="Posted_Phys__Invt__Rec__Header___Person_Recorded_">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <TextAlign>Left</TextAlign>
+                          </Style>
+                          <Value>=Fields!Posted_Phys__Invt__Rec__Header___Person_Recorded_.Value</Value>
+                          <ZIndex>41</ZIndex>
+                          <rd:DefaultName>Posted_Phys__Invt__Rec__Header___Person_Recorded_</rd:DefaultName>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ColSpan>3</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="textbox19">
+                          <Style>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <Value />
+                          <ZIndex>40</ZIndex>
+                          <rd:DefaultName>textbox19</rd:DefaultName>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                  </TableCells>
+                </TableRow>
+                <TableRow>
+                  <Height>0.423cm</Height>
+                  <TableCells>
+                    <TableCell>
+                      <ColSpan>2</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="Posted_Phys__Invt__Rec__Header___Time_Recorded_Caption">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <TextAlign>Left</TextAlign>
+                          </Style>
+                          <Value>=Fields!Posted_Phys__Invt__Rec__Header___Time_Recorded_Caption.Value</Value>
+                          <ZIndex>37</ZIndex>
+                          <rd:DefaultName>Posted_Phys__Invt__Rec__Header___Time_Recorded_Caption</rd:DefaultName>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ColSpan>2</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="Posted_Phys__Invt__Rec__Header___Time_Recorded_">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <Format>t</Format>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <TextAlign>Left</TextAlign>
+                          </Style>
+                          <Value>=Fields!Posted_Phys__Invt__Rec__Header___Time_Recorded_.Value</Value>
+                          <ZIndex>36</ZIndex>
+                          <rd:DefaultName>Posted_Phys__Invt__Rec__Header___Time_Recorded_</rd:DefaultName>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ColSpan>8</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="textbox6">
+                          <Style>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <Value />
+                          <ZIndex>35</ZIndex>
+                          <rd:DefaultName>textbox6</rd:DefaultName>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                  </TableCells>
+                </TableRow>
+                <TableRow>
+                  <Height>0.423cm</Height>
+                  <TableCells>
+                    <TableCell>
+                      <ColSpan>12</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="textbox2">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <FontWeight>700</FontWeight>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>0.075cm</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <VerticalAlign>Bottom</VerticalAlign>
+                          </Style>
+                          <Value />
+                          <ZIndex>28</ZIndex>
+                          <rd:DefaultName>textbox2</rd:DefaultName>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                  </TableCells>
+                </TableRow>
+                <TableRow>
+                  <Height>0.846cm</Height>
+                  <TableCells>
+                    <TableCell>
+                      <ReportItems>
+                        <Textbox Name="Posted_Phys__Invt__Rec__Line__Item_No__Caption">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <FontWeight>700</FontWeight>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>0.075cm</PaddingRight>
+                            <TextAlign>Left</TextAlign>
+                            <VerticalAlign>Bottom</VerticalAlign>
+                          </Style>
+                          <Value>=First(Fields!Posted_Phys__Invt__Rec__Line__Item_No__Caption.Value)</Value>
+                          <ZIndex>17</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ReportItems>
+                        <Textbox Name="Posted_Phys__Invt__Rec__Line__Variant_Code_Caption">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <FontWeight>700</FontWeight>
+                            <PaddingLeft>0.075cm</PaddingLeft>
+                            <PaddingRight>0.075cm</PaddingRight>
+                            <VerticalAlign>Bottom</VerticalAlign>
+                          </Style>
+                          <Value>=First(Fields!Posted_Phys__Invt__Rec__Line__Variant_Code_Caption.Value)</Value>
+                          <ZIndex>16</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ReportItems>
+                        <Textbox Name="Posted_Phys__Invt__Rec__Line__Location_Code_Caption">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <FontWeight>700</FontWeight>
+                            <PaddingLeft>0.075cm</PaddingLeft>
+                            <PaddingRight>0.075cm</PaddingRight>
+                            <VerticalAlign>Bottom</VerticalAlign>
+                          </Style>
+                          <Value>=First(Fields!Posted_Phys__Invt__Rec__Line__Location_Code_Caption.Value)</Value>
+                          <ZIndex>15</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ReportItems>
+                        <Textbox Name="Posted_Phys__Invt__Rec__Line__Bin_Code_Caption">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <FontWeight>700</FontWeight>
+                            <PaddingLeft>0.075cm</PaddingLeft>
+                            <PaddingRight>0.075cm</PaddingRight>
+                            <VerticalAlign>Bottom</VerticalAlign>
+                          </Style>
+                          <Value>=First(Fields!Posted_Phys__Invt__Rec__Line__Bin_Code_Caption.Value)</Value>
+                          <ZIndex>14</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ColSpan>2</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="Posted_Phys__Invt__Rec__Line_DescriptionCaption">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <FontWeight>700</FontWeight>
+                            <PaddingLeft>0.075cm</PaddingLeft>
+                            <PaddingRight>0.075cm</PaddingRight>
+                            <VerticalAlign>Bottom</VerticalAlign>
+                          </Style>
+                          <Value>=First(Fields!Posted_Phys__Invt__Rec__Line_DescriptionCaption.Value)</Value>
+                          <ZIndex>13</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ColSpan>2</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="Posted_Phys__Invt__Rec__Line__Unit_of_Measure_Code_Caption">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <FontWeight>700</FontWeight>
+                            <PaddingLeft>0.075cm</PaddingLeft>
+                            <PaddingRight>0.075cm</PaddingRight>
+                            <VerticalAlign>Bottom</VerticalAlign>
+                          </Style>
+                          <Value>=First(Fields!Posted_Phys__Invt__Rec__Line__Unit_of_Measure_Code_Caption.Value)</Value>
+                          <ZIndex>12</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ReportItems>
+                        <Textbox Name="Posted_Phys__Invt__Rec__Line_QuantityCaption">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <FontWeight>700</FontWeight>
+                            <PaddingLeft>0.075cm</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <TextAlign>Right</TextAlign>
+                            <VerticalAlign>Bottom</VerticalAlign>
+                          </Style>
+                          <Value>=First(Fields!Posted_Phys__Invt__Rec__Line_QuantityCaption.Value)</Value>
+                          <ZIndex>11</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ColSpan>3</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="TextBox1">
+                          <Style>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <VerticalAlign>Middle</VerticalAlign>
+                          </Style>
+                          <Value />
+                          <ZIndex>10</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                  </TableCells>
+                </TableRow>
+              </TableRows>
+            </Header>
+          </TableGroup>
+        </TableGroups>
+        <Width>14.55cm</Width>
+      </Table>
+    </ReportItems>
+  </Body>
+  <BottomMargin>2cm</BottomMargin>
+  <Code>Public Function BlankZero(ByVal Value As Decimal)
+    if Value = 0 then
+        Return ""
+    end if
+    Return Value
+End Function
+
+Public Function BlankPos(ByVal Value As Decimal)
+    if Value &gt; 0 then
+        Return ""
+    end if
+    Return Value
+End Function
+
+Public Function BlankZeroAndPos(ByVal Value As Decimal)
+    if Value &gt;= 0 then
+        Return ""
+    end if
+    Return Value
+End Function
+
+Public Function BlankNeg(ByVal Value As Decimal)
+    if Value &lt; 0 then
+        Return ""
+    end if
+    Return Value
+End Function
+
+Public Function BlankNegAndZero(ByVal Value As Decimal)
+    if Value &lt;= 0 then
+        Return ""
+    end if
+    Return Value
+End Function
+</Code>
+  <DataSets>
+    <DataSet Name="DataSet_Result">
+      <Query>
+        <CommandText />
+        <DataSourceName>DummyDataSource</DataSourceName>
+      </Query>
+      <Fields>
+        <Field Name="Posted_Phys__Invt__Rec__Header_Order_No_">
+          <DataField>Posted_Phys__Invt__Rec__Header_Order_No_</DataField>
+        </Field>
+        <Field Name="Posted_Phys__Invt__Rec__Header_Recording_No_">
+          <DataField>Posted_Phys__Invt__Rec__Header_Recording_No_</DataField>
+        </Field>
+        <Field Name="USERID">
+          <DataField>USERID</DataField>
+        </Field>
+        <Field Name="COMPANYNAME">
+          <DataField>COMPANYNAME</DataField>
+        </Field>
+        <Field Name="CurrReport_PAGENO">
+          <DataField>CurrReport_PAGENO</DataField>
+        </Field>
+        <Field Name="CurrReport_PAGENOCaption">
+          <DataField>CurrReport_PAGENOCaption</DataField>
+        </Field>
+        <Field Name="Posted_Phys__Inventory_RecordingCaption">
+          <DataField>Posted_Phys__Inventory_RecordingCaption</DataField>
+        </Field>
+        <Field Name="FORMAT_TODAY_0_4_">
+          <DataField>FORMAT_TODAY_0_4_</DataField>
+        </Field>
+        <Field Name="Posted_Phys__Invt__Rec__Header___Order_No__">
+          <DataField>Posted_Phys__Invt__Rec__Header___Order_No__</DataField>
+        </Field>
+        <Field Name="Posted_Phys__Invt__Rec__Header___Order_No__Caption">
+          <DataField>Posted_Phys__Invt__Rec__Header___Order_No__Caption</DataField>
+        </Field>
+        <Field Name="Posted_Phys__Invt__Rec__Header__Status">
+          <DataField>Posted_Phys__Invt__Rec__Header__Status</DataField>
+        </Field>
+        <Field Name="Posted_Phys__Invt__Rec__Header__StatusCaption">
+          <DataField>Posted_Phys__Invt__Rec__Header__StatusCaption</DataField>
+        </Field>
+        <Field Name="Posted_Phys__Invt__Rec__Header___Person_Responsible_">
+          <DataField>Posted_Phys__Invt__Rec__Header___Person_Responsible_</DataField>
+        </Field>
+        <Field Name="Posted_Phys__Invt__Rec__Header___Person_Responsible_Caption">
+          <DataField>Posted_Phys__Invt__Rec__Header___Person_Responsible_Caption</DataField>
+        </Field>
+        <Field Name="Posted_Phys__Invt__Rec__Header___Recording_No__">
+          <DataField>Posted_Phys__Invt__Rec__Header___Recording_No__</DataField>
+        </Field>
+        <Field Name="Posted_Phys__Invt__Rec__Header___Recording_No__Caption">
+          <DataField>Posted_Phys__Invt__Rec__Header___Recording_No__Caption</DataField>
+        </Field>
+        <Field Name="Posted_Phys__Invt__Rec__Header__Description">
+          <DataField>Posted_Phys__Invt__Rec__Header__Description</DataField>
+        </Field>
+        <Field Name="Posted_Phys__Invt__Rec__Header__DescriptionCaption">
+          <DataField>Posted_Phys__Invt__Rec__Header__DescriptionCaption</DataField>
+        </Field>
+        <Field Name="Posted_Phys__Invt__Rec__Header___Time_Recorded_">
+          <DataField>Posted_Phys__Invt__Rec__Header___Time_Recorded_</DataField>
+        </Field>
+        <Field Name="Posted_Phys__Invt__Rec__Header___Time_Recorded_Caption">
+          <DataField>Posted_Phys__Invt__Rec__Header___Time_Recorded_Caption</DataField>
+        </Field>
+        <Field Name="Posted_Phys__Invt__Rec__Header___Date_Recorded_">
+          <DataField>Posted_Phys__Invt__Rec__Header___Date_Recorded_</DataField>
+        </Field>
+        <Field Name="Posted_Phys__Invt__Rec__Header___Date_Recorded_Caption">
+          <DataField>Posted_Phys__Invt__Rec__Header___Date_Recorded_Caption</DataField>
+        </Field>
+        <Field Name="Posted_Phys__Invt__Rec__Header___Person_Recorded_">
+          <DataField>Posted_Phys__Invt__Rec__Header___Person_Recorded_</DataField>
+        </Field>
+        <Field Name="Posted_Phys__Invt__Rec__Header___Person_Recorded_Caption">
+          <DataField>Posted_Phys__Invt__Rec__Header___Person_Recorded_Caption</DataField>
+        </Field>
+        <Field Name="Posted_Phys__Invt__Rec__Line__Item_No__Caption">
+          <DataField>Posted_Phys__Invt__Rec__Line__Item_No__Caption</DataField>
+        </Field>
+        <Field Name="Posted_Phys__Invt__Rec__Line__Location_Code_Caption">
+          <DataField>Posted_Phys__Invt__Rec__Line__Location_Code_Caption</DataField>
+        </Field>
+        <Field Name="Posted_Phys__Invt__Rec__Line__Bin_Code_Caption">
+          <DataField>Posted_Phys__Invt__Rec__Line__Bin_Code_Caption</DataField>
+        </Field>
+        <Field Name="Posted_Phys__Invt__Rec__Line_DescriptionCaption">
+          <DataField>Posted_Phys__Invt__Rec__Line_DescriptionCaption</DataField>
+        </Field>
+        <Field Name="Posted_Phys__Invt__Rec__Line__Unit_of_Measure_Code_Caption">
+          <DataField>Posted_Phys__Invt__Rec__Line__Unit_of_Measure_Code_Caption</DataField>
+        </Field>
+        <Field Name="Posted_Phys__Invt__Rec__Line__Variant_Code_Caption">
+          <DataField>Posted_Phys__Invt__Rec__Line__Variant_Code_Caption</DataField>
+        </Field>
+        <Field Name="Posted_Phys__Invt__Rec__Line_QuantityCaption">
+          <DataField>Posted_Phys__Invt__Rec__Line_QuantityCaption</DataField>
+        </Field>
+        <Field Name="Posted_Phys__Invt__Rec__Line__Item_No__">
+          <DataField>Posted_Phys__Invt__Rec__Line__Item_No__</DataField>
+        </Field>
+        <Field Name="Posted_Phys__Invt__Rec__Line__Location_Code_">
+          <DataField>Posted_Phys__Invt__Rec__Line__Location_Code_</DataField>
+        </Field>
+        <Field Name="Posted_Phys__Invt__Rec__Line__Bin_Code_">
+          <DataField>Posted_Phys__Invt__Rec__Line__Bin_Code_</DataField>
+        </Field>
+        <Field Name="Posted_Phys__Invt__Rec__Line_Description">
+          <DataField>Posted_Phys__Invt__Rec__Line_Description</DataField>
+        </Field>
+        <Field Name="Posted_Phys__Invt__Rec__Line__Unit_of_Measure_Code_">
+          <DataField>Posted_Phys__Invt__Rec__Line__Unit_of_Measure_Code_</DataField>
+        </Field>
+        <Field Name="Posted_Phys__Invt__Rec__Line__Variant_Code_">
+          <DataField>Posted_Phys__Invt__Rec__Line__Variant_Code_</DataField>
+        </Field>
+        <Field Name="Posted_Phys__Invt__Rec__Line_Quantity">
+          <DataField>Posted_Phys__Invt__Rec__Line_Quantity</DataField>
+        </Field>
+        <Field Name="Posted_Phys__Invt__Rec__Line_QuantityFormat">
+          <DataField>Posted_Phys__Invt__Rec__Line_QuantityFormat</DataField>
+        </Field>
+        <Field Name="Posted_Phys__Invt__Rec__Line_Order_No_">
+          <DataField>Posted_Phys__Invt__Rec__Line_Order_No_</DataField>
+        </Field>
+        <Field Name="Posted_Phys__Invt__Rec__Line_Recording_No_">
+          <DataField>Posted_Phys__Invt__Rec__Line_Recording_No_</DataField>
+        </Field>
+        <Field Name="Posted_Phys__Invt__Rec__Line_Line_No_">
+          <DataField>Posted_Phys__Invt__Rec__Line_Line_No_</DataField>
+        </Field>
+      </Fields>
+      <rd:DataSetInfo>
+        <rd:DataSetName>DataSet</rd:DataSetName>
+        <rd:TableName>Result</rd:TableName>
+      </rd:DataSetInfo>
+    </DataSet>
+  </DataSets>
+  <DataSources>
+    <DataSource Name="DummyDataSource">
+      <ConnectionProperties>
+        <ConnectString />
+        <DataProvider>SQL</DataProvider>
+      </ConnectionProperties>
+      <rd:DataSourceID>e93b1112-aaaa-4719-8a50-7c7c32ca4b17</rd:DataSourceID>
+    </DataSource>
+  </DataSources>
+  <InteractiveHeight>11in</InteractiveHeight>
+  <InteractiveWidth>8.5in</InteractiveWidth>
+  <Language>=User!Language</Language>
+  <LeftMargin>1.5cm</LeftMargin>
+  <PageHeader>
+    <Height>1.269cm</Height>
+    <PrintOnFirstPage>true</PrintOnFirstPage>
+    <PrintOnLastPage>true</PrintOnLastPage>
+    <ReportItems>
+      <Textbox Name="PageNumberTextBox">
+        <Height>0.423cm</Height>
+        <Left>17.7cm</Left>
+        <Style>
+          <FontSize>7pt</FontSize>
+          <TextAlign>Right</TextAlign>
+          <VerticalAlign>Middle</VerticalAlign>
+        </Style>
+        <Top>0.423cm</Top>
+        <Value>=Globals!PageNumber</Value>
+        <ZIndex>5</ZIndex>
+      </Textbox>
+      <Textbox Name="UserIdTextBox">
+        <Left>14.9cm</Left>
+        <Style>
+          <FontSize>7pt</FontSize>
+          <TextAlign>Right</TextAlign>
+          <VerticalAlign>Middle</VerticalAlign>
+        </Style>
+        <Top>0.846cm</Top>
+        <Value>=User!UserID</Value>
+        <ZIndex>4</ZIndex>
+      </Textbox>
+      <Textbox Name="ExecutionTimeTextBox">
+        <Height>0.423cm</Height>
+        <Left>15cm</Left>
+        <Style>
+          <FontSize>7pt</FontSize>
+          <Format>g</Format>
+          <TextAlign>Right</TextAlign>
+          <VerticalAlign>Middle</VerticalAlign>
+        </Style>
+        <Value>=Globals!ExecutionTime</Value>
+        <ZIndex>3</ZIndex>
+      </Textbox>
+      <Textbox Name="COMPANYNAME1">
+        <Height>0.423cm</Height>
+        <Style>
+          <FontSize>7pt</FontSize>
+          <VerticalAlign>Middle</VerticalAlign>
+        </Style>
+        <Top>0.423cm</Top>
+        <Value>=ReportItems!COMPANYNAME.Value</Value>
+        <Width>7.5cm</Width>
+        <ZIndex>2</ZIndex>
+      </Textbox>
+      <Textbox Name="CurrReport_PAGENOCaption1">
+        <Height>0.423cm</Height>
+        <Left>16.95cm</Left>
+        <Style>
+          <FontSize>7pt</FontSize>
+          <VerticalAlign>Middle</VerticalAlign>
+        </Style>
+        <Top>0.423cm</Top>
+        <Value>=ReportItems!CurrReport_PAGENOCaption.Value</Value>
+        <Width>0.75cm</Width>
+        <ZIndex>1</ZIndex>
+      </Textbox>
+      <Textbox Name="Posted_Phys__Inventory_RecordingCaption1">
+        <Height>0.423cm</Height>
+        <Style>
+          <FontSize>8pt</FontSize>
+          <FontWeight>700</FontWeight>
+          <VerticalAlign>Middle</VerticalAlign>
+        </Style>
+        <Value>=ReportItems!Posted_Phys__Inventory_RecordingCaption.Value</Value>
+        <Width>7.5cm</Width>
+      </Textbox>
+    </ReportItems>
+  </PageHeader>
+  <PageHeight>29.7cm</PageHeight>
+  <PageWidth>21cm</PageWidth>
+  <TopMargin>2cm</TopMargin>
+  <Width>18.15cm</Width>
+  <rd:DrawGrid>true</rd:DrawGrid>
+  <rd:GridSpacing>0.423cm</rd:GridSpacing>
+  <rd:ReportID>8c6ee641-30a2-47cc-819c-9046abfee270</rd:ReportID>
+  <rd:SnapToGrid>true</rd:SnapToGrid>
+</Report>
+    END_OF_RDLDatA
+  }
+}
+

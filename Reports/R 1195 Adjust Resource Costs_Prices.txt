@@ -1,0 +1,206 @@
+OBJECT Report 1195 Adjust Resource Costs/Prices
+{
+  OBJECT-PROPERTIES
+  {
+    Date=05.11.08;
+    Time=12:00:00;
+    Version List=NAVW16.00;
+  }
+  PROPERTIES
+  {
+    CaptionML=[DEU=Ressourcenpreise justieren;
+               ENU=Adjust Resource Costs/Prices];
+    ProcessingOnly=Yes;
+    OnPreReport=BEGIN
+                  RoundingMethod.SETRANGE(Code,RoundingMethod.Code);
+                END;
+
+  }
+  DATAITEMS
+  {
+    { PROPERTIES
+      {
+        DataItemTable=Table156;
+        DataItemTableView=SORTING(No.);
+        OnPreDataItem=BEGIN
+                        Window.OPEN(Text000);
+                      END;
+
+        OnAfterGetRecord=VAR
+                           RecRef@1002 : RecordRef;
+                           xRecRef@1001 : RecordRef;
+                           ChangeLogMgt@1000 : Codeunit 423;
+                         BEGIN
+                           Window.UPDATE(1,"No.");
+
+                           xRecRef.GETTABLE(Resource);
+
+                           CASE Selection OF
+                             Selection::"Direct Unit Cost":
+                               OldFieldNo := "Direct Unit Cost";
+                             Selection::"Indirect Cost %":
+                               OldFieldNo := "Indirect Cost %";
+                             Selection::"Unit Cost":
+                               OldFieldNo := "Unit Cost";
+                             Selection::"Profit %":
+                               OldFieldNo := "Profit %";
+                             Selection::"Unit Price":
+                               OldFieldNo := "Unit Price";
+                           END;
+
+                           NewFieldNo := OldFieldNo * AdjFactor;
+
+                           IF RoundingMethod.Code <> '' THEN BEGIN
+                             RoundingMethod."Minimum Amount" := NewFieldNo;
+                             IF RoundingMethod.FIND('=<') THEN BEGIN
+                               NewFieldNo := NewFieldNo + RoundingMethod."Amount Added Before";
+                               IF RoundingMethod.Precision > 0 THEN
+                                 NewFieldNo := ROUND(NewFieldNo,RoundingMethod.Precision,COPYSTR('=><',RoundingMethod.Type+1,1));
+                               NewFieldNo := NewFieldNo + RoundingMethod."Amount Added After";
+                             END;
+                           END;
+
+                           CASE Selection OF
+                             Selection::"Direct Unit Cost":
+                               VALIDATE("Direct Unit Cost",NewFieldNo);
+                             Selection::"Indirect Cost %":
+                               VALIDATE("Indirect Cost %",NewFieldNo);
+                             Selection::"Unit Cost":
+                               VALIDATE("Unit Cost",NewFieldNo);
+                             Selection::"Profit %":
+                               VALIDATE("Profit %",NewFieldNo);
+                             Selection::"Unit Price":
+                               VALIDATE("Unit Price",NewFieldNo);
+                           END;
+
+                           MODIFY;
+
+                           RecRef.GETTABLE(Resource);
+                           ChangeLogMgt.LogModification(RecRef,xRecRef);
+                         END;
+
+        ReqFilterFields=No.,Resource Group No.;
+      }
+      SECTIONS
+      {
+        { PROPERTIES
+          {
+            SectionType=Body;
+            SectionWidth=12000;
+            SectionHeight=846;
+          }
+          CONTROLS
+          {
+          }
+           }
+      }
+       }
+  }
+  REQUESTFORM
+  {
+    PROPERTIES
+    {
+      Width=7260;
+      Height=3960;
+      OnOpenForm=BEGIN
+                   IF AdjFactor = 0 THEN
+                     AdjFactor := 1;
+                 END;
+
+    }
+    CONTROLS
+    {
+      { 1   ;TextBox      ;3410 ;3520 ;2750 ;440  ;CaptionML=[DEU=Rundungsmethode;
+                                                              ENU=Rounding Method];
+                                                   SourceExpr=RoundingMethod.Code;
+                                                   TableRelation="Rounding Method" }
+      { 2   ;Label        ;0    ;3520 ;3300 ;440  ;ParentControl=1 }
+      { 3   ;TextBox      ;3410 ;2970 ;2750 ;440  ;CaptionML=[DEU=Korrekturfaktor;
+                                                              ENU=Adjustment Factor];
+                                                   DecimalPlaces=0:5;
+                                                   SourceExpr=AdjFactor }
+      { 4   ;Label        ;0    ;2970 ;3300 ;440  ;ParentControl=3 }
+      { 5   ;OptionButton ;3410 ;2200 ;3850 ;440  ;CaptionML=[DEU=VK-Preis;
+                                                              ENU=Unit Price];
+                                                   SourceExpr=Selection;
+                                                   OptionValue=Unit Price }
+      { 6   ;OptionButton ;3410 ;1100 ;3850 ;440  ;CaptionML=[DEU=Einstandspreis;
+                                                              ENU=Unit Cost];
+                                                   SourceExpr=Selection;
+                                                   OptionValue=Unit Cost }
+      { 7   ;OptionButton ;3410 ;1650 ;3850 ;440  ;CaptionML=[DEU=DB %;
+                                                              ENU=Profit %];
+                                                   SourceExpr=Selection;
+                                                   OptionValue=Profit % }
+      { 8   ;OptionButton ;3410 ;550  ;3850 ;440  ;CaptionML=[DEU=Kosten %;
+                                                              ENU=Indirect Cost %];
+                                                   SourceExpr=Selection;
+                                                   OptionValue=Indirect Cost % }
+      { 10  ;OptionButton ;3410 ;0    ;3850 ;440  ;CaptionML=[DEU=EK-Preis;
+                                                              ENU=Direct Unit Cost];
+                                                   SourceExpr=Selection;
+                                                   OptionValue=Direct Unit Cost }
+      { 11  ;Label        ;0    ;0    ;3300 ;440  ;ParentControl=10;
+                                                   CaptionML=[DEU=Feld korrigieren;
+                                                              ENU=Adjust Field] }
+    }
+  }
+  REQUESTPAGE
+  {
+    PROPERTIES
+    {
+      OnOpenPage=BEGIN
+                   IF AdjFactor = 0 THEN
+                     AdjFactor := 1;
+                 END;
+
+    }
+    CONTROLS
+    {
+      { 1900000001;0;Container;
+                  ContainerType=ContentArea }
+
+      { 1900000002;1;Group  ;
+                  CaptionML=[DEU=Optionen;
+                             ENU=Options] }
+
+      { 10  ;2   ;Field     ;
+                  CaptionML=[DEU=Feld korrigieren;
+                             ENU=Adjust Field];
+                  OptionCaptionML=[DEU=EK-Preis,Kosten %,Einstandspreis,Gewinn %,VK-Preis;
+                                   ENU=Direct Unit Cost,Indirect Cost %,Unit Cost,Profit %,Unit Price];
+                  SourceExpr=Selection }
+
+      { 3   ;2   ;Field     ;
+                  CaptionML=[DEU=Korrekturfaktor;
+                             ENU=Adjustment Factor];
+                  DecimalPlaces=0:5;
+                  SourceExpr=AdjFactor }
+
+      { 1   ;2   ;Field     ;
+                  CaptionML=[DEU=Rundungsmethode;
+                             ENU=Rounding Method];
+                  SourceExpr=RoundingMethod.Code;
+                  TableRelation="Rounding Method" }
+
+    }
+  }
+  CODE
+  {
+    VAR
+      Text000@1000 : TextConst 'DEU=Ressourcen werden durchgelesen   #1##########;ENU=Processing resources  #1##########';
+      NewFieldNo@1001 : Decimal;
+      OldFieldNo@1002 : Decimal;
+      RoundingMethod@1003 : Record 42;
+      AdjFactor@1004 : Decimal;
+      Selection@1005 : 'Direct Unit Cost,Indirect Cost %,Unit Cost,Profit %,Unit Price';
+      Window@1006 : Dialog;
+
+    BEGIN
+    END.
+  }
+  RDLDATA
+  {
+  }
+}
+

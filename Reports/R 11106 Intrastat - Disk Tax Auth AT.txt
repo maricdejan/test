@@ -1,0 +1,882 @@
+OBJECT Report 11106 Intrastat - Disk Tax Auth AT
+{
+  OBJECT-PROPERTIES
+  {
+    Date=14.08.09;
+    Time=12:00:00;
+    Version List=NAVDACH6.00.01;
+  }
+  PROPERTIES
+  {
+    CaptionML=[DEU=Intrastat - Diskette AT;
+               ENU=Intrastat - Disk Tax Auth AT];
+    ProcessingOnly=Yes;
+    OnPreReport=BEGIN
+                  CompanyInfo.GET;
+                  CompanyInfo.TESTFIELD("VAT Registration No.");
+                  CompanyInfo.TESTFIELD("Sales Authorized No.");
+                  CompanyInfo.TESTFIELD("Purch. Authorized No.");
+                END;
+
+  }
+  DATAITEMS
+  {
+    { PROPERTIES
+      {
+        DataItemTable=Table262;
+        DataItemTableView=SORTING(Journal Template Name,Name);
+        OnPreDataItem=BEGIN
+                        // Testflags
+                        "Intrastat Jnl. Batch".COPYFILTER("Journal Template Name",IntraJnlLineTest."Journal Template Name");
+                        "Intrastat Jnl. Batch".COPYFILTER(Name, IntraJnlLineTest."Journal Batch Name");
+
+                        IntraJnlLineTest.SETRANGE(Type,0);
+                        IF IntraJnlLineTest.FIND('<>=') THEN
+                          PrintReceipt := TRUE
+                        ELSE
+                          PrintReceipt := FALSE;
+
+                        IntraJnlLineTest.SETRANGE(Type,1);
+                        IF IntraJnlLineTest.FIND('<>=') THEN
+                          PrintShipment := TRUE
+                        ELSE
+                          PrintShipment := FALSE;
+                      END;
+
+        OnAfterGetRecord=BEGIN
+                           TESTFIELD(Reported,FALSE);
+                           IntraRefNo := "Statistics Period" + '000000';
+                         END;
+
+        ReqFilterFields=Journal Template Name,Name;
+      }
+      SECTIONS
+      {
+      }
+       }
+    { PROPERTIES
+      {
+        DataItemIndent=1;
+        DataItemTable=Table263;
+        DataItemTableView=SORTING(Type,Country/Region Code,Tariff No.,Transaction Type,Transport Method,Area,Entry/Exit Point,Transaction Specification,Country/Region of Origin Code);
+        OnPreDataItem=BEGIN
+                        // General Inits
+                           Apostroph := 39;
+                           EndOfLine := FORMAT(Apostroph,1);
+                           DateOfToday := FORMAT(TODAY,6,Text000);
+                           Today4 := FORMAT(TODAY,8,Text001);
+                           TimeOfNow := FORMAT(TIME,4,Text002);
+
+                        // UID Check
+                           CompanyInfo."VAT Registration No." := RemoveSpecChar(CompanyInfo."VAT Registration No.");
+                           CompanyInfo.TESTFIELD("VAT Registration No.");
+                           IF STRLEN(CompanyInfo."VAT Registration No.") > 11 THEN
+                             ERROR(Text003,
+                               CompanyInfo.FIELDCAPTION("VAT Registration No."),CompanyInfo."VAT Registration No.");
+                           UIDNo := CompanyInfo."VAT Registration No.";
+
+                        // Statisticperiod
+                          "Intrastat Jnl. Batch".TESTFIELD("Statistics Period");
+                          Period := "Intrastat Jnl. Batch"."Statistics Period";
+                          IF NOT EVALUATE(PeriodYear,COPYSTR(Period,1,2)) THEN
+                            ERROR(Text004,Period);
+                          IF PeriodYear < 20 THEN
+                            Period4 := '20' + Period
+                          ELSE
+                            Period4 := '19' + Period;
+
+                        // Check of OEstatnumber
+                           CompanyInfo.TESTFIELD("Statistic No.");
+
+                        // Increment Controlnumber
+                           CompanyInfo.TESTFIELD("Control No.");
+                           CompanyInfo."Control No." := INCSTR(CompanyInfo."Control No.");
+                           CompanyInfo.MODIFY;
+                           BKNR := CompanyInfo."Control No.";
+                           TextZeroFormat(BKNR,8);
+
+                        // Check Adress
+                          CompanyInfo.TESTFIELD(Name);
+                          CompanyInfo.TESTFIELD(Address);
+                          CompanyInfo.TESTFIELD("Post Code");
+                          CompanyInfo.TESTFIELD(City);
+                          CompanyInfo.TESTFIELD("Phone No.");
+                          CompanyInfo.TESTFIELD("Fax No.");
+                      END;
+
+        OnAfterGetRecord=BEGIN
+                           IF ("Tariff No." = '') AND
+                              ("Country/Region Code" = '') AND
+                              ("Transaction Type" = '') AND
+                              ("Transport Method" = '') AND
+                              ("Total Weight" = 0)
+                           THEN
+                              CurrReport.SKIP;
+
+                           // Check Period
+                           LinePeriod := FORMAT(Date,4,Text005);
+                           IF LinePeriod <> Period THEN
+                             ERROR(Text006 +
+                                    Text007,
+                                    Date,"Line No.",Period);
+
+                           // Check Tariff
+                           "Tariff No." := DELCHR("Tariff No.");
+                           TESTFIELD("Tariff No.");
+                           IF STRLEN("Tariff No.") <> 8 THEN
+                             ERROR(Text008,"Intrastat Jnl. Line"."Line No.");
+
+                           TESTFIELD("Country/Region Code");
+                           TESTFIELD("Transaction Type");
+                           IF CompanyInfo."Check Transport Method" THEN
+                             TESTFIELD("Transport Method");
+                           IF CompanyInfo."Check Transaction Specific." THEN
+                             TESTFIELD("Transaction Specification");
+                           TESTFIELD("Total Weight");
+
+                           IF "Transport Method" <> '' THEN
+                             IF STRLEN("Transport Method") <> 1 THEN
+                               ERROR(Text009,FIELDCAPTION("Transport Method"),"Transport Method");
+                           IF STRLEN("Transaction Type") <> 1 THEN
+                             ERROR(Text010,FIELDCAPTION("Transaction Type"),"Transaction Type");
+                           IF (STRLEN("Transaction Specification") <> 5) AND (STRLEN("Transaction Specification") <> 0) THEN
+                             ERROR(Text011,FIELDCAPTION("Transaction Specification"),"Transaction Specification");
+
+                           IF (Type = Type::Receipt) AND ("Country/Region of Origin Code" = '') THEN
+                             "Country/Region of Origin Code" := "Country/Region Code";
+
+                           IF "Supplementary Units" THEN
+                             TESTFIELD(Quantity);
+                             // ELSE
+                             // Quantity := 0;
+                           AddField :=
+                             FORMAT("Country/Region Code",5) + FORMAT("Tariff No.",10) +
+                             FORMAT("Transaction Type",10) + FORMAT("Transport Method",10) +
+                             FORMAT("Transaction Specification",10) + FORMAT("Country/Region of Origin Code",5);
+
+                           IF (TempType <> Type) OR (STRLEN(TempAddField) = 0) THEN BEGIN
+                             TempType := Type;
+                             TempAddField := AddField;
+                             IntraRefNo := COPYSTR(IntraRefNo,1,4) + '001001';
+                           END ELSE
+                             IF (TempAddField <> AddField) THEN BEGIN
+                               TempAddField := AddField;
+                               IF COPYSTR(IntraRefNo,8,3) = '999' THEN
+                                 IntraRefNo := INCSTR(COPYSTR(IntraRefNo,1,7)) + '001'
+                               ELSE
+                                 IntraRefNo := INCSTR(IntraRefNo);
+                             END;
+
+                           "Internal Ref. No." := IntraRefNo;
+                           MODIFY;
+                         END;
+
+        DataItemLink=Journal Template Name=FIELD(Journal Template Name),
+                     Journal Batch Name=FIELD(Name);
+      }
+      SECTIONS
+      {
+      }
+       }
+    { PROPERTIES
+      {
+        DataItemIndent=1;
+        DataItemTable=Table263;
+        DataItemTableView=SORTING(Type,Internal Ref. No.)
+                          WHERE(Type=CONST(Receipt));
+        DataItemVarName=IntraJnlLineR;
+        OnPreDataItem=BEGIN
+                        IF NOT PrintReceipt THEN
+                          CurrReport.BREAK;
+
+                        FilenameForReceipts := Drive + '\' + COPYSTR(CompanyInfo."Purch. Authorized No.",1,4) +
+                                               "Intrastat Jnl. Batch"."Statistics Period" + Text012;
+                        IF NOT
+                           CONFIRM(
+                              Text013 +
+                              Text014 + CONVERTSTR(FilenameForReceipts,'\','/'))
+                        THEN BEGIN
+                          PrintReceipt := FALSE;
+                          CurrReport.BREAK;
+                        END;
+
+                        IntraFile.TEXTMODE := FALSE;
+                        IntraFile.WRITEMODE := TRUE;
+                        IF NOT ISSERVICETIER THEN IntraFile.QUERYREPLACE := TRUE;
+                        IntraFile.CREATE(FilenameForReceipts);
+                        CurrentType := CurrentType::Receipt;
+
+                        DiskStatus.OPEN(Text015+
+                                        '@1@@@@@@@@@@@@@@@@@@@@@@@@@@@');
+                        RecordsTotal := IntraJnlLineR.COUNT;
+
+                        WeightTotal := 0;
+                        ValueTotal := 0;
+                        StatValueTotal := 0;
+                        QuantityTotal := 0;
+                        Segments := 0;
+
+                        IntraFile.WRITE(Text016 + EndOfLine);
+                        LF;
+                        IntraFile.WRITE(Text017 + UIDNo + Text018 + DateOfToday
+                                          + ':' + TimeOfNow + '+' + BKNR + EndOfLine);
+                        LF;
+                        IntraFile.WRITE(Text019 + BKNR + Text020 + EndOfLine);
+                        LF;
+                        IntraFile.WRITE(Text021 + UIDNo + '-' + Period + BKNR + EndOfLine);
+                        LF;
+                        IntraFile.WRITE(Text022 + Period4 + ':610' + EndOfLine);
+                        LF;
+                        IntraFile.WRITE(Text023 + Today4 + ':102' + EndOfLine);
+                        LF;
+                        IntraFile.WRITE(Text024 + EndOfLine);
+                        LF;
+                        IntraFile.WRITE(Text025 + UIDNo + '-000+' + RemoveSpecChar(CompanyInfo.Name) + ':'
+                                          + RemoveSpecChar(CompanyInfo."Name 2") + ':'
+                                          + RemoveSpecChar(CompanyInfo.Address) + ':'
+                                          + RemoveSpecChar(CompanyInfo."Post Code") + ' '
+                                          + RemoveSpecChar(CompanyInfo.City) + ':'
+                                          + RemoveSpecChar(Contactperson) + EndOfLine);
+                        LF;
+                        IntraFile.WRITE(Text026 + RemoveSpecChar(CompanyInfo."Phone No.") + Text027 + EndOfLine);
+                        LF;
+                        IntraFile.WRITE(Text026 + RemoveSpecChar(CompanyInfo."Fax No.") + Text028 + EndOfLine);
+                        LF;
+                        IntraFile.WRITE(Text029 + EndOfLine);
+                        LF;
+                        IntraFile.WRITE(Text030 + EndOfLine);
+                        LF;
+                        IntraFile.WRITE(Text032 + EndOfLine);
+                        LF;
+                        PosNo := 0;
+
+                        CLEAR(IntrastatJnlLine);
+                      END;
+
+        OnAfterGetRecord=BEGIN
+                           IF NOT PrintReceipt THEN
+                             CurrReport.BREAK;
+
+
+                           IF (IntrastatJnlLine."Internal Ref. No." <> '') AND (IntrastatJnlLine."Internal Ref. No." <> "Internal Ref. No.") THEN BEGIN
+
+                             IF (IntrastatJnlLine."Tariff No." <> '') AND
+                                (IntrastatJnlLine."Country/Region Code" <> '') AND
+                                (IntrastatJnlLine."Transaction Type" <> '') AND
+                                (IntrastatJnlLine."Transport Method" <> '') AND
+                                (IntrastatJnlLine."Total Weight" <> 0)
+                             THEN BEGIN
+                               Country.GET(IntrastatJnlLine."Country/Region Code");
+                               Country.TESTFIELD("Intrastat Code");
+                               IF STRLEN(Country."Intrastat Code") <> 2 THEN
+                                 ERROR(Text043,"Country/Region Code");
+
+                               CountryOfOrg.GET(IntrastatJnlLine."Country/Region of Origin Code");
+                               CountryOfOrg.TESTFIELD("Intrastat Code");
+                               IF STRLEN(CountryOfOrg."Intrastat Code") <> 2 THEN
+                                 ERROR(Text044,CountryOfOrg."Intrastat Code");
+
+                               PosNo := PosNo + 1;
+
+                               IF IntrastatJnlLine."Transaction Specification" = '' THEN
+                                 IntraFile.WRITE(Text045 + DecimalZeroFormat(PosNo,4) + '+' + IntrastatJnlLine."Tariff No." +
+                                                 Text046 + IntrastatJnlLine."Transaction Type" + ':112+' + '0' + ':177' + EndOfLine)
+                               ELSE
+                                 IntraFile.WRITE(Text045 + DecimalZeroFormat(PosNo,4) + '+' + IntrastatJnlLine."Tariff No." +
+                                                 Text046 + IntrastatJnlLine."Transaction Type" + ':112+' +
+                                                 IntrastatJnlLine."Transaction Specification" + ':177' + EndOfLine);
+                               LF;
+                               IntraFile.WRITE(Text047 + COPYSTR(RemoveSpecChar(IntrastatJnlLine."Item Description"),1,70) + EndOfLine);
+                               LF;
+                               IntraFile.WRITE(Text048 + Country."Intrastat Code" + EndOfLine);
+                               LF;
+                               IntraFile.WRITE(Text049 + CountryOfOrg."Intrastat Code" + EndOfLine);
+                               LF;
+                               IntraFile.WRITE(Text050 + DecimalZeroFormat(IntrastatJnlLine."Total Weight",12) + EndOfLine);
+                               LF;
+                               IF IntrastatJnlLine."Supplementary Units" THEN BEGIN
+                                 IntraFile.WRITE(Text051 + DecimalZeroFormat(IntrastatJnlLine.Quantity,12) + EndOfLine);
+                                 LF;
+                                 Segments := Segments + 9;
+                               END ELSE
+                                 Segments := Segments + 8;
+                               IntraFile.WRITE(Text052 + IntrastatJnlLine."Transport Method" + EndOfLine);
+                               LF;
+                               IntraFile.WRITE(Text053 + DecimalZeroFormat(IntrastatJnlLine.Amount,12) + EndOfLine);
+                               LF;
+                               IntraFile.WRITE(Text054 + DecimalZeroFormat(IntrastatJnlLine."Statistical Value",12) + EndOfLine);
+                               LF;
+                             END;
+                             CLEAR(IntrastatJnlLine);
+                           END;
+
+                           ValueTotal := ValueTotal + Amount;
+                           StatValueTotal := StatValueTotal + "Statistical Value";
+                           WeightTotal := WeightTotal + ROUND(ABS("Total Weight"),1,'<');
+                           QuantityTotal := QuantityTotal + ROUND(ABS(Quantity),1,'<');
+
+                           Amount := Amount + IntrastatJnlLine.Amount;
+                           "Statistical Value" := "Statistical Value" + IntrastatJnlLine."Statistical Value";
+                           "Total Weight" := "Total Weight" + IntrastatJnlLine."Total Weight";
+                           Quantity := Quantity + IntrastatJnlLine.Quantity;
+                           IntrastatJnlLine := IntraJnlLineR;
+                         END;
+
+        OnPostDataItem=BEGIN
+                         IF (IntrastatJnlLine."Tariff No." <> '') AND
+                            (IntrastatJnlLine."Country/Region Code" <> '') AND
+                            (IntrastatJnlLine."Transaction Type" <> '') AND
+                            (IntrastatJnlLine."Transport Method" <> '') AND
+                            (IntrastatJnlLine."Total Weight" <> 0)
+                         THEN BEGIN
+                           Country.GET(IntrastatJnlLine."Country/Region Code");
+                           Country.TESTFIELD("Intrastat Code");
+                           IF STRLEN(Country."Intrastat Code") <> 2 THEN
+                             ERROR(Text043,"Country/Region Code");
+
+                           CountryOfOrg.GET(IntrastatJnlLine."Country/Region of Origin Code");
+                           CountryOfOrg.TESTFIELD("Intrastat Code");
+                           IF STRLEN(CountryOfOrg."Intrastat Code") <> 2 THEN
+                             ERROR(Text044,CountryOfOrg."Intrastat Code");
+
+                           PosNo := PosNo + 1;
+
+                           IF IntrastatJnlLine."Transaction Specification" = '' THEN
+                             IntraFile.WRITE(Text045 + DecimalZeroFormat(PosNo,4) + '+' + IntrastatJnlLine."Tariff No." +
+                                             Text046 + IntrastatJnlLine."Transaction Type" + ':112+' + '0' + ':177' + EndOfLine)
+                           ELSE
+                             IntraFile.WRITE(Text045 + DecimalZeroFormat(PosNo,4) + '+' + IntrastatJnlLine."Tariff No." +
+                                             Text046 + IntrastatJnlLine."Transaction Type" + ':112+' +
+                                             IntrastatJnlLine."Transaction Specification" + ':177' + EndOfLine);
+                           LF;
+                           IntraFile.WRITE(Text047 + COPYSTR(RemoveSpecChar(IntrastatJnlLine."Item Description"),1,70) + EndOfLine);
+                           LF;
+                           IntraFile.WRITE(Text048 + Country."Intrastat Code" + EndOfLine);
+                           LF;
+                           IntraFile.WRITE(Text049 + CountryOfOrg."Intrastat Code" + EndOfLine);
+                           LF;
+                           IntraFile.WRITE(Text050 + DecimalZeroFormat(IntrastatJnlLine."Total Weight",12) + EndOfLine);
+                           LF;
+                           IF IntrastatJnlLine."Supplementary Units" THEN BEGIN
+                             IntraFile.WRITE(Text051 + DecimalZeroFormat(IntrastatJnlLine.Quantity,12) + EndOfLine);
+                             LF;
+                             Segments := Segments + 9;
+                           END ELSE
+                             Segments := Segments + 8;
+                           IntraFile.WRITE(Text052 + IntrastatJnlLine."Transport Method" + EndOfLine);
+                           LF;
+                           IntraFile.WRITE(Text053 + DecimalZeroFormat(IntrastatJnlLine.Amount,12) + EndOfLine);
+                           LF;
+                           IntraFile.WRITE(Text054 + DecimalZeroFormat(IntrastatJnlLine."Statistical Value",12) + EndOfLine);
+                           LF;
+                         END;
+                         CLEAR(IntrastatJnlLine);
+
+                         IF NOT PrintReceipt THEN
+                           CurrReport.BREAK;
+
+                         Segments := Segments + 19;
+
+                         IntraFile.WRITE(Text033 + EndOfLine);
+                         LF;
+                         IntraFile.WRITE(Text034 + DecimalZeroFormat(PosNo,5) + EndOfLine);
+                         LF;
+                         IntraFile.WRITE(Text035 + DecimalZeroFormat(WeightTotal,13) + EndOfLine);
+                         LF;
+                         IF QuantityTotal <> 0 THEN BEGIN
+                           IntraFile.WRITE(Text036 + DecimalZeroFormat(QuantityTotal,13) + EndOfLine);
+                           LF;
+                           Segments := Segments + 1;
+                         END;
+                         IntraFile.WRITE(Text037 + DecimalZeroFormat(ValueTotal,13) + EndOfLine);
+                         LF;
+                         IntraFile.WRITE(Text038 + DecimalZeroFormat(StatValueTotal,13) + EndOfLine);
+                         LF;
+                         IntraFile.WRITE(Text039 + RemoveSpecChar(CompanyInfo."Statistic No.") + EndOfLine);
+                         LF;
+                         IntraFile.WRITE(Text040 + Today4 + ':102' + EndOfLine);
+                         LF;
+                         IntraFile.WRITE(Text041 + DecimalZeroFormat(Segments,5) + '+' + BKNR + EndOfLine);
+                         LF;
+                         IntraFile.WRITE(Text042 + BKNR + EndOfLine);
+                         LF;
+                         IntraFile.CLOSE;
+
+                         RecordsProcessed := RecordsProcessed + 1;
+                         DiskStatus.UPDATE(1,ROUND(RecordsProcessed/RecordsTotal * 10000,1));
+                       END;
+
+        DataItemLink=Journal Template Name=FIELD(Journal Template Name),
+                     Journal Batch Name=FIELD(Name);
+      }
+      SECTIONS
+      {
+      }
+       }
+    { PROPERTIES
+      {
+        DataItemIndent=1;
+        DataItemTable=Table263;
+        DataItemTableView=SORTING(Type,Internal Ref. No.)
+                          WHERE(Type=CONST(Shipment));
+        DataItemVarName=IntraJnlLineS;
+        OnPreDataItem=BEGIN
+                        IF NOT PrintShipment THEN
+                          CurrReport.BREAK;
+
+                        FilenameForShipments := Drive + '\' + COPYSTR(CompanyInfo."Sales Authorized No.",1,4) +
+                                               "Intrastat Jnl. Batch"."Statistics Period" + Text012;
+                        IF NOT
+                           CONFIRM(
+                              Text055 +
+                              Text056 + CONVERTSTR(FilenameForShipments,'\','/'))
+                        THEN BEGIN
+                          PrintShipment := FALSE;
+                          CurrReport.BREAK;
+                        END;
+
+                        IntraFile.TEXTMODE := FALSE;
+                        IntraFile.WRITEMODE := TRUE;
+                        IF NOT ISSERVICETIER THEN IntraFile.QUERYREPLACE := TRUE;
+                        IntraFile.CREATE(FilenameForShipments);
+                        CurrentType := CurrentType::Shipment;
+
+                        DiskStatus.OPEN(Text057+
+                                        '@1@@@@@@@@@@@@@@@@@@@@@@@@@@@');
+                        RecordsTotal := IntraJnlLineS.COUNT;
+
+
+                        WeightTotal := 0;
+                        ValueTotal := 0;
+                        StatValueTotal := 0;
+                        QuantityTotal := 0;
+                        Segments := 0;
+
+                        IntraFile.WRITE(Text016 + EndOfLine);
+                        LF;
+                        IntraFile.WRITE(Text017 + UIDNo + Text018 + DateOfToday
+                                          + ':' + TimeOfNow + '+' + BKNR + EndOfLine);
+                        LF;
+                        IntraFile.WRITE(Text019 + BKNR + Text020 + EndOfLine);
+                        LF;
+                        IntraFile.WRITE(Text021 + UIDNo + '-' + Period + BKNR + EndOfLine);
+                        LF;
+                        IntraFile.WRITE(Text022 + Period4 + ':610' + EndOfLine);
+                        LF;
+                        IntraFile.WRITE(Text023 + Today4 + ':102' + EndOfLine);
+                        LF;
+                        IntraFile.WRITE(Text024 + EndOfLine);
+                        LF;
+                        IntraFile.WRITE(Text025 + UIDNo + '-000+' + RemoveSpecChar(CompanyInfo.Name) + ':'
+                                          + RemoveSpecChar(CompanyInfo."Name 2") + ':'
+                                          + RemoveSpecChar(CompanyInfo.Address) + ':'
+                                          + RemoveSpecChar(CompanyInfo."Post Code") + ' '
+                                          + RemoveSpecChar(CompanyInfo.City) + ':'
+                                          + RemoveSpecChar(Contactperson) + EndOfLine);
+                        LF;
+                        IntraFile.WRITE(Text026 + RemoveSpecChar(CompanyInfo."Phone No.") + Text027 + EndOfLine);
+                        LF;
+                        IntraFile.WRITE(Text026 + RemoveSpecChar(CompanyInfo."Fax No.") + Text028 + EndOfLine);
+                        LF;
+                        IntraFile.WRITE(Text029 + EndOfLine);
+                        LF;
+                        IntraFile.WRITE(Text030 + EndOfLine);
+                        LF;
+                        IntraFile.WRITE(Text032 + EndOfLine);
+                        LF;
+                        PosNo := 0;
+
+                        CLEAR(IntrastatJnlLine);
+                      END;
+
+        OnAfterGetRecord=BEGIN
+                           IF NOT PrintShipment THEN
+                             CurrReport.BREAK;
+
+
+                           IF (IntrastatJnlLine."Internal Ref. No." <> '') AND (IntrastatJnlLine."Internal Ref. No." <> "Internal Ref. No.") THEN BEGIN
+
+                             IF (IntrastatJnlLine."Tariff No." <> '') AND
+                                (IntrastatJnlLine."Country/Region Code" <> '') AND
+                                (IntrastatJnlLine."Transaction Type" <> '') AND
+                                (IntrastatJnlLine."Transport Method" <> '') AND
+                                (IntrastatJnlLine."Total Weight" <> 0)
+                             THEN BEGIN
+                               Country.GET(IntrastatJnlLine."Country/Region Code");
+                               Country.TESTFIELD("Intrastat Code");
+                               IF STRLEN(Country."Intrastat Code") <> 2 THEN
+                                 ERROR(Text058,"Country/Region Code");
+
+                               PosNo := PosNo + 1;
+
+                               IF IntrastatJnlLine."Transaction Specification" = '' THEN
+                                 IntraFile.WRITE(Text045 + DecimalZeroFormat(PosNo,4) + '+' + IntrastatJnlLine."Tariff No." +
+                                                 Text059 + IntrastatJnlLine."Transaction Type" + ':112+' + '0' + ':177' + EndOfLine)
+                               ELSE
+                                 IntraFile.WRITE(Text045 + DecimalZeroFormat(PosNo,4) + '+' + IntrastatJnlLine."Tariff No." +
+                                                 Text059 + IntrastatJnlLine."Transaction Type" + ':112+' +
+                                                 IntrastatJnlLine."Transaction Specification" + ':177' + EndOfLine);
+                               LF;
+                               IntraFile.WRITE(Text047 + COPYSTR(RemoveSpecChar(IntrastatJnlLine."Item Description"),1,70) + EndOfLine);
+                               LF;
+                               IntraFile.WRITE(Text060 + Country."Intrastat Code" + EndOfLine);
+                               LF;
+                               IntraFile.WRITE(Text050 + DecimalZeroFormat(IntrastatJnlLine."Total Weight",12) + EndOfLine);
+                               LF;
+                               IF "Supplementary Units" THEN BEGIN
+                                 IntraFile.WRITE(Text051 + DecimalZeroFormat(IntrastatJnlLine.Quantity,12) + EndOfLine);
+                                 LF;
+                                 Segments := Segments + 8;
+                               END ELSE
+                                 Segments := Segments + 7;
+                               IntraFile.WRITE(Text052 + IntrastatJnlLine."Transport Method" + EndOfLine);
+                               LF;
+                               IntraFile.WRITE(Text053 + DecimalZeroFormat(IntrastatJnlLine.Amount,12) + EndOfLine);
+                               LF;
+                               IntraFile.WRITE(Text054 + DecimalZeroFormat(IntrastatJnlLine."Statistical Value",12) + EndOfLine);
+                               LF;
+                             END;
+                             CLEAR(IntrastatJnlLine);
+                           END;
+
+                           ValueTotal := ValueTotal + Amount;
+                           StatValueTotal := StatValueTotal + "Statistical Value";
+                           WeightTotal := WeightTotal + ROUND(ABS("Total Weight"),1,'<');
+                           QuantityTotal := QuantityTotal + ROUND(ABS(Quantity),1,'<');
+
+                           Amount := Amount + IntrastatJnlLine.Amount;
+                           "Statistical Value" := "Statistical Value" + IntrastatJnlLine."Statistical Value";
+                           "Total Weight" := "Total Weight" + IntrastatJnlLine."Total Weight";
+                           Quantity := Quantity + IntrastatJnlLine.Quantity;
+                           IntrastatJnlLine := IntraJnlLineS;
+                         END;
+
+        OnPostDataItem=BEGIN
+                         IF (IntrastatJnlLine."Tariff No." <> '') AND
+                            (IntrastatJnlLine."Country/Region Code" <> '') AND
+                            (IntrastatJnlLine."Transaction Type" <> '') AND
+                            (IntrastatJnlLine."Transport Method" <> '') AND
+                            (IntrastatJnlLine."Total Weight" <> 0)
+                         THEN BEGIN
+                           Country.GET(IntrastatJnlLine."Country/Region Code");
+                           Country.TESTFIELD("Intrastat Code");
+                           IF STRLEN(Country."Intrastat Code") <> 2 THEN
+                             ERROR(Text058,"Country/Region Code");
+
+                           PosNo := PosNo + 1;
+
+                           IF IntrastatJnlLine."Transaction Specification" = '' THEN
+                             IntraFile.WRITE(Text045 + DecimalZeroFormat(PosNo,4) + '+' + IntrastatJnlLine."Tariff No." +
+                                             Text059 + IntrastatJnlLine."Transaction Type" + ':112+' + '0' + ':177' + EndOfLine)
+                           ELSE
+                             IntraFile.WRITE(Text045 + DecimalZeroFormat(PosNo,4) + '+' + IntrastatJnlLine."Tariff No." +
+                                             Text059 + IntrastatJnlLine."Transaction Type" + ':112+' +
+                                             IntrastatJnlLine."Transaction Specification" + ':177' + EndOfLine);
+                           LF;
+                           IntraFile.WRITE(Text047 + COPYSTR(RemoveSpecChar(IntrastatJnlLine."Item Description"),1,70) + EndOfLine);
+                           LF;
+                           IntraFile.WRITE(Text060 + Country."Intrastat Code" + EndOfLine);
+                           LF;
+                           IntraFile.WRITE(Text050 + DecimalZeroFormat(IntrastatJnlLine."Total Weight",12) + EndOfLine);
+                           LF;
+                           IF "Supplementary Units" THEN BEGIN
+                             IntraFile.WRITE(Text051 + DecimalZeroFormat(IntrastatJnlLine.Quantity,12) + EndOfLine);
+                             LF;
+                             Segments := Segments + 8;
+                           END ELSE
+                             Segments := Segments + 7;
+                           IntraFile.WRITE(Text052 + IntrastatJnlLine."Transport Method" + EndOfLine);
+                           LF;
+                           IntraFile.WRITE(Text053 + DecimalZeroFormat(IntrastatJnlLine.Amount,12) + EndOfLine);
+                           LF;
+                           IntraFile.WRITE(Text054 + DecimalZeroFormat(IntrastatJnlLine."Statistical Value",12) + EndOfLine);
+                           LF;
+                         END;
+                         CLEAR(IntrastatJnlLine);
+
+                         IF PrintReceipt OR PrintShipment THEN BEGIN
+                           "Intrastat Jnl. Batch".Reported := TRUE;
+                           "Intrastat Jnl. Batch".MODIFY;
+                         END;
+
+                         IF NOT PrintShipment THEN
+                           CurrReport.BREAK;
+
+                         Segments := Segments + 19;
+
+                         IntraFile.WRITE(Text033 + EndOfLine);
+                         LF;
+                         IntraFile.WRITE(Text034 + DecimalZeroFormat(PosNo,5) + EndOfLine);
+                         LF;
+                         IntraFile.WRITE(Text035 + DecimalZeroFormat(WeightTotal,13) + EndOfLine);
+                         LF;
+                         IF QuantityTotal <> 0 THEN BEGIN
+                           IntraFile.WRITE(Text036 + DecimalZeroFormat(QuantityTotal,13) + EndOfLine);
+                           LF;
+                           Segments := Segments + 1;
+                         END;
+                         IntraFile.WRITE(Text037 + DecimalZeroFormat(ValueTotal,13) + EndOfLine);
+                         LF;
+                         IntraFile.WRITE(Text038 + DecimalZeroFormat(StatValueTotal,13) + EndOfLine);
+                         LF;
+                         IntraFile.WRITE(Text039 + RemoveSpecChar(CompanyInfo."Statistic No.") + EndOfLine);
+                         LF;
+                         IntraFile.WRITE(Text040 + Today4 + ':102' + EndOfLine);
+                         LF;
+                         IntraFile.WRITE(Text041 + DecimalZeroFormat(Segments,5) + '+' + BKNR + EndOfLine);
+                         LF;
+                         IntraFile.WRITE(Text042 + BKNR + EndOfLine);
+                         LF;
+                         IntraFile.CLOSE;
+
+                         RecordsProcessed := RecordsProcessed + 1;
+                         DiskStatus.UPDATE(1,ROUND(RecordsProcessed/RecordsTotal * 10000,1));
+                       END;
+
+        DataItemLink=Journal Template Name=FIELD(Journal Template Name),
+                     Journal Batch Name=FIELD(Name);
+      }
+      SECTIONS
+      {
+      }
+       }
+  }
+  REQUESTFORM
+  {
+    PROPERTIES
+    {
+      Width=8580;
+      Height=2970;
+      SaveValues=Yes;
+      OnInit=BEGIN
+               IF Drive = '' THEN
+                 Drive := Text061;
+             END;
+
+    }
+    CONTROLS
+    {
+      { 3   ;Label        ;0    ;990  ;8580 ;440  ;ParentControl=1140000;
+                                                   InFrame=Yes;
+                                                   MultiLine=Yes;
+                                                   LeaderDots=No;
+                                                   CaptionML=[DEU=Verk.-Material Nummer + Statistikperiode + .EDI fÅr Lieferungen;
+                                                              ENU=Sales Authorized No. + Statisticperiod + .EDI for Shipments] }
+      { 5   ;Label        ;0    ;550  ;8580 ;440  ;ParentControl=1140000;
+                                                   InFrame=Yes;
+                                                   LeaderDots=No;
+                                                   CaptionML=[DEU=Eink.-Material Nummer + Statistikperiode + .EDI fÅr EingÑnge;
+                                                              ENU=Purch. Authorized No. + Statisticperiod + .EDI for Receipts] }
+      { 4   ;Label        ;0    ;110  ;8580 ;440  ;ParentControl=1140000;
+                                                   InFrame=Yes;
+                                                   LeaderDots=No;
+                                                   CaptionML=[DEU=Die Dateinamen werden wie folgt erzeugt:;
+                                                              ENU=The filenames are created as follows:] }
+      { 1   ;TextBox      ;3410 ;1870 ;5170 ;440  ;InPage=-1;
+                                                   SourceExpr=Drive }
+      { 2   ;Label        ;0    ;1870 ;3300 ;440  ;ParentControl=1;
+                                                   CaptionML=[DEU=Laufwerk fÅr Dateien;
+                                                              ENU=Drive for files] }
+      { 6   ;TextBox      ;3410 ;2530 ;5170 ;440  ;CaptionML=[DEU=Kontaktperson;
+                                                              ENU=Contactperson];
+                                                   SourceExpr=Contactperson }
+      { 7   ;Label        ;0    ;2530 ;3300 ;440  ;ParentControl=6;
+                                                   InPage=-1 }
+      { 1140000;Frame     ;0    ;0    ;8580 ;1540 ;ShowCaption=No;
+                                                   Border=No }
+    }
+  }
+  REQUESTPAGE
+  {
+    PROPERTIES
+    {
+      SaveValues=Yes;
+      OnInit=BEGIN
+               IF Drive = '' THEN
+                 Drive := Text061;
+             END;
+
+    }
+    CONTROLS
+    {
+      { 1900000001;0;Container;
+                  ContainerType=ContentArea }
+
+      { 1900000002;1;Group  ;
+                  CaptionML=[DEU=Optionen;
+                             ENU=Options] }
+
+      { 1140000;2;Group      }
+
+      { 4   ;3   ;Field     ;
+                  CaptionClass=Text19031129 }
+
+      { 5   ;3   ;Field     ;
+                  CaptionClass=Text19070121 }
+
+      { 3   ;3   ;Field     ;
+                  CaptionClass=Text19015047;
+                  MultiLine=Yes }
+
+      { 1   ;2   ;Field     ;
+                  CaptionML=[DEU=Laufwerk fÅr Dateien;
+                             ENU=Drive for files];
+                  SourceExpr=Drive }
+
+      { 6   ;2   ;Field     ;
+                  CaptionML=[DEU=Kontaktperson;
+                             ENU=Contactperson];
+                  SourceExpr=Contactperson }
+
+    }
+  }
+  CODE
+  {
+    VAR
+      Text000@1160000 : TextConst 'DEU=<Year,2><Month,2><Day,2>;ENU=<Year,2><Month,2><Day,2>';
+      Text001@1160001 : TextConst 'DEU=<Year4,4><Month,2><Day,2>;ENU=<Year4,4><Month,2><Day,2>';
+      Text002@1160002 : TextConst 'DEU=<Hours24,2><Minutes,2>;ENU=<Hours24,2><Minutes,2>';
+      Text003@1160003 : TextConst 'DEU=UID in Mandanteninfo muss 11 Stellen haben;ENU=UID in Companyinfo must be 11 digits';
+      Text004@1160004 : TextConst 'DEU=Statistikperiode %1 darf nur Ziffern enthalten.;ENU=Statisticperiod %1 may only include digits.';
+      Text005@1160005 : TextConst 'DEU=<year,2><month,2>;ENU=<year,2><month,2>';
+      Text006@1160006 : TextConst 'DEU=Datum % von Intrastat-Buchungsblattzeile deckt sich nicht mit \\;ENU=Date % of Intrastatjournalline doesn''t fit with \\';
+      Text007@1160007 : TextConst 'DEU=Periode von Intrastat-Blattname %3;ENU=period of Intrastatbatchname %3';
+      Text008@1160008 : TextConst 'DEU=Zollpos. in Zeile %1 muss 8 Stellen haben.;ENU=Tariffno. in Line %1 must be 8 digits.';
+      Text009@1160009 : TextConst 'DEU=%1 muss eine Stelle haben.;ENU=%1 must be one digit.';
+      Text010@1160010 : TextConst 'DEU=%1 muss eine Stelle haben.;ENU=%1 must be one digit.';
+      Text011@1160011 : TextConst 'DEU=Verfahren muss 5 Stellen haben.;ENU=Transaction Specification must be 5 digits.';
+      Text012@1160012 : TextConst 'DEU=.EDI;ENU=.EDI';
+      Text013@1160013 : TextConst 'DEU=Diskette in Laufwerk einlegen\\;ENU=Insert Disk in Drive\\';
+      Text014@1160014 : TextConst 'DEU="Dateiname: ";ENU="File name: "';
+      Text015@1160015 : TextConst 'DEU=Anzahl verarbeiteter DatensÑtze Eingang\;ENU=Number of Records Receipt processed\';
+      Text016@1160016 : TextConst 'DEU="UNA:+,? ";ENU="UNA:+,? "';
+      Text017@1160017 : TextConst 'DEU=UNB+UNOC:3+;ENU=UNB+UNOC:3+';
+      Text018@1160018 : TextConst 'DEU=-000+OESTAT::INTRASTAT+;ENU=-000+OESTAT::INTRASTAT+';
+      Text019@1160019 : TextConst 'DEU=UNH+;ENU=UNH+';
+      Text020@1160020 : TextConst 'DEU=+CUSDEC:D:97B:UN:INSTAT;ENU=+CUSDEC:D:97B:UN:INSTAT';
+      Text021@1160021 : TextConst 'DEU=BGM+896+;ENU=BGM+896+';
+      Text022@1160022 : TextConst 'DEU=DTM+320:;ENU=DTM+320:';
+      Text023@1160023 : TextConst 'DEU=DTM+137:;ENU=DTM+137:';
+      Text024@1160024 : TextConst 'DEU=RFF+ACD:NAVATT::3.60.D.97B;ENU=RFF+ACD:NAVATT::3.60.D.97B';
+      Text025@1160025 : TextConst 'DEU=NAD+DT+;ENU=NAD+DT+';
+      Text026@1160026 : TextConst 'DEU=COM+;ENU=COM+';
+      Text027@1160027 : TextConst 'DEU=:TE;ENU=:TE';
+      Text028@1160028 : TextConst 'DEU=:FX;ENU=:FX';
+      Text029@1160029 : TextConst 'DEU=NAD+DO+OESTAT;ENU=NAD+DO+OESTAT';
+      Text030@1160030 : TextConst 'DEU=MOA+ZZZ::EUR;ENU=MOA+ZZZ::EUR';
+      Text031@1160031 : TextConst 'DEU=MOA+ZZZ::ATS;ENU=MOA+ZZZ::ATS';
+      Text032@1160032 : TextConst 'DEU=UNS+D;ENU=UNS+D';
+      Text033@1160033 : TextConst 'DEU=UNS+S;ENU=UNS+S';
+      Text034@1160034 : TextConst 'DEU=CNT+2:;ENU=CNT+2:';
+      Text035@1160035 : TextConst 'DEU=CNT+18:;ENU=CNT+18:';
+      Text036@1160036 : TextConst 'DEU=CNT+19:;ENU=CNT+19:';
+      Text037@1160037 : TextConst 'DEU=CNT+20:;ENU=CNT+20:';
+      Text038@1160038 : TextConst 'DEU=CNT+22:;ENU=CNT+22:';
+      Text039@1160039 : TextConst 'DEU=AUT+;ENU=AUT+';
+      Text040@1160040 : TextConst 'DEU=DTM+187:;ENU=DTM+187:';
+      Text041@1160041 : TextConst 'DEU=UNT+;ENU=UNT+';
+      Text042@1160042 : TextConst 'DEU=UNZ+1+;ENU=UNZ+1+';
+      Text043@1160043 : TextConst 'DEU=LÑndercode %1 muss 2 Stellen haben.;ENU=Countrycode %1 must be 2 digits.';
+      Text044@1160044 : TextConst 'DEU=Intrastat-Code %1 muss 2 Stellen haben.;ENU=Intrastatcode %1 must be 2 digits.';
+      Text045@1160045 : TextConst 'DEU=CST+;ENU=CST+';
+      Text046@1160046 : TextConst 'DEU=:122+A:176+;ENU=:122+A:176+';
+      Text047@1160047 : TextConst 'DEU=FTX+AAA+++;ENU=FTX+AAA+++';
+      Text048@1160048 : TextConst 'DEU=LOC+35+;ENU=LOC+35+';
+      Text049@1160049 : TextConst 'DEU=LOC+27+;ENU=LOC+27+';
+      Text050@1160050 : TextConst 'DEU=MEA+WT++KGM:;ENU=MEA+WT++KGM:';
+      Text051@1160051 : TextConst 'DEU=MEA+AAE++PCE:;ENU=MEA+AAE++PCE:';
+      Text052@1160052 : TextConst 'DEU=TDT+2++;ENU=TDT+2++';
+      Text053@1160053 : TextConst 'DEU=MOA+38:;ENU=MOA+38:';
+      Text054@1160054 : TextConst 'DEU=MOA+123:;ENU=MOA+123:';
+      Text055@1160055 : TextConst 'DEU=Diskette einlegen,\\;ENU=Insert Disk,\\';
+      Text056@1160056 : TextConst 'DEU="Dateiname lautet: ";ENU="Filename is: "';
+      Text057@1160057 : TextConst 'DEU=Anzahl verarbeiteter DatensÑtze Lieferung\;ENU=Number of Records Shipment processed\';
+      Text058@1160058 : TextConst 'DEU=Intrastat-Code %1 muss 2 Stellen haben.;ENU=Intrastat Code %1 must be 2 digits.';
+      Text059@1160059 : TextConst 'DEU=:122+D:176+;ENU=:122+D:176+';
+      Text060@1160060 : TextConst 'DEU=LOC+36+;ENU=LOC+36+';
+      Text061@1160061 : TextConst 'DEU=A:;ENU=A:';
+      Text062@1160062 : TextConst 'DEU=%1 kînnen Sie in einem Feld der LÑnge %2 nicht anzeigen.;ENU=You cannot display %1 in a field of length %2.';
+      CompanyInfo@1160063 : Record 79;
+      Country@1160064 : Record 9;
+      IntraFile@1160065 : File;
+      Drive@1160066 : Code[20];
+      IntraRefNo@1160068 : Text[10];
+      AddField@1160069 : Text[70];
+      TempAddField@1160070 : Text[70];
+      TempType@1160071 : Integer;
+      UIDNo@1160072 : Code[11];
+      CountryOfOrg@1160073 : Record 9;
+      EndOfFile@1160074 : Char;
+      IntraJnlLineTest@1160075 : Record 263;
+      PrintReceipt@1160076 : Boolean;
+      PrintShipment@1160077 : Boolean;
+      Apostroph@1160078 : Char;
+      EndOfLine@1160079 : Text[1];
+      DateOfToday@1160080 : Text[6];
+      Today4@1160081 : Text[8];
+      TimeOfNow@1160082 : Text[4];
+      BKNR@1160083 : Text[8];
+      Period@1160084 : Text[4];
+      Period4@1160085 : Text[6];
+      PeriodYear@1160086 : Integer;
+      PosNo@1160087 : Decimal;
+      Segments@1160088 : Integer;
+      WeightTotal@1160089 : Decimal;
+      ValueTotal@1160090 : Decimal;
+      StatValueTotal@1160091 : Decimal;
+      QuantityTotal@1160092 : Decimal;
+      LinePeriod@1160093 : Text[4];
+      RecordsTotal@1160094 : Integer;
+      RecordsProcessed@1160095 : Integer;
+      DiskStatus@1160096 : Dialog;
+      Contactperson@1160097 : Text[30];
+      FilenameForShipments@1160098 : Text[250];
+      FilenameForReceipts@1160099 : Text[250];
+      CurrentType@1160103 : 'Receipt,Shipment';
+      IntrastatJnlLine@1160104 : Record 263;
+      Text19031129@19014169 : TextConst 'DEU=Die Dateinamen werden wie folgt erzeugt:;ENU=The filenames are created as follows:';
+      Text19070121@19073178 : TextConst 'DEU=Eink.-Material Nummer + Statistikperiode + .EDI fÅr EingÑnge;ENU=Purch. Authorized No. + Statisticperiod + .EDI for Receipts';
+      Text19015047@19011635 : TextConst 'DEU=Verk.-Material Nummer + Statistikperiode + .EDI fÅr Lieferungen;ENU=Sales Authorized No. + Statisticperiod + .EDI for Shipments';
+
+    PROCEDURE DecimalZeroFormat@1(DecimalNumber@1160000 : Decimal;Lenght@1160001 : Integer) : Text[250];
+    BEGIN
+      EXIT(TextZeroFormat(DELCHR(FORMAT(ROUND(ABS(DecimalNumber),1,'<'),0,1)),Lenght));
+    END;
+
+    PROCEDURE TextZeroFormat@2(Text@1160000 : Text[250];Length@1160001 : Integer) : Text[250];
+    BEGIN
+      IF STRLEN(Text) > Length THEN
+        ERROR(Text062,
+          Text,Length);
+      EXIT(PADSTR('',Length - STRLEN(Text),'0') + Text);
+    END;
+
+    PROCEDURE RemoveSpecChar@3(Text@1160000 : Text[200]) : Text[200];
+    VAR
+      DeleteChar@1160001 : Text[30];
+    BEGIN
+      DeleteChar := '":+? ' + FORMAT(Apostroph,1);
+      EXIT(CONVERTSTR(DELCHR(Text,'=',DeleteChar),',',' '));
+    END;
+
+    PROCEDURE LF@4();
+    BEGIN
+      // reset Filepointer to avoid
+      // senseless spaces
+      IntraFile.CLOSE;
+      IF CurrentType = CurrentType::Receipt THEN
+        IntraFile.OPEN(FilenameForReceipts)
+      ELSE
+        IntraFile.OPEN(FilenameForShipments);
+      IntraFile.SEEK(IntraFile.LEN-1);
+      IntraFile.TRUNC;
+    END;
+
+    BEGIN
+    END.
+  }
+  RDLDATA
+  {
+  }
+}
+

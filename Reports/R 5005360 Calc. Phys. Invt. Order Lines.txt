@@ -1,0 +1,263 @@
+OBJECT Report 5005360 Calc. Phys. Invt. Order Lines
+{
+  OBJECT-PROPERTIES
+  {
+    Date=05.11.08;
+    Time=12:00:00;
+    Version List=NAVDACH6.00;
+  }
+  PROPERTIES
+  {
+    CaptionML=[DEU=Inventurauftragszeilen berech.;
+               ENU=Calc. Phys. Invt. Order Lines];
+    ProcessingOnly=Yes;
+  }
+  DATAITEMS
+  {
+    { PROPERTIES
+      {
+        DataItemTable=Table27;
+        OnPreDataItem=BEGIN
+                        PhysInvtOrderHeader.TESTFIELD("No.");
+                        PhysInvtOrderHeader.TESTFIELD(Status, PhysInvtOrderHeader.Status::Open);
+
+                        PhysInvtOrderHeader.LOCKTABLE;
+                        PhysInvtOrderLine.LOCKTABLE;
+
+                        PhysInvtOrderLine.RESET;
+                        PhysInvtOrderLine.SETRANGE("Document No.", PhysInvtOrderHeader."No.");
+                        IF PhysInvtOrderLine.FIND('+') THEN
+                          NextLineNo := PhysInvtOrderLine."Line No." + 10000
+                        ELSE
+                          NextLineNo := 10000;
+
+                        IF NOT HideValidationDialog THEN
+                          Window.OPEN(
+                            Text1140000 +
+                            Text1140001);
+
+                        LineCount := 0;
+                        ItemsBlocked := FALSE;
+                      END;
+
+        OnAfterGetRecord=BEGIN
+                           IF NOT HideValidationDialog THEN
+                             Window.UPDATE(1, "No.");
+
+                           LastItemNo := '';
+                           LastVariantCode := '';
+                           LastLocationCode := '';
+
+                           IF Item.Blocked = FALSE THEN BEGIN
+                             ItemLedgEntry.RESET;
+                             ItemLedgEntry.SETCURRENTKEY(
+                               "Item No.", "Entry Type", "Variant Code", "Drop Shipment", "Location Code", "Posting Date");
+                             ItemLedgEntry.SETRANGE("Item No.", "No.");
+                             IF GETFILTER("Variant Filter") <> '' THEN
+                               COPYFILTER("Variant Filter", ItemLedgEntry."Variant Code");
+                             IF GETFILTER("Location Filter") <> '' THEN
+                               COPYFILTER("Location Filter", ItemLedgEntry."Location Code");
+                             IF GETFILTER("Date Filter") <> '' THEN
+                               COPYFILTER("Date Filter", ItemLedgEntry."Posting Date");
+                             IF ItemLedgEntry.FIND('-') THEN REPEAT
+                               IF (LastItemNo <> ItemLedgEntry."Item No.") OR
+                                  (LastVariantCode <> ItemLedgEntry."Variant Code") OR
+                                  (LastLocationCode <> ItemLedgEntry."Location Code")
+                               THEN BEGIN
+                                 LastItemNo := ItemLedgEntry."Item No.";
+                                 LastVariantCode := ItemLedgEntry."Variant Code";
+                                 LastLocationCode := ItemLedgEntry."Location Code";
+
+                                 IF ItemTrkgMgtPhysInvtLine.LocationIsBinMandatory(ItemLedgEntry."Location Code") THEN BEGIN
+                                   LastBinCode := '';
+                                   WhseEntry.RESET;
+                                   WhseEntry.SETCURRENTKEY("Item No.", "Variant Code", "Location Code", "Bin Code");
+                                   WhseEntry.SETRANGE("Item No.", ItemLedgEntry."Item No.");
+                                   WhseEntry.SETRANGE("Variant Code", ItemLedgEntry."Variant Code");
+                                   WhseEntry.SETRANGE("Location Code", ItemLedgEntry."Location Code");
+                                   IF GETFILTER("Bin Filter") <> '' THEN
+                                     COPYFILTER("Bin Filter", WhseEntry."Bin Code");
+                                   IF WhseEntry.FIND('-') THEN REPEAT
+                                     IF (LastBinCode <> WhseEntry."Bin Code") THEN BEGIN
+                                       LastBinCode := WhseEntry."Bin Code";
+                                       IF PhysInvtOrderHeader.GetSamePhysInvtOrderLine(
+                                         ItemLedgEntry."Item No.", ItemLedgEntry."Variant Code",
+                                         ItemLedgEntry."Location Code",
+                                         WhseEntry."Bin Code",
+                                         ErrorText,
+                                         PhysInvtOrderLine) = 0
+                                       THEN BEGIN
+                                         CreateNewPhysInvtOrderLine();
+                                       END;
+                                     END;
+                                   UNTIL WhseEntry.NEXT = 0;
+                                 END ELSE BEGIN
+                                   IF PhysInvtOrderHeader.GetSamePhysInvtOrderLine(
+                                     ItemLedgEntry."Item No.", ItemLedgEntry."Variant Code",
+                                     ItemLedgEntry."Location Code",
+                                     '',                       // without BIN Code
+                                     ErrorText,
+                                     PhysInvtOrderLine) = 0
+                                   THEN BEGIN
+                                     WhseEntry.INIT;
+                                     CreateNewPhysInvtOrderLine();
+                                   END;
+                                 END
+                               END;
+                             UNTIL ItemLedgEntry.NEXT = 0;
+                           END ELSE
+                             ItemsBlocked := TRUE;
+                         END;
+
+        OnPostDataItem=BEGIN
+                         IF NOT HideValidationDialog THEN BEGIN
+                           Window.CLOSE;
+                           IF ItemsBlocked = TRUE THEN
+                             MESSAGE(Text1140003);
+                           MESSAGE(
+                             STRSUBSTNO(Text1140002, LineCount));
+                         END;
+                       END;
+
+        ReqFilterFields=No.,Inventory Posting Group,Gen. Prod. Posting Group,Variant Filter,Location Filter,Bin Filter,Date Filter;
+      }
+      SECTIONS
+      {
+      }
+       }
+  }
+  REQUESTFORM
+  {
+    PROPERTIES
+    {
+      Width=3850;
+      Height=990;
+      SaveValues=Yes;
+    }
+    CONTROLS
+    {
+      { 1   ;CheckBox     ;3410 ;550  ;440  ;440  ;ShowCaption=No;
+                                                   CaptionML=[DEU=Artikel nicht auf Lager;
+                                                              ENU=Items Not on Inventory];
+                                                   SourceExpr=ZeroQty }
+      { 2   ;Label        ;0    ;550  ;3300 ;440  ;ParentControl=1 }
+      { 3   ;CheckBox     ;3410 ;0    ;440  ;440  ;ShowCaption=No;
+                                                   CaptionML=[DEU=Erw. Menge berechnen;
+                                                              ENU=Calculate Qty. Expected];
+                                                   SourceExpr=CalcQtyExpected }
+      { 4   ;Label        ;0    ;0    ;3300 ;440  ;ParentControl=3 }
+    }
+  }
+  REQUESTPAGE
+  {
+    PROPERTIES
+    {
+      SaveValues=Yes;
+    }
+    CONTROLS
+    {
+      { 1900000001;0;Container;
+                  ContainerType=ContentArea }
+
+      { 1900000002;1;Group  ;
+                  CaptionML=[DEU=Optionen;
+                             ENU=Options] }
+
+      { 3   ;2   ;Field     ;
+                  CaptionML=[DEU=Erwartete Menge berechnen;
+                             ENU=Calculate Qty. Expected];
+                  SourceExpr=CalcQtyExpected }
+
+      { 1   ;2   ;Field     ;
+                  CaptionML=[DEU=Artikel nicht auf Lager;
+                             ENU=Items Not on Inventory];
+                  SourceExpr=ZeroQty }
+
+    }
+  }
+  CODE
+  {
+    VAR
+      Text1140000@1140000 : TextConst 'DEU=Berechne die Auftragszeilen...\\;ENU=Calculating the order lines...\\';
+      Text1140001@1140001 : TextConst 'DEU=Artikelnr. #1##################;ENU=Item No.  #1##################';
+      Text1140002@1140002 : TextConst 'DEU=%1 neue Zeilen wurden erstellt.;ENU=%1 new lines have been created.';
+      Text1140003@1140023 : TextConst 'DEU=Mindestens ein gesperrter Artikel wurde Åbersprungen.;ENU=There is at least one blocked item that was skipped.';
+      PhysInvtOrderHeader@1140003 : Record 5005350;
+      PhysInvtOrderLine@1140004 : Record 5005351;
+      ItemLedgEntry@1140005 : Record 32;
+      WhseEntry@1140006 : Record 7312;
+      ItemTrkgMgtPhysInvtLine@1140007 : Codeunit 5005364;
+      Window@1140008 : Dialog;
+      ErrorText@1140009 : Text[250];
+      CycleSourceType@1140010 : ' ,Item,SKU';
+      PhysInvtCountCode@1140011 : Code[10];
+      LastItemNo@1140012 : Code[20];
+      LastVariantCode@1140013 : Code[10];
+      LastLocationCode@1140014 : Code[10];
+      LastBinCode@1140015 : Code[20];
+      QtyExp@1140016 : Decimal;
+      LastItemLedgEntryNo@1140017 : Integer;
+      NextLineNo@1140018 : Integer;
+      LineCount@1140019 : Integer;
+      HideValidationDialog@1140020 : Boolean;
+      ZeroQty@1140021 : Boolean;
+      CalcQtyExpected@1140022 : Boolean;
+      ItemsBlocked@1140024 : Boolean;
+
+    PROCEDURE SetPhysInvtOrderHeader@1140000(NewPhysInvtOrderHeader@1140000 : Record 5005350);
+    BEGIN
+      PhysInvtOrderHeader := NewPhysInvtOrderHeader;
+    END;
+
+    PROCEDURE InitializeRequest@1140001(ZeroQty2@1140000 : Boolean;CalcQtyExpected2@1140001 : Boolean);
+    BEGIN
+      ZeroQty := ZeroQty2;
+      CalcQtyExpected := CalcQtyExpected2;
+    END;
+
+    PROCEDURE InitializePhysInvtCount@1140002(PhysInvtCountCode2@1140000 : Code[10];CycleSourceType2@1140001 : ' ,Item,SKU');
+    BEGIN
+      PhysInvtCountCode := PhysInvtCountCode2;
+      CycleSourceType := CycleSourceType2;
+    END;
+
+    PROCEDURE SetHideValidationDialog@1140003(NewHideValidationDialog@1140000 : Boolean);
+    BEGIN
+      HideValidationDialog := NewHideValidationDialog;
+    END;
+
+    PROCEDURE CreateNewPhysInvtOrderLine@1140004();
+    BEGIN
+      PhysInvtOrderLine.INIT;
+      PhysInvtOrderLine."Document No." := PhysInvtOrderHeader."No.";
+      PhysInvtOrderLine."Line No." := NextLineNo;
+      PhysInvtOrderLine.VALIDATE("Item No.", ItemLedgEntry."Item No.");
+      PhysInvtOrderLine.VALIDATE("Variant Code", ItemLedgEntry."Variant Code");
+      PhysInvtOrderLine.VALIDATE("Location Code", ItemLedgEntry."Location Code");
+      PhysInvtOrderLine.VALIDATE("Bin Code", WhseEntry."Bin Code");
+
+      PhysInvtOrderLine."Phys Invt Counting Period Code" := PhysInvtCountCode;
+      PhysInvtOrderLine."Phys Invt Counting Period Type" := CycleSourceType;
+
+      PhysInvtOrderLine.CalcQtyAndLastItemLedgExpected(
+        QtyExp, LastItemLedgEntryNo);
+      PhysInvtOrderLine."Recorded without Order" := FALSE;
+      IF (QtyExp <> 0) OR ZeroQty THEN BEGIN
+        PhysInvtOrderLine.INSERT(TRUE);
+        PhysInvtOrderLine.CreateDim(DATABASE::Item, PhysInvtOrderLine."Item No.");
+      IF CalcQtyExpected THEN
+        PhysInvtOrderLine.CalcQtyAndTrackLinesExpected;
+        PhysInvtOrderLine.MODIFY;
+        NextLineNo := NextLineNo + 10000;
+        LineCount := LineCount +1;
+      END;
+    END;
+
+    BEGIN
+    END.
+  }
+  RDLDATA
+  {
+  }
+}
+

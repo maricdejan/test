@@ -1,0 +1,3150 @@
+OBJECT Report 11105 Intrastat - Checklist AT
+{
+  OBJECT-PROPERTIES
+  {
+    Date=05.11.08;
+    Time=12:00:00;
+    Version List=NAVDACH6.00;
+  }
+  PROPERTIES
+  {
+    CaptionML=[DEU=Intrastat - PrÅfung AT;
+               ENU=Intrastat - Checklist AT];
+    OnPreReport=BEGIN
+                  CompanyInfo.GET;
+                  VATIDNo := COPYSTR(DELCHR(UPPERCASE(CompanyInfo."Registration No."),'=',Text000),1,11);
+
+                  GLSetup.GET;
+                  IF "Intrastat Jnl. Batch"."Amounts in Add. Currency" THEN BEGIN
+                    GLSetup.TESTFIELD("Additional Reporting Currency");
+                    HeaderText := STRSUBSTNO(Text002,GLSetup."Additional Reporting Currency");
+                  END ELSE BEGIN
+                    GLSetup.TESTFIELD("LCY Code");
+                    HeaderText := STRSUBSTNO(Text002,GLSetup."LCY Code");
+                  END;
+                END;
+
+  }
+  DATAITEMS
+  {
+    { PROPERTIES
+      {
+        DataItemTable=Table262;
+        DataItemTableView=SORTING(Journal Template Name,Name);
+        NewPagePerRecord=Yes;
+        OnAfterGetRecord=BEGIN
+                           CurrReport.PAGENO := 1;
+                         END;
+
+        ReqFilterFields=Journal Template Name,Name;
+      }
+      SECTIONS
+      {
+      }
+       }
+    { PROPERTIES
+      {
+        DataItemIndent=1;
+        DataItemTable=Table263;
+        DataItemTableView=SORTING(Journal Template Name,Journal Batch Name,Type,Country/Region Code,Tariff No.,Transaction Type,Transport Method,Area,Transaction Specification,Country/Region of Origin Code);
+        OnPreDataItem=BEGIN
+                        CurrReport.CREATETOTALS("Statistical Value",Quantity,"Total Weight");
+                      END;
+
+        OnAfterGetRecord=BEGIN
+                           IF ISSERVICETIER THEN
+                             IF ("Journal Template Name" <> OldJournalTemplateName) OR
+                              ("Journal Batch Name" <> OldJournalBatchName) OR
+                              (Type <> OldType) OR
+                              ("Country/Region Code" <> OldCountry_RegionCode) OR
+                              ("Tariff No." <> OldTariffNo) OR
+                              ("Transaction Type" <> OldTransactionType) OR
+                              ("Transport Method" <> OldTransportMethod) OR
+                              (Area <> OldArea) OR
+                              ("Transaction Specification" <> OldTransactionSpecification) OR
+                              ("Country/Region of Origin Code" <> OldCountry_RegionofOriginCode)
+                             THEN BEGIN
+                               NoOfRecords := NoOfRecords + 1;
+                               OldJournalTemplateName := "Journal Template Name";
+                               OldJournalBatchName := "Journal Batch Name";
+                               OldType := Type;
+                               OldCountry_RegionCode := "Country/Region Code";
+                               OldTariffNo := "Tariff No.";
+                               OldTransactionType := "Transaction Type";
+                               OldTransportMethod := "Transport Method";
+                               OldArea := Area;
+                               OldTransactionSpecification := "Transaction Specification";
+                               OldCountry_RegionofOriginCode := "Country/Region of Origin Code";
+                             END;
+
+                           IF ("Tariff No." = '') AND
+                              ("Country/Region Code" = '') AND
+                              ("Transaction Type" = '') AND
+                              ("Transport Method" = '') AND
+                              ("Transaction Specification" = '') AND
+                              ("Total Weight" = 0)
+                           THEN
+                             CurrReport.SKIP;
+
+                           OldTariffNo := "Tariff No.";
+                           "Tariff No." := DELCHR("Tariff No.");
+                           TESTFIELD("Tariff No.");
+                           TESTFIELD("Country/Region Code");
+                           TESTFIELD("Transaction Type");
+                           IF CompanyInfo."Check Transport Method" THEN
+                             TESTFIELD("Transport Method");
+                           IF CompanyInfo."Check Transaction Specific." THEN
+                             TESTFIELD("Transaction Specification");
+                           IF Type = Type::Receipt THEN BEGIN
+                             TESTFIELD("Country/Region of Origin Code");
+                             OriginCountry.GET("Country/Region of Origin Code");
+                             OriginCountry.TESTFIELD("Intrastat Code");
+                           END ELSE
+                             CLEAR(OriginCountry);
+                           IF "Supplementary Units" THEN
+                             TESTFIELD(Quantity);
+
+                           Country.GET("Country/Region Code");
+                           Country.TESTFIELD("Intrastat Code");
+
+                           "Tariff No." := OldTariffNo;
+                         END;
+
+        ReqFilterFields=Type;
+        GroupTotalFields=Country/Region of Origin Code;
+        DataItemLink=Journal Template Name=FIELD(Journal Template Name),
+                     Journal Batch Name=FIELD(Name);
+      }
+      SECTIONS
+      {
+        { PROPERTIES
+          {
+            SectionType=Header;
+            PrintOnEveryPage=Yes;
+            SectionWidth=18150;
+            SectionHeight=2538;
+          }
+          CONTROLS
+          {
+            { 1   ;Label        ;0    ;0    ;7500 ;423  ;FontSize=8;
+                                                         FontBold=Yes;
+                                                         CaptionML=[DEU=Intrastat - PrÅfung;
+                                                                    ENU=Intrastat - Checklist];
+                                                         DataSetFieldName=Intrastat___ChecklistCaption }
+            { 2   ;TextBox      ;15000;0    ;3150 ;423  ;HorzAlign=Right;
+                                                         SourceExpr=FORMAT(TODAY,0,4);
+                                                         DataSetFieldName=FORMAT_TODAY_0_4_ }
+            { 3   ;TextBox      ;0    ;423  ;7500 ;423  ;SourceExpr=STRSUBSTNO(Text001,"Intrastat Jnl. Batch"."Statistics Period");
+                                                         DataSetFieldName=STRSUBSTNO_Text001__Intrastat_Jnl__Batch___Statistics_Period__ }
+            { 4   ;Label        ;16950;423  ;750  ;423  ;ParentControl=5;
+                                                         DataSetFieldName=CurrReport_PAGENOCaption }
+            { 5   ;TextBox      ;17700;423  ;450  ;423  ;CaptionML=[DEU=Seite;
+                                                                    ENU=Page];
+                                                         SourceExpr=CurrReport.PAGENO;
+                                                         DataSetFieldName=CurrReport_PAGENO }
+            { 6   ;TextBox      ;0    ;846  ;7500 ;423  ;SourceExpr=COMPANYNAME;
+                                                         DataSetFieldName=COMPANYNAME }
+            { 7   ;TextBox      ;15900;846  ;2250 ;423  ;HorzAlign=Right;
+                                                         SourceExpr=USERID;
+                                                         DataSetFieldName=USERID }
+            { 8   ;Label        ;0    ;1692 ;1500 ;423  ;ParentControl=9;
+                                                         DataSetFieldName=VATIDNoCaption }
+            { 9   ;TextBox      ;1650 ;1692 ;1500 ;423  ;CaptionML=[DEU=USt-IdNr.;
+                                                                    ENU=VAT Reg. No.];
+                                                         SourceExpr=VATIDNo;
+                                                         DataSetFieldName=VATIDNo }
+            { 1140000;TextBox   ;1650 ;2115 ;1500 ;423  ;CaptionML=[DEU=Bundesland;
+                                                                    ENU=Area];
+                                                         SourceExpr=CompanyInfo.Area;
+                                                         DataSetFieldName=CompanyInfo_Area }
+            { 1140001;Label     ;0    ;2115 ;1500 ;423  ;ParentControl=1140000;
+                                                         DataSetFieldName=CompanyInfo_AreaCaption }
+            { 1140014;TextBox   ;17850;2115 ;150  ;423  ;Visible=No;
+                                                         ForeColor=65535;
+                                                         SourceExpr=PrintJnlLines;
+                                                         DataSetFieldName=PrintJnlLines }
+            { 1140020;TextBox   ;18000;2115 ;150  ;423  ;Visible=No;
+                                                         ForeColor=65535;
+                                                         SourceExpr=Heading;
+                                                         DataSetFieldName=Heading }
+          }
+           }
+        { PROPERTIES
+          {
+            SectionType=Header;
+            SectionWidth=18150;
+            SectionHeight=846;
+          }
+          CONTROLS
+          {
+            { 63  ;TextBox      ;0    ;0    ;3750 ;423  ;SourceExpr=HeaderText;
+                                                         DataSetFieldName=HeaderText }
+          }
+           }
+        { PROPERTIES
+          {
+            SectionType=Header;
+            PrintOnEveryPage=Yes;
+            SectionWidth=18150;
+            SectionHeight=846;
+            OnPreSection=BEGIN
+                           CurrReport.SHOWOUTPUT(NOT PrintJnlLines);
+                         END;
+
+          }
+          CONTROLS
+          {
+            { 10  ;Label        ;0    ;0    ;1500 ;846  ;ParentControl=38;
+                                                         VertAlign=Bottom;
+                                                         FontBold=Yes;
+                                                         MultiLine=Yes;
+                                                         DataSetFieldName=Intrastat_Jnl__Line_Type_Control38Caption }
+            { 11  ;Label        ;1650 ;0    ;1800 ;846  ;ParentControl=39;
+                                                         VertAlign=Bottom;
+                                                         FontBold=Yes;
+                                                         MultiLine=Yes;
+                                                         DataSetFieldName=Intrastat_Jnl__Line__Tariff_No___Control39Caption }
+            { 13  ;Label        ;6900 ;0    ;1500 ;846  ;ParentControl=42;
+                                                         VertAlign=Bottom;
+                                                         FontBold=Yes;
+                                                         MultiLine=Yes;
+                                                         DataSetFieldName=Intrastat_Jnl__Line__Transaction_Type__Control42Caption }
+            { 14  ;Label        ;8550 ;0    ;1500 ;846  ;ParentControl=43;
+                                                         VertAlign=Bottom;
+                                                         FontBold=Yes;
+                                                         MultiLine=Yes;
+                                                         DataSetFieldName=Intrastat_Jnl__Line__Transport_Method__Control43Caption }
+            { 15  ;Label        ;13500;0    ;1500 ;846  ;ParentControl=44;
+                                                         HorzAlign=Right;
+                                                         VertAlign=Bottom;
+                                                         FontBold=Yes;
+                                                         MultiLine=Yes;
+                                                         DataSetFieldName=Intrastat_Jnl__Line__Total_Weight__Control44Caption }
+            { 16  ;Label        ;15150;0    ;1050 ;846  ;ParentControl=45;
+                                                         HorzAlign=Right;
+                                                         VertAlign=Bottom;
+                                                         FontBold=Yes;
+                                                         MultiLine=Yes;
+                                                         DataSetFieldName=Intrastat_Jnl__Line_Quantity_Control45Caption }
+            { 17  ;Label        ;16350;0    ;1800 ;846  ;ParentControl=46;
+                                                         HorzAlign=Right;
+                                                         VertAlign=Bottom;
+                                                         FontBold=Yes;
+                                                         MultiLine=Yes;
+                                                         DataSetFieldName=Intrastat_Jnl__Line__Statistical_Value__Control46Caption }
+            { 1140002;Label     ;10200;0    ;1500 ;846  ;ParentControl=1140011;
+                                                         VertAlign=Bottom;
+                                                         FontBold=Yes;
+                                                         MultiLine=Yes;
+                                                         CaptionML=[DEU=Ursprungsland;
+                                                                    ENU=Country of Origin Code];
+                                                         DataSetFieldName=OriginCountry__Intrastat_Code__Control1140011Caption }
+            { 1140003;Label     ;11850;0    ;1500 ;846  ;ParentControl=1140012;
+                                                         VertAlign=Bottom;
+                                                         FontBold=Yes;
+                                                         MultiLine=Yes;
+                                                         DataSetFieldName=Intrastat_Jnl__Line__Transaction_Specification__Control1140012Caption }
+            { 1140004;Label     ;5250 ;0    ;1500 ;846  ;ParentControl=1140013;
+                                                         VertAlign=Bottom;
+                                                         FontBold=Yes;
+                                                         MultiLine=Yes;
+                                                         DataSetFieldName=Intrastat_Jnl__Line_Area_Control1140013Caption }
+            { 12  ;Label        ;3600 ;0    ;1500 ;846  ;ParentControl=40;
+                                                         VertAlign=Bottom;
+                                                         FontBold=Yes;
+                                                         MultiLine=Yes;
+                                                         DataSetFieldName=Country__Intrastat_Code__Control40Caption }
+          }
+           }
+        { PROPERTIES
+          {
+            SectionType=Header;
+            PrintOnEveryPage=Yes;
+            SectionWidth=18150;
+            SectionHeight=846;
+            OnPreSection=BEGIN
+                           CurrReport.SHOWOUTPUT(PrintJnlLines);
+                         END;
+
+          }
+          CONTROLS
+          {
+            { 18  ;Label        ;0    ;0    ;4500 ;846  ;ParentControl=33;
+                                                         VertAlign=Bottom;
+                                                         FontBold=Yes;
+                                                         MultiLine=Yes;
+                                                         DataSetFieldName=Intrastat_Jnl__Line__Item_Description_Caption }
+            { 19  ;Label        ;4650 ;0    ;1500 ;846  ;ParentControl=34;
+                                                         HorzAlign=Right;
+                                                         VertAlign=Bottom;
+                                                         FontBold=Yes;
+                                                         MultiLine=Yes;
+                                                         DataSetFieldName=Intrastat_Jnl__Line__Total_Weight_Caption }
+            { 20  ;Label        ;6300 ;0    ;1050 ;846  ;ParentControl=35;
+                                                         HorzAlign=Right;
+                                                         VertAlign=Bottom;
+                                                         FontBold=Yes;
+                                                         MultiLine=Yes;
+                                                         DataSetFieldName=Intrastat_Jnl__Line_QuantityCaption }
+            { 21  ;Label        ;7500 ;0    ;1800 ;846  ;ParentControl=36;
+                                                         HorzAlign=Right;
+                                                         VertAlign=Bottom;
+                                                         FontBold=Yes;
+                                                         MultiLine=Yes;
+                                                         DataSetFieldName=Intrastat_Jnl__Line__Statistical_Value_Caption }
+            { 22  ;Label        ;9450 ;0    ;1500 ;846  ;ParentControl=37;
+                                                         VertAlign=Bottom;
+                                                         FontBold=Yes;
+                                                         MultiLine=Yes;
+                                                         DataSetFieldName=Intrastat_Jnl__Line__Internal_Ref__No__Caption }
+          }
+           }
+        { PROPERTIES
+          {
+            SectionType=Header;
+            PrintOnEveryPage=Yes;
+            SectionWidth=18150;
+            SectionHeight=423;
+          }
+          CONTROLS
+          {
+          }
+           }
+        { PROPERTIES
+          {
+            SectionType=GroupHeader;
+            SectionWidth=18150;
+            SectionHeight=3807;
+            OnPreSection=BEGIN
+                           CurrReport.SHOWOUTPUT(PrintJnlLines AND NOT Heading);
+                           Heading := TRUE;
+                         END;
+
+          }
+          CONTROLS
+          {
+            { 23  ;TextBox      ;0    ;0    ;1500 ;423  ;FontBold=Yes;
+                                                         SourceExpr=Type;
+                                                         DataSetFieldName=Intrastat_Jnl__Line_Type }
+            { 24  ;Label        ;0    ;423  ;2250 ;423  ;ParentControl=25;
+                                                         DataSetFieldName=Intrastat_Jnl__Line__Tariff_No__Caption }
+            { 25  ;TextBox      ;2400 ;423  ;1500 ;423  ;HorzAlign=Left;
+                                                         SourceExpr="Tariff No.";
+                                                         DataSetFieldName=Intrastat_Jnl__Line__Tariff_No__ }
+            { 26  ;Label        ;0    ;846  ;2250 ;423  ;ParentControl=27;
+                                                         DataSetFieldName=Country__Intrastat_Code_Caption }
+            { 27  ;TextBox      ;2400 ;846  ;750  ;423  ;HorzAlign=Left;
+                                                         CaptionML=[DEU=LÑndercode;
+                                                                    ENU=Country Code];
+                                                         SourceExpr=Country."Intrastat Code";
+                                                         DataSetFieldName=Country__Intrastat_Code_ }
+            { 28  ;TextBox      ;3300 ;846  ;1500 ;423  ;SourceExpr=Country.Name;
+                                                         DataSetFieldName=Country_Name }
+            { 29  ;Label        ;0    ;1692 ;2250 ;423  ;ParentControl=30;
+                                                         DataSetFieldName=Intrastat_Jnl__Line__Transaction_Type_Caption }
+            { 30  ;TextBox      ;2400 ;1692 ;1500 ;423  ;HorzAlign=Left;
+                                                         SourceExpr="Transaction Type";
+                                                         DataSetFieldName=Intrastat_Jnl__Line__Transaction_Type_ }
+            { 31  ;Label        ;0    ;2115 ;2250 ;423  ;ParentControl=32;
+                                                         DataSetFieldName=Intrastat_Jnl__Line__Transport_Method_Caption }
+            { 32  ;TextBox      ;2400 ;2115 ;1500 ;423  ;HorzAlign=Left;
+                                                         SourceExpr="Transport Method";
+                                                         DataSetFieldName=Intrastat_Jnl__Line__Transport_Method_ }
+            { 1140009;TextBox   ;2400 ;2961 ;5700 ;423  ;HorzAlign=Left;
+                                                         SourceExpr="Transaction Specification";
+                                                         DataSetFieldName=Intrastat_Jnl__Line__Transaction_Specification_ }
+            { 1140010;Label     ;0    ;2961 ;2250 ;423  ;ParentControl=1140009;
+                                                         DataSetFieldName=Intrastat_Jnl__Line__Transaction_Specification_Caption }
+            { 1140005;TextBox   ;2400 ;1269 ;1500 ;423  ;HorzAlign=Left;
+                                                         SourceExpr=Area;
+                                                         DataSetFieldName=Intrastat_Jnl__Line_Area }
+            { 1140006;Label     ;0    ;1269 ;2250 ;423  ;ParentControl=1140005;
+                                                         DataSetFieldName=Intrastat_Jnl__Line_AreaCaption }
+            { 1140007;TextBox   ;2400 ;2538 ;1500 ;423  ;HorzAlign=Left;
+                                                         CaptionML=[DEU=Ursprungsland;
+                                                                    ENU=Country of Origin Code];
+                                                         SourceExpr=OriginCountry."Intrastat Code";
+                                                         DataSetFieldName=OriginCountry__Intrastat_Code_ }
+            { 1140008;Label     ;0    ;2538 ;2250 ;423  ;ParentControl=1140007;
+                                                         DataSetFieldName=OriginCountry__Intrastat_Code_Caption }
+          }
+           }
+        { PROPERTIES
+          {
+            SectionType=Body;
+            SectionWidth=18150;
+            SectionHeight=423;
+            OnPreSection=BEGIN
+                           CurrReport.SHOWOUTPUT(PrintJnlLines);
+                         END;
+
+          }
+          CONTROLS
+          {
+            { 33  ;TextBox      ;0    ;0    ;4500 ;423  ;SourceExpr="Item Description";
+                                                         DataSetFieldName=Intrastat_Jnl__Line__Item_Description_ }
+            { 34  ;TextBox      ;4650 ;0    ;1500 ;423  ;DecimalPlaces=2:2;
+                                                         SourceExpr="Total Weight";
+                                                         DataSetFieldName=Intrastat_Jnl__Line__Total_Weight_ }
+            { 35  ;TextBox      ;6300 ;0    ;1050 ;423  ;SourceExpr=Quantity;
+                                                         DataSetFieldName=Intrastat_Jnl__Line_Quantity }
+            { 36  ;TextBox      ;7500 ;0    ;1800 ;423  ;SourceExpr="Statistical Value";
+                                                         DataSetFieldName=Intrastat_Jnl__Line__Statistical_Value_ }
+            { 37  ;TextBox      ;9450 ;0    ;1500 ;423  ;SourceExpr="Internal Ref. No.";
+                                                         DataSetFieldName=Intrastat_Jnl__Line__Internal_Ref__No__ }
+            { 1140015;TextBox   ;18000;0    ;150  ;423  ;Visible=No;
+                                                         ForeColor=65535;
+                                                         SourceExpr="Country/Region Code";
+                                                         DataSetFieldName=Intrastat_Jnl__Line__Country_Region_Code_ }
+          }
+           }
+        { PROPERTIES
+          {
+            SectionType=GroupFooter;
+            SectionWidth=18150;
+            SectionHeight=846;
+            OnPreSection=BEGIN
+                           Heading := FALSE;
+                           IF NOT ISSERVICETIER THEN
+                             NoOfRecords := NoOfRecords + 1;
+                           CurrReport.SHOWOUTPUT(NOT PrintJnlLines);
+                         END;
+
+          }
+          CONTROLS
+          {
+            { 38  ;TextBox      ;0    ;0    ;1500 ;423  ;HorzAlign=Left;
+                                                         SourceExpr=Type;
+                                                         DataSetFieldName=Intrastat_Jnl__Line_Type_Control38 }
+            { 39  ;TextBox      ;1650 ;0    ;1800 ;423  ;HorzAlign=Left;
+                                                         CaptionML=[DEU=Zollpos.;
+                                                                    ENU=Tariff No.];
+                                                         SourceExpr="Tariff No.";
+                                                         DataSetFieldName=Intrastat_Jnl__Line__Tariff_No___Control39 }
+            { 42  ;TextBox      ;6900 ;0    ;1500 ;423  ;HorzAlign=Left;
+                                                         CaptionML=[DEU=Transaktionstyp;
+                                                                    ENU=Transaction Type];
+                                                         SourceExpr="Transaction Type";
+                                                         DataSetFieldName=Intrastat_Jnl__Line__Transaction_Type__Control42 }
+            { 43  ;TextBox      ;8550 ;0    ;1500 ;423  ;HorzAlign=Left;
+                                                         CaptionML=[DEU=Verkehrszweig;
+                                                                    ENU=Transport Method];
+                                                         SourceExpr="Transport Method";
+                                                         DataSetFieldName=Intrastat_Jnl__Line__Transport_Method__Control43 }
+            { 44  ;TextBox      ;13500;0    ;1500 ;423  ;SourceExpr="Total Weight";
+                                                         DataSetFieldName=Intrastat_Jnl__Line__Total_Weight__Control44 }
+            { 45  ;TextBox      ;15150;0    ;1050 ;423  ;SourceExpr=Quantity;
+                                                         DataSetFieldName=Intrastat_Jnl__Line_Quantity_Control45 }
+            { 46  ;TextBox      ;16350;0    ;1800 ;423  ;SourceExpr="Statistical Value";
+                                                         DataSetFieldName=Intrastat_Jnl__Line__Statistical_Value__Control46 }
+            { 1140011;TextBox   ;10200;0    ;1500 ;423  ;HorzAlign=Left;
+                                                         SourceExpr=OriginCountry."Intrastat Code";
+                                                         DataSetFieldName=OriginCountry__Intrastat_Code__Control1140011 }
+            { 1140012;TextBox   ;11850;0    ;1500 ;423  ;HorzAlign=Left;
+                                                         SourceExpr="Transaction Specification";
+                                                         DataSetFieldName=Intrastat_Jnl__Line__Transaction_Specification__Control1140012 }
+            { 1140013;TextBox   ;5250 ;0    ;1500 ;423  ;HorzAlign=Left;
+                                                         SourceExpr=Area;
+                                                         DataSetFieldName=Intrastat_Jnl__Line_Area_Control1140013 }
+            { 40  ;TextBox      ;3600 ;0    ;1500 ;423  ;HorzAlign=Left;
+                                                         CaptionML=[DEU=LÑndercode;
+                                                                    ENU=Country Code];
+                                                         SourceExpr=Country."Intrastat Code";
+                                                         DataSetFieldName=Country__Intrastat_Code__Control40 }
+          }
+           }
+        { PROPERTIES
+          {
+            SectionType=GroupFooter;
+            SectionWidth=18150;
+            SectionHeight=1269;
+            OnPreSection=BEGIN
+                           CurrReport.SHOWOUTPUT(PrintJnlLines);
+                         END;
+
+          }
+          CONTROLS
+          {
+            { 47  ;TextBox      ;4650 ;0    ;1500 ;423  ;FontBold=Yes;
+                                                         DecimalPlaces=0:0;
+                                                         SourceExpr="Total Weight";
+                                                         DataSetFieldName=Intrastat_Jnl__Line__Total_Weight__Control47 }
+            { 48  ;TextBox      ;6300 ;0    ;1050 ;423  ;FontBold=Yes;
+                                                         SourceExpr=Quantity;
+                                                         DataSetFieldName=Intrastat_Jnl__Line_Quantity_Control48 }
+            { 49  ;TextBox      ;7500 ;0    ;1800 ;423  ;FontBold=Yes;
+                                                         SourceExpr="Statistical Value";
+                                                         DataSetFieldName=Intrastat_Jnl__Line__Statistical_Value__Control49 }
+          }
+           }
+        { PROPERTIES
+          {
+            SectionType=Footer;
+            SectionWidth=18150;
+            SectionHeight=423;
+          }
+          CONTROLS
+          {
+          }
+           }
+        { PROPERTIES
+          {
+            SectionType=Footer;
+            SectionWidth=18150;
+            SectionHeight=846;
+            OnPreSection=BEGIN
+                           CurrReport.SHOWOUTPUT(NOT PrintJnlLines);
+                         END;
+
+          }
+          CONTROLS
+          {
+            { 50  ;Label        ;11850;0    ;1500 ;423  ;ParentControl=51;
+                                                         FontBold=Yes;
+                                                         DataSetFieldName=Intrastat_Jnl__Line__Total_Weight__Control51Caption }
+            { 51  ;TextBox      ;13500;0    ;1500 ;423  ;FontBold=Yes;
+                                                         CaptionML=[DEU=Summe;
+                                                                    ENU=Total];
+                                                         SourceExpr="Total Weight";
+                                                         DataSetFieldName=Intrastat_Jnl__Line__Total_Weight__Control51 }
+            { 52  ;TextBox      ;15150;0    ;1050 ;423  ;FontBold=Yes;
+                                                         SourceExpr=Quantity;
+                                                         DataSetFieldName=Intrastat_Jnl__Line_Quantity_Control52 }
+            { 53  ;TextBox      ;16350;0    ;1800 ;423  ;FontBold=Yes;
+                                                         SourceExpr="Statistical Value";
+                                                         DataSetFieldName=Intrastat_Jnl__Line__Statistical_Value__Control53 }
+            { 59  ;Label        ;11850;423  ;2400 ;423  ;CaptionML=[DEU=Anzahl Posten;
+                                                                    ENU=No. of Entries];
+                                                         DataSetFieldName=No__of_EntriesCaption }
+            { 60  ;TextBox      ;14400;423  ;1800 ;423  ;SourceExpr=NoOfRecords;
+                                                         DataSetFieldName=NoOfRecords }
+          }
+           }
+        { PROPERTIES
+          {
+            SectionType=Footer;
+            SectionWidth=18150;
+            SectionHeight=1269;
+            OnPreSection=BEGIN
+                           CurrReport.SHOWOUTPUT(PrintJnlLines);
+                         END;
+
+          }
+          CONTROLS
+          {
+            { 54  ;Label        ;0    ;0    ;1500 ;423  ;FontBold=Yes;
+                                                         CaptionML=[DEU=Summe;
+                                                                    ENU=Total];
+                                                         DataSetFieldName=TotalCaption }
+            { 55  ;Label        ;2850 ;423  ;1500 ;423  ;FontBold=Yes;
+                                                         CaptionML=[DEU=Summe;
+                                                                    ENU=Total];
+                                                         DataSetFieldName=TotalCaption_Control55 }
+            { 56  ;TextBox      ;4650 ;423  ;1500 ;423  ;FontBold=Yes;
+                                                         SourceExpr="Total Weight";
+                                                         DataSetFieldName=Intrastat_Jnl__Line__Total_Weight__Control56 }
+            { 57  ;TextBox      ;6300 ;423  ;1050 ;423  ;FontBold=Yes;
+                                                         SourceExpr=Quantity;
+                                                         DataSetFieldName=Intrastat_Jnl__Line_Quantity_Control57 }
+            { 58  ;TextBox      ;7500 ;423  ;1800 ;423  ;FontBold=Yes;
+                                                         SourceExpr="Statistical Value";
+                                                         DataSetFieldName=Intrastat_Jnl__Line__Statistical_Value__Control58 }
+            { 61  ;Label        ;2850 ;846  ;2250 ;423  ;ParentControl=62;
+                                                         DataSetFieldName=NoOfRecords_Control62Caption }
+            { 62  ;TextBox      ;5100 ;846  ;1050 ;423  ;CaptionML=[DEU=Anzahl Posten;
+                                                                    ENU=No. of Entries];
+                                                         SourceExpr=NoOfRecords;
+                                                         DataSetFieldName=NoOfRecords_Control62 }
+          }
+           }
+      }
+       }
+  }
+  REQUESTFORM
+  {
+    PROPERTIES
+    {
+      Width=3850;
+      Height=880;
+      SaveValues=Yes;
+    }
+    CONTROLS
+    {
+      { 1   ;CheckBox     ;3410 ;440  ;440  ;440  ;ShowCaption=No;
+                                                   CaptionML=[DEU=Intrastat-Buchungsblattzeilen anzeigen;
+                                                              ENU=Show Intrastat Journal Lines];
+                                                   SourceExpr=PrintJnlLines }
+      { 21  ;Label        ;0    ;0    ;3300 ;880  ;ParentControl=1;
+                                                   VertAlign=Bottom;
+                                                   MultiLine=Yes }
+    }
+  }
+  REQUESTPAGE
+  {
+    PROPERTIES
+    {
+      SaveValues=Yes;
+    }
+    CONTROLS
+    {
+      { 1900000001;0;Container;
+                  ContainerType=ContentArea }
+
+      { 1900000002;1;Group  ;
+                  CaptionML=[DEU=Optionen;
+                             ENU=Options] }
+
+      { 1   ;2   ;Field     ;
+                  CaptionML=[DEU=Intrastat-Buchungsblattzeilen anzeigen;
+                             ENU=Show Intrastat Journal Lines];
+                  SourceExpr=PrintJnlLines;
+                  MultiLine=Yes }
+
+    }
+  }
+  CODE
+  {
+    VAR
+      Text000@1000 : TextConst 'DEU=ABCDEFGHIJKLMNOPQRSTUVWXYZ/-.+;ENU=ABCDEFGHIJKLMNOPQRSTUVWXYZ/-.+';
+      Text001@1001 : TextConst 'DEU=Statistikperiode: %1;ENU=Statistics Period: %1';
+      Text002@1002 : TextConst 'DEU=Alle BetrÑge in %1;ENU=All amounts are in %1';
+      CompanyInfo@1003 : Record 79;
+      Country@1004 : Record 9;
+      GLSetup@1005 : Record 98;
+      OriginCountry@1140000 : Record 9;
+      NoOfRecords@1006 : Integer;
+      PrintJnlLines@1007 : Boolean;
+      Heading@1008 : Boolean;
+      HeaderText@1009 : Text[30];
+      VATIDNo@1140002 : Code[11];
+      OldJournalTemplateName@1140003 : Code[10];
+      OldJournalBatchName@1140004 : Code[10];
+      OldType@1140005 : Integer;
+      OldCountry_RegionCode@1140006 : Code[10];
+      OldTariffNo@1140001 : Code[10];
+      OldTransactionType@1140008 : Code[10];
+      OldTransportMethod@1140009 : Code[10];
+      OldArea@1140010 : Code[10];
+      OldTransactionSpecification@1140011 : Code[10];
+      OldCountry_RegionofOriginCode@1140013 : Code[10];
+
+    BEGIN
+    END.
+  }
+  RDLDATA
+  {
+    <?xml version="1.0" encoding="utf-8"?>
+<Report xmlns="http://schemas.microsoft.com/sqlserver/reporting/2005/01/reportdefinition" xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner">
+  <Body>
+    <Height>11.844cm</Height>
+    <ReportItems>
+      <Table Name="Table1">
+        <DataSetName>DataSet_Result</DataSetName>
+        <Details>
+          <TableRows>
+            <TableRow>
+              <Height>0.423cm</Height>
+              <TableCells>
+                <TableCell>
+                  <ColSpan>3</ColSpan>
+                  <ReportItems>
+                    <Textbox Name="textbox81">
+                      <Style>
+                        <FontSize>7pt</FontSize>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <VerticalAlign>Middle</VerticalAlign>
+                      </Style>
+                      <Value>=Fields!Intrastat_Jnl__Line__Item_Description_.Value</Value>
+                      <ZIndex>5</ZIndex>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ColSpan>2</ColSpan>
+                  <ReportItems>
+                    <Textbox Name="textbox82">
+                      <Style>
+                        <FontSize>7pt</FontSize>
+                        <Format>=Fields!Intrastat_Jnl__Line__Total_Weight_Format.Value</Format>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <VerticalAlign>Middle</VerticalAlign>
+                      </Style>
+                      <Value>=Fields!Intrastat_Jnl__Line__Total_Weight_.Value</Value>
+                      <ZIndex>4</ZIndex>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ColSpan>2</ColSpan>
+                  <ReportItems>
+                    <Textbox Name="textbox83">
+                      <Style>
+                        <FontSize>7pt</FontSize>
+                        <Format>=Fields!Intrastat_Jnl__Line_QuantityFormat.Value</Format>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <VerticalAlign>Middle</VerticalAlign>
+                      </Style>
+                      <Value>=Fields!Intrastat_Jnl__Line_Quantity.Value</Value>
+                      <ZIndex>3</ZIndex>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ColSpan>2</ColSpan>
+                  <ReportItems>
+                    <Textbox Name="textbox110">
+                      <Style>
+                        <FontSize>7pt</FontSize>
+                        <Format>=Fields!Intrastat_Jnl__Line__Statistical_Value_Format.Value</Format>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <VerticalAlign>Middle</VerticalAlign>
+                      </Style>
+                      <Value>=Fields!Intrastat_Jnl__Line__Statistical_Value_.Value</Value>
+                      <ZIndex>2</ZIndex>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ColSpan>2</ColSpan>
+                  <ReportItems>
+                    <Textbox Name="textbox111">
+                      <Style>
+                        <FontSize>7pt</FontSize>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <VerticalAlign>Middle</VerticalAlign>
+                      </Style>
+                      <Value>=Fields!Intrastat_Jnl__Line__Internal_Ref__No__.Value</Value>
+                      <ZIndex>1</ZIndex>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ColSpan>5</ColSpan>
+                  <ReportItems>
+                    <Textbox Name="textbox112">
+                      <Style>
+                        <FontSize>7pt</FontSize>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <VerticalAlign>Middle</VerticalAlign>
+                      </Style>
+                      <Value />
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+              </TableCells>
+              <Visibility>
+                <Hidden>=IIF(Fields!PrintJnlLines.Value,false,true)</Hidden>
+              </Visibility>
+            </TableRow>
+          </TableRows>
+        </Details>
+        <TableColumns>
+          <TableColumn>
+            <Width>1.61878cm</Width>
+          </TableColumn>
+          <TableColumn>
+            <Width>1.91311cm</Width>
+          </TableColumn>
+          <TableColumn>
+            <Width>0.58865cm</Width>
+          </TableColumn>
+          <TableColumn>
+            <Width>1.1773cm</Width>
+          </TableColumn>
+          <TableColumn>
+            <Width>1.1773cm</Width>
+          </TableColumn>
+          <TableColumn>
+            <Width>0.44149cm</Width>
+          </TableColumn>
+          <TableColumn>
+            <Width>0.73581cm</Width>
+          </TableColumn>
+          <TableColumn>
+            <Width>0.88297cm</Width>
+          </TableColumn>
+          <TableColumn>
+            <Width>1.03014cm</Width>
+          </TableColumn>
+          <TableColumn>
+            <Width>0.58865cm</Width>
+          </TableColumn>
+          <TableColumn>
+            <Width>1.03014cm</Width>
+          </TableColumn>
+          <TableColumn>
+            <Width>0.58865cm</Width>
+          </TableColumn>
+          <TableColumn>
+            <Width>1.66784cm</Width>
+          </TableColumn>
+          <TableColumn>
+            <Width>1.61878cm</Width>
+          </TableColumn>
+          <TableColumn>
+            <Width>1.1773cm</Width>
+          </TableColumn>
+          <TableColumn>
+            <Width>1.91311cm</Width>
+          </TableColumn>
+        </TableColumns>
+        <TableGroups>
+          <TableGroup>
+            <Footer>
+              <TableRows>
+                <TableRow>
+                  <Height>0.423cm</Height>
+                  <TableCells>
+                    <TableCell>
+                      <ColSpan>16</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="textbox52">
+                          <CanGrow>true</CanGrow>
+                          <Style>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <Value />
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                  </TableCells>
+                </TableRow>
+                <TableRow>
+                  <Height>0.423cm</Height>
+                  <TableCells>
+                    <TableCell>
+                      <ColSpan>12</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="textbox53">
+                          <Style>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <Value />
+                          <ZIndex>16</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ReportItems>
+                        <Textbox Name="textbox54">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <FontWeight>700</FontWeight>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <Value>=Fields!TotalCaption.Value</Value>
+                          <ZIndex>15</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ReportItems>
+                        <Textbox Name="textbox56">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <FontWeight>700</FontWeight>
+                            <Format>=Last(Fields!Intrastat_Jnl__Line__Total_Weight__Control51Format.Value)</Format>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <Value>=round(sum(Fields!Intrastat_Jnl__Line__Total_Weight_.Value,"Table1_Group"))</Value>
+                          <ZIndex>14</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ReportItems>
+                        <Textbox Name="textbox58">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <FontWeight>700</FontWeight>
+                            <Format>=Last(Fields!Intrastat_Jnl__Line_QuantityFormat.Value)</Format>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <Value>=sum(Fields!Intrastat_Jnl__Line_Quantity.Value,"Table1_Group")</Value>
+                          <ZIndex>13</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ReportItems>
+                        <Textbox Name="textbox62">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <FontWeight>700</FontWeight>
+                            <Format>=Last(Fields!Intrastat_Jnl__Line__Statistical_Value_Format.Value)</Format>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <Value>=sum(Fields!Intrastat_Jnl__Line__Statistical_Value_.Value,"Table1_Group")</Value>
+                          <ZIndex>12</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                  </TableCells>
+                  <Visibility>
+                    <Hidden>=IIF(Fields!PrintJnlLines.Value, True, False)</Hidden>
+                  </Visibility>
+                </TableRow>
+                <TableRow>
+                  <Height>0.423cm</Height>
+                  <TableCells>
+                    <TableCell>
+                      <ColSpan>12</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="textbox92">
+                          <Style>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <Value />
+                          <ZIndex>20</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ColSpan>2</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="textbox93">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <Value>=Fields!No__of_EntriesCaption.Value</Value>
+                          <ZIndex>19</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ReportItems>
+                        <Textbox Name="textbox94">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <Value>=Last(Fields!NoOfRecords.Value)</Value>
+                          <ZIndex>18</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ReportItems>
+                        <Textbox Name="textbox95">
+                          <Style>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <Value />
+                          <ZIndex>17</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                  </TableCells>
+                  <Visibility>
+                    <Hidden>=IIF(Fields!PrintJnlLines.Value, True, False)</Hidden>
+                  </Visibility>
+                </TableRow>
+                <TableRow>
+                  <Height>0.423cm</Height>
+                  <TableCells>
+                    <TableCell>
+                      <ColSpan>16</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="textbox96">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <FontWeight>700</FontWeight>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <Value>=Fields!TotalCaption.Value</Value>
+                          <ZIndex>21</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                  </TableCells>
+                  <Visibility>
+                    <Hidden>=IIF(Fields!PrintJnlLines.Value, False, True)</Hidden>
+                  </Visibility>
+                </TableRow>
+                <TableRow>
+                  <Height>0.423cm</Height>
+                  <TableCells>
+                    <TableCell>
+                      <ReportItems>
+                        <Textbox Name="textbox97">
+                          <Style>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <Value />
+                          <ZIndex>28</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ReportItems>
+                        <Textbox Name="textbox98">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <FontWeight>700</FontWeight>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <Value>=Fields!TotalCaption.Value</Value>
+                          <ZIndex>27</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ReportItems>
+                        <Textbox Name="textbox99">
+                          <Style>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <Value />
+                          <ZIndex>26</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ColSpan>2</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="textbox100">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <FontWeight>700</FontWeight>
+                            <Format>=Last(Fields!Intrastat_Jnl__Line__Total_Weight__Control51Format.Value)</Format>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <Value>=round(sum(Fields!Intrastat_Jnl__Line__Total_Weight_.Value,"Table1_Group"))</Value>
+                          <ZIndex>25</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ColSpan>2</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="textbox101">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <FontWeight>700</FontWeight>
+                            <Format>=Last(Fields!Intrastat_Jnl__Line_QuantityFormat.Value)</Format>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <Value>=sum(Fields!Intrastat_Jnl__Line_Quantity.Value,"Table1_Group")</Value>
+                          <ZIndex>24</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ColSpan>2</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="textbox102">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <FontWeight>700</FontWeight>
+                            <Format>=Last(Fields!Intrastat_Jnl__Line__Statistical_Value_Format.Value)</Format>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <Value>=sum(Fields!Intrastat_Jnl__Line__Statistical_Value_.Value,"Table1_Group")</Value>
+                          <ZIndex>23</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ColSpan>7</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="textbox103">
+                          <Style>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <Value />
+                          <ZIndex>22</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                  </TableCells>
+                  <Visibility>
+                    <Hidden>=IIF(Fields!PrintJnlLines.Value, False, True)</Hidden>
+                  </Visibility>
+                </TableRow>
+                <TableRow>
+                  <Height>0.423cm</Height>
+                  <TableCells>
+                    <TableCell>
+                      <ReportItems>
+                        <Textbox Name="textbox105">
+                          <Style>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <Value />
+                          <ZIndex>33</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ColSpan>2</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="textbox106">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <Value>=Fields!No__of_EntriesCaption.Value</Value>
+                          <ZIndex>32</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ColSpan>2</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="textbox108">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <Value>=Last(Fields!NoOfRecords.Value)</Value>
+                          <ZIndex>30</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ColSpan>11</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="textbox109">
+                          <Style>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <Value />
+                          <ZIndex>29</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                  </TableCells>
+                  <Visibility>
+                    <Hidden>=IIF(Fields!PrintJnlLines.Value, False, True)</Hidden>
+                  </Visibility>
+                </TableRow>
+              </TableRows>
+            </Footer>
+            <Grouping Name="Table1_Group">
+              <GroupExpressions>
+                <GroupExpression>=Fields!Intrastat_Jnl__Batch_Journal_Template_Name.Value</GroupExpression>
+                <GroupExpression>=Fields!Intrastat_Jnl__Batch_Name.Value</GroupExpression>
+              </GroupExpressions>
+            </Grouping>
+            <Header>
+              <RepeatOnNewPage>true</RepeatOnNewPage>
+              <TableRows>
+                <TableRow>
+                  <Height>0.423cm</Height>
+                  <TableCells>
+                    <TableCell>
+                      <ColSpan>2</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="textbox4">
+                          <CanGrow>true</CanGrow>
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <Value>=Fields!HeaderText.Value</Value>
+                          <rd:DefaultName>textbox4</rd:DefaultName>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ColSpan>14</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="textbox10">
+                          <CanGrow>true</CanGrow>
+                          <Style>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <Value />
+                          <rd:DefaultName>textbox10</rd:DefaultName>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                  </TableCells>
+                </TableRow>
+                <TableRow>
+                  <Height>0.423cm</Height>
+                  <TableCells>
+                    <TableCell>
+                      <ColSpan>16</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="textbox18">
+                          <CanGrow>true</CanGrow>
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <Value />
+                          <rd:DefaultName>textbox18</rd:DefaultName>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                  </TableCells>
+                </TableRow>
+                <TableRow>
+                  <Height>0.846cm</Height>
+                  <TableCells>
+                    <TableCell>
+                      <ReportItems>
+                        <Textbox Name="textbox60">
+                          <CanGrow>true</CanGrow>
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <FontWeight>700</FontWeight>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <VerticalAlign>Bottom</VerticalAlign>
+                          </Style>
+                          <Value>=Fields!Intrastat_Jnl__Line_Type_Control38Caption.Value</Value>
+                          <ZIndex>102</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ReportItems>
+                        <Textbox Name="textbox61">
+                          <CanGrow>true</CanGrow>
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <FontWeight>700</FontWeight>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <VerticalAlign>Bottom</VerticalAlign>
+                          </Style>
+                          <Value>=Fields!Intrastat_Jnl__Line__Tariff_No___Control39Caption.Value</Value>
+                          <ZIndex>101</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ColSpan>2</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="textbox68">
+                          <CanGrow>true</CanGrow>
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <FontWeight>700</FontWeight>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <VerticalAlign>Bottom</VerticalAlign>
+                          </Style>
+                          <Value>=Fields!Country__Intrastat_Code__Control40Caption.Value</Value>
+                          <ZIndex>100</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ColSpan>2</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="textbox69">
+                          <CanGrow>true</CanGrow>
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <FontWeight>700</FontWeight>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <VerticalAlign>Bottom</VerticalAlign>
+                          </Style>
+                          <Value>=Fields!Intrastat_Jnl__Line_Area_Control1140013Caption.Value</Value>
+                          <ZIndex>99</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ColSpan>2</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="textbox86">
+                          <CanGrow>true</CanGrow>
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <FontWeight>700</FontWeight>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <VerticalAlign>Bottom</VerticalAlign>
+                          </Style>
+                          <Value>=Fields!Intrastat_Jnl__Line__Transaction_Type__Control42Caption.Value</Value>
+                          <ZIndex>98</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ColSpan>2</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="textbox88">
+                          <CanGrow>true</CanGrow>
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <FontWeight>700</FontWeight>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <VerticalAlign>Bottom</VerticalAlign>
+                          </Style>
+                          <Value>=Fields!Intrastat_Jnl__Line__Transport_Method__Control43Caption.Value</Value>
+                          <ZIndex>97</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ColSpan>2</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="textbox116">
+                          <CanGrow>true</CanGrow>
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <FontWeight>700</FontWeight>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <VerticalAlign>Bottom</VerticalAlign>
+                          </Style>
+                          <Value>=Fields!OriginCountry__Intrastat_Code_Caption.Value</Value>
+                          <ZIndex>96</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ReportItems>
+                        <Textbox Name="textbox117">
+                          <CanGrow>true</CanGrow>
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <FontWeight>700</FontWeight>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <VerticalAlign>Bottom</VerticalAlign>
+                          </Style>
+                          <Value>=Fields!Intrastat_Jnl__Line__Transaction_Specification__Control1140012Caption.Value</Value>
+                          <ZIndex>95</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ReportItems>
+                        <Textbox Name="textbox118">
+                          <CanGrow>true</CanGrow>
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <FontWeight>700</FontWeight>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <TextAlign>Right</TextAlign>
+                            <VerticalAlign>Bottom</VerticalAlign>
+                          </Style>
+                          <Value>=Fields!Intrastat_Jnl__Line__Total_Weight__Control44Caption.Value</Value>
+                          <ZIndex>94</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ReportItems>
+                        <Textbox Name="textbox119">
+                          <CanGrow>true</CanGrow>
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <FontWeight>700</FontWeight>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <TextAlign>Right</TextAlign>
+                            <VerticalAlign>Bottom</VerticalAlign>
+                          </Style>
+                          <Value>=Fields!Intrastat_Jnl__Line_QuantityCaption.Value</Value>
+                          <ZIndex>93</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ReportItems>
+                        <Textbox Name="textbox120">
+                          <CanGrow>true</CanGrow>
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <FontWeight>700</FontWeight>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <TextAlign>Right</TextAlign>
+                            <VerticalAlign>Bottom</VerticalAlign>
+                          </Style>
+                          <Value>=Fields!Intrastat_Jnl__Line__Statistical_Value__Control46Caption.Value</Value>
+                          <ZIndex>92</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                  </TableCells>
+                  <Visibility>
+                    <Hidden>=IIF(Fields!PrintJnlLines.Value, True, False)</Hidden>
+                  </Visibility>
+                </TableRow>
+                <TableRow>
+                  <Height>0.846cm</Height>
+                  <TableCells>
+                    <TableCell>
+                      <ColSpan>3</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="textbox121">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <FontWeight>700</FontWeight>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <VerticalAlign>Bottom</VerticalAlign>
+                          </Style>
+                          <Value>=Fields!Intrastat_Jnl__Line__Item_Description_Caption.Value</Value>
+                          <ZIndex>91</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ColSpan>2</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="textbox122">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <FontWeight>700</FontWeight>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <TextAlign>Right</TextAlign>
+                            <VerticalAlign>Bottom</VerticalAlign>
+                          </Style>
+                          <Value>=Fields!Intrastat_Jnl__Line__Total_Weight_Caption.Value</Value>
+                          <ZIndex>90</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ColSpan>2</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="textbox123">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <FontWeight>700</FontWeight>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <TextAlign>Right</TextAlign>
+                            <VerticalAlign>Bottom</VerticalAlign>
+                          </Style>
+                          <Value>=Fields!Intrastat_Jnl__Line_QuantityCaption.Value</Value>
+                          <ZIndex>89</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ColSpan>2</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="textbox125">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <FontWeight>700</FontWeight>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <TextAlign>Right</TextAlign>
+                            <VerticalAlign>Bottom</VerticalAlign>
+                          </Style>
+                          <Value>=Fields!Intrastat_Jnl__Line__Statistical_Value_Caption.Value</Value>
+                          <ZIndex>88</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ColSpan>2</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="textbox126">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <FontWeight>700</FontWeight>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <VerticalAlign>Bottom</VerticalAlign>
+                          </Style>
+                          <Value>=Fields!Intrastat_Jnl__Line__Internal_Ref__No__Caption.Value</Value>
+                          <ZIndex>87</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ColSpan>5</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="textbox127">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <VerticalAlign>Bottom</VerticalAlign>
+                          </Style>
+                          <Value />
+                          <ZIndex>86</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                  </TableCells>
+                  <Visibility>
+                    <Hidden>=IIF(Fields!PrintJnlLines.Value, False, True)</Hidden>
+                  </Visibility>
+                </TableRow>
+                <TableRow>
+                  <Height>0.423cm</Height>
+                  <TableCells>
+                    <TableCell>
+                      <ReportItems>
+                        <Textbox Name="STRSUBSTNO_Text001__Intrastat_Jnl__Batch___Statistics_Period__">
+                          <CanGrow>true</CanGrow>
+                          <Style>
+                            <Color>Red</Color>
+                            <FontSize>7pt</FontSize>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <Value>=Fields!STRSUBSTNO_Text001__Intrastat_Jnl__Batch___Statistics_Period__.Value</Value>
+                          <Visibility>
+                            <Hidden>true</Hidden>
+                          </Visibility>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ReportItems>
+                        <Textbox Name="COMPANYNAME">
+                          <CanGrow>true</CanGrow>
+                          <Style>
+                            <Color>Red</Color>
+                            <FontSize>7pt</FontSize>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <Value>=Fields!COMPANYNAME.Value</Value>
+                          <Visibility>
+                            <Hidden>true</Hidden>
+                          </Visibility>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ReportItems>
+                        <Textbox Name="PrintJnlLines">
+                          <CanGrow>true</CanGrow>
+                          <Style>
+                            <Color>Red</Color>
+                            <FontSize>7pt</FontSize>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <Value>=Fields!PrintJnlLines.Value</Value>
+                          <Visibility>
+                            <Hidden>true</Hidden>
+                          </Visibility>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ReportItems>
+                        <Textbox Name="Intrastat___ChecklistCaption">
+                          <CanGrow>true</CanGrow>
+                          <Style>
+                            <Color>Red</Color>
+                            <FontSize>7pt</FontSize>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <Value>=Fields!Intrastat___ChecklistCaption.Value</Value>
+                          <Visibility>
+                            <Hidden>true</Hidden>
+                          </Visibility>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ReportItems>
+                        <Textbox Name="CurrReport_PAGENOCaption">
+                          <CanGrow>true</CanGrow>
+                          <Style>
+                            <Color>Red</Color>
+                            <FontSize>7pt</FontSize>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <Value>=Fields!CurrReport_PAGENOCaption.Value</Value>
+                          <Visibility>
+                            <Hidden>true</Hidden>
+                          </Visibility>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ReportItems>
+                        <Textbox Name="VATIDNoCaption">
+                          <CanGrow>true</CanGrow>
+                          <Style>
+                            <Color>Red</Color>
+                            <FontSize>7pt</FontSize>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <Value>=Fields!VATIDNoCaption.Value</Value>
+                          <Visibility>
+                            <Hidden>true</Hidden>
+                          </Visibility>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ReportItems>
+                        <Textbox Name="CompanyInfo_AreaCaption">
+                          <CanGrow>true</CanGrow>
+                          <Style>
+                            <Color>Red</Color>
+                            <FontSize>7pt</FontSize>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <Value>=Fields!CompanyInfo_AreaCaption.Value</Value>
+                          <Visibility>
+                            <Hidden>true</Hidden>
+                          </Visibility>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ReportItems>
+                        <Textbox Name="FORMAT_TODAY">
+                          <CanGrow>true</CanGrow>
+                          <Style>
+                            <Color>Red</Color>
+                            <FontSize>7pt</FontSize>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <Value>=Fields!FORMAT_TODAY_0_4_.Value</Value>
+                          <Visibility>
+                            <Hidden>true</Hidden>
+                          </Visibility>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ReportItems>
+                        <Textbox Name="Intrastat_Jnl__Batch_Name">
+                          <CanGrow>true</CanGrow>
+                          <Style>
+                            <Color>Red</Color>
+                            <FontSize>7pt</FontSize>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <Value>=Fields!Intrastat_Jnl__Batch_Name.Value</Value>
+                          <Visibility>
+                            <Hidden>true</Hidden>
+                          </Visibility>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ReportItems>
+                        <Textbox Name="VATIDNo">
+                          <CanGrow>true</CanGrow>
+                          <Style>
+                            <Color>Red</Color>
+                            <FontSize>7pt</FontSize>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <Value>=First(Fields!VATIDNo.Value)</Value>
+                          <Visibility>
+                            <Hidden>true</Hidden>
+                          </Visibility>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ReportItems>
+                        <Textbox Name="CompanyInfo_Area">
+                          <CanGrow>true</CanGrow>
+                          <Style>
+                            <Color>Red</Color>
+                            <FontSize>7pt</FontSize>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <Value>=First(Fields!CompanyInfo_Area.Value)</Value>
+                          <Visibility>
+                            <Hidden>true</Hidden>
+                          </Visibility>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ReportItems>
+                        <Textbox Name="Intrastat_Jnl__Batch_Journal_Template_Name">
+                          <CanGrow>true</CanGrow>
+                          <Style>
+                            <Color>Red</Color>
+                            <FontSize>7pt</FontSize>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <Value>Fields!Intrastat_Jnl__Batch_Journal_Template_Name.Value</Value>
+                          <Visibility>
+                            <Hidden>true</Hidden>
+                          </Visibility>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ColSpan>4</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="NewPage">
+                          <CanGrow>true</CanGrow>
+                          <Style>
+                            <Color>White</Color>
+                            <FontSize>7pt</FontSize>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <Value>=Code.IsNewPage(First(Fields!Intrastat_Jnl__Batch_Name.Value), First(Fields!Intrastat_Jnl__Batch_Journal_Template_Name.Value))</Value>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                  </TableCells>
+                </TableRow>
+              </TableRows>
+            </Header>
+          </TableGroup>
+          <TableGroup>
+            <Footer>
+              <TableRows>
+                <TableRow>
+                  <Height>0.846cm</Height>
+                  <TableCells>
+                    <TableCell>
+                      <ReportItems>
+                        <Textbox Name="textbox6">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <TextAlign>Left</TextAlign>
+                          </Style>
+                          <Value>=Fields!Intrastat_Jnl__Line_Type.Value</Value>
+                          <ZIndex>60</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ReportItems>
+                        <Textbox Name="textbox7">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <TextAlign>Left</TextAlign>
+                          </Style>
+                          <Value>=Fields!Intrastat_Jnl__Line__Tariff_No__.Value</Value>
+                          <ZIndex>59</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ColSpan>2</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="textbox8">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <TextAlign>Left</TextAlign>
+                          </Style>
+                          <Value>=Fields!Country__Intrastat_Code_.Value</Value>
+                          <ZIndex>58</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ColSpan>2</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="textbox9">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <Format>=Fields!Intrastat_Jnl__Line__Statistical_Value_Format.Value</Format>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <TextAlign>Left</TextAlign>
+                          </Style>
+                          <Value>=Fields!Intrastat_Jnl__Line_Area.Value</Value>
+                          <ZIndex>57</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ColSpan>2</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="textbox11">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <TextAlign>Left</TextAlign>
+                          </Style>
+                          <Value>=Fields!Intrastat_Jnl__Line__Transaction_Type_.Value</Value>
+                          <ZIndex>56</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ColSpan>2</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="textbox12">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <TextAlign>Left</TextAlign>
+                          </Style>
+                          <Value>=Fields!Intrastat_Jnl__Line__Transport_Method_.Value</Value>
+                          <ZIndex>55</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ColSpan>2</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="textbox13">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <TextAlign>Left</TextAlign>
+                          </Style>
+                          <Value>=Fields!OriginCountry__Intrastat_Code_.Value</Value>
+                          <ZIndex>54</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ReportItems>
+                        <Textbox Name="textbox14">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <TextAlign>Left</TextAlign>
+                          </Style>
+                          <Value>=Fields!Intrastat_Jnl__Line__Transaction_Specification_.Value</Value>
+                          <ZIndex>53</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ReportItems>
+                        <Textbox Name="textbox15">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <Format>=Fields!Intrastat_Jnl__Line__Total_Weight__Control44Format.Value</Format>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <Value>=Round(Sum(Fields!Intrastat_Jnl__Line__Total_Weight_.Value))</Value>
+                          <ZIndex>52</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ReportItems>
+                        <Textbox Name="textbox16">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <Format>=Fields!Intrastat_Jnl__Line_Quantity_Control45Format.Value</Format>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <Value>=Sum(Fields!Intrastat_Jnl__Line_Quantity.Value)</Value>
+                          <ZIndex>51</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ReportItems>
+                        <Textbox Name="textbox17">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <Format>=Fields!Intrastat_Jnl__Line__Statistical_Value_Format.Value</Format>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <Value>=Sum(Fields!Intrastat_Jnl__Line__Statistical_Value_.Value)</Value>
+                          <ZIndex>50</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                  </TableCells>
+                  <Visibility>
+                    <Hidden>=IIF(Fields!PrintJnlLines.Value, True, False)</Hidden>
+                  </Visibility>
+                </TableRow>
+                <TableRow>
+                  <Height>1.269cm</Height>
+                  <TableCells>
+                    <TableCell>
+                      <ColSpan>3</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="textbox26">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <Value />
+                          <ZIndex>10</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ColSpan>2</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="textbox30">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <FontWeight>700</FontWeight>
+                            <Format>=Fields!Intrastat_Jnl__Line__Statistical_Value_Format.Value</Format>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <Value>=round(sum(fields!Intrastat_Jnl__Line__Total_Weight_.Value))</Value>
+                          <ZIndex>9</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ColSpan>2</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="textbox32">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <FontWeight>700</FontWeight>
+                            <Format>=Fields!Intrastat_Jnl__Line_Quantity_Control48Format.Value</Format>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <Value>=sum(Fields!Intrastat_Jnl__Line_Quantity.Value)</Value>
+                          <ZIndex>8</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ColSpan>2</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="textbox33">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <FontWeight>700</FontWeight>
+                            <Format>=Fields!Intrastat_Jnl__Line__Statistical_Value_Format.Value</Format>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <Value>=Sum(Fields!Intrastat_Jnl__Line__Statistical_Value_.Value)</Value>
+                          <ZIndex>7</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ColSpan>7</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="textbox34">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <Value />
+                          <ZIndex>6</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                  </TableCells>
+                  <Visibility>
+                    <Hidden>=IIF(Fields!PrintJnlLines.Value,false,true)</Hidden>
+                  </Visibility>
+                </TableRow>
+              </TableRows>
+            </Footer>
+            <Grouping Name="Table1_Group2">
+              <GroupExpressions>
+                <GroupExpression>=Fields!Intrastat_Jnl__Line_Journal_Template_Name.Value</GroupExpression>
+                <GroupExpression>=Fields!Intrastat_Jnl__Line_Journal_Batch_Name.Value</GroupExpression>
+                <GroupExpression>=Fields!Intrastat_Jnl__Line_Type.Value</GroupExpression>
+                <GroupExpression>=Fields!Intrastat_Jnl__Line__Country_Region_Code_.Value</GroupExpression>
+                <GroupExpression>=Fields!Intrastat_Jnl__Line__Tariff_No__.Value</GroupExpression>
+                <GroupExpression>=Fields!Intrastat_Jnl__Line__Transaction_Type_.Value</GroupExpression>
+                <GroupExpression>=Fields!Intrastat_Jnl__Line__Transport_Method_.Value</GroupExpression>
+                <GroupExpression>=Fields!Intrastat_Jnl__Line_Area.Value</GroupExpression>
+                <GroupExpression>=Fields!Intrastat_Jnl__Line__Transaction_Specification_.Value</GroupExpression>
+                <GroupExpression>=Fields!Intrastat_Jnl__Line_Country_Region_of_Origin_Code.Value</GroupExpression>
+              </GroupExpressions>
+            </Grouping>
+            <Header>
+              <TableRows>
+                <TableRow>
+                  <Height>0.423cm</Height>
+                  <TableCells>
+                    <TableCell>
+                      <ReportItems>
+                        <Textbox Name="textbox57">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <FontWeight>700</FontWeight>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <Value>=Fields!Intrastat_Jnl__Line_Type.Value</Value>
+                          <ZIndex>84</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ColSpan>15</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="textbox5">
+                          <CanGrow>true</CanGrow>
+                          <Style>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <Value />
+                          <rd:DefaultName>textbox5</rd:DefaultName>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                  </TableCells>
+                  <Visibility>
+                    <Hidden>=IIF(Fields!PrintJnlLines.Value and not Fields!Heading.Value,false,true)</Hidden>
+                  </Visibility>
+                </TableRow>
+                <TableRow>
+                  <Height>0.423cm</Height>
+                  <TableCells>
+                    <TableCell>
+                      <ColSpan>2</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="textbox64">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <Value>=Fields!Intrastat_Jnl__Line__Tariff_No___Control39Caption.Value</Value>
+                          <ZIndex>82</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ColSpan>14</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="textbox65">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <TextAlign>Left</TextAlign>
+                          </Style>
+                          <Value>=Fields!Intrastat_Jnl__Line__Tariff_No__.Value</Value>
+                          <ZIndex>81</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                  </TableCells>
+                  <Visibility>
+                    <Hidden>=IIF(Fields!PrintJnlLines.Value and not Fields!Heading.Value,false,true)</Hidden>
+                  </Visibility>
+                </TableRow>
+                <TableRow>
+                  <Height>0.423cm</Height>
+                  <TableCells>
+                    <TableCell>
+                      <ColSpan>2</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="textbox66">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <Value>=Fields!Country__Intrastat_Code_Caption.Value</Value>
+                          <ZIndex>80</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ReportItems>
+                        <Textbox Name="textbox67">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <TextAlign>Left</TextAlign>
+                          </Style>
+                          <Value>=Fields!Country__Intrastat_Code_.Value</Value>
+                          <ZIndex>79</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ColSpan>2</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="textbox1">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <TextAlign>Left</TextAlign>
+                          </Style>
+                          <Value>=Fields!Country_Name.Value</Value>
+                          <ZIndex>78</ZIndex>
+                          <rd:DefaultName>textbox1</rd:DefaultName>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ColSpan>11</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="textbox3">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <Value />
+                          <ZIndex>77</ZIndex>
+                          <rd:DefaultName>textbox3</rd:DefaultName>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                  </TableCells>
+                  <Visibility>
+                    <Hidden>=IIF(Fields!PrintJnlLines.Value and not Fields!Heading.Value,false,true)</Hidden>
+                  </Visibility>
+                </TableRow>
+                <TableRow>
+                  <Height>0.423cm</Height>
+                  <TableCells>
+                    <TableCell>
+                      <ColSpan>2</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="textbox70">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <Value>=Fields!Intrastat_Jnl__Line_Area_Control1140013Caption.Value</Value>
+                          <ZIndex>76</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ColSpan>2</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="textbox71">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <TextAlign>Left</TextAlign>
+                          </Style>
+                          <Value>=Fields!Intrastat_Jnl__Line_Area.Value</Value>
+                          <ZIndex>75</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ColSpan>12</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="textbox72">
+                          <Style>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <Value />
+                          <ZIndex>74</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                  </TableCells>
+                  <Visibility>
+                    <Hidden>=IIF(Fields!PrintJnlLines.Value and not Fields!Heading.Value,false,true)</Hidden>
+                  </Visibility>
+                </TableRow>
+                <TableRow>
+                  <Height>0.423cm</Height>
+                  <TableCells>
+                    <TableCell>
+                      <ColSpan>2</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="textbox73">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <Value>=Fields!Intrastat_Jnl__Line__Transaction_Type__Control42Caption.Value</Value>
+                          <ZIndex>73</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ColSpan>2</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="textbox74">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <TextAlign>Left</TextAlign>
+                          </Style>
+                          <Value>=Fields!Intrastat_Jnl__Line__Transaction_Type_.Value</Value>
+                          <ZIndex>72</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ColSpan>12</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="textbox76">
+                          <Style>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <Value />
+                          <ZIndex>71</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                  </TableCells>
+                  <Visibility>
+                    <Hidden>=IIF(Fields!PrintJnlLines.Value and not Fields!Heading.Value,false,true)</Hidden>
+                  </Visibility>
+                </TableRow>
+                <TableRow>
+                  <Height>0.423cm</Height>
+                  <TableCells>
+                    <TableCell>
+                      <ColSpan>2</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="textbox77">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <Value>=Fields!Intrastat_Jnl__Line__Transport_Method__Control43Caption.Value</Value>
+                          <ZIndex>70</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ColSpan>2</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="textbox78">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <TextAlign>Left</TextAlign>
+                          </Style>
+                          <Value>=Fields!Intrastat_Jnl__Line__Transport_Method_.Value</Value>
+                          <ZIndex>69</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ColSpan>12</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="textbox79">
+                          <Style>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <Value />
+                          <ZIndex>68</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                  </TableCells>
+                  <Visibility>
+                    <Hidden>=IIF(Fields!PrintJnlLines.Value and not Fields!Heading.Value,false,true)</Hidden>
+                  </Visibility>
+                </TableRow>
+                <TableRow>
+                  <Height>0.423cm</Height>
+                  <TableCells>
+                    <TableCell>
+                      <ColSpan>2</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="textbox80">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <Value>=Fields!OriginCountry__Intrastat_Code_Caption.Value</Value>
+                          <ZIndex>67</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ColSpan>2</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="textbox84">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <TextAlign>Left</TextAlign>
+                          </Style>
+                          <Value>=Fields!OriginCountry__Intrastat_Code_.Value</Value>
+                          <ZIndex>66</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ColSpan>12</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="textbox85">
+                          <Style>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <Value />
+                          <ZIndex>65</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                  </TableCells>
+                  <Visibility>
+                    <Hidden>=IIF(Fields!PrintJnlLines.Value and not Fields!Heading.Value,false,true)</Hidden>
+                  </Visibility>
+                </TableRow>
+                <TableRow>
+                  <Height>0.423cm</Height>
+                  <TableCells>
+                    <TableCell>
+                      <ColSpan>2</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="textbox87">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <Value>=Fields!Intrastat_Jnl__Line__Transaction_Specification__Control1140012Caption.Value</Value>
+                          <ZIndex>64</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ColSpan>7</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="textbox89">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <TextAlign>Left</TextAlign>
+                          </Style>
+                          <Value>=Fields!Intrastat_Jnl__Line__Transaction_Specification_.Value</Value>
+                          <ZIndex>63</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ColSpan>7</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="textbox90">
+                          <Style>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <Value />
+                          <ZIndex>62</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                  </TableCells>
+                  <Visibility>
+                    <Hidden>=IIF(Fields!PrintJnlLines.Value and not Fields!Heading.Value,false,true)</Hidden>
+                  </Visibility>
+                </TableRow>
+                <TableRow>
+                  <Height>0.423cm</Height>
+                  <TableCells>
+                    <TableCell>
+                      <ColSpan>16</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="textbox91">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <Value />
+                          <ZIndex>61</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                  </TableCells>
+                  <Visibility>
+                    <Hidden>=IIF(Fields!PrintJnlLines.Value and not Fields!Heading.Value,false,true)</Hidden>
+                  </Visibility>
+                </TableRow>
+              </TableRows>
+            </Header>
+          </TableGroup>
+        </TableGroups>
+      </Table>
+    </ReportItems>
+  </Body>
+  <BottomMargin>2cm</BottomMargin>
+  <Code>Public Function BlankZero(ByVal Value As Decimal)
+    if Value = 0 then
+        Return ""
+    end if
+    Return Value
+End Function
+
+Public Function BlankPos(ByVal Value As Decimal)
+    if Value &gt; 0 then
+        Return ""
+    end if
+    Return Value
+End Function
+
+Public Function BlankZeroAndPos(ByVal Value As Decimal)
+    if Value &gt;= 0 then
+        Return ""
+    end if
+    Return Value
+End Function
+
+Public Function BlankNeg(ByVal Value As Decimal)
+    if Value &lt; 0 then
+        Return ""
+    end if
+    Return Value
+End Function
+
+Public Function BlankNegAndZero(ByVal Value As Decimal)
+    if Value &lt;= 0 then
+        Return ""
+    end if
+    Return Value
+End Function
+
+Shared offset as Integer
+Shared newPage as Object
+Shared currentgroup1 as Object
+Shared currentgroup2 as Object
+Shared changeFlag as Object
+Public Function GetGroupPageNumber(NewPage as String, pagenumber as Integer) as Object
+    If NewPage.ToLower() = "true" then
+        offset = pagenumber - 1
+    End If
+    Return pagenumber - offset
+End Function
+
+Public Function IsNewPage(group1 as Object, group2 as Object) As Boolean
+    newPage = FALSE
+    If currentgroup1 ="" then
+        currentgroup1 =group1
+    End If
+    If currentgroup2 ="" then
+        currentgroup2 =group2
+    End If
+   
+    If Not (group1 = currentgroup1)  or Not (group1 = currentgroup1) then
+        newPage = TRUE
+        currentgroup1 = group1
+        currentgroup2 = group2
+    End If
+    Return newPage
+End Function</Code>
+  <DataSets>
+    <DataSet Name="DataSet_Result">
+      <Fields>
+        <Field Name="Intrastat_Jnl__Batch_Journal_Template_Name">
+          <DataField>Intrastat_Jnl__Batch_Journal_Template_Name</DataField>
+        </Field>
+        <Field Name="Intrastat_Jnl__Batch_Name">
+          <DataField>Intrastat_Jnl__Batch_Name</DataField>
+        </Field>
+        <Field Name="Intrastat___ChecklistCaption">
+          <DataField>Intrastat___ChecklistCaption</DataField>
+        </Field>
+        <Field Name="FORMAT_TODAY_0_4_">
+          <DataField>FORMAT_TODAY_0_4_</DataField>
+        </Field>
+        <Field Name="STRSUBSTNO_Text001__Intrastat_Jnl__Batch___Statistics_Period__">
+          <DataField>STRSUBSTNO_Text001__Intrastat_Jnl__Batch___Statistics_Period__</DataField>
+        </Field>
+        <Field Name="CurrReport_PAGENOCaption">
+          <DataField>CurrReport_PAGENOCaption</DataField>
+        </Field>
+        <Field Name="CurrReport_PAGENO">
+          <DataField>CurrReport_PAGENO</DataField>
+        </Field>
+        <Field Name="COMPANYNAME">
+          <DataField>COMPANYNAME</DataField>
+        </Field>
+        <Field Name="USERID">
+          <DataField>USERID</DataField>
+        </Field>
+        <Field Name="VATIDNoCaption">
+          <DataField>VATIDNoCaption</DataField>
+        </Field>
+        <Field Name="VATIDNo">
+          <DataField>VATIDNo</DataField>
+        </Field>
+        <Field Name="CompanyInfo_Area">
+          <DataField>CompanyInfo_Area</DataField>
+        </Field>
+        <Field Name="CompanyInfo_AreaCaption">
+          <DataField>CompanyInfo_AreaCaption</DataField>
+        </Field>
+        <Field Name="PrintJnlLines">
+          <DataField>PrintJnlLines</DataField>
+        </Field>
+        <Field Name="Heading">
+          <DataField>Heading</DataField>
+        </Field>
+        <Field Name="HeaderText">
+          <DataField>HeaderText</DataField>
+        </Field>
+        <Field Name="Intrastat_Jnl__Line_Type_Control38Caption">
+          <DataField>Intrastat_Jnl__Line_Type_Control38Caption</DataField>
+        </Field>
+        <Field Name="Intrastat_Jnl__Line__Tariff_No___Control39Caption">
+          <DataField>Intrastat_Jnl__Line__Tariff_No___Control39Caption</DataField>
+        </Field>
+        <Field Name="Intrastat_Jnl__Line__Transaction_Type__Control42Caption">
+          <DataField>Intrastat_Jnl__Line__Transaction_Type__Control42Caption</DataField>
+        </Field>
+        <Field Name="Intrastat_Jnl__Line__Transport_Method__Control43Caption">
+          <DataField>Intrastat_Jnl__Line__Transport_Method__Control43Caption</DataField>
+        </Field>
+        <Field Name="Intrastat_Jnl__Line__Total_Weight__Control44Caption">
+          <DataField>Intrastat_Jnl__Line__Total_Weight__Control44Caption</DataField>
+        </Field>
+        <Field Name="Intrastat_Jnl__Line_Quantity_Control45Caption">
+          <DataField>Intrastat_Jnl__Line_Quantity_Control45Caption</DataField>
+        </Field>
+        <Field Name="Intrastat_Jnl__Line__Statistical_Value__Control46Caption">
+          <DataField>Intrastat_Jnl__Line__Statistical_Value__Control46Caption</DataField>
+        </Field>
+        <Field Name="OriginCountry__Intrastat_Code__Control1140011Caption">
+          <DataField>OriginCountry__Intrastat_Code__Control1140011Caption</DataField>
+        </Field>
+        <Field Name="Intrastat_Jnl__Line__Transaction_Specification__Control1140012Caption">
+          <DataField>Intrastat_Jnl__Line__Transaction_Specification__Control1140012Caption</DataField>
+        </Field>
+        <Field Name="Intrastat_Jnl__Line_Area_Control1140013Caption">
+          <DataField>Intrastat_Jnl__Line_Area_Control1140013Caption</DataField>
+        </Field>
+        <Field Name="Country__Intrastat_Code__Control40Caption">
+          <DataField>Country__Intrastat_Code__Control40Caption</DataField>
+        </Field>
+        <Field Name="Intrastat_Jnl__Line__Item_Description_Caption">
+          <DataField>Intrastat_Jnl__Line__Item_Description_Caption</DataField>
+        </Field>
+        <Field Name="Intrastat_Jnl__Line__Total_Weight_Caption">
+          <DataField>Intrastat_Jnl__Line__Total_Weight_Caption</DataField>
+        </Field>
+        <Field Name="Intrastat_Jnl__Line_QuantityCaption">
+          <DataField>Intrastat_Jnl__Line_QuantityCaption</DataField>
+        </Field>
+        <Field Name="Intrastat_Jnl__Line__Statistical_Value_Caption">
+          <DataField>Intrastat_Jnl__Line__Statistical_Value_Caption</DataField>
+        </Field>
+        <Field Name="Intrastat_Jnl__Line__Internal_Ref__No__Caption">
+          <DataField>Intrastat_Jnl__Line__Internal_Ref__No__Caption</DataField>
+        </Field>
+        <Field Name="Intrastat_Jnl__Line_Type">
+          <DataField>Intrastat_Jnl__Line_Type</DataField>
+        </Field>
+        <Field Name="Intrastat_Jnl__Line__Tariff_No__Caption">
+          <DataField>Intrastat_Jnl__Line__Tariff_No__Caption</DataField>
+        </Field>
+        <Field Name="Intrastat_Jnl__Line__Tariff_No__">
+          <DataField>Intrastat_Jnl__Line__Tariff_No__</DataField>
+        </Field>
+        <Field Name="Country__Intrastat_Code_Caption">
+          <DataField>Country__Intrastat_Code_Caption</DataField>
+        </Field>
+        <Field Name="Country__Intrastat_Code_">
+          <DataField>Country__Intrastat_Code_</DataField>
+        </Field>
+        <Field Name="Country_Name">
+          <DataField>Country_Name</DataField>
+        </Field>
+        <Field Name="Intrastat_Jnl__Line__Transaction_Type_Caption">
+          <DataField>Intrastat_Jnl__Line__Transaction_Type_Caption</DataField>
+        </Field>
+        <Field Name="Intrastat_Jnl__Line__Transaction_Type_">
+          <DataField>Intrastat_Jnl__Line__Transaction_Type_</DataField>
+        </Field>
+        <Field Name="Intrastat_Jnl__Line__Transport_Method_Caption">
+          <DataField>Intrastat_Jnl__Line__Transport_Method_Caption</DataField>
+        </Field>
+        <Field Name="Intrastat_Jnl__Line__Transport_Method_">
+          <DataField>Intrastat_Jnl__Line__Transport_Method_</DataField>
+        </Field>
+        <Field Name="Intrastat_Jnl__Line__Transaction_Specification_">
+          <DataField>Intrastat_Jnl__Line__Transaction_Specification_</DataField>
+        </Field>
+        <Field Name="Intrastat_Jnl__Line__Transaction_Specification_Caption">
+          <DataField>Intrastat_Jnl__Line__Transaction_Specification_Caption</DataField>
+        </Field>
+        <Field Name="Intrastat_Jnl__Line_Area">
+          <DataField>Intrastat_Jnl__Line_Area</DataField>
+        </Field>
+        <Field Name="Intrastat_Jnl__Line_AreaCaption">
+          <DataField>Intrastat_Jnl__Line_AreaCaption</DataField>
+        </Field>
+        <Field Name="OriginCountry__Intrastat_Code_">
+          <DataField>OriginCountry__Intrastat_Code_</DataField>
+        </Field>
+        <Field Name="OriginCountry__Intrastat_Code_Caption">
+          <DataField>OriginCountry__Intrastat_Code_Caption</DataField>
+        </Field>
+        <Field Name="Intrastat_Jnl__Line__Item_Description_">
+          <DataField>Intrastat_Jnl__Line__Item_Description_</DataField>
+        </Field>
+        <Field Name="Intrastat_Jnl__Line__Total_Weight_">
+          <DataField>Intrastat_Jnl__Line__Total_Weight_</DataField>
+        </Field>
+        <Field Name="Intrastat_Jnl__Line__Total_Weight_Format">
+          <DataField>Intrastat_Jnl__Line__Total_Weight_Format</DataField>
+        </Field>
+        <Field Name="Intrastat_Jnl__Line_Quantity">
+          <DataField>Intrastat_Jnl__Line_Quantity</DataField>
+        </Field>
+        <Field Name="Intrastat_Jnl__Line_QuantityFormat">
+          <DataField>Intrastat_Jnl__Line_QuantityFormat</DataField>
+        </Field>
+        <Field Name="Intrastat_Jnl__Line__Statistical_Value_">
+          <DataField>Intrastat_Jnl__Line__Statistical_Value_</DataField>
+        </Field>
+        <Field Name="Intrastat_Jnl__Line__Statistical_Value_Format">
+          <DataField>Intrastat_Jnl__Line__Statistical_Value_Format</DataField>
+        </Field>
+        <Field Name="Intrastat_Jnl__Line__Internal_Ref__No__">
+          <DataField>Intrastat_Jnl__Line__Internal_Ref__No__</DataField>
+        </Field>
+        <Field Name="Intrastat_Jnl__Line__Country_Region_Code_">
+          <DataField>Intrastat_Jnl__Line__Country_Region_Code_</DataField>
+        </Field>
+        <Field Name="Intrastat_Jnl__Line__Total_Weight__Control44Format">
+          <DataField>Intrastat_Jnl__Line__Total_Weight__Control44Format</DataField>
+        </Field>
+        <Field Name="Intrastat_Jnl__Line_Quantity_Control45Format">
+          <DataField>Intrastat_Jnl__Line_Quantity_Control45Format</DataField>
+        </Field>
+        <Field Name="Intrastat_Jnl__Line__Statistical_Value__Control46Format">
+          <DataField>Intrastat_Jnl__Line__Statistical_Value__Control46Format</DataField>
+        </Field>
+        <Field Name="Intrastat_Jnl__Line__Total_Weight__Control47Format">
+          <DataField>Intrastat_Jnl__Line__Total_Weight__Control47Format</DataField>
+        </Field>
+        <Field Name="Intrastat_Jnl__Line_Quantity_Control48Format">
+          <DataField>Intrastat_Jnl__Line_Quantity_Control48Format</DataField>
+        </Field>
+        <Field Name="Intrastat_Jnl__Line__Statistical_Value__Control49Format">
+          <DataField>Intrastat_Jnl__Line__Statistical_Value__Control49Format</DataField>
+        </Field>
+        <Field Name="Intrastat_Jnl__Line__Total_Weight__Control51Caption">
+          <DataField>Intrastat_Jnl__Line__Total_Weight__Control51Caption</DataField>
+        </Field>
+        <Field Name="Intrastat_Jnl__Line__Total_Weight__Control51Format">
+          <DataField>Intrastat_Jnl__Line__Total_Weight__Control51Format</DataField>
+        </Field>
+        <Field Name="Intrastat_Jnl__Line_Quantity_Control52Format">
+          <DataField>Intrastat_Jnl__Line_Quantity_Control52Format</DataField>
+        </Field>
+        <Field Name="Intrastat_Jnl__Line__Statistical_Value__Control53Format">
+          <DataField>Intrastat_Jnl__Line__Statistical_Value__Control53Format</DataField>
+        </Field>
+        <Field Name="No__of_EntriesCaption">
+          <DataField>No__of_EntriesCaption</DataField>
+        </Field>
+        <Field Name="NoOfRecords">
+          <DataField>NoOfRecords</DataField>
+        </Field>
+        <Field Name="TotalCaption">
+          <DataField>TotalCaption</DataField>
+        </Field>
+        <Field Name="TotalCaption_Control55">
+          <DataField>TotalCaption_Control55</DataField>
+        </Field>
+        <Field Name="Intrastat_Jnl__Line__Total_Weight__Control56Format">
+          <DataField>Intrastat_Jnl__Line__Total_Weight__Control56Format</DataField>
+        </Field>
+        <Field Name="Intrastat_Jnl__Line_Quantity_Control57Format">
+          <DataField>Intrastat_Jnl__Line_Quantity_Control57Format</DataField>
+        </Field>
+        <Field Name="Intrastat_Jnl__Line__Statistical_Value__Control58Format">
+          <DataField>Intrastat_Jnl__Line__Statistical_Value__Control58Format</DataField>
+        </Field>
+        <Field Name="NoOfRecords_Control62Caption">
+          <DataField>NoOfRecords_Control62Caption</DataField>
+        </Field>
+        <Field Name="Intrastat_Jnl__Line_Journal_Template_Name">
+          <DataField>Intrastat_Jnl__Line_Journal_Template_Name</DataField>
+        </Field>
+        <Field Name="Intrastat_Jnl__Line_Journal_Batch_Name">
+          <DataField>Intrastat_Jnl__Line_Journal_Batch_Name</DataField>
+        </Field>
+        <Field Name="Intrastat_Jnl__Line_Line_No_">
+          <DataField>Intrastat_Jnl__Line_Line_No_</DataField>
+        </Field>
+        <Field Name="Intrastat_Jnl__Line_Country_Region_of_Origin_Code">
+          <DataField>Intrastat_Jnl__Line_Country_Region_of_Origin_Code</DataField>
+        </Field>
+      </Fields>
+      <Query>
+        <CommandText />
+        <DataSourceName>DummyDataSource</DataSourceName>
+      </Query>
+      <rd:DataSetInfo>
+        <rd:DataSetName>DataSet</rd:DataSetName>
+        <rd:TableName>Result</rd:TableName>
+      </rd:DataSetInfo>
+    </DataSet>
+  </DataSets>
+  <DataSources>
+    <DataSource Name="DummyDataSource">
+      <ConnectionProperties>
+        <ConnectString />
+        <DataProvider>SQL</DataProvider>
+      </ConnectionProperties>
+      <rd:DataSourceID>20a21f9e-9fcb-4a7a-b8df-3fb7f11322c4</rd:DataSourceID>
+    </DataSource>
+  </DataSources>
+  <InteractiveHeight>11in</InteractiveHeight>
+  <InteractiveWidth>8.5in</InteractiveWidth>
+  <Language>=User!Language</Language>
+  <LeftMargin>1.5cm</LeftMargin>
+  <PageHeader>
+    <Height>2.53968cm</Height>
+    <PrintOnFirstPage>true</PrintOnFirstPage>
+    <PrintOnLastPage>true</PrintOnLastPage>
+    <ReportItems>
+      <Textbox Name="PageNumberTextBox">
+        <Height>0.423cm</Height>
+        <Left>17.7cm</Left>
+        <Style>
+          <FontSize>7pt</FontSize>
+          <PaddingBottom>2pt</PaddingBottom>
+          <PaddingLeft>2pt</PaddingLeft>
+          <PaddingRight>2pt</PaddingRight>
+          <PaddingTop>2pt</PaddingTop>
+          <TextAlign>Right</TextAlign>
+          <VerticalAlign>Middle</VerticalAlign>
+        </Style>
+        <Top>0.423cm</Top>
+        <Value>=Code.GetGroupPageNumber(ReportItems!NewPage.Value, Globals.PageNumber)</Value>
+        <ZIndex>10</ZIndex>
+      </Textbox>
+      <Textbox Name="UserIdTextBox">
+        <Height>0.423cm</Height>
+        <Left>14.9cm</Left>
+        <Style>
+          <FontSize>7pt</FontSize>
+          <PaddingBottom>2pt</PaddingBottom>
+          <PaddingLeft>2pt</PaddingLeft>
+          <PaddingRight>2pt</PaddingRight>
+          <PaddingTop>2pt</PaddingTop>
+          <TextAlign>Right</TextAlign>
+          <VerticalAlign>Middle</VerticalAlign>
+        </Style>
+        <Top>0.846cm</Top>
+        <Value>=User!UserID</Value>
+        <ZIndex>9</ZIndex>
+      </Textbox>
+      <Textbox Name="ExecutionTimeTextBox">
+        <Height>0.423cm</Height>
+        <Left>15cm</Left>
+        <Style>
+          <FontSize>7pt</FontSize>
+          <Format>g</Format>
+          <PaddingBottom>2pt</PaddingBottom>
+          <PaddingLeft>2pt</PaddingLeft>
+          <PaddingRight>2pt</PaddingRight>
+          <PaddingTop>2pt</PaddingTop>
+          <TextAlign>Right</TextAlign>
+          <VerticalAlign>Middle</VerticalAlign>
+        </Style>
+        <Value>=ReportItems!FORMAT_TODAY.Value</Value>
+        <ZIndex>8</ZIndex>
+      </Textbox>
+      <Textbox Name="STRSUBSTNO_Text001__Intrastat_Jnl__Batch___Statistics_Period__1">
+        <Height>0.423cm</Height>
+        <Style>
+          <FontSize>7pt</FontSize>
+          <PaddingBottom>2pt</PaddingBottom>
+          <PaddingLeft>2pt</PaddingLeft>
+          <PaddingRight>2pt</PaddingRight>
+          <PaddingTop>2pt</PaddingTop>
+          <VerticalAlign>Middle</VerticalAlign>
+        </Style>
+        <Top>0.423cm</Top>
+        <Value>=ReportItems!STRSUBSTNO_Text001__Intrastat_Jnl__Batch___Statistics_Period__.Value</Value>
+        <Width>7.5cm</Width>
+        <ZIndex>7</ZIndex>
+      </Textbox>
+      <Textbox Name="COMPANYNAME1">
+        <Height>0.423cm</Height>
+        <Style>
+          <FontSize>7pt</FontSize>
+          <PaddingBottom>2pt</PaddingBottom>
+          <PaddingLeft>2pt</PaddingLeft>
+          <PaddingRight>2pt</PaddingRight>
+          <PaddingTop>2pt</PaddingTop>
+          <VerticalAlign>Middle</VerticalAlign>
+        </Style>
+        <Top>0.846cm</Top>
+        <Value>=ReportItems!COMPANYNAME.Value</Value>
+        <Width>7.5cm</Width>
+        <ZIndex>6</ZIndex>
+      </Textbox>
+      <Textbox Name="VATIDNo1">
+        <Height>0.423cm</Height>
+        <Left>1.8cm</Left>
+        <Style>
+          <FontSize>7pt</FontSize>
+          <PaddingBottom>2pt</PaddingBottom>
+          <PaddingLeft>2pt</PaddingLeft>
+          <PaddingRight>2pt</PaddingRight>
+          <PaddingTop>2pt</PaddingTop>
+          <TextAlign>=IIF(IsNumeric(ReportItems!VATIDNo.Value), "Right", "Left")</TextAlign>
+          <VerticalAlign>Middle</VerticalAlign>
+        </Style>
+        <Top>1.692cm</Top>
+        <Value>=ReportItems!VATIDNo.Value</Value>
+        <Width>1.8cm</Width>
+        <ZIndex>5</ZIndex>
+      </Textbox>
+      <Textbox Name="CompanyInfo_Area1">
+        <Left>1.8cm</Left>
+        <Style>
+          <FontSize>7pt</FontSize>
+          <PaddingBottom>2pt</PaddingBottom>
+          <PaddingLeft>2pt</PaddingLeft>
+          <PaddingRight>2pt</PaddingRight>
+          <PaddingTop>2pt</PaddingTop>
+          <TextAlign>=IIF(IsNumeric(ReportItems!CompanyInfo_Area.Value), "Right", "Left")</TextAlign>
+          <VerticalAlign>Middle</VerticalAlign>
+        </Style>
+        <Top>2.115cm</Top>
+        <Value>=ReportItems!CompanyInfo_Area.Value</Value>
+        <Width>1.8cm</Width>
+        <ZIndex>4</ZIndex>
+      </Textbox>
+      <Textbox Name="Intrastat___ChecklistCaption1">
+        <Height>0.423cm</Height>
+        <Style>
+          <FontSize>8pt</FontSize>
+          <FontWeight>700</FontWeight>
+          <PaddingBottom>1pt</PaddingBottom>
+          <PaddingLeft>2pt</PaddingLeft>
+          <PaddingRight>2pt</PaddingRight>
+          <PaddingTop>1pt</PaddingTop>
+          <VerticalAlign>Middle</VerticalAlign>
+        </Style>
+        <Value>=ReportItems!Intrastat___ChecklistCaption.Value</Value>
+        <Width>7.5cm</Width>
+        <ZIndex>3</ZIndex>
+      </Textbox>
+      <Textbox Name="CurrReport_PAGENOCaption1">
+        <Height>0.423cm</Height>
+        <Left>16.79127cm</Left>
+        <Style>
+          <FontSize>7pt</FontSize>
+          <PaddingBottom>2pt</PaddingBottom>
+          <PaddingLeft>2pt</PaddingLeft>
+          <PaddingRight>2pt</PaddingRight>
+          <PaddingTop>2pt</PaddingTop>
+          <VerticalAlign>Middle</VerticalAlign>
+        </Style>
+        <Top>0.423cm</Top>
+        <Value>=ReportItems!CurrReport_PAGENOCaption.Value</Value>
+        <Width>0.9cm</Width>
+        <ZIndex>2</ZIndex>
+      </Textbox>
+      <Textbox Name="VATIDNoCaption1">
+        <Height>0.423cm</Height>
+        <Style>
+          <FontSize>7pt</FontSize>
+          <PaddingBottom>2pt</PaddingBottom>
+          <PaddingLeft>2pt</PaddingLeft>
+          <PaddingRight>2pt</PaddingRight>
+          <PaddingTop>2pt</PaddingTop>
+          <VerticalAlign>Middle</VerticalAlign>
+        </Style>
+        <Top>1.692cm</Top>
+        <Value>=ReportItems!VATIDNoCaption.Value</Value>
+        <Width>1.8cm</Width>
+        <ZIndex>1</ZIndex>
+      </Textbox>
+      <Textbox Name="CompanyInfo_AreaCaption1">
+        <Style>
+          <FontSize>7pt</FontSize>
+          <PaddingBottom>2pt</PaddingBottom>
+          <PaddingLeft>2pt</PaddingLeft>
+          <PaddingRight>2pt</PaddingRight>
+          <PaddingTop>2pt</PaddingTop>
+          <VerticalAlign>Middle</VerticalAlign>
+        </Style>
+        <Top>2.115cm</Top>
+        <Value>=ReportItems!CompanyInfo_AreaCaption.Value</Value>
+        <Width>1.8cm</Width>
+      </Textbox>
+    </ReportItems>
+  </PageHeader>
+  <PageHeight>29.7cm</PageHeight>
+  <PageWidth>21cm</PageWidth>
+  <TopMargin>2cm</TopMargin>
+  <Width>18.15002cm</Width>
+  <rd:DrawGrid>true</rd:DrawGrid>
+  <rd:ReportID>da8cac7e-9f2a-457e-8dcb-32bc88d30cd4</rd:ReportID>
+  <rd:SnapToGrid>true</rd:SnapToGrid>
+</Report>
+    END_OF_RDLDatA
+  }
+}
+

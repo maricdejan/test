@@ -1,0 +1,609 @@
+OBJECT Report 11016 Create XML-File VAT Adv.Notif.
+{
+  OBJECT-PROPERTIES
+  {
+    Date=05.11.08;
+    Time=12:00:00;
+    Version List=NAVDACH6.00;
+  }
+  PROPERTIES
+  {
+    CaptionML=[DEU=XML-Datei fÅr USt.-VA erst.;
+               ENU=Create XML-File VAT Adv.Notif.];
+    ProcessingOnly=Yes;
+  }
+  DATAITEMS
+  {
+    { PROPERTIES
+      {
+        DataItemTable=Table11011;
+        DataItemTableView=SORTING(No.)
+                          ORDER(Ascending);
+        OnPreDataItem=BEGIN
+                        Window.OPEN('#1########');
+                      END;
+
+        OnAfterGetRecord=VAR
+                           PeriodSelection@1140000 : 'Before and Within Period,Within Period';
+                           Continued@1140001 : Decimal;
+                           TotalLine1@1140002 : Decimal;
+                           TotalLine2@1140003 : Decimal;
+                           TotalLine3@1140004 : Decimal;
+                           VATNo@1140005 : Text[30];
+                           PosTaxOffice@1140006 : Integer;
+                           NumberTaxOffice@1140007 : Integer;
+                           PosArea@1140008 : Integer;
+                           NumberArea@1140009 : Integer;
+                           PosDistinction@1140010 : Integer;
+                           NumberDistinction@1140011 : Integer;
+                         BEGIN
+                           IF "XML-File Creation Date" <> 0D THEN
+                             ERROR(Text1140006,TABLECAPTION);
+                           TESTFIELD("Contact for Tax Office");
+                           Window.UPDATE(1,Text1140000);
+                           VATStmtName.SETRANGE("Sales VAT Adv. Notification",TRUE);
+                           VATStmtName.FIND('-');
+                           CheckDate("Starting Date",Period);
+                           VATNo := CheckVATNo(PosTaxOffice,NumberTaxOffice,PosArea,NumberArea,PosDistinction,NumberDistinction);
+                           IF  "Incl. VAT Entries (Period)" ="Incl. VAT Entries (Period)"::"Before and Within Period" THEN
+                             PeriodSelection := PeriodSelection::"Before and Within Period"
+                           ELSE
+                             PeriodSelection := PeriodSelection::"Within Period";
+                           SetCalcParameters("Starting Date",CalcEndDate("Starting Date",Period),
+                                             "Incl. VAT Entries (Closing)",PeriodSelection,
+                                             "Amounts in Add. Rep. Currency");
+                           CalcTaxFigures(VATStmtName,TaxAmount,TaxBase,TaxUnrealizedAmount,TaxUnrealizedBase,
+                                                      Continued,TotalLine1,TotalLine2,TotalLine3);
+                           Window.UPDATE(1,Text1140001);
+
+                           CheckTaxPairs;
+
+                           CreateXMLSubDoc;
+                         END;
+
+        OnPostDataItem=BEGIN
+                         Window.CLOSE;
+                         COMMIT;
+                         CASE SubsequentAction OF
+                           SubsequentAction::"create and show":
+                             Show;
+                           SubsequentAction::"create and transmit":
+                             CODEUNIT.RUN(CODEUNIT::"Sales VAT Adv. Notif.-Transmit","Sales VAT Advance Notification");
+                           SubsequentAction::"Only create":
+                             MESSAGE(Text1140005,TABLECAPTION);
+                         END;
+                       END;
+
+      }
+      SECTIONS
+      {
+      }
+       }
+  }
+  REQUESTFORM
+  {
+    PROPERTIES
+    {
+      Width=9020;
+      Height=3410;
+    }
+    CONTROLS
+    {
+      { 1140000;OptionButton;3410;550 ;3740 ;440  ;CaptionML=[DEU=Erstellen und anzeigen;
+                                                              ENU=Create and show];
+                                                   SourceExpr=SubsequentAction;
+                                                   OptionValue=create and show }
+      { 1140001;OptionButton;3410;0   ;3740 ;440  ;CaptionML=[DEU=Erstellen;
+                                                              ENU=Create];
+                                                   SourceExpr=SubsequentAction;
+                                                   OptionValue=Only create }
+      { 1140002;Label     ;0    ;0    ;3300 ;440  ;ParentControl=1140001;
+                                                   CaptionML=[DEU=XML-Datei;
+                                                              ENU=XML-File] }
+      { 1140003;OptionButton;3410;1100;3740 ;440  ;CaptionML=[DEU=Erstellen und Åbertragen;
+                                                              ENU=Create and transmit];
+                                                   SourceExpr=SubsequentAction;
+                                                   OptionValue=create and transmit }
+    }
+  }
+  REQUESTPAGE
+  {
+    PROPERTIES
+    {
+    }
+    CONTROLS
+    {
+      { 1900000001;0;Container;
+                  ContainerType=ContentArea }
+
+      { 1900000002;1;Group  ;
+                  CaptionML=[DEU=Optionen;
+                             ENU=Options] }
+
+      { 1140001;2;Field     ;
+                  CaptionML=[DEU=XML-Datei;
+                             ENU=XML-File];
+                  OptionCaptionML=[DEU=Erstellen,Erstellen und anzeigen,Erstellen und Åbertragen;
+                                   ENU=Create,Create and show,Create and transmit];
+                  SourceExpr=SubsequentAction }
+
+    }
+  }
+  CODE
+  {
+    VAR
+      Text1140000@1140000 : TextConst 'DEU=Berechne SteuerbetrÑge;ENU=Calculating Tax Amounts';
+      Text1140001@1140001 : TextConst 'DEU=Erstelle USt.-Voranmeldung;ENU=Creating Sales VAT Adv. Notif.';
+      Text1140002@1140002 : TextConst 'DEU=Das XML Dokument wurde nicht erstellt.;ENU=The XML Document has not been not created.';
+      Text1140003@1140003 : TextConst 'DEU=Die %1 muss aus 4 Ziffern bestehen.;ENU=The %1 must consist of 4 digits.';
+      Text1140004@1140004 : TextConst 'DEU=Kennzahl %1 darf nicht negativ sein.;ENU=Key figure %1 must not be negative.';
+      Text1140005@1140005 : TextConst 'DEU=Die XML-Datei fÅr die %1 wurde erfolgreich erstellt.;ENU=The XML-File for the %1 has been created successfully.';
+      Text1140006@1140006 : TextConst 'DEU=Die XML-Datei fÅr die %1 existiert bereits.;ENU=The XML-File for the %1 already exists.';
+      Text1140024@1140024 : TextConst 'DEU=Die LÑnge des Feldes %1 von Tabelle %2 Åberschreitet die maximal zulÑssige LÑnge von %3. Der Text wird von \\%4 auf\%5 beschnitten.\\Mîchten Sie den Vorgang fortsetzen?;ENU=The length of the field %1 of table %2 exceeds the maximum length of %3 allowed. The text will be truncated from\\%4 to\%5.\\Do you want to continue?';
+      Text1140025@1140025 : TextConst 'DEU=Stellen Sie sicher, dass sowohl Kategorie %1 als auch %2 in %3 %4 definiert sind.;ENU=Please make sure that as well category %1 and %2 are defined in %3 %4.';
+      VATStmtName@1140007 : Record 257;
+      CompanyInfo@1140008 : Record 79;
+      Country@1140009 : Record 9;
+      ElectronicVATDeclSetup@1140026 : Record 11013;
+      ApplicationMgt@1140010 : Codeunit 1;
+      XMLDOMMgt@1140011 : Codeunit 6224;
+      Window@1140012 : Dialog;
+      SubsequentAction@1140013 : 'Only create,create and show,create and transmit';
+      TaxAmount@1140014 : ARRAY [100] OF Decimal;
+      TaxBase@1140015 : ARRAY [100] OF Decimal;
+      TaxUnrealizedAmount@1140016 : ARRAY [100] OF Decimal;
+      TaxUnrealizedBase@1140017 : ARRAY [100] OF Decimal;
+      xmlNameSpace@1140018 : Text[250];
+      DatenLieferantTransferHeader@1140019 : Text[256];
+      DatenLieferantNutzdatenHeader@1140027 : Text[256];
+      Version@1140020 : Text[250];
+      DateText@1140021 : Text[30];
+      ElsterVATNo@1140022 : Text[30];
+      ContactForTaxOffice@1140029 : Text[30];
+      ManufacturerID@1140023 : Code[10];
+      UseAuthentication@1140028 : Boolean;
+      AdditionalInformation@1140030 : Text[250];
+
+    LOCAL PROCEDURE CreateXMLSubDoc@1140000();
+    VAR
+      XMLSubDoc@1140000 : Automation "{F5078F18-C551-11D3-89B9-0000F81FE221} 3.0:{F5078F32-C551-11D3-89B9-0000F81FE221}:'Microsoft XML, v3.0'.DOMDocument30";
+      XMLNodeCurr@1140001 : Automation "{F5078F18-C551-11D3-89B9-0000F81FE221} 3.0:{2933BF80-7B36-11D2-B20E-00C04F983E60}:'Microsoft XML, v3.0'.IXMLDOMNode";
+    BEGIN
+      PrepareXMLDoc;
+
+      IF ISCLEAR(XMLSubDoc) THEN
+        CREATE(XMLSubDoc);
+
+      XMLSubDoc.validateOnParse := FALSE;
+      XMLSubDoc.loadXML('<?xml version="1.0" encoding="ISO-8859-1"?>' +
+            '<Elster xmlns="' + xmlNameSpace + '"></Elster>');
+
+      IF ISCLEAR(XMLSubDoc) THEN
+        ERROR(XMLSubDoc.parseError.reason+Text1140002);
+
+      XMLNodeCurr := XMLSubDoc.documentElement;
+      XMLDOMMgt.SetNormalCase;
+
+      AddTransferHeader(XMLNodeCurr);
+      AddUseDataHeader(XMLNodeCurr);
+      AddUseData(XMLNodeCurr);
+
+      UpdateSalesVATAdvNotif(XMLSubDoc);
+      CLEAR(XMLSubDoc);
+    END;
+
+    LOCAL PROCEDURE AddAddressText@1140001(Type@1140000 : Integer;TextToAdd@1140001 : Text[80]);
+    BEGIN
+      CASE Type OF
+        1 : BEGIN                     // TransferHeader
+              IF STRLEN(DatenLieferantTransferHeader)+STRLEN(TextToAdd) >= 253 THEN
+                EXIT;
+              DatenLieferantTransferHeader :=
+                COPYSTR(DatenLieferantTransferHeader + TextToAdd,1,MAXSTRLEN(DatenLieferantTransferHeader));
+            END;
+        2 : BEGIN                     // NutzdatenHeader
+              IF STRLEN(DatenLieferantNutzdatenHeader)+STRLEN(TextToAdd) >= 253 THEN
+                EXIT;
+              DatenLieferantNutzdatenHeader :=
+                COPYSTR(DatenLieferantNutzdatenHeader + TextToAdd,1,MAXSTRLEN(DatenLieferantNutzdatenHeader));
+            END;
+      END;
+    END;
+
+    LOCAL PROCEDURE UpdateSalesVATAdvNotif@1140002(XMLSubDoc@1140000 : Automation "{F5078F18-C551-11D3-89B9-0000F81FE221} 3.0:{F5078F32-C551-11D3-89B9-0000F81FE221}:'Microsoft XML, v3.0'.DOMDocument30");
+    VAR
+      XMLSubDocOutStream@1140001 : OutStream;
+    BEGIN
+      WITH "Sales VAT Advance Notification" DO BEGIN
+        "XML Submission Document".CREATEOUTSTREAM(XMLSubDocOutStream);
+        XMLSubDoc.save(XMLSubDocOutStream);
+        CALCFIELDS("XML Submission Document");
+        IF "XML Submission Document".HASVALUE THEN BEGIN
+          "XML-File Creation Date" := TODAY;
+          "Statement Template Name" := VATStmtName."Statement Template Name";
+          "Statement Name" := VATStmtName.Name;
+          MODIFY;
+        END;
+      END;
+    END;
+
+    LOCAL PROCEDURE PrepareXMLDoc@1140003();
+    BEGIN
+      CompanyInfo.GET;
+      CompanyInfo.TESTFIELD("VAT Representative");
+      IF CompanyInfo."Country/Region Code" <> '' THEN
+        Country.GET(CompanyInfo."Country/Region Code");
+
+      UseAuthentication := FALSE;
+      IF ElectronicVATDeclSetup.GET THEN
+        UseAuthentication := ElectronicVATDeclSetup."Use Authentication";
+      ContactForTaxOffice := "Sales VAT Advance Notification"."Contact for Tax Office";
+      AdditionalInformation := "Sales VAT Advance Notification"."Additional Information";
+
+      CheckAddressData(5,CompanyInfo."VAT Representative",45);
+      CheckAddressData(6,ContactForTaxOffice,30);
+      IF CompanyInfo.Address <> '' THEN
+        CheckAddressData(1,CompanyInfo.Address,30)
+      ELSE
+        CheckAddressData(2,CompanyInfo."Address 2",30);
+      CheckAddressData(3,CompanyInfo."Post Code",12);
+      CheckAddressData(4,CompanyInfo.City,30);
+      CheckAddressData(7,AdditionalInformation,250);
+
+      IF UseAuthentication THEN
+        AddAddressText(1,'ElsterOnline-Portal: ' + CompanyInfo."VAT Representative" + '; ')
+      ELSE
+        AddAddressText(1,CompanyInfo."VAT Representative" + '; ');
+      AddAddressText(1,CompanyInfo.Address + '; ');
+      AddAddressText(1,'; ');
+      AddAddressText(1,'; ');
+      AddAddressText(1,CompanyInfo."Address 2" + '; ');
+      AddAddressText(1,CompanyInfo."Post Code" + '; ');
+      AddAddressText(1,CompanyInfo.City + '; ');
+      AddAddressText(1,Country.Name + '; ');
+      AddAddressText(1,CompanyInfo."Phone No." + '; ');
+      AddAddressText(1,CompanyInfo."E-Mail");
+
+      AddAddressText(2,ContactForTaxOffice + '; ');
+      AddAddressText(2,CompanyInfo.Address + '; ');
+      AddAddressText(2,'; ');
+      AddAddressText(2,'; ');
+      AddAddressText(2,CompanyInfo."Address 2" + '; ');
+      AddAddressText(2,CompanyInfo."Post Code" + '; ');
+      AddAddressText(2,CompanyInfo.City + '; ');
+      AddAddressText(2,Country.Name + '; ');
+      AddAddressText(2,"Sales VAT Advance Notification"."Contact Phone No." + '; ');
+      AddAddressText(2,"Sales VAT Advance Notification"."Contact E-Mail");
+
+      xmlNameSpace := 'http://www.elster.de/2002/XMLSchema';
+
+      Version := 'Navision ' + ApplicationMgt.ApplicationVersion + ' Build # ' + ApplicationMgt.ApplicationBuild;
+
+      IF "Sales VAT Advance Notification".Period = "Sales VAT Advance Notification".Period::Month THEN
+        DateText := FORMAT("Sales VAT Advance Notification"."Starting Date",0,'<month,2>')
+      ELSE
+        DateText := '4' + FORMAT(((DATE2DMY("Sales VAT Advance Notification"."Starting Date",2) + 2) / 3));
+
+      IF STRLEN(CompanyInfo."Tax Office Number") <> 4 THEN
+        ERROR(Text1140003,CompanyInfo.FIELDCAPTION("Tax Office Number"));
+      ElsterVATNo := DELCHR(CompanyInfo."Registration No.");
+      ElsterVATNo := DELCHR(ElsterVATNo,'=','/');
+      ElsterVATNo := CompanyInfo."Tax Office Number" + '0' + COPYSTR(ElsterVATNo,STRLEN(ElsterVATNo) - 7);
+      ManufacturerID := '20784';
+    END;
+
+    LOCAL PROCEDURE AddTransferHeader@1140004(VAR XMLNodeCurr@1140000 : Automation "{F5078F18-C551-11D3-89B9-0000F81FE221} 3.0:{2933BF80-7B36-11D2-B20E-00C04F983E60}:'Microsoft XML, v3.0'.IXMLDOMNode");
+    VAR
+      XMLNewNode@1140001 : Automation "{F5078F18-C551-11D3-89B9-0000F81FE221} 3.0:{2933BF80-7B36-11D2-B20E-00C04F983E60}:'Microsoft XML, v3.0'.IXMLDOMNode";
+    BEGIN
+      IF XMLDOMMgt.AddElement(XMLNodeCurr,'TransferHeader','',xmlNameSpace,XMLNewNode) > 0 THEN
+        EXIT;
+
+      XMLNodeCurr := XMLNewNode;
+
+      IF XMLDOMMgt.AddAttribute(XMLNodeCurr,'version','8') > 0 THEN
+        EXIT;
+
+      IF XMLDOMMgt.AddElement(XMLNodeCurr,'Verfahren','ElsterAnmeldung',xmlNameSpace,XMLNewNode) > 0 THEN
+        EXIT;
+      IF XMLDOMMgt.AddElement(XMLNodeCurr,'DatenArt','UStVA',xmlNameSpace,XMLNewNode) > 0 THEN
+        EXIT;
+      IF UseAuthentication THEN BEGIN
+        IF XMLDOMMgt.AddElement(XMLNodeCurr,'Vorgang','send-Sig',xmlNameSpace,XMLNewNode) > 0 THEN
+          EXIT;
+      END ELSE BEGIN
+        IF XMLDOMMgt.AddElement(XMLNodeCurr,'Vorgang','send-NoSig',xmlNameSpace,XMLNewNode) > 0 THEN
+          EXIT;
+      END;
+      IF "Sales VAT Advance Notification".Testversion THEN BEGIN
+        IF XMLDOMMgt.AddElement(XMLNodeCurr,'Testmerker','700000004',xmlNameSpace,XMLNewNode) > 0 THEN
+          EXIT;
+      END ELSE
+        IF XMLDOMMgt.AddElement(XMLNodeCurr,'Testmerker','000000000',xmlNameSpace,XMLNewNode) > 0 THEN
+          EXIT;
+      IF XMLDOMMgt.AddElement(XMLNodeCurr,'HerstellerID',ManufacturerID,xmlNameSpace,XMLNewNode) > 0 THEN
+        EXIT;
+      IF XMLDOMMgt.AddElement(XMLNodeCurr,'DatenLieferant',DatenLieferantTransferHeader,xmlNameSpace,XMLNewNode) > 0 THEN
+        EXIT;
+      IF XMLDOMMgt.AddElement(XMLNodeCurr,'Datei','',xmlNameSpace,XMLNewNode) > 0 THEN
+        EXIT;
+      IF XMLDOMMgt.AddElement(XMLNodeCurr,'VersionClient',Version,xmlNameSpace,XMLNewNode) > 0 THEN
+        EXIT;
+      IF "Sales VAT Advance Notification"."Additional Information" <> '' THEN BEGIN
+        IF XMLDOMMgt.AddElement(XMLNodeCurr,'Zusatz','',xmlNameSpace,XMLNewNode) > 0 THEN
+          EXIT;
+        IF XMLDOMMgt.AddElement(
+          XMLNewNode,'Info',AdditionalInformation,xmlNameSpace,XMLNewNode) > 0
+        THEN
+          EXIT;
+      END;
+
+      XMLNodeCurr := XMLNodeCurr.parentNode;
+    END;
+
+    LOCAL PROCEDURE AddUseDataHeader@1140005(VAR XMLNodeCurr@1140000 : Automation "{F5078F18-C551-11D3-89B9-0000F81FE221} 3.0:{2933BF80-7B36-11D2-B20E-00C04F983E60}:'Microsoft XML, v3.0'.IXMLDOMNode");
+    VAR
+      XMLNewNode@1140001 : Automation "{F5078F18-C551-11D3-89B9-0000F81FE221} 3.0:{2933BF80-7B36-11D2-B20E-00C04F983E60}:'Microsoft XML, v3.0'.IXMLDOMNode";
+    BEGIN
+      IF XMLDOMMgt.AddElement(XMLNodeCurr,'DatenTeil','',xmlNameSpace,XMLNewNode) > 0 THEN
+        EXIT;
+      XMLNodeCurr := XMLNewNode;
+      IF XMLDOMMgt.AddElement(XMLNodeCurr,'Nutzdatenblock','',xmlNameSpace,XMLNewNode) > 0 THEN
+        EXIT;
+      XMLNodeCurr := XMLNewNode;
+      IF XMLDOMMgt.AddElement(XMLNodeCurr,'NutzdatenHeader','',xmlNameSpace,XMLNewNode) > 0 THEN
+        EXIT;
+      XMLNodeCurr := XMLNewNode;
+      IF XMLDOMMgt.AddAttribute(XMLNodeCurr,'version','10') > 0 THEN
+        EXIT;
+      IF XMLDOMMgt.AddElement(XMLNodeCurr,'NutzdatenTicket',"Sales VAT Advance Notification"."No.",xmlNameSpace,XMLNewNode) > 0 THEN
+        EXIT;
+      IF XMLDOMMgt.AddElement(XMLNodeCurr,'Empfaenger',CompanyInfo."Tax Office Number",xmlNameSpace,XMLNewNode) > 0 THEN
+        EXIT;
+      IF XMLDOMMgt.AddAttribute(XMLNewNode,'id','F') > 0 THEN
+        EXIT;
+      IF XMLDOMMgt.AddElement(XMLNodeCurr,'Hersteller','',xmlNameSpace,XMLNewNode) > 0 THEN
+        EXIT;
+      XMLNodeCurr := XMLNewNode;
+      IF XMLDOMMgt.AddElement(XMLNodeCurr,'ProduktName','Microsoft Business Solutions-Navision',xmlNameSpace,XMLNewNode) > 0 THEN
+        EXIT;
+      IF XMLDOMMgt.AddElement(XMLNodeCurr,'ProduktVersion',ApplicationMgt.ApplicationVersion,xmlNameSpace,XMLNewNode) > 0 THEN
+        EXIT;
+      XMLNodeCurr := XMLNodeCurr.parentNode;
+      IF XMLDOMMgt.AddElement(XMLNodeCurr,'DatenLieferant',DatenLieferantNutzdatenHeader,xmlNameSpace,XMLNewNode) > 0 THEN
+        EXIT;
+      IF "Sales VAT Advance Notification"."Additional Information" <> '' THEN BEGIN
+        IF XMLDOMMgt.AddElement(XMLNodeCurr,'Zusatz','',xmlNameSpace,XMLNewNode) > 0 THEN
+          EXIT;
+        IF XMLDOMMgt.AddElement(
+          XMLNewNode,'Info',AdditionalInformation,xmlNameSpace,XMLNewNode) > 0
+        THEN
+          EXIT;
+      END;
+      XMLNodeCurr := XMLNodeCurr.parentNode;
+    END;
+
+    LOCAL PROCEDURE AddUseData@1140006(VAR XMLNodeCurr@1140000 : Automation "{F5078F18-C551-11D3-89B9-0000F81FE221} 3.0:{2933BF80-7B36-11D2-B20E-00C04F983E60}:'Microsoft XML, v3.0'.IXMLDOMNode");
+    VAR
+      XMLNewNode@1140001 : Automation "{F5078F18-C551-11D3-89B9-0000F81FE221} 3.0:{2933BF80-7B36-11D2-B20E-00C04F983E60}:'Microsoft XML, v3.0'.IXMLDOMNode";
+      i@1140002 : Integer;
+      AmtToUse@1140003 : Decimal;
+      TaxAmtText@1140004 : Text[30];
+    BEGIN
+      IF XMLDOMMgt.AddElement(XMLNodeCurr,'Nutzdaten','',xmlNameSpace,XMLNewNode) > 0 THEN
+        EXIT;
+      XMLNodeCurr := XMLNewNode;
+      IF XMLDOMMgt.AddElement(XMLNodeCurr,'Anmeldungssteuern','',xmlNameSpace,XMLNewNode) > 0 THEN
+        EXIT;
+      XMLNodeCurr := XMLNewNode;
+      IF XMLDOMMgt.AddAttribute(XMLNodeCurr,'art','UStVA') > 0 THEN
+        EXIT;
+      IF XMLDOMMgt.AddAttribute(XMLNodeCurr,'version',
+                                FORMAT(DATE2DMY("Sales VAT Advance Notification"."Starting Date",3)) + '01') > 0 THEN
+        EXIT;
+      IF XMLDOMMgt.AddElement(XMLNodeCurr,'DatenLieferant','',xmlNameSpace,XMLNewNode) > 0 THEN
+        EXIT;
+      XMLNodeCurr := XMLNewNode;
+      IF XMLDOMMgt.AddElement(XMLNodeCurr,'Name',ContactForTaxOffice,xmlNameSpace,XMLNewNode) > 0 THEN
+        EXIT;
+      IF CompanyInfo.Address <> '' THEN BEGIN
+        IF XMLDOMMgt.AddElement(XMLNodeCurr,'Strasse',CompanyInfo.Address,xmlNameSpace,XMLNewNode) > 0 THEN
+          EXIT;
+      END ELSE BEGIN
+        IF XMLDOMMgt.AddElement(XMLNodeCurr,'Strasse',CompanyInfo."Address 2",xmlNameSpace,XMLNewNode) > 0 THEN
+          EXIT;
+      END;
+      IF XMLDOMMgt.AddElement(XMLNodeCurr,'PLZ',CompanyInfo."Post Code",xmlNameSpace,XMLNewNode) > 0 THEN
+        EXIT;
+      IF XMLDOMMgt.AddElement(XMLNodeCurr,'Ort',CompanyInfo.City,xmlNameSpace,XMLNewNode) > 0 THEN
+        EXIT;
+      XMLNodeCurr := XMLNodeCurr.parentNode;
+
+      IF XMLDOMMgt.AddElement(XMLNodeCurr,'Erstellungsdatum',FORMAT(TODAY,0,'<year4><month,2><day,2>'),xmlNameSpace,XMLNewNode) > 0 THEN
+        EXIT;
+      IF XMLDOMMgt.AddElement(XMLNodeCurr,'Steuerfall','',xmlNameSpace,XMLNewNode) > 0 THEN
+        EXIT;
+      XMLNodeCurr := XMLNewNode;
+      IF XMLDOMMgt.AddElement(XMLNodeCurr,'Umsatzsteuervoranmeldung','',xmlNameSpace,XMLNewNode) > 0 THEN
+        EXIT;
+      XMLNodeCurr := XMLNewNode;
+      IF XMLDOMMgt.AddElement(
+        XMLNodeCurr,'Jahr',FORMAT(DATE2DMY("Sales VAT Advance Notification"."Starting Date",3)),xmlNameSpace,XMLNewNode) > 0
+      THEN
+        EXIT;
+
+      IF XMLDOMMgt.AddElement(XMLNodeCurr,'Zeitraum',DateText,xmlNameSpace,XMLNewNode) > 0 THEN
+        EXIT;
+
+      IF XMLDOMMgt.AddElement(XMLNodeCurr,'Steuernummer',ElsterVATNo,xmlNameSpace,XMLNewNode) > 0 THEN
+        EXIT;
+      IF XMLDOMMgt.AddElement(XMLNodeCurr,'Kz09',ManufacturerID,xmlNameSpace,XMLNewNode) > 0 THEN
+        EXIT;
+      IF "Sales VAT Advance Notification"."Corrected Notification" THEN
+        IF XMLDOMMgt.AddElement(XMLNodeCurr,'Kz10','1',xmlNameSpace,XMLNewNode) > 0 THEN
+          EXIT;
+      IF "Sales VAT Advance Notification"."Documents Submitted Separately" THEN
+        IF XMLDOMMgt.AddElement(XMLNodeCurr,'Kz22','1',xmlNameSpace,XMLNewNode) > 0 THEN
+          EXIT;
+      IF "Sales VAT Advance Notification"."Cancel Order for Direct Debit" THEN
+        IF XMLDOMMgt.AddElement(XMLNodeCurr,'Kz26','1',xmlNameSpace,XMLNewNode) > 0 THEN
+          EXIT;
+      IF "Sales VAT Advance Notification"."Offset Amount of Refund" THEN
+        IF XMLDOMMgt.AddElement(XMLNodeCurr,'Kz29','1',xmlNameSpace,XMLNewNode) > 0 THEN
+          EXIT;
+      IF TaxAmount[39] < 0 THEN
+        ERROR(Text1140004,FORMAT(39));
+      FOR i := 35 TO 100 DO BEGIN
+        TaxAmtText := '';
+        CASE i OF
+          35,41,42,43,44,45,48,49,51,52,54,55,57,60,73,76,77,81,84,86,89,91,93,94,95,97:
+            AmtToUse := TaxBase[i];
+          ELSE
+            AmtToUse := TaxAmount[i];
+        END;
+        IF (AmtToUse <> 0) OR
+           (i = 83)
+        THEN BEGIN
+          CASE i OF
+            35,41,42,43,44,45,48,49,51,52,57,60,73,76,77,81,84,86,89,91,93,94,95,97:
+              TaxAmtText := FORMAT(AmtToUse,0,'<Sign><Integer>');
+            36,39,53,54,55,58,59,61,62,63,64,65,66,67,69,74,80,83,85,96,98:
+               TaxAmtText := FORMAT(AmtToUse,0,'<precision,2:2><Sign><Integer><Decimals><comma,.>');
+          END;
+          IF TaxAmtText <> '' THEN
+            IF XMLDOMMgt.AddElement(XMLNodeCurr,'Kz' + FORMAT(i),TaxAmtText,xmlNameSpace,XMLNewNode) > 0 THEN
+              EXIT;
+        END;
+      END;
+    END;
+
+    LOCAL PROCEDURE CheckAddressData@1140007(FieldID@1140000 : Integer;TextToCheck@1140001 : Text[250];MaxLength@1140002 : Integer);
+    VAR
+      TruncatedText@1140003 : Text[50];
+    BEGIN
+      CASE FieldID OF
+        1 : BEGIN
+              CompanyInfo.Address := ConvertSpecialChars(CompanyInfo.Address,MAXSTRLEN(CompanyInfo.Address));
+              TextToCheck := CompanyInfo.Address;
+            END;
+        2 : BEGIN
+              CompanyInfo."Address 2" := ConvertSpecialChars(CompanyInfo."Address 2",MAXSTRLEN(CompanyInfo."Address 2"));
+              TextToCheck := CompanyInfo."Address 2";
+            END;
+        4 : BEGIN
+              CompanyInfo.City := ConvertSpecialChars(CompanyInfo.City,MAXSTRLEN(CompanyInfo.City));
+              TextToCheck := CompanyInfo.City;
+            END;
+        6 : BEGIN
+              ContactForTaxOffice := ConvertSpecialChars(ContactForTaxOffice,MAXSTRLEN(ContactForTaxOffice));
+              CLEAR(TextToCheck);
+            END;
+        7 : BEGIN
+              AdditionalInformation := ConvertSpecialChars(AdditionalInformation,MAXSTRLEN(AdditionalInformation));
+              TextToCheck := AdditionalInformation;
+            END;
+      END;
+      CLEAR(TruncatedText);
+      IF STRLEN(TextToCheck) > MaxLength THEN BEGIN
+        CASE FieldID OF
+          1 : BEGIN
+                TruncatedText := PADSTR(CompanyInfo.Address,MaxLength);
+                IF NOT CONFIRM(Text1140024,TRUE,CompanyInfo.FIELDCAPTION(Address),
+                                                CompanyInfo.TABLECAPTION,MaxLength,
+                                                CompanyInfo.Address,
+                                                TruncatedText) THEN
+                  ERROR('')
+                ELSE
+                  CompanyInfo.Address := TruncatedText;
+              END;
+          2 : BEGIN
+                TruncatedText := PADSTR(CompanyInfo."Address 2",MaxLength);
+                IF NOT CONFIRM(Text1140024,TRUE,CompanyInfo.FIELDCAPTION("Address 2"),
+                                                CompanyInfo.TABLECAPTION,MaxLength,
+                                                CompanyInfo."Address 2",
+                                                TruncatedText) THEN
+                  ERROR('')
+                ELSE
+                  CompanyInfo."Address 2" := TruncatedText;
+              END;
+          3 : BEGIN
+                TruncatedText := PADSTR(CompanyInfo."Post Code",MaxLength);
+                IF NOT CONFIRM(Text1140024,TRUE,CompanyInfo.FIELDCAPTION("Post Code"),
+                                                CompanyInfo.TABLECAPTION,MaxLength,
+                                                CompanyInfo."Post Code",
+                                                TruncatedText) THEN
+                  ERROR('')
+                ELSE
+                  CompanyInfo."Post Code" := TruncatedText;
+              END;
+          4 : BEGIN
+                TruncatedText := PADSTR(CompanyInfo.City,MaxLength);
+                IF NOT CONFIRM(Text1140024,TRUE,CompanyInfo.FIELDCAPTION(City),
+                                                CompanyInfo.TABLECAPTION,MaxLength,
+                                                CompanyInfo.City,
+                                                TruncatedText) THEN
+                  ERROR('')
+                ELSE
+                  CompanyInfo.City := TruncatedText;
+              END;
+        END;
+      END;
+    END;
+
+    PROCEDURE CheckTaxPairs@1140008();
+    VAR
+      TaxError@1140000 : Boolean;
+      TaxPair@1140001 : ARRAY [7,2] OF Integer;
+      loop@1140002 : Integer;
+    BEGIN
+      CLEAR(TaxError);
+      CLEAR(TaxPair);
+
+      TaxPair[1][1] := 35; TaxPair[1][2] := 36;
+      TaxPair[2][1] := 76; TaxPair[2][2] := 80;
+      TaxPair[3][1] := 95; TaxPair[3][2] := 98;
+      TaxPair[4][1] := 94; TaxPair[4][2] := 96;
+      TaxPair[5][1] := 52; TaxPair[5][2] := 53;
+      TaxPair[6][1] := 73; TaxPair[6][2] := 74;
+      TaxPair[7][1] := 84; TaxPair[7][2] := 85;
+
+      loop := 1;
+      WHILE (NOT TaxError) AND (loop <= ARRAYLEN(TaxPair,1)) DO BEGIN
+        IF NOT TaxError THEN
+          IF TaxBase[TaxPair[loop][1]] <> 0 THEN
+            TaxError := TaxAmount[TaxPair[loop][2]] = 0;
+        loop += 1;
+      END;
+      IF TaxError THEN
+        ERROR(Text1140025,TaxPair[loop-1][1],TaxPair[loop-1][2],VATStmtName.TABLECAPTION,VATStmtName.Name) ;
+    END;
+
+    LOCAL PROCEDURE ConvertSpecialChars@1140009(Text@1140000 : Text[250];MaxLen@1140001 : Integer) : Text[250];
+    VAR
+      SpecialCharPos@1140002 : Integer;
+      loop@1140003 : Integer;
+      SpecialChars@1140004 : Text[20];
+      ConvertedChars@1140005 : Text[20];
+    BEGIN
+      SpecialChars :='éÑôîöÅ·';
+      ConvertedChars := 'AeaeOeoeUeuess';
+      FOR loop := 1 TO 7 DO BEGIN
+        WHILE STRPOS(Text,COPYSTR(SpecialChars,loop,1)) <> 0 DO BEGIN
+          SpecialCharPos := STRPOS(Text,COPYSTR(SpecialChars,loop,1));
+          IF STRLEN(Text)=MaxLen THEN
+            Text := PADSTR(Text,MaxLen-1);
+          Text := DELSTR(Text,SpecialCharPos,1);
+          Text := INSSTR(Text,COPYSTR(ConvertedChars,loop*2-1,2),SpecialCharPos);
+        END;
+      END;
+      EXIT(Text);
+    END;
+
+    BEGIN
+    END.
+  }
+  RDLDATA
+  {
+  }
+}
+
