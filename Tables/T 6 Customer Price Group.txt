@@ -1,0 +1,49 @@
+OBJECT Table 6 Customer Price Group
+{
+  OBJECT-PROPERTIES
+  {
+    Date=05.11.08;
+    Time=12:00:00;
+    Version List=NAVW16.00;
+  }
+  PROPERTIES
+  {
+    CaptionML=[DEU=Debitorenpreisgruppe;
+               ENU=Customer Price Group];
+    LookupFormID=Form7;
+  }
+  FIELDS
+  {
+    { 1   ;   ;Code                ;Code10        ;CaptionML=[DEU=Code;
+                                                              ENU=Code];
+                                                   NotBlank=Yes }
+    { 2   ;   ;Price Includes VAT  ;Boolean       ;CaptionML=[DEU=VK-Preis inkl. MwSt.;
+                                                              ENU=Price Includes VAT] }
+    { 5   ;   ;Allow Invoice Disc. ;Boolean       ;InitValue=Yes;
+                                                   CaptionML=[DEU=Rech.-Rabatt zulassen;
+                                                              ENU=Allow Invoice Disc.] }
+    { 6   ;   ;VAT Bus. Posting Gr. (Price);Code10;TableRelation="VAT Business Posting Group";
+                                                   CaptionML=[DEU=MwSt.-Gesch„ftsbuch.-G.(Preis);
+                                                              ENU=VAT Bus. Posting Gr. (Price)] }
+    { 10  ;   ;Description         ;Text30        ;CaptionML=[DEU=Beschreibung;
+                                                              ENU=Description] }
+    { 7001;   ;Allow Line Disc.    ;Boolean       ;InitValue=Yes;
+                                                   CaptionML=[DEU=Zeilenrabatt zulassen;
+                                                              ENU=Allow Line Disc.] }
+  }
+  KEYS
+  {
+    {    ;Code                                    ;Clustered=Yes }
+  }
+  FIELDGROUPS
+  {
+    { 1   ;DropDown            ;Code,Description,Allow Invoice Disc.,Allow Line Disc. }
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

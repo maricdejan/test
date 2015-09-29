@@ -1,0 +1,63 @@
+OBJECT Table 9 Country/Region
+{
+  OBJECT-PROPERTIES
+  {
+    Date=05.11.08;
+    Time=12:00:00;
+    Version List=NAVW16.00;
+  }
+  PROPERTIES
+  {
+    OnDelete=VAR
+               VATRegNoFormat@1000 : Record 381;
+             BEGIN
+               VATRegNoFormat.SETFILTER("Country/Region Code",Code);
+               VATRegNoFormat.DELETEALL;
+             END;
+
+    CaptionML=[DEU=Land/Region;
+               ENU=Country/Region];
+    LookupFormID=Form10;
+  }
+  FIELDS
+  {
+    { 1   ;   ;Code                ;Code10        ;CaptionML=[DEU=Code;
+                                                              ENU=Code];
+                                                   NotBlank=Yes }
+    { 2   ;   ;Name                ;Text50        ;CaptionML=[DEU=Name;
+                                                              ENU=Name] }
+    { 6   ;   ;EU Country/Region Code;Code10      ;CaptionML=[DEU=EU-L„nder-/Regionscode;
+                                                              ENU=EU Country/Region Code] }
+    { 7   ;   ;Intrastat Code      ;Code10        ;CaptionML=[DEU=Intrastatcode;
+                                                              ENU=Intrastat Code] }
+    { 8   ;   ;Address Format      ;Option        ;InitValue=City+Post Code;
+                                                   CaptionML=[DEU=Adressformat;
+                                                              ENU=Address Format];
+                                                   OptionCaptionML=[DEU=PLZ-Code+Ort,Ort+PLZ-Code,Ort+Bundesregion+PLZ-Code,Leerzeile+PLZ-Code+Ort;
+                                                                    ENU=Post Code+City,City+Post Code,City+County+Post Code,Blank Line+Post Code+City];
+                                                   OptionString=Post Code+City,City+Post Code,City+County+Post Code,Blank Line+Post Code+City }
+    { 9   ;   ;Contact Address Format;Option      ;InitValue=After Company Name;
+                                                   CaptionML=[DEU=Kontaktadressformat;
+                                                              ENU=Contact Address Format];
+                                                   OptionCaptionML=[DEU=Vor,Nach Firmennamen,Zuletzt;
+                                                                    ENU=First,After Company Name,Last];
+                                                   OptionString=First,After Company Name,Last }
+  }
+  KEYS
+  {
+    {    ;Code                                    ;Clustered=Yes }
+    {    ;EU Country/Region Code                   }
+    {    ;Intrastat Code                           }
+    {    ;Name                                     }
+  }
+  FIELDGROUPS
+  {
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+
