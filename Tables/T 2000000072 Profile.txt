@@ -1,0 +1,48 @@
+OBJECT Table 2000000072 Profile
+{
+  OBJECT-PROPERTIES
+  {
+    Date=11.12.10;
+    Time=12:00:00;
+    Version List=;
+  }
+  PROPERTIES
+  {
+    DataPerCompany=No;
+    CaptionML=[DEU=Profil;
+               ENU=Profile];
+  }
+  FIELDS
+  {
+    { 3   ;   ;Profile ID          ;Code30        ;CaptionML=[DEU=Profil-ID;
+                                                              ENU=Profile ID] }
+    { 6   ;   ;Owner SID           ;Text119       ;TableRelation="Windows Login".SID;
+                                                   CaptionML=[DEU=Besitzer-SID;
+                                                              ENU=Owner SID] }
+    { 9   ;   ;Owner ID            ;Text132       ;FieldClass=FlowField;
+                                                   CalcFormula=Lookup("SID - Account ID".ID WHERE (SID=FIELD(Owner SID)));
+                                                   CaptionML=[DEU=Besitzer-ID;
+                                                              ENU=Owner ID] }
+    { 12  ;   ;Description         ;Text250       ;CaptionML=[DEU=Beschreibung;
+                                                              ENU=Description] }
+    { 15  ;   ;Role Center ID      ;Integer       ;TableRelation=AllObj."Object ID" WHERE (Object Type=CONST(Page));
+                                                   CaptionML=[DEU=Rollencenter-ID;
+                                                              ENU=Role Center ID] }
+    { 18  ;   ;Default Role Center ;Boolean       ;CaptionML=[DEU=Standardrollencenter;
+                                                              ENU=Default Role Center] }
+  }
+  KEYS
+  {
+    {    ;Profile ID                              ;Clustered=Yes }
+  }
+  FIELDGROUPS
+  {
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

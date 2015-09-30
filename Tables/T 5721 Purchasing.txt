@@ -1,0 +1,54 @@
+OBJECT Table 5721 Purchasing
+{
+  OBJECT-PROPERTIES
+  {
+    Date=05.11.08;
+    Time=12:00:00;
+    Version List=NAVW16.00;
+  }
+  PROPERTIES
+  {
+    CaptionML=[DEU=Einkauf;
+               ENU=Purchasing];
+    LookupFormID=Form5729;
+    DrillDownFormID=Form5729;
+  }
+  FIELDS
+  {
+    { 1   ;   ;Code                ;Code10        ;CaptionML=[DEU=Code;
+                                                              ENU=Code];
+                                                   NotBlank=Yes }
+    { 2   ;   ;Description         ;Text30        ;CaptionML=[DEU=Beschreibung;
+                                                              ENU=Description] }
+    { 3   ;   ;Drop Shipment       ;Boolean       ;OnValidate=BEGIN
+                                                                IF "Special Order" AND "Drop Shipment" THEN
+                                                                  ERROR(Text000);
+                                                              END;
+
+                                                   CaptionML=[DEU=Direktlieferung;
+                                                              ENU=Drop Shipment] }
+    { 4   ;   ;Special Order       ;Boolean       ;OnValidate=BEGIN
+                                                                IF "Drop Shipment" AND "Special Order" THEN
+                                                                  ERROR(Text000);
+                                                              END;
+
+                                                   CaptionML=[DEU=Spezialauftrag;
+                                                              ENU=Special Order] }
+  }
+  KEYS
+  {
+    {    ;Code                                    ;Clustered=Yes }
+  }
+  FIELDGROUPS
+  {
+  }
+  CODE
+  {
+    VAR
+      Text000@1000 : TextConst 'DEU=Dieser Einkaufscode muss entweder Direktlieferung oder Spezialauftrag sein.;ENU=This purchasing code may be either a Drop Ship, or a Special Order.';
+
+    BEGIN
+    END.
+  }
+}
+

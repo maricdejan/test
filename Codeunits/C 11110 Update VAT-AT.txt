@@ -1,0 +1,462 @@
+OBJECT Codeunit 11110 Update VAT-AT
+{
+  OBJECT-PROPERTIES
+  {
+    Date=14.08.09;
+    Time=12:00:00;
+    Version List=NAVDACH6.00.01;
+  }
+  PROPERTIES
+  {
+    OnRun=BEGIN
+          END;
+
+  }
+  CODE
+  {
+    VAR
+      Text1160000@1160000 : TextConst 'DEU=Mîchten Sie das vorhandene %1 %2-Objekt lîschen und ein neues erstellen?;ENU=Do you want to delete the existing %1 %2 and create a new one?';
+      Text1160001@1160001 : TextConst 'DEU=Mîchten Sie ein neues %1 %2-Objekt erstellen?;ENU=Do you want to create a new %1 %2?';
+      Text1160002@1160002 : TextConst 'DEU=%1 %2 wurde erfolgreich aktualisiert oder erstellt.;ENU=The %1 %2 has been successfully updated or created.';
+      Text1160003@1160003 : TextConst 'DEU=Es wurde kein %1-Objekt erstellt oder aktualisiert.;ENU=No %1 has been created or updated.';
+      VATPostingSetup@1160004 : Record 325;
+      VATStatementTemplate@1160005 : Record 255;
+      VATStatementName@1160006 : Record 257;
+      VATStatementLine@1160007 : Record 256;
+      LineNo@1160008 : Integer;
+
+    PROCEDURE UpdateVATStatementTemplate@1160008(TemplateName@1160000 : Code[10];TemplateDescription@1160001 : Text[80]);
+    BEGIN
+      IF VATStatementTemplate.GET(TemplateName) THEN BEGIN
+        IF NOT CONFIRM(Text1160000,TRUE,VATStatementTemplate.TABLECAPTION,TemplateName) THEN
+          ERROR(Text1160003,VATStatementTemplate.TABLECAPTION)
+      END ELSE
+        IF NOT CONFIRM(Text1160001,TRUE,VATStatementTemplate.TABLECAPTION,TemplateName) THEN
+          ERROR(Text1160003,VATStatementTemplate.TABLECAPTION);
+
+      Update(TemplateName,TemplateDescription);
+
+      MESSAGE(Text1160002,VATStatementTemplate.TABLECAPTION,VATStatementTemplate.Name);
+    END;
+
+    PROCEDURE Update@1160009(TemplateName@1160000 : Code[10];TemplateDescription@1160001 : Text[80]);
+    BEGIN
+      VATStatementLine.SETRANGE("Statement Template Name",TemplateName);
+      VATStatementLine.SETRANGE("Statement Name",'Standard');
+      IF VATStatementName.GET(TemplateName,'Standard') THEN
+        VATStatementName.DELETE;
+      VATStatementLine.DELETEALL;
+      IF VATStatementTemplate.GET(TemplateName) THEN
+        VATStatementTemplate.DELETE;
+      COMMIT;
+
+      VATStatementTemplate.INIT;
+      VATStatementTemplate.Name := TemplateName;
+      VATStatementTemplate.Description := TemplateDescription;
+      VATStatementTemplate."VAT Statement Report ID" := 11110;
+      VATStatementTemplate."Form ID" := 317;
+      VATStatementTemplate.INSERT;
+
+      VATStatementName.INIT;
+      VATStatementName."Statement Template Name" := TemplateName;
+      VATStatementName.Name := 'Standard';
+      VATStatementName.INSERT;
+      LineNo := 10000;
+
+      InsertSalestaxBaseamounts;
+      InsertSalestaxAmounts;
+      InsertPurchasetaxBaseamounts;
+      InsertPurchasetaxAmounts;
+      InsertEUTaxBaseamounts;
+      InsertEUTaxAmounts;
+      InsertEUShipments;
+      InsertRownumbers;
+    END;
+
+    PROCEDURE InsertSalestaxBaseamounts@1160000();
+    BEGIN
+      // Salestax Baseamounts
+      InsertData('','UST Bemessungsgrundlagen',3,0,0,'',FALSE,FALSE);
+      WITH VATPostingSetup DO BEGIN
+        SETRANGE("VAT Calculation Type","VAT Calculation Type"::"Normal VAT");
+        SETRANGE("VAT %",0);
+        IF FIND('-') THEN
+          REPEAT
+            InsertData('BU0','   ' + "VAT Bus. Posting Group" + ' / ' + "VAT Prod. Posting Group",1,2,2,'',FALSE,TRUE);
+          UNTIL NEXT = 0;
+        SETRANGE("VAT %",8);
+        IF FIND('-') THEN
+          REPEAT
+            InsertData('BU8','   ' + "VAT Bus. Posting Group" + ' / ' + "VAT Prod. Posting Group",1,2,2,'',FALSE,TRUE);
+          UNTIL NEXT = 0;
+        SETRANGE("VAT Calculation Type","VAT Calculation Type"::"Normal VAT");
+        SETRANGE("VAT %",10);
+        IF FIND('-') THEN
+          REPEAT
+            InsertData('BU10','   ' + "VAT Bus. Posting Group" + ' / ' + "VAT Prod. Posting Group",1,2,2,'',FALSE,TRUE);
+          UNTIL NEXT = 0;
+        SETRANGE("VAT %",12);
+        IF FIND('-') THEN
+          REPEAT
+            InsertData('BU12','   ' + "VAT Bus. Posting Group" + ' / ' + "VAT Prod. Posting Group",1,2,2,'',FALSE,TRUE);
+          UNTIL NEXT = 0;
+        SETRANGE("VAT %",19);
+        IF FIND('-') THEN
+          REPEAT
+            InsertData('BU19','   ' + "VAT Bus. Posting Group" + ' / ' + "VAT Prod. Posting Group",1,2,2,'',FALSE,TRUE);
+          UNTIL NEXT = 0;
+        SETRANGE("VAT %",20);
+        IF FIND('-') THEN
+          REPEAT
+            InsertData('BU20','   ' + "VAT Bus. Posting Group" + ' / ' + "VAT Prod. Posting Group",1,2,2,'',FALSE,TRUE);
+          UNTIL NEXT = 0;
+      END;
+    END;
+
+    PROCEDURE InsertSalestaxAmounts@1160002();
+    BEGIN
+      // Salestax Amounts
+      InsertData('','',3,0,0,'',FALSE,FALSE);
+      InsertData('','UST BetrÑge',3,0,0,'',FALSE,FALSE);
+
+      WITH VATPostingSetup DO BEGIN
+        SETRANGE("VAT Calculation Type","VAT Calculation Type"::"Normal VAT");
+        SETRANGE("VAT %",0);
+        IF FIND('-') THEN
+          REPEAT
+            InsertData('UST0','   ' + "VAT Bus. Posting Group" + ' / ' + "VAT Prod. Posting Group",1,2,1,'',FALSE,TRUE);
+          UNTIL NEXT = 0;
+        SETRANGE("VAT Calculation Type","VAT Calculation Type"::"Normal VAT");
+        SETRANGE("VAT %",8);
+        IF FIND('-') THEN
+          REPEAT
+            InsertData('UST8','   ' + "VAT Bus. Posting Group" + ' / ' + "VAT Prod. Posting Group",1,2,1,'',FALSE,TRUE);
+          UNTIL NEXT = 0;
+        SETRANGE("VAT Calculation Type","VAT Calculation Type"::"Normal VAT");
+        SETRANGE("VAT %",10);
+        IF FIND('-') THEN
+          REPEAT
+            InsertData('UST10','   ' + "VAT Bus. Posting Group" + ' / ' + "VAT Prod. Posting Group",1,2,1,'',FALSE,TRUE);
+          UNTIL NEXT = 0;
+        SETRANGE("VAT Calculation Type","VAT Calculation Type"::"Normal VAT");
+        SETRANGE("VAT %",12);
+        IF FIND('-') THEN
+          REPEAT
+            InsertData('UST12','   ' + "VAT Bus. Posting Group" + ' / ' + "VAT Prod. Posting Group",1,2,1,'',FALSE,TRUE);
+          UNTIL NEXT = 0;
+        SETRANGE("VAT Calculation Type","VAT Calculation Type"::"Normal VAT");
+        SETRANGE("VAT %",19);
+        IF FIND('-') THEN
+          REPEAT
+            InsertData('UST19','   ' + "VAT Bus. Posting Group" + ' / ' + "VAT Prod. Posting Group",1,2,1,'',FALSE,TRUE);
+          UNTIL NEXT = 0;
+        SETRANGE("VAT Calculation Type","VAT Calculation Type"::"Normal VAT");
+        SETRANGE("VAT %",20);
+        IF FIND('-') THEN
+          REPEAT
+            InsertData('UST20','   ' + "VAT Bus. Posting Group" + ' / ' + "VAT Prod. Posting Group",1,2,1,'',FALSE,TRUE);
+          UNTIL NEXT = 0;
+      END;
+    END;
+
+    PROCEDURE InsertPurchasetaxBaseamounts@1160004();
+    BEGIN
+      // Purchasetax Baseamounts
+      InsertData('','',3,0,0,'',FALSE,FALSE);
+      InsertData('','Vorsteuer Bemessungsgrundlagen',3,0,0,'',FALSE,FALSE);
+
+      WITH VATPostingSetup DO BEGIN
+        SETRANGE("VAT Calculation Type","VAT Calculation Type"::"Normal VAT");
+        SETRANGE("VAT %",0);
+        IF FIND('-') THEN
+          REPEAT
+            InsertData('BV10','   ' + "VAT Bus. Posting Group" + ' / ' + "VAT Prod. Posting Group",1,1,2,'',FALSE,FALSE);
+          UNTIL NEXT = 0;
+        SETRANGE("VAT %",8);
+        IF FIND('-') THEN
+          REPEAT
+            InsertData('BV8','   ' + "VAT Bus. Posting Group" + ' / ' + "VAT Prod. Posting Group",1,1,2,'',FALSE,FALSE);
+          UNTIL NEXT = 0;
+        SETRANGE("VAT Calculation Type","VAT Calculation Type"::"Normal VAT");
+        SETRANGE("VAT %",10);
+        IF FIND('-') THEN
+          REPEAT
+            InsertData('BV10','   ' + "VAT Bus. Posting Group" + ' / ' + "VAT Prod. Posting Group",1,1,2,'',FALSE,FALSE);
+          UNTIL NEXT = 0;
+        SETRANGE("VAT %",12);
+        IF FIND('-') THEN
+          REPEAT
+            InsertData('BV12','   ' + "VAT Bus. Posting Group" + ' / ' + "VAT Prod. Posting Group",1,1,2,'',FALSE,FALSE);
+          UNTIL NEXT = 0;
+        SETRANGE("VAT %",19);
+        IF FIND('-') THEN
+          REPEAT
+            InsertData('BV19','   ' + "VAT Bus. Posting Group" + ' / ' + "VAT Prod. Posting Group",1,1,2,'',FALSE,FALSE);
+          UNTIL NEXT = 0;
+        SETRANGE("VAT %",20);
+        IF FIND('-') THEN
+          REPEAT
+            InsertData('BV20','   ' + "VAT Bus. Posting Group" + ' / ' + "VAT Prod. Posting Group",1,1,2,'',FALSE,FALSE);
+          UNTIL NEXT = 0;
+      END;
+    END;
+
+    PROCEDURE InsertPurchasetaxAmounts@1160001();
+    BEGIN
+      // Purchasetax Amounts
+      InsertData('','',3,0,0,'',FALSE,FALSE);
+      InsertData('','Vorsteuer BetrÑge',3,0,0,'',FALSE,FALSE);
+
+      WITH VATPostingSetup DO BEGIN
+        SETRANGE("VAT Calculation Type","VAT Calculation Type"::"Normal VAT");
+        SETRANGE("VAT %",0);
+        IF FIND('-') THEN
+          REPEAT
+            InsertData('VST0','   ' + "VAT Bus. Posting Group" + ' / ' + "VAT Prod. Posting Group",1,1,1,'',FALSE,FALSE);
+          UNTIL NEXT = 0;
+        SETRANGE("VAT Calculation Type","VAT Calculation Type"::"Normal VAT");
+        SETRANGE("VAT %",8);
+        IF FIND('-') THEN
+          REPEAT
+            InsertData('VST8','   ' + "VAT Bus. Posting Group" + ' / ' + "VAT Prod. Posting Group",1,1,1,'',FALSE,FALSE);
+          UNTIL NEXT = 0;
+        SETRANGE("VAT Calculation Type","VAT Calculation Type"::"Normal VAT");
+        SETRANGE("VAT %",10);
+        IF FIND('-') THEN
+          REPEAT
+            InsertData('VST10','   ' + "VAT Bus. Posting Group" + ' / ' + "VAT Prod. Posting Group",1,1,1,'',FALSE,FALSE);
+          UNTIL NEXT = 0;
+        SETRANGE("VAT Calculation Type","VAT Calculation Type"::"Normal VAT");
+        SETRANGE("VAT %",12);
+        IF FIND('-') THEN
+          REPEAT
+            InsertData('VST12','   ' + "VAT Bus. Posting Group" + ' / ' + "VAT Prod. Posting Group",1,1,1,'',FALSE,FALSE);
+          UNTIL NEXT = 0;
+        SETRANGE("VAT Calculation Type","VAT Calculation Type"::"Normal VAT");
+        SETRANGE("VAT %",19);
+        IF FIND('-') THEN
+          REPEAT
+            InsertData('VST19','   ' + "VAT Bus. Posting Group" + ' / ' + "VAT Prod. Posting Group",1,1,1,'',FALSE,FALSE);
+          UNTIL NEXT = 0;
+        SETRANGE("VAT Calculation Type","VAT Calculation Type"::"Normal VAT");
+        SETRANGE("VAT %",20);
+        IF FIND('-') THEN
+          REPEAT
+            InsertData('VST20','   ' + "VAT Bus. Posting Group" + ' / ' + "VAT Prod. Posting Group",1,1,1,'',FALSE,FALSE);
+          UNTIL NEXT = 0;
+      END;
+    END;
+
+    PROCEDURE InsertEUTaxBaseamounts@1160003();
+    BEGIN
+      // EU-tax Baseamounts
+      InsertData('','',3,0,0,'',FALSE,FALSE);
+      InsertData('','Erwerbsteuer Bemessungsgrundlagen',3,0,0,'',FALSE,FALSE);
+
+      WITH VATPostingSetup DO BEGIN
+        SETRANGE("VAT Calculation Type","VAT Calculation Type"::"Reverse Charge VAT");
+        SETRANGE("VAT %",8);
+        IF FIND('-') THEN
+          REPEAT
+            InsertData('BES8','   ' + "VAT Bus. Posting Group" + ' / ' + "VAT Prod. Posting Group",1,1,2,'',FALSE,FALSE);
+          UNTIL NEXT = 0;
+        SETRANGE("VAT Calculation Type","VAT Calculation Type"::"Reverse Charge VAT");
+        SETRANGE("VAT %",10);
+        IF FIND('-') THEN
+          REPEAT
+            InsertData('BES10','   ' + "VAT Bus. Posting Group" + ' / ' + "VAT Prod. Posting Group",1,1,2,'',FALSE,FALSE);
+          UNTIL NEXT = 0;
+        SETRANGE("VAT Calculation Type","VAT Calculation Type"::"Reverse Charge VAT");
+        SETRANGE("VAT %",12);
+        IF FIND('-') THEN
+          REPEAT
+            InsertData('BES12','   ' + "VAT Bus. Posting Group" + ' / ' + "VAT Prod. Posting Group",1,1,2,'',FALSE,FALSE);
+          UNTIL NEXT = 0;
+        SETRANGE("VAT Calculation Type","VAT Calculation Type"::"Reverse Charge VAT");
+        SETRANGE("VAT %",19);
+        IF FIND('-') THEN
+          REPEAT
+            InsertData('BES19','   ' + "VAT Bus. Posting Group" + ' / ' + "VAT Prod. Posting Group",1,1,2,'',FALSE,FALSE);
+          UNTIL NEXT = 0;
+        SETRANGE("VAT Calculation Type","VAT Calculation Type"::"Reverse Charge VAT");
+        SETRANGE("VAT %",20);
+        IF FIND('-') THEN
+          REPEAT
+            InsertData('BES20','   ' + "VAT Bus. Posting Group" + ' / ' + "VAT Prod. Posting Group",1,1,2,'',FALSE,FALSE);
+          UNTIL NEXT = 0;
+      END;
+    END;
+
+    PROCEDURE InsertEUTaxAmounts@1160005();
+    BEGIN
+      // EU-tax Amounts
+      InsertData('','',3,0,0,'',FALSE,FALSE);
+      InsertData('','Erwerbsteuer BetrÑge',3,0,0,'',FALSE,FALSE);
+
+      WITH VATPostingSetup DO BEGIN
+        SETRANGE("VAT Calculation Type","VAT Calculation Type"::"Reverse Charge VAT");
+        SETRANGE("VAT %",8);
+        IF FIND('-') THEN
+          REPEAT
+            InsertData('ES8','   ' + "VAT Bus. Posting Group" + ' / ' + "VAT Prod. Posting Group",1,1,1,'',FALSE,FALSE);
+          UNTIL NEXT = 0;
+        SETRANGE("VAT Calculation Type","VAT Calculation Type"::"Reverse Charge VAT");
+        SETRANGE("VAT %",10);
+        IF FIND('-') THEN
+          REPEAT
+            InsertData('ES10','   ' + "VAT Bus. Posting Group" + ' / ' + "VAT Prod. Posting Group",1,1,1,'',FALSE,FALSE);
+          UNTIL NEXT = 0;
+        SETRANGE("VAT Calculation Type","VAT Calculation Type"::"Reverse Charge VAT");
+        SETRANGE("VAT %",12);
+        IF FIND('-') THEN
+          REPEAT
+            InsertData('ES12','   ' + "VAT Bus. Posting Group" + ' / ' + "VAT Prod. Posting Group",1,1,1,'',FALSE,FALSE);
+          UNTIL NEXT = 0;
+        SETRANGE("VAT Calculation Type","VAT Calculation Type"::"Reverse Charge VAT");
+        SETRANGE("VAT %",19);
+        IF FIND('-') THEN
+          REPEAT
+            InsertData('ES19','   ' + "VAT Bus. Posting Group" + ' / ' + "VAT Prod. Posting Group",1,1,1,'',FALSE,FALSE);
+          UNTIL NEXT = 0;
+        SETRANGE("VAT Calculation Type","VAT Calculation Type"::"Reverse Charge VAT");
+        SETRANGE("VAT %",20);
+        IF FIND('-') THEN
+          REPEAT
+            InsertData('ES20','   ' + "VAT Bus. Posting Group" + ' / ' + "VAT Prod. Posting Group",1,1,1,'',FALSE,FALSE);
+          UNTIL NEXT = 0;
+      END;
+    END;
+
+    PROCEDURE InsertEUShipments@1160006();
+    BEGIN
+      // EU-Shipments
+      WITH VATPostingSetup DO BEGIN
+        SETRANGE("VAT Calculation Type","VAT Calculation Type"::"Reverse Charge VAT");
+        SETRANGE("VAT %");
+        IF FIND('-') THEN BEGIN
+          InsertData('','',3,0,0,'',FALSE,FALSE);
+          InsertData('','Lieferungen in die EU',3,0,0,'',FALSE,FALSE);
+          REPEAT
+            InsertData('EULIEF','   ' + "VAT Bus. Posting Group" + ' / ' + "VAT Prod. Posting Group",1,2,2,'',FALSE,TRUE);
+          UNTIL NEXT = 0;
+        END;
+      END;
+    END;
+
+    PROCEDURE InsertRownumbers@1160007();
+    BEGIN
+
+      VATStatementLine."VAT Bus. Posting Group" := '';
+      VATStatementLine."VAT Prod. Posting Group" := '';
+      InsertData('','',3,0,0,'',FALSE,FALSE);
+      InsertData('','POS.NUMMERN FöR UVA-FORMULAR',3,0,0,'',FALSE,FALSE);
+      InsertData('','  Bemessungsgrundlagen beginnen mit 0xxx',3,0,0,'',FALSE,FALSE);
+      InsertData('','  UST BetrÑgebeginnen mit 1xxx',3,0,0,'',FALSE,FALSE);
+      InsertData('','',3,0,0,'',FALSE,FALSE);
+      InsertData('L1','Zwischensumme 1 Lief.',2,0,0,'BU0|BU10|BU20|BU12|BU19',TRUE,FALSE);
+      InsertData('L2','Zwischensumme 2 Lief.',2,0,0,'BU4',TRUE,FALSE);
+      InsertData('','',3,0,0,'',FALSE,FALSE);
+      InsertData('','Lief., sonst. Leist. u. Eigenverb.',3,0,0,'',FALSE,FALSE);
+      InsertData('1000','  BMG fÅr Lief. und Leist. inkl. Anzahlungen',2,0,0,'L1|L2',TRUE,FALSE);
+      InsertData('1001','  zuzÅglich Eigenverbrauch',2,0,0,'',TRUE,FALSE);
+      InsertData('1021','  UmsÑtze ı 19',2,0,0,'',TRUE,FALSE);
+      InsertData('','',3,0,0,'',FALSE,FALSE);
+      InsertData('','Steuerfrei MIT Vorsteuerabzug',3,0,0,'',FALSE,FALSE);
+      InsertData('1011','  Steuerfrei ı6 Ausfuhrlieferungen',2,0,0,'BU0',TRUE,FALSE);
+      InsertData('1012','  Steuerfrei ı6 Lohnveredelung',2,0,0,'',TRUE,FALSE);
+      InsertData('1015','  Steuerfrei ı6 Seeschifffahrt usw.',2,0,0,'',TRUE,FALSE);
+      InsertData('1017','  Steuerfrei ı6 innerg. Lieferungen',2,0,0,'',TRUE,FALSE);
+      InsertData('1018','  Steuerfrei ı6 Fahrzeuge ohne UID',2,0,0,'',TRUE,FALSE);
+      InsertData('','',3,0,0,'',FALSE,FALSE);
+      InsertData('','Steuerfrei OHNE Vorsteuerabzug',3,0,0,'',FALSE,FALSE);
+      InsertData('1019','  Steuerfrei ı6 GrundstÅcksumsÑtze',2,0,0,'',TRUE,FALSE);
+      InsertData('1016','  Steuerfrei ı6 Kleinunternehmer',2,0,0,'',TRUE,FALSE);
+      InsertData('1020','  Steuerfrei ı6 Åbrige UmsÑtze',2,0,0,'',TRUE,FALSE);
+      InsertData('','',3,0,0,'',FALSE,FALSE);
+      InsertData('','Davon sind zu versteuern mit:',3,0,0,'',FALSE,FALSE);
+      InsertData('0022','  20% BMG Normalsteuersatz',2,0,0,'BU20',TRUE,FALSE);
+      InsertData('1022','  20% UST Normalsteuersatz',2,0,0,'UST20',TRUE,FALSE);
+      InsertData('0029','  10% BMG ermÑ·igter Steuersatz',2,0,0,'BU10',TRUE,FALSE);
+      InsertData('1029','  10% UST ermÑ·igter Steuersatz',2,0,0,'UST10',TRUE,FALSE);
+      InsertData('0025','  12% BMG WeinumsÑtze',2,0,0,'BU12',TRUE,FALSE);
+      InsertData('1025','  12% UST WeinumsÑtze',2,0,0,'UST12',TRUE,FALSE);
+      InsertData('0037','  19% BMG Jungholz',2,0,0,'BU19',TRUE,FALSE);
+      InsertData('1037','  19% UST Jungholz',2,0,0,'UST19',TRUE,FALSE);
+      InsertData('0052','  10% BMG pauschalierte LW',2,0,0,'BU12',TRUE,FALSE);
+      InsertData('1052','  10% UST pauschalierte LW',2,0,0,'UST12',TRUE,FALSE);
+      InsertData('0038','  8% BMG pauschalierte LW',2,0,0,'BU8',TRUE,FALSE);
+      InsertData('1038','  8% UST pauschalierte LW',2,0,0,'UST8',TRUE,FALSE);
+      InsertData('','',3,0,0,'',FALSE,FALSE);
+      InsertData('','Weiters zu versteuern:',3,0,0,'',FALSE,FALSE);
+      InsertData('1056','  Steuerschuld Par. 11',2,0,0,'',TRUE,FALSE);
+      InsertData('1057','  Steuerschuld Par. 19',2,0,0,'',TRUE,FALSE);
+      InsertData('1048','  Steuerschuld Par. 19 (Bauleistungen)',2,0,0,'',TRUE,FALSE);
+      InsertData('1032','  Steuerschuld Par. 19 (Schrott und Abfall)',2,0,0,'',TRUE,FALSE);
+      InsertData('1044','  Steuerschuld Par. 19 (Sicherungseigentum)',2,0,0,'',TRUE,FALSE);
+      InsertData('','',3,0,0,'',FALSE,FALSE);
+      InsertData('','Innergemeinschaftliche Erwerbe',3,0,0,'',FALSE,FALSE);
+      InsertData('0070','  BMG Innerg. Erwerbe',2,0,0,'BES20|BES10|BES12|BES19',TRUE,FALSE);
+      InsertData('0071','  Davon steuerfrei gem. Art.6 Abs. 2',2,0,0,'',TRUE,FALSE);
+      InsertData('','',3,0,0,'',FALSE,FALSE);
+      InsertData('','Davon sind zu versteuern mit:',3,0,0,'',FALSE,FALSE);
+      InsertData('0072','  20% BMG Erwerbsteuer 20%',2,0,0,'BES20',TRUE,FALSE);
+      InsertData('1072','  20% Erwerbssteuer',2,0,0,'ES20',TRUE,FALSE);
+      InsertData('0073','  10% BMG Erwerbsteuer',2,0,0,'BES10',TRUE,FALSE);
+      InsertData('1073','  10% Erwerbssteuer',2,0,0,'ES10',TRUE,FALSE);
+      InsertData('0088','  19% BMG Erwerbsteuer',2,0,0,'BES19',TRUE,FALSE);
+      InsertData('1088','  19% Erwerbssteuer',2,0,0,'ES19',TRUE,FALSE);
+      InsertData('','',3,0,0,'',FALSE,FALSE);
+      InsertData('','Nicht zu versteuernde Erwerbe:',3,0,0,'',FALSE,FALSE);
+      InsertData('0076','  Erwerbe Art.3 Abs.8 (1)',2,0,0,'',TRUE,FALSE);
+      InsertData('0077','  Erwerbe Art.3 Abs.8 (2)',2,0,0,'',TRUE,FALSE);
+      InsertData('','',3,0,0,'',FALSE,FALSE);
+      InsertData('','Berechnung der abziehbaren Vorsteuer:',3,0,0,'',FALSE,FALSE);
+      InsertData('1060','  Gesamtbetrag der Vorsteuern',2,0,0,'VST10|VST20|VST12|VST5|VST19',TRUE,FALSE);
+      InsertData('1061','  Einfuhrumsatzsteuer',2,0,0,'',TRUE,FALSE);
+      InsertData('1083','  Vorsteuern ı12 Abs.1 Z 2 lit.b',2,0,0,'',TRUE,FALSE);
+      InsertData('1065','  Vorsteuern aus dem Innerg. Erwerb',2,0,0,'ES20|ES10|ES12|ES19',TRUE,FALSE);
+      InsertData('1066','  Vorsteuern ı19',2,0,0,'',TRUE,FALSE);
+      InsertData('1082','  Vorsteuern ı19 (Bauleistungen)',2,0,0,'',TRUE,FALSE);
+      InsertData('1089','  Vorsteuern ı19 (Schrott und Abfall)',2,0,0,'',TRUE,FALSE);
+      InsertData('1087','  Vorsteuern Par. 19 (Sicherungseigentum)',2,0,0,'',TRUE,FALSE);
+      InsertData('1064','  Vorsteuern ı12',2,0,0,'',TRUE,FALSE);
+      InsertData('1062','  davon ab gem. ı12',2,0,0,'',TRUE,FALSE);
+      InsertData('1063','  Berichtigung gem. ı12',2,0,0,'',TRUE,FALSE);
+      InsertData('1067','  Berichtigung gem. ı16',2,0,0,'',TRUE,FALSE);
+      InsertData('1027','    Vorsteuern betreffend KFZ',2,0,0,'',TRUE,FALSE);
+      InsertData('1028','    Vorsteuern betreffend GebÑude',2,0,0,'',TRUE,FALSE);
+      InsertData('1090','  Sonstige Berichtigungen',2,0,0,'',TRUE,FALSE);
+    END;
+
+    PROCEDURE InsertData@3(Number@1160000 : Code[10];Txt@1160001 : Text[50];Type@1160002 : Integer;TaxType@1160003 : Integer;AmountType@1160004 : Integer;RowTotal@1160005 : Text[30];Print@1160006 : Boolean;ReverseSign@1160007 : Boolean);
+    BEGIN
+      VATStatementLine.INIT;
+      VATStatementLine."Statement Template Name" := VATStatementTemplate.Name;
+      VATStatementLine."Statement Name"  := 'Standard';
+      VATStatementLine."Line No." := LineNo;
+      LineNo := LineNo + 10000;
+      VATStatementLine."Row No." := Number;
+      VATStatementLine.Description := Txt;
+      VATStatementLine.Type := Type;
+      VATStatementLine."Gen. Posting Type" := TaxType;
+      VATStatementLine."VAT Bus. Posting Group" := VATPostingSetup."VAT Bus. Posting Group";
+      VATStatementLine."VAT Prod. Posting Group" := VATPostingSetup."VAT Prod. Posting Group";
+      VATStatementLine."Amount Type" := AmountType;
+      VATStatementLine."Row Totaling" := RowTotal;
+      VATStatementLine.Print := Print;
+      IF ReverseSign THEN
+        VATStatementLine."Calculate with" := VATStatementLine."Calculate with"::"Opposite Sign"
+      ELSE
+        VATStatementLine."Calculate with" := VATStatementLine."Calculate with"::Sign;
+      IF (Number = '') OR (VATStatementLine.Type = VATStatementLine.Type::"Row Totaling") THEN BEGIN
+        VATStatementLine."VAT Bus. Posting Group" := '';
+        VATStatementLine."VAT Prod. Posting Group" := '';
+      END;
+      VATStatementLine.INSERT;
+    END;
+
+    BEGIN
+    END.
+  }
+}
+

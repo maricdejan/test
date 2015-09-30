@@ -1,0 +1,53 @@
+OBJECT Table 6521 Item Tracing History Buffer
+{
+  OBJECT-PROPERTIES
+  {
+    Date=05.11.08;
+    Time=12:00:00;
+    Version List=NAVW16.00;
+  }
+  PROPERTIES
+  {
+    CaptionML=[DEU=Puffer Artikelverfolgungshistorie;
+               ENU=Item Tracing History Buffer];
+  }
+  FIELDS
+  {
+    { 1   ;   ;Entry No.           ;Integer       ;CaptionML=[DEU=Lfd. Nr.;
+                                                              ENU=Entry No.] }
+    { 2   ;   ;Level               ;Integer       ;CaptionML=[DEU=Ebene;
+                                                              ENU=Level] }
+    { 10  ;   ;Serial No. Filter   ;Code250       ;CaptionML=[DEU=Seriennr. Filter;
+                                                              ENU=Serial No. Filter] }
+    { 11  ;   ;Lot No. Filter      ;Code250       ;CaptionML=[DEU=Chargennr. Filter;
+                                                              ENU=Lot No. Filter] }
+    { 12  ;   ;Item No. Filter     ;Code250       ;CaptionML=[DEU=Artikelnr. Filter;
+                                                              ENU=Item No. Filter] }
+    { 13  ;   ;Variant Filter      ;Code250       ;CaptionML=[DEU=Variantenfilter;
+                                                              ENU=Variant Filter] }
+    { 14  ;   ;Trace Method        ;Option        ;CaptionML=[DEU=Ablaufverfolgungsmethode;
+                                                              ENU=Trace Method];
+                                                   OptionCaptionML=[DEU=Ursprung->Verbrauch,Verbrauch->Ursprung;
+                                                                    ENU=Origin->Usage,Usage->Origin];
+                                                   OptionString=Origin->Usage,Usage->Origin }
+    { 15  ;   ;Show Components     ;Option        ;CaptionML=[DEU=Komponenten anzeigen;
+                                                              ENU=Show Components];
+                                                   OptionCaptionML=[DEU=Nein,Nur mit Artikelverfolgung,Alle;
+                                                                    ENU=No,Item-tracked only,All];
+                                                   OptionString=No,Item-tracked only,All }
+  }
+  KEYS
+  {
+    {    ;Entry No.,Level                         ;Clustered=Yes }
+  }
+  FIELDGROUPS
+  {
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

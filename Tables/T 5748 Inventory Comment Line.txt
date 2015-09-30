@@ -1,0 +1,58 @@
+OBJECT Table 5748 Inventory Comment Line
+{
+  OBJECT-PROPERTIES
+  {
+    Date=05.11.08;
+    Time=12:00:00;
+    Version List=NAVW16.00;
+  }
+  PROPERTIES
+  {
+    CaptionML=[DEU=Lagerbemerkungszeile;
+               ENU=Inventory Comment Line];
+    LookupFormID=Form5751;
+  }
+  FIELDS
+  {
+    { 1   ;   ;Document Type       ;Option        ;CaptionML=[DEU=Belegart;
+                                                              ENU=Document Type];
+                                                   OptionCaptionML=[DEU=" ,Umlagerungsauftrag,Geb. Umlag.-Ausgang,Geb. Umlag.-Eingang";
+                                                                    ENU=" ,Transfer Order,Posted Transfer Shipment,Posted Transfer Receipt"];
+                                                   OptionString=[ ,Transfer Order,Posted Transfer Shipment,Posted Transfer Receipt] }
+    { 2   ;   ;No.                 ;Code20        ;CaptionML=[DEU=Nr.;
+                                                              ENU=No.] }
+    { 3   ;   ;Line No.            ;Integer       ;CaptionML=[DEU=Zeilennr.;
+                                                              ENU=Line No.] }
+    { 4   ;   ;Date                ;Date          ;CaptionML=[DEU=Datum;
+                                                              ENU=Date] }
+    { 5   ;   ;Code                ;Code10        ;CaptionML=[DEU=Code;
+                                                              ENU=Code] }
+    { 6   ;   ;Comment             ;Text80        ;CaptionML=[DEU=Bemerkung;
+                                                              ENU=Comment] }
+  }
+  KEYS
+  {
+    {    ;Document Type,No.,Line No.              ;Clustered=Yes }
+  }
+  FIELDGROUPS
+  {
+  }
+  CODE
+  {
+
+    PROCEDURE SetUpNewLine@1();
+    VAR
+      InvtCommentLine@1000 : Record 5748;
+    BEGIN
+      InvtCommentLine.SETRANGE("Document Type","Document Type");
+      InvtCommentLine.SETRANGE("No.","No.");
+      InvtCommentLine.SETRANGE(Date,WORKDATE);
+      IF NOT InvtCommentLine.FIND('-') THEN
+        Date := WORKDATE;
+    END;
+
+    BEGIN
+    END.
+  }
+}
+

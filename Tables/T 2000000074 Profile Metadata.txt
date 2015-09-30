@@ -1,0 +1,52 @@
+OBJECT Table 2000000074 Profile Metadata
+{
+  OBJECT-PROPERTIES
+  {
+    Date=11.12.10;
+    Time=12:00:00;
+    Version List=;
+  }
+  PROPERTIES
+  {
+    DataPerCompany=No;
+    CaptionML=[DEU=Profilmetadaten;
+               ENU=Profile Metadata];
+  }
+  FIELDS
+  {
+    { 3   ;   ;Profile ID          ;Code30        ;TableRelation=Profile."Profile ID";
+                                                   CaptionML=[DEU=Profil-ID;
+                                                              ENU=Profile ID] }
+    { 6   ;   ;Page ID             ;Integer       ;TableRelation=AllObj."Object ID" WHERE (Object Type=CONST(Page));
+                                                   CaptionML=[DEU=Seiten-ID;
+                                                              ENU=Page ID] }
+    { 9   ;   ;Description         ;Text250       ;FieldClass=FlowField;
+                                                   CalcFormula=Lookup(AllObjWithCaption."Object Caption" WHERE (Object Type=CONST(Page),
+                                                                                                                Object ID=FIELD(Page ID)));
+                                                   CaptionML=[DEU=Beschreibung;
+                                                              ENU=Description] }
+    { 12  ;   ;Date                ;Date          ;CaptionML=[DEU=Datum;
+                                                              ENU=Date] }
+    { 15  ;   ;Time                ;Time          ;CaptionML=[DEU=Zeit;
+                                                              ENU=Time] }
+    { 18  ;   ;Personalization ID  ;Code40        ;CaptionML=[DEU=Anpassungs-ID;
+                                                              ENU=Personalization ID] }
+    { 21  ;   ;Page Metadata Delta ;BLOB          ;CaptionML=[DEU=Seitenmetadaten - Delta;
+                                                              ENU=Page Metadata Delta] }
+  }
+  KEYS
+  {
+    {    ;Profile ID,Page ID,Personalization ID   ;Clustered=Yes }
+    {    ;Date                                     }
+  }
+  FIELDGROUPS
+  {
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

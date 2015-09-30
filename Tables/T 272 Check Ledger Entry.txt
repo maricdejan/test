@@ -1,0 +1,139 @@
+OBJECT Table 272 Check Ledger Entry
+{
+  OBJECT-PROPERTIES
+  {
+    Date=05.11.08;
+    Time=12:00:00;
+    Version List=NAVW16.00;
+  }
+  PROPERTIES
+  {
+    CaptionML=[DEU=Scheckposten;
+               ENU=Check Ledger Entry];
+    LookupFormID=Form374;
+    DrillDownFormID=Form374;
+  }
+  FIELDS
+  {
+    { 1   ;   ;Entry No.           ;Integer       ;CaptionML=[DEU=Lfd. Nr.;
+                                                              ENU=Entry No.] }
+    { 2   ;   ;Bank Account No.    ;Code20        ;TableRelation="Bank Account";
+                                                   CaptionML=[DEU=Bankkontonummer;
+                                                              ENU=Bank Account No.] }
+    { 3   ;   ;Bank Account Ledger Entry No.;Integer;
+                                                   TableRelation="Bank Account Ledger Entry";
+                                                   CaptionML=[DEU=Bankposten Lfd. Nr.;
+                                                              ENU=Bank Account Ledger Entry No.] }
+    { 4   ;   ;Posting Date        ;Date          ;CaptionML=[DEU=Buchungsdatum;
+                                                              ENU=Posting Date] }
+    { 5   ;   ;Document Type       ;Option        ;CaptionML=[DEU=Belegart;
+                                                              ENU=Document Type];
+                                                   OptionCaptionML=[DEU=" ,Zahlung,Rechnung,Gutschrift,Zinsrechnung,Mahnung,Erstattung";
+                                                                    ENU=" ,Payment,Invoice,Credit Memo,Finance Charge Memo,Reminder,Refund"];
+                                                   OptionString=[ ,Payment,Invoice,Credit Memo,Finance Charge Memo,Reminder,Refund] }
+    { 6   ;   ;Document No.        ;Code20        ;CaptionML=[DEU=Belegnr.;
+                                                              ENU=Document No.] }
+    { 7   ;   ;Description         ;Text50        ;CaptionML=[DEU=Beschreibung;
+                                                              ENU=Description] }
+    { 8   ;   ;Amount              ;Decimal       ;CaptionML=[DEU=Betrag;
+                                                              ENU=Amount];
+                                                   AutoFormatType=1;
+                                                   AutoFormatExpr=GetCurrencyCodeFromBank }
+    { 9   ;   ;Check Date          ;Date          ;CaptionML=[DEU=Scheckdatum;
+                                                              ENU=Check Date] }
+    { 10  ;   ;Check No.           ;Code20        ;CaptionML=[DEU=Schecknummer;
+                                                              ENU=Check No.] }
+    { 11  ;   ;Check Type          ;Option        ;CaptionML=[DEU=Scheckart;
+                                                              ENU=Check Type];
+                                                   OptionCaptionML=[DEU=Gesamtscheck,Anzahlungsscheck;
+                                                                    ENU=Total Check,Partial Check];
+                                                   OptionString=Total Check,Partial Check }
+    { 12  ;   ;Bank Payment Type   ;Option        ;CaptionML=[DEU=Bankkontozahlungsart;
+                                                              ENU=Bank Payment Type];
+                                                   OptionCaptionML=[DEU=" ,Computer Scheck,Manueller Scheck";
+                                                                    ENU=" ,Computer Check,Manual Check"];
+                                                   OptionString=[ ,Computer Check,Manual Check] }
+    { 13  ;   ;Entry Status        ;Option        ;CaptionML=[DEU=Buchungsstatus;
+                                                              ENU=Entry Status];
+                                                   OptionCaptionML=[DEU=,Gedruckt,Annulliert,Gebucht,Storniert,Testdruck;
+                                                                    ENU=,Printed,Voided,Posted,Financially Voided,Test Print];
+                                                   OptionString=,Printed,Voided,Posted,Financially Voided,Test Print }
+    { 14  ;   ;Original Entry Status;Option       ;CaptionML=[DEU=Ursprungsstatus;
+                                                              ENU=Original Entry Status];
+                                                   OptionCaptionML=[DEU=" ,Gedruckt,Annulliert,Gebucht,Storniert";
+                                                                    ENU=" ,Printed,Voided,Posted,Financially Voided"];
+                                                   OptionString=[ ,Printed,Voided,Posted,Financially Voided] }
+    { 15  ;   ;Bal. Account Type   ;Option        ;CaptionML=[DEU=Gegenkontoart;
+                                                              ENU=Bal. Account Type];
+                                                   OptionCaptionML=[DEU=Sachkonto,Debitor,Kreditor,Bankkonto,Anlage;
+                                                                    ENU=G/L Account,Customer,Vendor,Bank Account,Fixed Asset];
+                                                   OptionString=G/L Account,Customer,Vendor,Bank Account,Fixed Asset }
+    { 16  ;   ;Bal. Account No.    ;Code20        ;TableRelation=IF (Bal. Account Type=CONST(G/L Account)) "G/L Account"
+                                                                 ELSE IF (Bal. Account Type=CONST(Customer)) Customer
+                                                                 ELSE IF (Bal. Account Type=CONST(Vendor)) Vendor
+                                                                 ELSE IF (Bal. Account Type=CONST(Bank Account)) "Bank Account"
+                                                                 ELSE IF (Bal. Account Type=CONST(Fixed Asset)) "Fixed Asset";
+                                                   CaptionML=[DEU=Gegenkontonr.;
+                                                              ENU=Bal. Account No.] }
+    { 17  ;   ;Open                ;Boolean       ;CaptionML=[DEU=Offen;
+                                                              ENU=Open] }
+    { 18  ;   ;Statement Status    ;Option        ;CaptionML=[DEU=Auszugsstatus;
+                                                              ENU=Statement Status];
+                                                   OptionCaptionML=[DEU=Offen,Bankpostenausgleich,Scheckpostenausgleich,Geschlossen;
+                                                                    ENU=Open,Bank Acc. Entry Applied,Check Entry Applied,Closed];
+                                                   OptionString=Open,Bank Acc. Entry Applied,Check Entry Applied,Closed }
+    { 19  ;   ;Statement No.       ;Code20        ;TableRelation="Bank Acc. Reconciliation Line"."Statement No." WHERE (Bank Account No.=FIELD(Bank Account No.));
+                                                   TestTableRelation=No;
+                                                   CaptionML=[DEU=Auszugsnr.;
+                                                              ENU=Statement No.] }
+    { 20  ;   ;Statement Line No.  ;Integer       ;TableRelation="Bank Acc. Reconciliation Line"."Statement Line No." WHERE (Bank Account No.=FIELD(Bank Account No.),
+                                                                                                                             Statement No.=FIELD(Statement No.));
+                                                   TestTableRelation=No;
+                                                   CaptionML=[DEU=Auszugszeilennr.;
+                                                              ENU=Statement Line No.] }
+    { 21  ;   ;User ID             ;Code20        ;TableRelation=User;
+                                                   OnLookup=VAR
+                                                              LoginMgt@1000 : Codeunit 418;
+                                                            BEGIN
+                                                              LoginMgt.LookupUserID("User ID");
+                                                            END;
+
+                                                   TestTableRelation=No;
+                                                   CaptionML=[DEU=Benutzer-ID;
+                                                              ENU=User ID] }
+    { 22  ;   ;External Document No.;Code20       ;CaptionML=[DEU=Externe Belegnummer;
+                                                              ENU=External Document No.] }
+  }
+  KEYS
+  {
+    {    ;Entry No.                               ;Clustered=Yes }
+    {    ;Bank Account No.,Check Date              }
+    {    ;Bank Account No.,Entry Status,Check No.  }
+    {    ;Bank Account Ledger Entry No.            }
+    {    ;Bank Account No.,Open                    }
+    {    ;Document No.,Posting Date                }
+  }
+  FIELDGROUPS
+  {
+  }
+  CODE
+  {
+
+    PROCEDURE GetCurrencyCodeFromBank@1() : Code[10];
+    VAR
+      BankAcc@1000 : Record 270;
+    BEGIN
+      IF ("Bank Account No." = BankAcc."No.") THEN
+        EXIT(BankAcc."Currency Code")
+      ELSE
+      IF BankAcc.GET("Bank Account No.") THEN
+        EXIT(BankAcc."Currency Code")
+      ELSE
+        EXIT('');
+    END;
+
+    BEGIN
+    END.
+  }
+}
+

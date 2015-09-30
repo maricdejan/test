@@ -1,0 +1,244 @@
+OBJECT Table 242 Source Code Setup
+{
+  OBJECT-PROPERTIES
+  {
+    Date=05.11.08;
+    Time=12:00:00;
+    Version List=NAVW16.00,LIQEM5.00,NAVDACH5.00.01;
+  }
+  PROPERTIES
+  {
+    CaptionML=[DEU=Herkunftscode Einrichtung;
+               ENU=Source Code Setup];
+  }
+  FIELDS
+  {
+    { 1   ;   ;Primary Key         ;Code10        ;CaptionML=[DEU=PrimÑrschlÅssel;
+                                                              ENU=Primary Key] }
+    { 2   ;   ;Sales               ;Code10        ;TableRelation="Source Code";
+                                                   CaptionML=[DEU=Verkauf;
+                                                              ENU=Sales] }
+    { 3   ;   ;Purchases           ;Code10        ;TableRelation="Source Code";
+                                                   CaptionML=[DEU=Einkauf;
+                                                              ENU=Purchases] }
+    { 4   ;   ;Inventory Post Cost ;Code10        ;TableRelation="Source Code";
+                                                   CaptionML=[DEU=Lagerregulierung;
+                                                              ENU=Inventory Post Cost] }
+    { 5   ;   ;Exchange Rate Adjmt.;Code10        ;TableRelation="Source Code";
+                                                   CaptionML=[DEU=Kursregulierung;
+                                                              ENU=Exchange Rate Adjmt.] }
+    { 6   ;   ;Post Recognition    ;Code10        ;TableRelation="Source Code";
+                                                   CaptionML=[DEU=Deaktivierung buchen;
+                                                              ENU=Post Recognition] }
+    { 7   ;   ;Post Value          ;Code10        ;TableRelation="Source Code";
+                                                   CaptionML=[DEU=Aktivierung buchen;
+                                                              ENU=Post Value] }
+    { 8   ;   ;Close Income Statement;Code10      ;TableRelation="Source Code";
+                                                   CaptionML=[DEU=GuV-Konten Nullstellung;
+                                                              ENU=Close Income Statement] }
+    { 9   ;   ;Consolidation       ;Code10        ;TableRelation="Source Code";
+                                                   CaptionML=[DEU=Konsolidierung;
+                                                              ENU=Consolidation] }
+    { 10  ;   ;General Journal     ;Code10        ;TableRelation="Source Code";
+                                                   CaptionML=[DEU=Fibu Buch.-Blatt;
+                                                              ENU=General Journal] }
+    { 11  ;   ;Sales Journal       ;Code10        ;TableRelation="Source Code";
+                                                   CaptionML=[DEU=Verkaufs Buch.-Blatt;
+                                                              ENU=Sales Journal] }
+    { 12  ;   ;Purchase Journal    ;Code10        ;TableRelation="Source Code";
+                                                   CaptionML=[DEU=Einkaufs Buch.-Blatt;
+                                                              ENU=Purchase Journal] }
+    { 13  ;   ;Cash Receipt Journal;Code10        ;TableRelation="Source Code";
+                                                   CaptionML=[DEU=Zahlungseingangs Buch.-Blatt;
+                                                              ENU=Cash Receipt Journal] }
+    { 14  ;   ;Payment Journal     ;Code10        ;TableRelation="Source Code";
+                                                   CaptionML=[DEU=Zahlungsausgangs Buch.-Blatt;
+                                                              ENU=Payment Journal] }
+    { 16  ;   ;Item Journal        ;Code10        ;TableRelation="Source Code";
+                                                   CaptionML=[DEU=Artikel Buch.-Blatt;
+                                                              ENU=Item Journal] }
+    { 17  ;   ;BOM Journal         ;Code10        ;TableRelation="Source Code";
+                                                   CaptionML=[DEU=StÅckliste Buch.-Blatt;
+                                                              ENU=BOM Journal] }
+    { 19  ;   ;Resource Journal    ;Code10        ;TableRelation="Source Code";
+                                                   CaptionML=[DEU=Ressourcen Buch.-Blatt;
+                                                              ENU=Resource Journal] }
+    { 20  ;   ;Job Journal         ;Code10        ;TableRelation="Source Code";
+                                                   CaptionML=[DEU=Projekt Buch.-Blatt;
+                                                              ENU=Job Journal] }
+    { 21  ;   ;Sales Entry Application;Code10     ;TableRelation="Source Code";
+                                                   CaptionML=[DEU=Verk.-Posten ausgleichen;
+                                                              ENU=Sales Entry Application] }
+    { 22  ;   ;Purchase Entry Application;Code10  ;TableRelation="Source Code";
+                                                   CaptionML=[DEU=Eink.-Posten ausgleichen;
+                                                              ENU=Purchase Entry Application] }
+    { 23  ;   ;VAT Settlement      ;Code10        ;TableRelation="Source Code";
+                                                   CaptionML=[DEU=MwSt.-Abrechnung;
+                                                              ENU=VAT Settlement] }
+    { 24  ;   ;Compress G/L        ;Code10        ;TableRelation="Source Code";
+                                                   CaptionML=[DEU=Sachposten kompr.;
+                                                              ENU=Compress G/L] }
+    { 25  ;   ;Compress VAT Entries;Code10        ;TableRelation="Source Code";
+                                                   CaptionML=[DEU=MwSt.-Posten kompr.;
+                                                              ENU=Compress VAT Entries] }
+    { 26  ;   ;Compress Cust. Ledger;Code10       ;TableRelation="Source Code";
+                                                   CaptionML=[DEU=Debitorenposten kompr.;
+                                                              ENU=Compress Cust. Ledger] }
+    { 27  ;   ;Compress Vend. Ledger;Code10       ;TableRelation="Source Code";
+                                                   CaptionML=[DEU=Kreditorenposten kompr.;
+                                                              ENU=Compress Vend. Ledger] }
+    { 28  ;   ;Compress Item Ledger;Code10        ;TableRelation="Source Code";
+                                                   CaptionML=[DEU=Artikelposten kompr.;
+                                                              ENU=Compress Item Ledger] }
+    { 29  ;   ;Compress BOM Ledger ;Code10        ;TableRelation="Source Code";
+                                                   CaptionML=[DEU=StÅcklistenposten kompr.;
+                                                              ENU=Compress BOM Ledger] }
+    { 31  ;   ;Compress Res. Ledger;Code10        ;TableRelation="Source Code";
+                                                   CaptionML=[DEU=Ressourcenposten kompr.;
+                                                              ENU=Compress Res. Ledger] }
+    { 32  ;   ;Compress Job Ledger ;Code10        ;TableRelation="Source Code";
+                                                   CaptionML=[DEU=Projektposten kompr.;
+                                                              ENU=Compress Job Ledger] }
+    { 33  ;   ;Item Reclass. Journal;Code10       ;TableRelation="Source Code";
+                                                   CaptionML=[DEU=Umlagerungs Buch.-Blatt;
+                                                              ENU=Item Reclass. Journal] }
+    { 34  ;   ;Phys. Inventory Journal;Code10     ;TableRelation="Source Code";
+                                                   CaptionML=[DEU=Inventur Buch.-Blatt;
+                                                              ENU=Phys. Inventory Journal] }
+    { 35  ;   ;Compress Bank Acc. Ledger;Code10   ;TableRelation="Source Code";
+                                                   CaptionML=[DEU=Bankposten kompr.;
+                                                              ENU=Compress Bank Acc. Ledger] }
+    { 36  ;   ;Compress Check Ledger;Code10       ;TableRelation="Source Code";
+                                                   CaptionML=[DEU=Komprimierung von Scheckposten;
+                                                              ENU=Compress Check Ledger] }
+    { 37  ;   ;Financially Voided Check;Code10    ;TableRelation="Source Code";
+                                                   CaptionML=[DEU=Stornierter Scheck;
+                                                              ENU=Financially Voided Check] }
+    { 38  ;   ;Finance Charge Memo ;Code10        ;TableRelation="Source Code";
+                                                   CaptionML=[DEU=Zinsrechnung;
+                                                              ENU=Finance Charge Memo] }
+    { 39  ;   ;Reminder            ;Code10        ;TableRelation="Source Code";
+                                                   CaptionML=[DEU=Mahnung;
+                                                              ENU=Reminder] }
+    { 40  ;   ;Deleted Document    ;Code10        ;TableRelation="Source Code";
+                                                   CaptionML=[DEU=Gelîschter Beleg;
+                                                              ENU=Deleted Document] }
+    { 41  ;   ;Adjust Add. Reporting Currency;Code10;
+                                                   TableRelation="Source Code";
+                                                   CaptionML=[DEU=BerichtswÑhrung regulieren;
+                                                              ENU=Adjust Add. Reporting Currency] }
+    { 42  ;   ;Trans. Bank Rec. to Gen. Jnl.;Code10;
+                                                   TableRelation="Source Code";
+                                                   CaptionML=[DEU=Bankkto. Ausgl. Fibu Buch.-Bl.;
+                                                              ENU=Trans. Bank Rec. to Gen. Jnl.] }
+    { 43  ;   ;IC General Journal  ;Code10        ;TableRelation="Source Code";
+                                                   CaptionML=[DEU=IC-Fibu Buch.-Blatt;
+                                                              ENU=IC General Journal] }
+    { 45  ;   ;Unapplied Sales Entry Appln.;Code10;TableRelation="Source Code";
+                                                   CaptionML=[DEU=Ni. gebucht. VK-Posten-Ausgl.;
+                                                              ENU=Unapplied Sales Entry Appln.] }
+    { 46  ;   ;Unapplied Purch. Entry Appln.;Code10;
+                                                   TableRelation="Source Code";
+                                                   CaptionML=[DEU=Ni. gebucht. EK-Posten-Ausgl.;
+                                                              ENU=Unapplied Purch. Entry Appln.] }
+    { 47  ;   ;Reversal            ;Code10        ;TableRelation="Source Code";
+                                                   CaptionML=[DEU=Storno;
+                                                              ENU=Reversal] }
+    { 1000;   ;Job G/L Journal     ;Code10        ;TableRelation="Source Code";
+                                                   CaptionML=[DEU=Fibu Buch.-Blatt Projekt;
+                                                              ENU=Job G/L Journal] }
+    { 1001;   ;Job G/L WIP         ;Code10        ;TableRelation="Source Code";
+                                                   CaptionML=[DEU=WIP-Projektsachposten;
+                                                              ENU=Job G/L WIP] }
+    { 5400;   ;Consumption Journal ;Code10        ;TableRelation="Source Code";
+                                                   CaptionML=[DEU=FA-Verbrauchs Buch.-Blatt;
+                                                              ENU=Consumption Journal] }
+    { 5402;   ;Output Journal      ;Code10        ;TableRelation="Source Code";
+                                                   CaptionML=[DEU=FA-Istmeldungs Buch.-Blatt;
+                                                              ENU=Output Journal] }
+    { 5403;   ;Flushing            ;Code10        ;TableRelation="Source Code";
+                                                   CaptionML=[DEU=Buchung;
+                                                              ENU=Flushing] }
+    { 5404;   ;Capacity Journal    ;Code10        ;TableRelation="Source Code";
+                                                   CaptionML=[DEU=KapazitÑts Buch.-Blatt;
+                                                              ENU=Capacity Journal] }
+    { 5500;   ;Production Journal  ;Code10        ;TableRelation="Source Code";
+                                                   CaptionML=[DEU=Produktions Buch.-Blatt;
+                                                              ENU=Production Journal] }
+    { 5600;   ;Fixed Asset Journal ;Code10        ;TableRelation="Source Code";
+                                                   CaptionML=[DEU=Anlagen Buch.-Blatt;
+                                                              ENU=Fixed Asset Journal] }
+    { 5601;   ;Fixed Asset G/L Journal;Code10     ;TableRelation="Source Code";
+                                                   CaptionML=[DEU=Anlagen Fibu Buch.-Blatt;
+                                                              ENU=Fixed Asset G/L Journal] }
+    { 5602;   ;Insurance Journal   ;Code10        ;TableRelation="Source Code";
+                                                   CaptionML=[DEU=Versicherungs Buch.-Blatt;
+                                                              ENU=Insurance Journal] }
+    { 5603;   ;Compress FA Ledger  ;Code10        ;TableRelation="Source Code";
+                                                   CaptionML=[DEU=Anlagenposten komprimieren;
+                                                              ENU=Compress FA Ledger] }
+    { 5604;   ;Compress Maintenance Ledger;Code10 ;TableRelation="Source Code";
+                                                   CaptionML=[DEU=Wartungsposten komprimieren;
+                                                              ENU=Compress Maintenance Ledger] }
+    { 5605;   ;Compress Insurance Ledger;Code10   ;TableRelation="Source Code";
+                                                   CaptionML=[DEU=Versicherungsposten kompr.;
+                                                              ENU=Compress Insurance Ledger] }
+    { 5700;   ;Transfer            ;Code10        ;TableRelation="Source Code";
+                                                   CaptionML=[DEU=Umlagerung;
+                                                              ENU=Transfer] }
+    { 5800;   ;Revaluation Journal ;Code10        ;TableRelation="Source Code";
+                                                   CaptionML=[DEU=Neubewertungs Buch.-Blatt;
+                                                              ENU=Revaluation Journal] }
+    { 5801;   ;Adjust Cost         ;Code10        ;TableRelation="Source Code";
+                                                   CaptionML=[DEU=Einstandspreisregulierung;
+                                                              ENU=Adjust Cost] }
+    { 5900;   ;Service Management  ;Code10        ;TableRelation="Source Code";
+                                                   CaptionML=[DEU=Service;
+                                                              ENU=Service Management] }
+    { 7300;   ;Whse. Item Journal  ;Code10        ;TableRelation="Source Code";
+                                                   CaptionML=[DEU=Logistik Artikel Buch.-Blatt;
+                                                              ENU=Whse. Item Journal] }
+    { 7302;   ;Whse. Phys. Invt. Journal;Code10   ;TableRelation="Source Code";
+                                                   CaptionML=[DEU=Logistik Inventur Buch.-Blatt;
+                                                              ENU=Whse. Phys. Invt. Journal] }
+    { 7303;   ;Whse. Reclassification Journal;Code10;
+                                                   TableRelation="Source Code";
+                                                   CaptionML=[DEU=Logistik Umlag. Buch.-Blatt;
+                                                              ENU=Whse. Reclassification Journal] }
+    { 7304;   ;Whse. Put-away      ;Code10        ;TableRelation="Source Code";
+                                                   CaptionML=[DEU=Einlagerung;
+                                                              ENU=Whse. Put-away] }
+    { 7305;   ;Whse. Pick          ;Code10        ;TableRelation="Source Code";
+                                                   CaptionML=[DEU=Kommissionierung;
+                                                              ENU=Whse. Pick] }
+    { 7306;   ;Whse. Movement      ;Code10        ;TableRelation="Source Code";
+                                                   CaptionML=[DEU=Lagerpl.-Umlagerung;
+                                                              ENU=Whse. Movement] }
+    { 7307;   ;Compress Whse. Entries;Code10      ;TableRelation="Source Code";
+                                                   CaptionML=[DEU=Lagerplatzposten kompr.;
+                                                              ENU=Compress Whse. Entries] }
+    { 5005270;;Delivery Reminder   ;Code10        ;TableRelation="Source Code";
+                                                   CaptionML=[DEU=Lieferanmahnung;
+                                                              ENU=Delivery Reminder] }
+    { 5005350;;Phys. Invt. Order   ;Code10        ;TableRelation="Source Code";
+                                                   CaptionML=[DEU=Inventurauftrag;
+                                                              ENU=Phys. Invt. Order] }
+    { 5055250;;Liquidity Journal   ;Code10        ;TableRelation="Source Code";
+                                                   CaptionML=[DEU=LiquiditÑt Buch.-Blatt;
+                                                              ENU=Liquidity Journal] }
+  }
+  KEYS
+  {
+    {    ;Primary Key                             ;Clustered=Yes }
+  }
+  FIELDGROUPS
+  {
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

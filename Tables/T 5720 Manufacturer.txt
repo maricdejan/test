@@ -1,0 +1,36 @@
+OBJECT Table 5720 Manufacturer
+{
+  OBJECT-PROPERTIES
+  {
+    Date=05.11.08;
+    Time=12:00:00;
+    Version List=NAVW16.00;
+  }
+  PROPERTIES
+  {
+    CaptionML=[DEU=Hersteller;
+               ENU=Manufacturer];
+    LookupFormID=Form5728;
+  }
+  FIELDS
+  {
+    { 10  ;   ;Code                ;Code10        ;CaptionML=[DEU=Code;
+                                                              ENU=Code] }
+    { 20  ;   ;Name                ;Text50        ;CaptionML=[DEU=Name;
+                                                              ENU=Name] }
+  }
+  KEYS
+  {
+    {    ;Code                                    ;Clustered=Yes }
+  }
+  FIELDGROUPS
+  {
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

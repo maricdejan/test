@@ -1,0 +1,61 @@
+OBJECT Table 5060 Contact Web Source
+{
+  OBJECT-PROPERTIES
+  {
+    Date=05.11.08;
+    Time=12:00:00;
+    Version List=NAVW16.00;
+  }
+  PROPERTIES
+  {
+    CaptionML=[DEU=Kontakt Internetfavorit;
+               ENU=Contact Web Source];
+    DrillDownFormID=Form5070;
+  }
+  FIELDS
+  {
+    { 1   ;   ;Contact No.         ;Code20        ;TableRelation=Contact WHERE (Type=CONST(Company));
+                                                   CaptionML=[DEU=Kontaktnr.;
+                                                              ENU=Contact No.];
+                                                   NotBlank=Yes }
+    { 2   ;   ;Web Source Code     ;Code10        ;TableRelation="Web Source";
+                                                   CaptionML=[DEU=Internetfavoritencode;
+                                                              ENU=Web Source Code];
+                                                   NotBlank=Yes }
+    { 3   ;   ;Search Word         ;Text30        ;CaptionML=[DEU=Suchbegriff;
+                                                              ENU=Search Word] }
+    { 4   ;   ;Web Source Description;Text30      ;FieldClass=FlowField;
+                                                   CalcFormula=Lookup("Web Source".Description WHERE (Code=FIELD(Web Source Code)));
+                                                   CaptionML=[DEU=Internetfavoritenbeschreibung;
+                                                              ENU=Web Source Description];
+                                                   Editable=No }
+    { 5   ;   ;Contact Name        ;Text50        ;FieldClass=FlowField;
+                                                   CalcFormula=Lookup(Contact.Name WHERE (No.=FIELD(Contact No.)));
+                                                   CaptionML=[DEU=Kontaktname;
+                                                              ENU=Contact Name];
+                                                   Editable=No }
+  }
+  KEYS
+  {
+    {    ;Contact No.,Web Source Code             ;Clustered=Yes }
+  }
+  FIELDGROUPS
+  {
+  }
+  CODE
+  {
+
+    PROCEDURE Launch@1();
+    VAR
+      WebSource@1000 : Record 5059;
+    BEGIN
+      WebSource.GET("Web Source Code");
+      WebSource.TESTFIELD(URL);
+      HYPERLINK(STRSUBSTNO(WebSource.URL,"Search Word"));
+    END;
+
+    BEGIN
+    END.
+  }
+}
+

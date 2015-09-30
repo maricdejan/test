@@ -1,0 +1,62 @@
+OBJECT Table 1019 Job Difference Buffer
+{
+  OBJECT-PROPERTIES
+  {
+    Date=05.11.08;
+    Time=12:00:00;
+    Version List=NAVW16.00;
+  }
+  PROPERTIES
+  {
+    CaptionML=[DEU=Projektabweichungspuffer;
+               ENU=Job Difference Buffer];
+  }
+  FIELDS
+  {
+    { 1   ;   ;Job No.             ;Code20        ;CaptionML=[DEU=Projektnr.;
+                                                              ENU=Job No.] }
+    { 2   ;   ;Job Task No.        ;Code20        ;CaptionML=[DEU=Projektaufgabennr.;
+                                                              ENU=Job Task No.] }
+    { 3   ;   ;Type                ;Option        ;CaptionML=[DEU=Art;
+                                                              ENU=Type];
+                                                   OptionCaptionML=[DEU=Ressource,Artikel,Sachkonto;
+                                                                    ENU=Resource,Item,G/L Account];
+                                                   OptionString=Resource,Item,G/L Account }
+    { 4   ;   ;Location Code       ;Code10        ;CaptionML=[DEU=Lagerortcode;
+                                                              ENU=Location Code] }
+    { 5   ;   ;Variant Code        ;Code10        ;CaptionML=[DEU=Variantencode;
+                                                              ENU=Variant Code] }
+    { 6   ;   ;Unit of Measure code;Code10        ;CaptionML=[DEU=Maáeinheitencode;
+                                                              ENU=Unit of Measure code] }
+    { 7   ;   ;Entry type          ;Option        ;CaptionML=[DEU=Postenart;
+                                                              ENU=Entry type];
+                                                   OptionCaptionML=[DEU=Plan,Verbrauch;
+                                                                    ENU=Schedule,Usage];
+                                                   OptionString=Schedule,Usage }
+    { 8   ;   ;Work Type Code      ;Code10        ;CaptionML=[DEU=Arbeitstypencode;
+                                                              ENU=Work Type Code] }
+    { 9   ;   ;No.                 ;Code20        ;CaptionML=[DEU=Nr.;
+                                                              ENU=No.] }
+    { 10  ;   ;Quantity            ;Decimal       ;CaptionML=[DEU=Menge;
+                                                              ENU=Quantity] }
+    { 11  ;   ;Total Cost          ;Decimal       ;CaptionML=[DEU=Einstandsbetrag;
+                                                              ENU=Total Cost] }
+    { 12  ;   ;Line Amount         ;Decimal       ;CaptionML=[DEU=Zeilenbetrag;
+                                                              ENU=Line Amount] }
+  }
+  KEYS
+  {
+    {    ;Job No.,Job Task No.,Type,Entry type,No.,Location Code,Variant Code,Unit of Measure code,Work Type Code;
+                                                   Clustered=Yes }
+  }
+  FIELDGROUPS
+  {
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

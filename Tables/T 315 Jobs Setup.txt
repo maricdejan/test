@@ -1,0 +1,39 @@
+OBJECT Table 315 Jobs Setup
+{
+  OBJECT-PROPERTIES
+  {
+    Date=14.08.09;
+    Time=12:00:00;
+    Version List=NAVW16.00.01;
+  }
+  PROPERTIES
+  {
+    CaptionML=[DEU=Projekt Einrichtung;
+               ENU=Jobs Setup];
+  }
+  FIELDS
+  {
+    { 1   ;   ;Primary Key         ;Code10        ;CaptionML=[DEU=PrimÑrschlÅssel;
+                                                              ENU=Primary Key] }
+    { 2   ;   ;Job Nos.            ;Code10        ;TableRelation="No. Series";
+                                                   CaptionML=[DEU=Projektnummern;
+                                                              ENU=Job Nos.] }
+    { 1001;   ;Automatic Update Job Item Cost;Boolean;
+                                                   CaptionML=[DEU=Automatische Aktualisierung der Projektartikelpreise;
+                                                              ENU=Automatic Update Job Item Cost] }
+  }
+  KEYS
+  {
+    {    ;Primary Key                             ;Clustered=Yes }
+  }
+  FIELDGROUPS
+  {
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

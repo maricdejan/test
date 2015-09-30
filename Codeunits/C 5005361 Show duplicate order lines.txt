@@ -1,0 +1,86 @@
+OBJECT Codeunit 5005361 Show duplicate order lines
+{
+  OBJECT-PROPERTIES
+  {
+    Date=01.10.04;
+    Time=12:00:00;
+    Version List=NAVDACH4.00;
+  }
+  PROPERTIES
+  {
+    TableNo=5005350;
+    OnRun=BEGIN
+            PhysInvtOrderHeader.COPY(Rec);
+            Code;
+            Rec := PhysInvtOrderHeader;
+          END;
+
+  }
+  CODE
+  {
+    VAR
+      Text1140000@1140000 : TextConst 'DEU=Prfe Zeilen          #2######;ENU=Checking lines        #2######';
+      Text1140001@1140001 : TextConst 'DEU=Es gibt keine doppelten Zeilen im Inventurauftrag %1.;ENU=There are no duplicate order lines in order %1.';
+      Text1140002@1140002 : TextConst 'DEU=Es gibt %1 doppelte Zeilen im Inventurauftrag %2.\;ENU=There are %1 duplicate order lines in order %2.\';
+      Text1140003@1140003 : TextConst 'DEU=Wollen Sie diese anzeigen lassen?;ENU=Do you want to show it?';
+      PhysInvtOrderHeader@1140004 : Record 5005350;
+      PhysInvtOrderLine@1140005 : Record 5005351;
+      PhysInvtOrderLine2@1140006 : Record 5005351;
+      Window@1140007 : Dialog;
+      ErrorText@1140008 : Text[250];
+      LineCount@1140009 : Integer;
+      DuplicateCount@1140010 : Integer;
+
+    PROCEDURE Code@1140000();
+    BEGIN
+      WITH PhysInvtOrderHeader DO BEGIN
+        Window.OPEN(
+          '#1################################\\' +
+          Text1140000);
+        Window.UPDATE(1,STRSUBSTNO('%1 %2',TABLECAPTION, "No."));
+
+        LineCount := 0;
+        DuplicateCount := 0;
+        PhysInvtOrderLine.RESET;
+        PhysInvtOrderLine.SETRANGE("Document No.", "No.");
+        PhysInvtOrderLine.CLEARMARKS;
+        IF PhysInvtOrderLine.FIND('-') THEN REPEAT
+          LineCount := LineCount + 1;
+          Window.UPDATE(2, LineCount);
+          IF NOT PhysInvtOrderLine.EmptyLine THEN BEGIN
+            PhysInvtOrderLine.TESTFIELD("Item No.");
+            IF
+              GetSamePhysInvtOrderLine(
+                PhysInvtOrderLine."Item No.", PhysInvtOrderLine."Variant Code",
+                PhysInvtOrderLine."Location Code", PhysInvtOrderLine."Bin Code",
+                ErrorText,
+                PhysInvtOrderLine2) > 1
+            THEN BEGIN
+              PhysInvtOrderLine.MARK(TRUE);
+              DuplicateCount := DuplicateCount +1;
+            END;
+          END;
+        UNTIL PhysInvtOrderLine.NEXT = 0;
+
+        Window.CLOSE;
+
+        IF DuplicateCount = 0 THEN
+          MESSAGE(
+            STRSUBSTNO(Text1140001, "No."))
+        ELSE
+          IF CONFIRM(
+            STRSUBSTNO(Text1140002, DuplicateCount, "No.") +
+            Text1140003,
+            TRUE)
+          THEN BEGIN
+            PhysInvtOrderLine.MARKEDONLY(TRUE);
+            FORM.RUN(0, PhysInvtOrderLine);
+          END;
+      END;
+    END;
+
+    BEGIN
+    END.
+  }
+}
+

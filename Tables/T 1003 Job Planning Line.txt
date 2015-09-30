@@ -1,0 +1,1095 @@
+OBJECT Table 1003 Job Planning Line
+{
+  OBJECT-PROPERTIES
+  {
+    Date=14.08.09;
+    Time=12:00:00;
+    Version List=NAVW16.00.01;
+  }
+  PROPERTIES
+  {
+    Permissions=TableData 1015=rimd;
+    OnInsert=BEGIN
+               LOCKTABLE;
+               GetJob;
+               IF Job.Blocked = Job.Blocked::All THEN
+                 Job.TestBlocked;
+               JT.GET("Job No.","Job Task No.");
+               JT.TESTFIELD("Job Task Type",JT."Job Task Type"::Posting);
+               "Job Contract Entry No." := JobEntryNo.GetNextEntryNo;
+               InitJobPlanningLine;
+               "User ID" := USERID;
+               "Last Date Modified" := 0D;
+               Status := Job.Status;
+             END;
+
+    OnModify=BEGIN
+               "Last Date Modified" := TODAY;
+               "User ID" := USERID;
+             END;
+
+    OnDelete=BEGIN
+               TESTFIELD(Transferred,FALSE);
+             END;
+
+    OnRename=BEGIN
+               ERROR(Text002,TABLECAPTION);
+             END;
+
+    CaptionML=[DEU=Projektplanungszeile;
+               ENU=Job Planning Line];
+    PasteIsValid=No;
+    LookupFormID=Form1007;
+    DrillDownFormID=Form1007;
+  }
+  FIELDS
+  {
+    { 1   ;   ;Line No.            ;Integer       ;CaptionML=[DEU=Zeilennr.;
+                                                              ENU=Line No.];
+                                                   Editable=No }
+    { 2   ;   ;Job No.             ;Code20        ;TableRelation=Job;
+                                                   CaptionML=[DEU=Projektnr.;
+                                                              ENU=Job No.];
+                                                   Editable=No }
+    { 3   ;   ;Planning Date       ;Date          ;OnValidate=BEGIN
+                                                                VALIDATE("Document Date","Planning Date");
+                                                                IF ("Currency Date" = 0D) OR ("Currency Date" = xRec."Planning Date") THEN
+                                                                  VALIDATE("Currency Date","Planning Date");
+                                                                IF (Type <> Type::Text) AND ("No." <> '') THEN
+                                                                  UpdateAllAmounts;
+                                                              END;
+
+                                                   CaptionML=[DEU=Planungsdatum;
+                                                              ENU=Planning Date] }
+    { 4   ;   ;Document No.        ;Code20        ;CaptionML=[DEU=Belegnr.;
+                                                              ENU=Document No.] }
+    { 5   ;   ;Type                ;Option        ;OnValidate=BEGIN
+                                                                VALIDATE("No.",'');
+                                                                IF Type = Type::Item THEN BEGIN
+                                                                  GetLocation("Location Code");
+                                                                  Location.TESTFIELD("Directed Put-away and Pick",FALSE);
+                                                                END;
+                                                              END;
+
+                                                   CaptionML=[DEU=Art;
+                                                              ENU=Type];
+                                                   OptionCaptionML=[DEU=Ressource,Artikel,Sachkonto,Text;
+                                                                    ENU=Resource,Item,G/L Account,Text];
+                                                   OptionString=Resource,Item,G/L Account,Text }
+    { 7   ;   ;No.                 ;Code20        ;TableRelation=IF (Type=CONST(Resource)) Resource
+                                                                 ELSE IF (Type=CONST(Item)) Item
+                                                                 ELSE IF (Type=CONST(G/L Account)) "G/L Account"
+                                                                 ELSE IF (Type=CONST(Text)) "Standard Text";
+                                                   OnValidate=BEGIN
+                                                                IF ("No." = '') OR ("No." <> xRec."No.") THEN BEGIN
+                                                                  Description := '';
+                                                                  "Unit of Measure Code" := '';
+                                                                  "Qty. per Unit of Measure" := 1;
+                                                                  "Variant Code" := '';
+                                                                  "Work Type Code" := '';
+                                                                  "Gen. Bus. Posting Group" := '';
+                                                                  "Gen. Prod. Posting Group" := '';
+                                                                  DeleteAmounts;
+                                                                  "Cost Factor" := 0;
+                                                                  CheckedAvailability := FALSE;
+                                                                  IF "No." <> '' THEN BEGIN
+                                                                    // Preserve quantities after resetting all amounts:
+                                                                    Quantity := xRec.Quantity;
+                                                                    "Quantity (Base)" := xRec."Quantity (Base)";
+                                                                  END ELSE
+                                                                    EXIT;
+                                                                END;
+
+                                                                GetJob;
+                                                                "Customer Price Group" := Job."Customer Price Group";
+
+                                                                CASE Type OF
+                                                                  Type::Resource:
+                                                                    BEGIN
+                                                                      Res.GET("No.");
+                                                                      Res.TESTFIELD(Blocked,FALSE);
+                                                                      Description := Res.Name;
+                                                                      "Description 2" := Res."Name 2";
+                                                                      "Gen. Prod. Posting Group" := Res."Gen. Prod. Posting Group";
+                                                                      "Resource Group No." := Res."Resource Group No.";
+                                                                      VALIDATE("Unit of Measure Code",Res."Base Unit of Measure");
+                                                                    END;
+                                                                  Type::Item:
+                                                                    BEGIN
+                                                                      GetItem;
+                                                                      Item.TESTFIELD(Blocked,FALSE);
+                                                                      Description := Item.Description;
+                                                                      "Description 2" := Item."Description 2";
+                                                                      IF Job."Language Code" <> '' THEN
+                                                                        GetItemTranslation;
+                                                                      "Gen. Prod. Posting Group" := Item."Gen. Prod. Posting Group";
+                                                                      VALIDATE("Unit of Measure Code",Item."Base Unit of Measure");
+                                                                    END;
+                                                                  Type::"G/L Account":
+                                                                    BEGIN
+                                                                      GLAcc.GET("No.");
+                                                                      GLAcc.CheckGLAcc;
+                                                                      GLAcc.TESTFIELD("Direct Posting",TRUE);
+                                                                      Description := GLAcc.Name;
+                                                                      "Gen. Bus. Posting Group" := GLAcc."Gen. Bus. Posting Group";
+                                                                      "Gen. Prod. Posting Group" := GLAcc."Gen. Prod. Posting Group";
+                                                                      "Unit of Measure Code" := '';
+                                                                      "Direct Unit Cost (LCY)" := 0;
+                                                                      "Unit Cost (LCY)" := 0;
+                                                                      "Unit Price" := 0;
+                                                                    END;
+                                                                  Type::Text:
+                                                                    BEGIN
+                                                                      StdTxt.GET("No.");
+                                                                      Description := StdTxt.Description;
+                                                                    END;
+                                                                END;
+
+                                                                IF Type <> Type::Text THEN
+                                                                  VALIDATE(Quantity);
+                                                              END;
+
+                                                   CaptionML=[DEU=Nr.;
+                                                              ENU=No.] }
+    { 8   ;   ;Description         ;Text50        ;CaptionML=[DEU=Beschreibung;
+                                                              ENU=Description] }
+    { 9   ;   ;Quantity            ;Decimal       ;OnValidate=BEGIN
+                                                                CASE Type OF
+                                                                  Type::Item:
+                                                                    BEGIN
+                                                                      IF NOT Item.GET("No.") THEN
+                                                                        ERROR(Text004,Type,Item.FIELDCAPTION("No."));
+                                                                      CheckItemAvailable;
+                                                                    END;
+                                                                  Type::Resource:
+                                                                    IF NOT Res.GET("No.") THEN
+                                                                      ERROR(Text004,Type,Res.FIELDCAPTION("No."));
+                                                                  Type::"G/L Account":
+                                                                    IF NOT GLAcc.GET("No.") THEN
+                                                                      ERROR(Text004,Type,GLAcc.FIELDCAPTION("No."));
+                                                                END;
+
+                                                                "Quantity (Base)" := CalcBaseQty(Quantity);
+                                                                UpdateAllAmounts;
+                                                              END;
+
+                                                   CaptionML=[DEU=Menge;
+                                                              ENU=Quantity];
+                                                   DecimalPlaces=0:5 }
+    { 11  ;   ;Direct Unit Cost (LCY);Decimal     ;CaptionML=[DEU=EK-Preis (MW);
+                                                              ENU=Direct Unit Cost (LCY)];
+                                                   AutoFormatType=2 }
+    { 12  ;   ;Unit Cost (LCY)     ;Decimal       ;OnValidate=BEGIN
+                                                                IF (Type = Type::Item) AND
+                                                                   Item.GET("No.") AND
+                                                                   (Item."Costing Method" = Item."Costing Method"::Standard) THEN
+                                                                  UpdateAllAmounts
+                                                                ELSE BEGIN
+                                                                  GetJob;
+                                                                  "Unit Cost" := ROUND(
+                                                                      CurrExchRate.ExchangeAmtLCYToFCY(
+                                                                        "Currency Date","Currency Code",
+                                                                        "Unit Cost (LCY)","Currency Factor"),
+                                                                      UnitAmountRoundingPrecision);
+                                                                  UpdateAllAmounts;
+                                                                END;
+                                                              END;
+
+                                                   CaptionML=[DEU=Einstandspreis (MW);
+                                                              ENU=Unit Cost (LCY)];
+                                                   Editable=No;
+                                                   AutoFormatType=2 }
+    { 13  ;   ;Total Cost (LCY)    ;Decimal       ;CaptionML=[DEU=Einstandsbetrag (MW);
+                                                              ENU=Total Cost (LCY)];
+                                                   Editable=No;
+                                                   AutoFormatType=1 }
+    { 14  ;   ;Unit Price (LCY)    ;Decimal       ;OnValidate=BEGIN
+                                                                GetJob;
+                                                                "Unit Price" := ROUND(
+                                                                    CurrExchRate.ExchangeAmtLCYToFCY(
+                                                                      "Currency Date","Currency Code",
+                                                                      "Unit Price (LCY)","Currency Factor"),
+                                                                    UnitAmountRoundingPrecision);
+                                                                UpdateAllAmounts;
+                                                              END;
+
+                                                   CaptionML=[DEU=VK-Preis (MW);
+                                                              ENU=Unit Price (LCY)];
+                                                   Editable=No;
+                                                   AutoFormatType=2 }
+    { 15  ;   ;Total Price (LCY)   ;Decimal       ;CaptionML=[DEU=Verkaufsbetrag (MW);
+                                                              ENU=Total Price (LCY)];
+                                                   Editable=No;
+                                                   AutoFormatType=1 }
+    { 16  ;   ;Resource Group No.  ;Code20        ;TableRelation="Resource Group";
+                                                   CaptionML=[DEU=Res.-Gruppennr.;
+                                                              ENU=Resource Group No.];
+                                                   Editable=No }
+    { 17  ;   ;Unit of Measure Code;Code10        ;TableRelation=IF (Type=CONST(Item)) "Item Unit of Measure".Code WHERE (Item No.=FIELD(No.))
+                                                                 ELSE IF (Type=CONST(Resource)) "Resource Unit of Measure".Code WHERE (Resource No.=FIELD(No.))
+                                                                 ELSE "Unit of Measure";
+                                                   OnValidate=VAR
+                                                                Resource@1000 : Record 156;
+                                                              BEGIN
+                                                                GetGLSetup;
+                                                                CASE Type OF
+                                                                  Type::Item:
+                                                                    BEGIN
+                                                                      Item.GET("No.");
+                                                                      "Qty. per Unit of Measure" :=
+                                                                        UOMMgt.GetQtyPerUnitOfMeasure(Item,"Unit of Measure Code");
+                                                                    END;
+                                                                  Type::Resource:
+                                                                    BEGIN
+                                                                      IF CurrFieldNo <> FIELDNO("Work Type Code") THEN
+                                                                        IF "Work Type Code" <> '' THEN BEGIN
+                                                                          WorkType.GET("Work Type Code");
+                                                                          IF WorkType."Unit of Measure Code" <> '' THEN
+                                                                            TESTFIELD("Unit of Measure Code",WorkType."Unit of Measure Code");
+                                                                        END ELSE TESTFIELD("Work Type Code",'');
+                                                                      IF "Unit of Measure Code" = '' THEN BEGIN
+                                                                        Resource.GET("No.");
+                                                                        "Unit of Measure Code" := Resource."Base Unit of Measure";
+                                                                      END;
+                                                                      ResUnitofMeasure.GET("No.","Unit of Measure Code");
+                                                                      "Qty. per Unit of Measure" := ResUnitofMeasure."Qty. per Unit of Measure";
+                                                                      "Quantity (Base)" := Quantity * "Qty. per Unit of Measure";
+                                                                    END;
+                                                                  Type::"G/L Account":
+                                                                    BEGIN
+                                                                      "Qty. per Unit of Measure" := 1;
+                                                                    END;
+                                                                END;
+                                                                VALIDATE(Quantity);
+                                                              END;
+
+                                                   CaptionML=[DEU=Einheitencode;
+                                                              ENU=Unit of Measure Code] }
+    { 20  ;   ;Location Code       ;Code10        ;TableRelation=Location WHERE (Use As In-Transit=CONST(No));
+                                                   OnValidate=BEGIN
+                                                                "Bin Code" := '';
+                                                                IF Type = Type::Item THEN BEGIN
+                                                                  GetLocation("Location Code");
+                                                                  Location.TESTFIELD("Directed Put-away and Pick",FALSE);
+                                                                  VALIDATE(Quantity);
+                                                                END;
+                                                              END;
+
+                                                   CaptionML=[DEU=Lagerortcode;
+                                                              ENU=Location Code] }
+    { 29  ;   ;Last Date Modified  ;Date          ;CaptionML=[DEU=Korrigiert am;
+                                                              ENU=Last Date Modified];
+                                                   Editable=No }
+    { 30  ;   ;User ID             ;Code20        ;TableRelation=User;
+                                                   TestTableRelation=No;
+                                                   CaptionML=[DEU=Benutzer-ID;
+                                                              ENU=User ID];
+                                                   Editable=No }
+    { 32  ;   ;Work Type Code      ;Code10        ;TableRelation="Work Type";
+                                                   OnValidate=BEGIN
+                                                                TESTFIELD(Type,Type::Resource);
+                                                                VALIDATE("Line Discount %",0);
+                                                                IF (Rec."Work Type Code" = '') AND (xRec."Work Type Code" <> '') THEN BEGIN
+                                                                  Res.GET("No.");
+                                                                  "Unit of Measure Code" := Res."Base Unit of Measure";
+                                                                  VALIDATE("Unit of Measure Code");
+                                                                END;
+                                                                IF WorkType.GET("Work Type Code") THEN BEGIN
+                                                                  IF WorkType."Unit of Measure Code" <> '' THEN BEGIN
+                                                                    "Unit of Measure Code" := WorkType."Unit of Measure Code";
+                                                                    IF ResUnitofMeasure.GET("No.","Unit of Measure Code") THEN
+                                                                      "Qty. per Unit of Measure" := ResUnitofMeasure."Qty. per Unit of Measure";
+                                                                  END ELSE BEGIN
+                                                                    Res.GET("No.");
+                                                                    "Unit of Measure Code" := Res."Base Unit of Measure";
+                                                                    VALIDATE("Unit of Measure Code");
+                                                                  END;
+                                                                END;
+                                                                VALIDATE(Quantity);
+                                                              END;
+
+                                                   CaptionML=[DEU=Arbeitstypencode;
+                                                              ENU=Work Type Code] }
+    { 33  ;   ;Customer Price Group;Code10        ;TableRelation="Customer Price Group";
+                                                   OnValidate=BEGIN
+                                                                IF (Type = Type::Item) AND ("No." <> '') THEN BEGIN
+                                                                  UpdateAllAmounts;
+                                                                END;
+                                                              END;
+
+                                                   CaptionML=[DEU=Debitorenpreisgruppe;
+                                                              ENU=Customer Price Group] }
+    { 79  ;   ;Country/Region Code ;Code10        ;TableRelation=Country/Region;
+                                                   CaptionML=[DEU=LÑnder-/Regionscode;
+                                                              ENU=Country/Region Code];
+                                                   Editable=No }
+    { 80  ;   ;Gen. Bus. Posting Group;Code10     ;TableRelation="Gen. Business Posting Group";
+                                                   CaptionML=[DEU=GeschÑftsbuchungsgruppe;
+                                                              ENU=Gen. Bus. Posting Group];
+                                                   Editable=No }
+    { 81  ;   ;Gen. Prod. Posting Group;Code10    ;TableRelation="Gen. Product Posting Group";
+                                                   CaptionML=[DEU=Produktbuchungsgruppe;
+                                                              ENU=Gen. Prod. Posting Group];
+                                                   Editable=No }
+    { 83  ;   ;Document Date       ;Date          ;CaptionML=[DEU=Belegdatum;
+                                                              ENU=Document Date] }
+    { 1000;   ;Job Task No.        ;Code20        ;TableRelation="Job Task"."Job Task No." WHERE (Job No.=FIELD(Job No.));
+                                                   CaptionML=[DEU=Projektaufgabennr.;
+                                                              ENU=Job Task No.];
+                                                   Editable=No }
+    { 1001;   ;Line Amount (LCY)   ;Decimal       ;OnValidate=BEGIN
+                                                                GetJob;
+                                                                "Line Amount" := ROUND(
+                                                                    CurrExchRate.ExchangeAmtLCYToFCY(
+                                                                      "Currency Date","Currency Code",
+                                                                      "Line Amount (LCY)","Currency Factor"),
+                                                                    AmountRoundingPrecision);
+                                                                UpdateAllAmounts;
+                                                              END;
+
+                                                   CaptionML=[DEU=Zeilenbetrag (MW);
+                                                              ENU=Line Amount (LCY)];
+                                                   Editable=No;
+                                                   AutoFormatType=1 }
+    { 1002;   ;Unit Cost           ;Decimal       ;OnValidate=BEGIN
+                                                                UpdateAllAmounts;
+                                                              END;
+
+                                                   CaptionML=[DEU=Einstandspreis;
+                                                              ENU=Unit Cost];
+                                                   AutoFormatType=2;
+                                                   AutoFormatExpr="Currency Code" }
+    { 1003;   ;Total Cost          ;Decimal       ;CaptionML=[DEU=Einstandsbetrag;
+                                                              ENU=Total Cost];
+                                                   Editable=No;
+                                                   AutoFormatType=1;
+                                                   AutoFormatExpr="Currency Code" }
+    { 1004;   ;Unit Price          ;Decimal       ;OnValidate=BEGIN
+                                                                UpdateAllAmounts;
+                                                              END;
+
+                                                   CaptionML=[DEU=VK-Preis;
+                                                              ENU=Unit Price];
+                                                   AutoFormatType=2;
+                                                   AutoFormatExpr="Currency Code" }
+    { 1005;   ;Total Price         ;Decimal       ;CaptionML=[DEU=Verkaufsbetrag;
+                                                              ENU=Total Price];
+                                                   Editable=No;
+                                                   AutoFormatType=1;
+                                                   AutoFormatExpr="Currency Code" }
+    { 1006;   ;Line Amount         ;Decimal       ;OnValidate=BEGIN
+                                                                UpdateAllAmounts;
+                                                              END;
+
+                                                   CaptionML=[DEU=Zeilenbetrag;
+                                                              ENU=Line Amount];
+                                                   AutoFormatType=1;
+                                                   AutoFormatExpr="Currency Code" }
+    { 1007;   ;Line Discount Amount;Decimal       ;OnValidate=BEGIN
+                                                                UpdateAllAmounts;
+                                                              END;
+
+                                                   CaptionML=[DEU=Zeilenrabattbetrag;
+                                                              ENU=Line Discount Amount];
+                                                   AutoFormatType=1;
+                                                   AutoFormatExpr="Currency Code" }
+    { 1008;   ;Line Discount Amount (LCY);Decimal ;OnValidate=BEGIN
+                                                                GetJob;
+                                                                "Line Discount Amount" := ROUND(
+                                                                    CurrExchRate.ExchangeAmtLCYToFCY(
+                                                                      "Currency Date","Currency Code",
+                                                                      "Line Discount Amount (LCY)","Currency Factor"),
+                                                                    AmountRoundingPrecision);
+                                                                UpdateAllAmounts;
+                                                              END;
+
+                                                   CaptionML=[DEU=Zeilenrabattbetrag (MW);
+                                                              ENU=Line Discount Amount (LCY)];
+                                                   Editable=No;
+                                                   AutoFormatType=1 }
+    { 1015;   ;Cost Factor         ;Decimal       ;OnValidate=BEGIN
+                                                                UpdateAllAmounts;
+                                                              END;
+
+                                                   CaptionML=[DEU=Kostenfaktor;
+                                                              ENU=Cost Factor];
+                                                   Editable=No }
+    { 1019;   ;Serial No.          ;Code20        ;CaptionML=[DEU=Seriennr.;
+                                                              ENU=Serial No.];
+                                                   Editable=No }
+    { 1020;   ;Lot No.             ;Code20        ;CaptionML=[DEU=Chargennr.;
+                                                              ENU=Lot No.];
+                                                   Editable=No }
+    { 1021;   ;Line Discount %     ;Decimal       ;OnValidate=BEGIN
+                                                                UpdateAllAmounts;
+                                                              END;
+
+                                                   CaptionML=[DEU=Zeilenrabatt %;
+                                                              ENU=Line Discount %];
+                                                   BlankZero=Yes }
+    { 1022;   ;Line Type           ;Option        ;OnValidate=BEGIN
+                                                                "Schedule Line" := TRUE;
+                                                                "Contract Line" := TRUE;
+                                                                IF "Line Type" = "Line Type"::Schedule THEN
+                                                                  "Contract Line" := FALSE;
+                                                                IF "Line Type" = "Line Type"::Contract THEN
+                                                                  "Schedule Line" := FALSE;
+                                                              END;
+
+                                                   CaptionML=[DEU=Zeilenart;
+                                                              ENU=Line Type];
+                                                   OptionCaptionML=[DEU=Plan,Vertrag,Plan und Vertrag;
+                                                                    ENU=Schedule,Contract,Both Schedule and Contract];
+                                                   OptionString=Schedule,Contract,Both Schedule and Contract }
+    { 1023;   ;Currency Code       ;Code10        ;TableRelation=Currency;
+                                                   OnValidate=BEGIN
+                                                                UpdateCurrencyFactor;
+                                                                UpdateAllAmounts;
+                                                              END;
+
+                                                   CaptionML=[DEU=WÑhrungscode;
+                                                              ENU=Currency Code];
+                                                   Editable=No }
+    { 1024;   ;Currency Date       ;Date          ;OnValidate=BEGIN
+                                                                UpdateCurrencyFactor;
+                                                                IF (CurrFieldNo <> FIELDNO("Planning Date")) AND ("No." <> '') THEN
+                                                                  UpdateFromCurrency;
+                                                              END;
+
+                                                   CaptionML=[DEU=WÑhrungsdatum;
+                                                              ENU=Currency Date] }
+    { 1025;   ;Currency Factor     ;Decimal       ;OnValidate=BEGIN
+                                                                IF ("Currency Code" = '') AND ("Currency Factor" <> 0) THEN
+                                                                  FIELDERROR("Currency Factor",STRSUBSTNO(Text001,FIELDCAPTION("Currency Code")));
+                                                                UpdateAllAmounts;
+                                                              END;
+
+                                                   CaptionML=[DEU=WÑhrungsfaktor;
+                                                              ENU=Currency Factor];
+                                                   DecimalPlaces=0:15;
+                                                   MinValue=0;
+                                                   Editable=No }
+    { 1026;   ;Schedule Line       ;Boolean       ;InitValue=Yes;
+                                                   CaptionML=[DEU=Schemazeile;
+                                                              ENU=Schedule Line];
+                                                   Editable=No }
+    { 1027;   ;Contract Line       ;Boolean       ;CaptionML=[DEU=Vertragszeile;
+                                                              ENU=Contract Line];
+                                                   Editable=No }
+    { 1028;   ;Invoiced            ;Boolean       ;CaptionML=[DEU=Fakturiert;
+                                                              ENU=Invoiced];
+                                                   Editable=No }
+    { 1029;   ;Transferred         ;Boolean       ;CaptionML=[DEU=Umgelagert;
+                                                              ENU=Transferred];
+                                                   Editable=No }
+    { 1030;   ;Job Contract Entry No.;Integer     ;CaptionML=[DEU=Projektvertragspostennr.;
+                                                              ENU=Job Contract Entry No.];
+                                                   Editable=No }
+    { 1031;   ;Invoice Type        ;Option        ;CaptionML=[DEU=Rechnungsart;
+                                                              ENU=Invoice Type];
+                                                   OptionCaptionML=[DEU=" ,Rechnung,Gutschrift,Geb. Rechnung,Geb. Gutschrift";
+                                                                    ENU=" ,Invoice,Credit Memo,Posted Invoice,Posted Credit Memo"];
+                                                   OptionString=[ ,Invoice,Credit Memo,Posted Invoice,Posted Credit Memo];
+                                                   Editable=No }
+    { 1032;   ;Invoice No.         ;Code20        ;TableRelation=IF (Invoice Type=CONST(Invoice),
+                                                                     Invoice Type=CONST(Credit Memo)) "Sales Invoice Header"
+                                                                     ELSE IF (Invoice Type=CONST(Credit Memo)) "Sales Cr.Memo Header";
+                                                   OnLookup=VAR
+                                                              JobCreateInvoice@1000 : Codeunit 1002;
+                                                            BEGIN
+                                                              JobCreateInvoice.GetSalesInvoice(Rec);
+                                                            END;
+
+                                                   CaptionML=[DEU=Rechnungsnr.;
+                                                              ENU=Invoice No.];
+                                                   Editable=No }
+    { 1033;   ;Transferred Date    ;Date          ;CaptionML=[DEU=Umlagerungsdatum;
+                                                              ENU=Transferred Date];
+                                                   Editable=No }
+    { 1034;   ;Invoiced Date       ;Date          ;CaptionML=[DEU=Fakturierungsdatum;
+                                                              ENU=Invoiced Date];
+                                                   Editable=No }
+    { 1035;   ;Invoiced Amount (LCY);Decimal      ;CaptionML=[DEU=Fakturierter Betrag (MW);
+                                                              ENU=Invoiced Amount (LCY)];
+                                                   Editable=No }
+    { 1036;   ;Invoiced Cost Amount (LCY);Decimal ;CaptionML=[DEU=Fakturierter Einstandsbetrag (MW);
+                                                              ENU=Invoiced Cost Amount (LCY)];
+                                                   Editable=No }
+    { 1037;   ;VAT Unit Price      ;Decimal       ;CaptionML=[DEU=MwSt.-VK-Preis;
+                                                              ENU=VAT Unit Price] }
+    { 1038;   ;VAT Line Discount Amount;Decimal   ;CaptionML=[DEU=MwSt.-Zeilenrabattbetrag;
+                                                              ENU=VAT Line Discount Amount] }
+    { 1039;   ;VAT Line Amount     ;Decimal       ;CaptionML=[DEU=MwSt.-Zeilenbetrag;
+                                                              ENU=VAT Line Amount] }
+    { 1041;   ;VAT %               ;Decimal       ;CaptionML=[DEU=MwSt. %;
+                                                              ENU=VAT %] }
+    { 1042;   ;Description 2       ;Text50        ;CaptionML=[DEU=Beschreibung 2;
+                                                              ENU=Description 2] }
+    { 1043;   ;Job Ledger Entry No.;Integer       ;TableRelation="Job Ledger Entry";
+                                                   CaptionML=[DEU=Projektpostennr.;
+                                                              ENU=Job Ledger Entry No.];
+                                                   BlankZero=Yes;
+                                                   Editable=No }
+    { 1044;   ;Inv. Curr. Unit Price;Decimal      ;CaptionML=[DEU=RechnungswÑhrung VK-Preis;
+                                                              ENU=Inv. Curr. Unit Price];
+                                                   Editable=No;
+                                                   AutoFormatType=2;
+                                                   AutoFormatExpr="Invoice Currency Code" }
+    { 1045;   ;Inv. Curr. Line Amount;Decimal     ;CaptionML=[DEU=RechnungswÑhrung Zeilenbetrag;
+                                                              ENU=Inv. Curr. Line Amount];
+                                                   Editable=No;
+                                                   AutoFormatType=1;
+                                                   AutoFormatExpr="Invoice Currency Code" }
+    { 1046;   ;Invoice Currency    ;Boolean       ;CaptionML=[DEU=RechnungswÑhrung;
+                                                              ENU=Invoice Currency];
+                                                   Editable=No }
+    { 1047;   ;Invoice Currency Code;Code10       ;TableRelation=Currency;
+                                                   CaptionML=[DEU=WÑhrungscode Rechnung;
+                                                              ENU=Invoice Currency Code] }
+    { 1048;   ;Status              ;Option        ;InitValue=Order;
+                                                   CaptionML=[DEU=Status;
+                                                              ENU=Status];
+                                                   OptionCaptionML=[DEU=Planung,Angebot,Auftrag,Abgeschlossen;
+                                                                    ENU=Planning,Quote,Order,Completed];
+                                                   OptionString=Planning,Quote,Order,Completed;
+                                                   Editable=No }
+    { 1049;   ;Invoice Currency Factor;Decimal    ;CaptionML=[DEU=RechnungswÑhrungsfaktur;
+                                                              ENU=Invoice Currency Factor];
+                                                   Editable=No }
+    { 1050;   ;Ledger Entry Type   ;Option        ;CaptionML=[DEU=Postenart;
+                                                              ENU=Ledger Entry Type];
+                                                   OptionCaptionML=[DEU=" ,Ressource,Artikel,Sachkonto";
+                                                                    ENU=" ,Resource,Item,G/L Account"];
+                                                   OptionString=[ ,Resource,Item,G/L Account] }
+    { 1051;   ;Ledger Entry No.    ;Integer       ;TableRelation=IF (Ledger Entry Type=CONST(Resource)) "Res. Ledger Entry"
+                                                                 ELSE IF (Ledger Entry Type=CONST(Item)) "Item Ledger Entry"
+                                                                 ELSE IF (Ledger Entry Type=CONST(G/L Account)) "G/L Entry";
+                                                   CaptionML=[DEU=Postennr.;
+                                                              ENU=Ledger Entry No.];
+                                                   BlankZero=Yes }
+    { 1052;   ;System-Created Entry;Boolean       ;CaptionML=[DEU=Systembuchung;
+                                                              ENU=System-Created Entry] }
+    { 5402;   ;Variant Code        ;Code10        ;TableRelation=IF (Type=CONST(Item)) "Item Variant".Code WHERE (Item No.=FIELD(No.));
+                                                   OnValidate=BEGIN
+                                                                IF "Variant Code" = '' THEN BEGIN
+                                                                  IF Type = Type::Item THEN BEGIN
+                                                                    Item.GET("No.");
+                                                                    Description := Item.Description;
+                                                                    "Description 2" := Item."Description 2";
+                                                                    GetItemTranslation;
+                                                                  END;
+                                                                  EXIT;
+                                                                END;
+
+                                                                TESTFIELD(Type,Type::Item);
+
+                                                                ItemVariant.GET("No.","Variant Code");
+                                                                Description := ItemVariant.Description;
+                                                                "Description 2" := ItemVariant."Description 2";
+
+                                                                VALIDATE(Quantity);
+                                                              END;
+
+                                                   CaptionML=[DEU=Variantencode;
+                                                              ENU=Variant Code] }
+    { 5403;   ;Bin Code            ;Code20        ;TableRelation=Bin.Code WHERE (Location Code=FIELD(Location Code));
+                                                   OnValidate=BEGIN
+                                                                TESTFIELD("Location Code");
+                                                                CheckItemAvailable;
+                                                              END;
+
+                                                   CaptionML=[DEU=Lagerplatzcode;
+                                                              ENU=Bin Code] }
+    { 5404;   ;Qty. per Unit of Measure;Decimal   ;InitValue=1;
+                                                   CaptionML=[DEU=Menge pro Einheit;
+                                                              ENU=Qty. per Unit of Measure];
+                                                   DecimalPlaces=0:5;
+                                                   Editable=No }
+    { 5410;   ;Quantity (Base)     ;Decimal       ;OnValidate=BEGIN
+                                                                TESTFIELD("Qty. per Unit of Measure",1);
+                                                                VALIDATE(Quantity,"Quantity (Base)");
+                                                              END;
+
+                                                   CaptionML=[DEU=Menge (Basis);
+                                                              ENU=Quantity (Base)];
+                                                   DecimalPlaces=0:5 }
+    { 5900;   ;Service Order No.   ;Code20        ;CaptionML=[DEU=Serviceauftragsnr.;
+                                                              ENU=Service Order No.] }
+  }
+  KEYS
+  {
+    {    ;Job No.,Job Task No.,Line No.           ;Clustered=Yes }
+    {    ;Job No.,Job Task No.,Schedule Line,Planning Date;
+                                                   SumIndexFields=Total Price (LCY),Total Cost (LCY),Line Amount (LCY) }
+    {    ;Job No.,Job Task No.,Contract Line,Planning Date;
+                                                   SumIndexFields=Line Amount (LCY),Total Price (LCY),Total Cost (LCY),Invoiced Amount (LCY),Invoiced Cost Amount (LCY) }
+    {    ;Job No.,Job Task No.,Schedule Line,Currency Date }
+    {    ;Job No.,Job Task No.,Contract Line,Currency Date }
+    {    ;Job No.,Schedule Line,Type,No.,Planning Date;
+                                                   SumIndexFields=Quantity (Base) }
+    {    ;Job No.,Schedule Line,Type,Resource Group No.,Planning Date;
+                                                   SumIndexFields=Quantity (Base) }
+    {    ;Status,Schedule Line,Type,No.,Planning Date;
+                                                   SumIndexFields=Quantity (Base) }
+    {    ;Status,Schedule Line,Type,Resource Group No.,Planning Date;
+                                                   SumIndexFields=Quantity (Base) }
+    {    ;Job Contract Entry No.                   }
+    {    ;Type,No.                                 }
+  }
+  FIELDGROUPS
+  {
+  }
+  CODE
+  {
+    VAR
+      GLAcc@1018 : Record 15;
+      Location@1013 : Record 14;
+      Item@1014 : Record 27;
+      JobEntryNo@1000 : Record 1015;
+      JT@1001 : Record 1001;
+      ItemVariant@1004 : Record 5401;
+      Res@1006 : Record 156;
+      ResCost@1007 : Record 202;
+      WorkType@1009 : Record 200;
+      Job@1002 : Record 167;
+      ResUnitofMeasure@1010 : Record 205;
+      ItemJnlLine@1011 : Record 83;
+      CurrExchRate@1025 : Record 330;
+      SKU@1022 : Record 5700;
+      StdTxt@1030 : Record 7;
+      Currency@1021 : Record 4;
+      ItemTranslation@1032 : Record 30;
+      GLSetup@1015 : Record 98;
+      SalesPriceCalcMgt@1003 : Codeunit 7000;
+      PurchPriceCalcMgt@1005 : Codeunit 7010;
+      UOMMgt@1017 : Codeunit 5402;
+      ResFindUnitCost@1008 : Codeunit 220;
+      ItemCheckAvail@1012 : Codeunit 311;
+      Text001@1020 : TextConst 'DEU=kann nicht ohne %1 angegeben werden;ENU=cannot be specified without %1';
+      Text002@1024 : TextConst 'DEU=Sie kînnen einen %1 nicht umbenennen.;ENU=You cannot rename a %1.';
+      CurrencyDate@1023 : Date;
+      Text004@1031 : TextConst 'DEU=Sie mÅssen %1 %2 in der Planungszeile angeben.;ENU=You must specify %1 %2 in planning line.';
+      HasGotGLSetup@1016 : Boolean;
+      UnitAmountRoundingPrecision@1019 : Decimal;
+      AmountRoundingPrecision@1028 : Decimal;
+      CheckedAvailability@1026 : Boolean;
+
+    LOCAL PROCEDURE CalcBaseQty@14(Qty@1000 : Decimal) : Decimal;
+    BEGIN
+      TESTFIELD("Qty. per Unit of Measure");
+      EXIT(ROUND(Qty * "Qty. per Unit of Measure",0.00001));
+    END;
+
+    LOCAL PROCEDURE CheckItemAvailable@5();
+    BEGIN
+      IF (CurrFieldNo <> 0) AND (Type = Type::Item) AND (Quantity > 0) AND NOT CheckedAvailability THEN BEGIN
+        ItemJnlLine."Item No." := "No.";
+        ItemJnlLine."Entry Type" := ItemJnlLine."Entry Type"::"Negative Adjmt.";
+        ItemJnlLine."Location Code" := "Location Code";
+        ItemJnlLine."Variant Code" := "Variant Code";
+        ItemJnlLine."Bin Code" := "Bin Code";
+        ItemJnlLine."Unit of Measure Code" := "Unit of Measure Code";
+        ItemJnlLine."Qty. per Unit of Measure" := "Qty. per Unit of Measure";
+        ItemJnlLine.Quantity := Quantity;
+        ItemCheckAvail.ItemJnlCheckLine(ItemJnlLine);
+        CheckedAvailability := TRUE;
+      END;
+    END;
+
+    LOCAL PROCEDURE GetLocation@7300(LocationCode@1000 : Code[10]);
+    BEGIN
+      IF LocationCode = '' THEN
+        CLEAR(Location)
+      ELSE
+        IF Location.Code <> LocationCode THEN
+          Location.GET(LocationCode);
+    END;
+
+    PROCEDURE GetJob@2();
+    BEGIN
+      TESTFIELD("Job No.");
+      IF "Job No." <> Job."No." THEN BEGIN
+        Job.GET("Job No.");
+        IF Job."Currency Code" = '' THEN BEGIN
+          GetGLSetup;
+          Currency.InitRoundingPrecision;
+          AmountRoundingPrecision := GLSetup."Amount Rounding Precision";
+          UnitAmountRoundingPrecision := GLSetup."Unit-Amount Rounding Precision";
+        END ELSE BEGIN
+          GetCurrency;
+          Currency.GET(Job."Currency Code");
+          Currency.TESTFIELD("Amount Rounding Precision");
+          AmountRoundingPrecision := Currency."Amount Rounding Precision";
+          UnitAmountRoundingPrecision := Currency."Unit-Amount Rounding Precision";
+        END;
+      END;
+    END;
+
+    PROCEDURE UpdateCurrencyFactor@17();
+    BEGIN
+      IF "Currency Code" <> '' THEN BEGIN
+        IF "Currency Date" = 0D THEN
+          CurrencyDate := WORKDATE
+        ELSE
+          CurrencyDate := "Currency Date";
+        "Currency Factor" := CurrExchRate.ExchangeRate(CurrencyDate,"Currency Code");
+      END ELSE
+        "Currency Factor" := 0;
+    END;
+
+    LOCAL PROCEDURE GetItem@19();
+    BEGIN
+      TESTFIELD("No.");
+      IF "No." <> Item."No." THEN
+        Item.GET("No.");
+    END;
+
+    LOCAL PROCEDURE GetSKU@5806() : Boolean;
+    BEGIN
+      IF (SKU."Location Code" = "Location Code") AND
+         (SKU."Item No." = "No.") AND
+         (SKU."Variant Code" = "Variant Code")
+      THEN
+        EXIT(TRUE);
+
+      IF SKU.GET("Location Code","No.","Variant Code") THEN
+        EXIT(TRUE);
+
+      EXIT(FALSE);
+    END;
+
+    LOCAL PROCEDURE GetCurrency@23();
+    BEGIN
+      IF "Currency Code" = '' THEN BEGIN
+        CLEAR(Currency);
+        Currency.InitRoundingPrecision
+      END ELSE BEGIN
+        Currency.GET("Currency Code");
+        Currency.TESTFIELD("Amount Rounding Precision");
+        Currency.TESTFIELD("Unit-Amount Rounding Precision");
+      END;
+    END;
+
+    PROCEDURE Caption@8() : Text[250];
+    VAR
+      Job@1000 : Record 167;
+      JT@1001 : Record 1001;
+    BEGIN
+      IF NOT Job.GET("Job No.") THEN
+        EXIT('');
+      IF NOT JT.GET("Job No.","Job Task No.") THEN
+        EXIT('');
+      EXIT(STRSUBSTNO('%1 %2 %3 %4',
+          Job."No.",
+          Job.Description,
+          JT."Job Task No.",
+          JT.Description));
+    END;
+
+    PROCEDURE SetUpNewLine@9(LastJobPlanningLine@1000 : Record 1003);
+    BEGIN
+      "Document Date" := LastJobPlanningLine."Planning Date";
+      "Document No." := LastJobPlanningLine."Document No.";
+      Type := LastJobPlanningLine.Type;
+      VALIDATE("Line Type",LastJobPlanningLine."Line Type");
+      GetJob;
+      "Currency Code" := Job."Currency Code";
+      IF LastJobPlanningLine."Planning Date" <> 0D THEN
+        VALIDATE("Planning Date",LastJobPlanningLine."Planning Date");
+    END;
+
+    PROCEDURE InitJobPlanningLine@4();
+    BEGIN
+      Transferred := FALSE;
+      Invoiced := FALSE;
+      "Invoiced Amount (LCY)" := 0;
+      "Invoiced Cost Amount (LCY)" := 0;
+      "Invoice Type" := 0;
+      "Invoice No." := '';
+      "Transferred Date" := 0D;
+      "Invoiced Date" := 0D;
+      "VAT Unit Price" := 0;
+      "VAT Line Discount Amount" := 0;
+      "VAT Line Amount" := 0;
+      "VAT %" := 0;
+      "Job Ledger Entry No." := 0;
+      "Inv. Curr. Unit Price" := 0;
+      "Inv. Curr. Line Amount" := 0;
+      "Invoice Currency Code" := '';
+      "Invoice Currency" := FALSE;
+    END;
+
+    PROCEDURE DeleteAmounts@10();
+    BEGIN
+      Quantity := 0;
+      "Quantity (Base)" := 0;
+
+      "Direct Unit Cost (LCY)" := 0;
+      "Unit Cost (LCY)" := 0;
+      "Unit Cost" := 0;
+
+      "Total Cost (LCY)" := 0;
+      "Total Cost" := 0;
+
+      "Unit Price (LCY)" := 0;
+      "Unit Price" := 0;
+
+      "Total Price (LCY)" := 0;
+      "Total Price" := 0;
+
+      "Line Amount (LCY)" := 0;
+      "Line Amount" := 0;
+
+      "Line Discount %" := 0;
+
+      "Line Discount Amount (LCY)" := 0;
+      "Line Discount Amount" := 0;
+    END;
+
+    PROCEDURE UpdateFromCurrency@1();
+    BEGIN
+      GetJob;
+      UpdateAllAmounts;
+    END;
+
+    PROCEDURE GetItemTranslation@42();
+    BEGIN
+      GetJob;
+      IF ItemTranslation.GET("No.","Variant Code",Job."Language Code") THEN BEGIN
+        Description := ItemTranslation.Description;
+        "Description 2" := ItemTranslation."Description 2";
+      END;
+    END;
+
+    PROCEDURE GetGLSetup@6();
+    BEGIN
+      IF HasGotGLSetup THEN
+        EXIT;
+      GLSetup.GET;
+      HasGotGLSetup := TRUE;
+    END;
+
+    PROCEDURE UpdateAllAmounts@11();
+    BEGIN
+      GetJob;
+
+      UpdateUnitCost;
+      UpdateTotalCost;
+      FindPriceAndDiscount(Rec,CurrFieldNo);
+      HandleCostFactor;
+      UpdateUnitPrice;
+      UpdateTotalPrice;
+      UpdateAmountsAndDiscounts;
+    END;
+
+    LOCAL PROCEDURE UpdateUnitCost@20();
+    VAR
+      RetrievedCost@1000 : Decimal;
+    BEGIN
+      IF (Type = Type::Item) AND Item.GET("No.") THEN BEGIN
+        IF Item."Costing Method" = Item."Costing Method"::Standard THEN BEGIN
+          IF RetrieveCostPrice THEN BEGIN
+            IF GetSKU THEN
+              "Unit Cost (LCY)" := SKU."Unit Cost" * "Qty. per Unit of Measure"
+            ELSE
+              "Unit Cost (LCY)" := Item."Unit Cost" * "Qty. per Unit of Measure";
+            "Unit Cost" := ROUND(
+                CurrExchRate.ExchangeAmtLCYToFCY(
+                  "Currency Date","Currency Code",
+                  "Unit Cost (LCY)","Currency Factor"),
+                UnitAmountRoundingPrecision);
+          END ELSE BEGIN
+            IF "Unit Cost" <> xRec."Unit Cost" THEN
+              "Unit Cost (LCY)" := ROUND(
+                  CurrExchRate.ExchangeAmtFCYToLCY(
+                    "Currency Date","Currency Code",
+                    "Unit Cost","Currency Factor"),
+                  UnitAmountRoundingPrecision)
+            ELSE
+              "Unit Cost" := ROUND(
+                  CurrExchRate.ExchangeAmtLCYToFCY(
+                    "Currency Date","Currency Code",
+                    "Unit Cost (LCY)","Currency Factor"),
+                  UnitAmountRoundingPrecision);
+          END;
+        END ELSE BEGIN
+          IF RetrieveCostPrice THEN BEGIN
+            IF GetSKU THEN
+              RetrievedCost := SKU."Unit Cost" * "Qty. per Unit of Measure"
+            ELSE
+              RetrievedCost := Item."Unit Cost" * "Qty. per Unit of Measure";
+            "Unit Cost" := ROUND(
+                CurrExchRate.ExchangeAmtLCYToFCY(
+                  "Currency Date","Currency Code",
+                  RetrievedCost,"Currency Factor"),
+                UnitAmountRoundingPrecision);
+            "Unit Cost (LCY)" := ROUND(
+                CurrExchRate.ExchangeAmtFCYToLCY(
+                  "Currency Date","Currency Code",
+                  "Unit Cost","Currency Factor"),
+                UnitAmountRoundingPrecision);
+          END ELSE BEGIN
+            "Unit Cost (LCY)" := ROUND(
+                CurrExchRate.ExchangeAmtFCYToLCY(
+                  "Currency Date","Currency Code",
+                  "Unit Cost","Currency Factor"),
+                UnitAmountRoundingPrecision);
+          END;
+        END;
+      END ELSE
+        IF (Type = Type::Resource) AND Res.GET("No.") THEN BEGIN
+          IF RetrieveCostPrice THEN BEGIN
+            ResCost.INIT;
+            ResCost.Code := "No.";
+            ResCost."Work Type Code" := "Work Type Code";
+            ResFindUnitCost.RUN(ResCost);
+            "Direct Unit Cost (LCY)" := ResCost."Direct Unit Cost" * "Qty. per Unit of Measure";
+            RetrievedCost := ROUND(ResCost."Unit Cost" * "Qty. per Unit of Measure",UnitAmountRoundingPrecision);
+            "Unit Cost" := ROUND(
+                CurrExchRate.ExchangeAmtLCYToFCY(
+                  "Currency Date","Currency Code",
+                  RetrievedCost,"Currency Factor"),
+                UnitAmountRoundingPrecision);
+            "Unit Cost (LCY)" := ROUND(
+                CurrExchRate.ExchangeAmtFCYToLCY(
+                  "Currency Date","Currency Code",
+                  "Unit Cost","Currency Factor"),
+                UnitAmountRoundingPrecision);
+          END ELSE BEGIN
+            "Unit Cost (LCY)" := ROUND(
+                CurrExchRate.ExchangeAmtFCYToLCY(
+                  "Currency Date","Currency Code",
+                  "Unit Cost","Currency Factor"),
+                UnitAmountRoundingPrecision);
+          END;
+        END ELSE BEGIN
+          "Unit Cost (LCY)" := ROUND(
+              CurrExchRate.ExchangeAmtFCYToLCY(
+                "Currency Date","Currency Code",
+                "Unit Cost","Currency Factor"),
+              UnitAmountRoundingPrecision);
+        END;
+    END;
+
+    PROCEDURE RetrieveCostPrice@13() : Boolean;
+    BEGIN
+      CASE Type OF
+        Type::Item:
+          IF ("No." <> xRec."No.") OR
+             ("Location Code" <> xRec."Location Code") OR
+             ("Variant Code" <> xRec."Variant Code") OR
+             ("Unit of Measure Code" <> xRec."Unit of Measure Code") THEN
+            EXIT(TRUE);
+        Type::Resource:
+          IF ("No." <> xRec."No.") OR
+             ("Work Type Code" <> xRec."Work Type Code") OR
+             ("Unit of Measure Code" <> xRec."Unit of Measure Code") THEN
+            EXIT(TRUE);
+        Type::"G/L Account":
+          IF "No." <> xRec."No." THEN
+            EXIT(TRUE);
+        ELSE
+          EXIT(FALSE);
+      END;
+      EXIT(FALSE);
+    END;
+
+    LOCAL PROCEDURE UpdateTotalCost@24();
+    BEGIN
+      "Total Cost" := ROUND("Unit Cost" * Quantity,AmountRoundingPrecision);
+      "Total Cost (LCY)" := ROUND(
+          CurrExchRate.ExchangeAmtFCYToLCY(
+            "Currency Date","Currency Code",
+            "Total Cost","Currency Factor"),
+          AmountRoundingPrecision);
+    END;
+
+    PROCEDURE FindPriceAndDiscount@60(VAR JobPlanningLine@1000 : Record 1003;CalledByFieldNo@1001 : Integer);
+    BEGIN
+      IF RetrieveCostPrice AND ("No." <> '') THEN BEGIN
+        SalesPriceCalcMgt.FindJobPlanningLinePrice(JobPlanningLine,CalledByFieldNo);
+
+        IF Type <> Type::"G/L Account" THEN
+          PurchPriceCalcMgt.FindJobPlanningLinePrice(JobPlanningLine,CalledByFieldNo)
+        ELSE BEGIN
+          // Because the SalesPriceCalcMgt.FindJobJnlLinePrice function also retrieves costs for G/L Account,
+          // cost and total cost need to get updated again.
+          UpdateUnitCost;
+          UpdateTotalCost;
+        END;
+
+      END;
+    END;
+
+    LOCAL PROCEDURE HandleCostFactor@22();
+    BEGIN
+      IF ("Unit Cost" <> xRec."Unit Cost") OR ("Cost Factor" <> xRec."Cost Factor") THEN BEGIN
+        IF "Cost Factor" <> 0 THEN
+          "Unit Price" := ROUND("Unit Cost" * "Cost Factor",UnitAmountRoundingPrecision)
+        ELSE
+          IF xRec."Cost Factor" <> 0 THEN
+            "Unit Price" := 0;
+      END;
+    END;
+
+    LOCAL PROCEDURE UpdateUnitPrice@25();
+    BEGIN
+      "Unit Price (LCY)" := ROUND(
+          CurrExchRate.ExchangeAmtFCYToLCY(
+            "Currency Date","Currency Code",
+            "Unit Price","Currency Factor"),
+          UnitAmountRoundingPrecision);
+    END;
+
+    LOCAL PROCEDURE UpdateTotalPrice@26();
+    BEGIN
+      "Total Price" := ROUND(Quantity * "Unit Price",AmountRoundingPrecision);
+      "Total Price (LCY)" := ROUND(
+          CurrExchRate.ExchangeAmtFCYToLCY(
+            "Currency Date","Currency Code",
+            "Total Price","Currency Factor"),
+          AmountRoundingPrecision);
+    END;
+
+    LOCAL PROCEDURE UpdateAmountsAndDiscounts@31();
+    BEGIN
+      IF "Total Price" <> 0 THEN BEGIN
+        IF ("Line Amount" <> xRec."Line Amount") AND ("Line Discount Amount" = xRec."Line Discount Amount") THEN BEGIN
+          "Line Amount" := ROUND("Line Amount",AmountRoundingPrecision);
+          "Line Discount Amount" := "Total Price" - "Line Amount";
+          "Line Discount %" :=
+            ROUND("Line Discount Amount" / "Total Price" * 100);
+        END ELSE
+          IF ("Line Discount Amount" <> xRec."Line Discount Amount") AND ("Line Amount" = xRec."Line Amount") THEN BEGIN
+            "Line Discount Amount" := ROUND("Line Discount Amount",AmountRoundingPrecision);
+            "Line Amount" := "Total Price" - "Line Discount Amount";
+            "Line Discount %" :=
+              ROUND("Line Discount Amount" / "Total Price" * 100);
+          END ELSE BEGIN
+            "Line Discount Amount" :=
+              ROUND("Total Price" * "Line Discount %" / 100,AmountRoundingPrecision);
+            "Line Amount" := "Total Price" - "Line Discount Amount";
+          END;
+      END ELSE BEGIN
+        "Line Amount" := 0;
+        "Line Discount Amount" := 0;
+      END;
+
+      "Line Amount (LCY)" := ROUND(
+          CurrExchRate.ExchangeAmtFCYToLCY(
+            "Currency Date","Currency Code",
+            "Line Amount","Currency Factor"),
+          AmountRoundingPrecision);
+
+      "Line Discount Amount (LCY)" := ROUND(
+          CurrExchRate.ExchangeAmtFCYToLCY(
+            "Currency Date","Currency Code",
+            "Line Discount Amount","Currency Factor"),
+          AmountRoundingPrecision);
+    END;
+
+    BEGIN
+    END.
+  }
+}
+

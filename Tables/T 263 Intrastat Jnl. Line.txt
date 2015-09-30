@@ -1,0 +1,217 @@
+OBJECT Table 263 Intrastat Jnl. Line
+{
+  OBJECT-PROPERTIES
+  {
+    Date=05.11.08;
+    Time=12:00:00;
+    Version List=NAVW16.00,NAVDACH4.00;
+  }
+  PROPERTIES
+  {
+    OnInsert=BEGIN
+               IntraJnlTemplate.GET("Journal Template Name");
+               IntrastatJnlBatch.GET("Journal Template Name","Journal Batch Name");
+             END;
+
+    OnModify=BEGIN
+               IntrastatJnlBatch.GET("Journal Template Name","Journal Batch Name");
+               IntrastatJnlBatch.TESTFIELD(Reported,FALSE);
+             END;
+
+    OnRename=BEGIN
+               IntrastatJnlBatch.GET(xRec."Journal Template Name",xRec."Journal Batch Name");
+               IntrastatJnlBatch.TESTFIELD(Reported,FALSE);
+             END;
+
+    CaptionML=[DEU=Intrastat Buch.-Blattzeile;
+               ENU=Intrastat Jnl. Line];
+  }
+  FIELDS
+  {
+    { 1   ;   ;Journal Template Name;Code10       ;TableRelation="Intrastat Jnl. Template";
+                                                   CaptionML=[DEU=Buch.-Blattvorlagenname;
+                                                              ENU=Journal Template Name] }
+    { 2   ;   ;Journal Batch Name  ;Code10        ;TableRelation="Intrastat Jnl. Batch".Name WHERE (Journal Template Name=FIELD(Journal Template Name));
+                                                   CaptionML=[DEU=Buch.-Blattname;
+                                                              ENU=Journal Batch Name] }
+    { 3   ;   ;Line No.            ;Integer       ;CaptionML=[DEU=Zeilennr.;
+                                                              ENU=Line No.] }
+    { 4   ;   ;Type                ;Option        ;CaptionML=[DEU=Art;
+                                                              ENU=Type];
+                                                   OptionCaptionML=[DEU=Eingang,Versendungen;
+                                                                    ENU=Receipt,Shipment];
+                                                   OptionString=Receipt,Shipment }
+    { 5   ;   ;Date                ;Date          ;CaptionML=[DEU=Datum;
+                                                              ENU=Date] }
+    { 6   ;   ;Tariff No.          ;Code10        ;TableRelation="Tariff Number";
+                                                   OnValidate=BEGIN
+                                                                TESTFIELD("Item No.",'');
+                                                                GetItemDescription;
+                                                              END;
+
+                                                   CaptionML=[DEU=Zollpos.;
+                                                              ENU=Tariff No.];
+                                                   NotBlank=Yes }
+    { 7   ;   ;Item Description    ;Text50        ;CaptionML=[DEU=Artikelbeschreibung;
+                                                              ENU=Item Description] }
+    { 8   ;   ;Country/Region Code ;Code10        ;TableRelation=Country/Region;
+                                                   CaptionML=[DEU=L„nder-/Regionscode;
+                                                              ENU=Country/Region Code] }
+    { 9   ;   ;Transaction Type    ;Code10        ;TableRelation="Transaction Type";
+                                                   CaptionML=[DEU=Art des Gesch„ftes;
+                                                              ENU=Transaction Type] }
+    { 10  ;   ;Transport Method    ;Code10        ;TableRelation="Transport Method";
+                                                   CaptionML=[DEU=Verkehrszweig;
+                                                              ENU=Transport Method] }
+    { 11  ;   ;Source Type         ;Option        ;CaptionML=[DEU=Herkunftsart;
+                                                              ENU=Source Type];
+                                                   OptionCaptionML=[DEU=,Artikelbuchung,Projektbuchung;
+                                                                    ENU=,Item entry,Job entry];
+                                                   OptionString=,Item entry,Job entry;
+                                                   BlankZero=Yes }
+    { 12  ;   ;Source Entry No.    ;Integer       ;TableRelation=IF (Source Type=CONST(Item entry)) "Item Ledger Entry"
+                                                                 ELSE IF (Source Type=CONST(Job entry)) "Job Ledger Entry";
+                                                   CaptionML=[DEU=Herkunft Lfd. Nr.;
+                                                              ENU=Source Entry No.];
+                                                   Editable=No }
+    { 13  ;   ;Net Weight          ;Decimal       ;OnValidate=BEGIN
+                                                                IF Quantity <> 0 THEN
+                                                                  "Total Weight" := ROUND("Net Weight" * Quantity,0.00001)
+                                                                ELSE
+                                                                  "Total Weight" := ROUND("Net Weight",0.00001);
+                                                              END;
+
+                                                   CaptionML=[DEU=Nettogewicht;
+                                                              ENU=Net Weight];
+                                                   DecimalPlaces=2:5 }
+    { 14  ;   ;Amount              ;Decimal       ;OnValidate=BEGIN
+                                                                IF "Cost Regulation %" <> 0 THEN
+                                                                  VALIDATE("Cost Regulation %")
+                                                                ELSE
+                                                                  "Statistical Value" := Amount + "Indirect Cost";
+                                                              END;
+
+                                                   CaptionML=[DEU=Betrag;
+                                                              ENU=Amount];
+                                                   DecimalPlaces=0:0 }
+    { 15  ;   ;Quantity            ;Decimal       ;OnValidate=BEGIN
+                                                                "Total Weight" := ROUND("Net Weight" * Quantity,0.00001);
+                                                              END;
+
+                                                   CaptionML=[DEU=Menge;
+                                                              ENU=Quantity];
+                                                   DecimalPlaces=0:0 }
+    { 16  ;   ;Cost Regulation %   ;Decimal       ;OnValidate=BEGIN
+                                                                "Indirect Cost" := ROUND(Amount * "Cost Regulation %" / 100,1);
+                                                                "Statistical Value" := ROUND(Amount + "Indirect Cost",1);
+                                                              END;
+
+                                                   CaptionML=[DEU=Kosten Zu-/Abschlag %;
+                                                              ENU=Cost Regulation %];
+                                                   DecimalPlaces=2:2;
+                                                   MinValue=-100;
+                                                   MaxValue=100 }
+    { 17  ;   ;Indirect Cost       ;Decimal       ;OnValidate=BEGIN
+                                                                "Cost Regulation %" := 0;
+                                                                "Statistical Value" := Amount + "Indirect Cost";
+                                                              END;
+
+                                                   CaptionML=[DEU=Kosten;
+                                                              ENU=Indirect Cost];
+                                                   DecimalPlaces=0:0 }
+    { 18  ;   ;Statistical Value   ;Decimal       ;CaptionML=[DEU=Statistikwert;
+                                                              ENU=Statistical Value];
+                                                   DecimalPlaces=0:0;
+                                                   Editable=No }
+    { 19  ;   ;Document No.        ;Code20        ;CaptionML=[DEU=Belegnr.;
+                                                              ENU=Document No.] }
+    { 20  ;   ;Item No.            ;Code20        ;TableRelation=Item;
+                                                   OnValidate=BEGIN
+                                                                TESTFIELD("Source Type",0);
+
+                                                                IF "Item No." = '' THEN
+                                                                  CLEAR(Item)
+                                                                ELSE BEGIN
+                                                                  Item.GET("Item No.");
+                                                                  Item.TESTFIELD("Tariff No.");
+                                                                END;
+
+                                                                Name := Item.Description;
+                                                                VALIDATE("Net Weight",Item."Net Weight");
+                                                                "Tariff No." := Item."Tariff No.";
+                                                                IF Type = Type::Receipt THEN
+                                                                  "Country/Region of Origin Code" := Item."Country/Region of Origin Code";
+                                                                GetItemDescription;
+                                                              END;
+
+                                                   CaptionML=[DEU=Artikelnr.;
+                                                              ENU=Item No.] }
+    { 21  ;   ;Name                ;Text30        ;CaptionML=[DEU=Name;
+                                                              ENU=Name] }
+    { 22  ;   ;Total Weight        ;Decimal       ;CaptionML=[DEU=Totalgewicht;
+                                                              ENU=Total Weight];
+                                                   DecimalPlaces=0:0;
+                                                   Editable=No }
+    { 23  ;   ;Supplementary Units ;Boolean       ;CaptionML=[DEU=Besondere Maáeinheit;
+                                                              ENU=Supplementary Units];
+                                                   Editable=No }
+    { 24  ;   ;Internal Ref. No.   ;Text10        ;CaptionML=[DEU=Interne Referenznr.;
+                                                              ENU=Internal Ref. No.];
+                                                   Editable=No }
+    { 25  ;   ;Country/Region of Origin Code;Code10;
+                                                   TableRelation=Country/Region;
+                                                   OnValidate=BEGIN
+                                                                TESTFIELD(Type,Type::Receipt);
+                                                              END;
+
+                                                   CaptionML=[DEU=Ursprungsland/-region;
+                                                              ENU=Country/Region of Origin Code] }
+    { 26  ;   ;Entry/Exit Point    ;Code10        ;TableRelation="Entry/Exit Point";
+                                                   CaptionML=[DEU=Hafen;
+                                                              ENU=Entry/Exit Point] }
+    { 27  ;   ;Area                ;Code10        ;TableRelation=Area;
+                                                   CaptionML=[DEU=Bundesland;
+                                                              ENU=Area] }
+    { 28  ;   ;Transaction Specification;Code10   ;TableRelation="Transaction Specification";
+                                                   CaptionML=[DEU=Verfahren;
+                                                              ENU=Transaction Specification] }
+  }
+  KEYS
+  {
+    {    ;Journal Template Name,Journal Batch Name,Line No.;
+                                                   SumIndexFields=Statistical Value;
+                                                   MaintainSIFTIndex=No;
+                                                   Clustered=Yes }
+    {    ;Source Type,Source Entry No.             }
+    {    ;Type,Country/Region Code,Tariff No.,Transaction Type,Transport Method,Area,Entry/Exit Point,Transaction Specification,Country/Region of Origin Code }
+    {    ;Internal Ref. No.                        }
+    {    ;Journal Template Name,Journal Batch Name,Type,Internal Ref. No. }
+    {    ;Journal Template Name,Journal Batch Name,Type,Country/Region Code,Tariff No.,Transaction Type,Transport Method,Area,Transaction Specification,Country/Region of Origin Code }
+    {    ;Type,Internal Ref. No.                   }
+  }
+  FIELDGROUPS
+  {
+  }
+  CODE
+  {
+    VAR
+      IntraJnlTemplate@1000 : Record 261;
+      IntrastatJnlBatch@1001 : Record 262;
+      Item@1002 : Record 27;
+      TariffNumber@1003 : Record 260;
+
+    LOCAL PROCEDURE GetItemDescription@1();
+    BEGIN
+      IF "Tariff No." <> '' THEN BEGIN
+        TariffNumber.GET("Tariff No.");
+        "Item Description" := COPYSTR(TariffNumber.Description,1,MAXSTRLEN("Item Description"));
+        "Supplementary Units" := TariffNumber."Supplementary Units";
+      END ELSE
+        "Item Description" := '';
+    END;
+
+    BEGIN
+    END.
+  }
+}
+

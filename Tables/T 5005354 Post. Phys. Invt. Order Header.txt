@@ -1,0 +1,140 @@
+OBJECT Table 5005354 Post. Phys. Invt. Order Header
+{
+  OBJECT-PROPERTIES
+  {
+    Date=05.11.08;
+    Time=12:00:00;
+    Version List=NAVDACH6.00;
+  }
+  PROPERTIES
+  {
+    DataCaptionFields=No.,Description;
+    OnDelete=BEGIN
+               LOCKTABLE;
+
+               PostedPhysInvtOrderLine.RESET;
+               PostedPhysInvtOrderLine.SETRANGE("Document No.","No.");
+               PostedPhysInvtOrderLine.DELETEALL(TRUE);
+
+               PhysInvtCommentLine.RESET;
+               PhysInvtCommentLine.SETRANGE("Document Type", PhysInvtCommentLine."Document Type"::"Posted Order");
+               PhysInvtCommentLine.SETRANGE("Order No.", "No.");
+               PhysInvtCommentLine.SETRANGE("Recording No.", 0);
+               PhysInvtCommentLine.DELETEALL;
+
+               PostedPhysInvtRecordingHeader.RESET;
+               PostedPhysInvtRecordingHeader.SETRANGE("Order No.", "No.");
+               PostedPhysInvtRecordingHeader.DELETEALL(TRUE);
+
+               DimManagement.DeletePostedDocDim(DATABASE::"Post. Phys. Invt. Order Header", "No.", 0);
+             END;
+
+    CaptionML=[DEU=Geb. Inventurauftragskopf;
+               ENU=Post. Phys. Invt. Order Header];
+    LookupFormID=Form5005359;
+    DrillDownFormID=Form5005359;
+  }
+  FIELDS
+  {
+    { 1   ;   ;No.                 ;Code20        ;CaptionML=[DEU=Nr.;
+                                                              ENU=No.] }
+    { 10  ;   ;Description         ;Text50        ;CaptionML=[DEU=Beschreibung;
+                                                              ENU=Description] }
+    { 11  ;   ;Status              ;Option        ;CaptionML=[DEU=Status;
+                                                              ENU=Status];
+                                                   OptionCaptionML=[DEU=Offen,Beendet;
+                                                                    ENU=Open,Finished];
+                                                   OptionString=Open,Finished }
+    { 20  ;   ;Order Date          ;Date          ;CaptionML=[DEU=Auftragsdatum;
+                                                              ENU=Order Date] }
+    { 21  ;   ;Posting Date        ;Date          ;CaptionML=[DEU=Buchungsdatum;
+                                                              ENU=Posting Date] }
+    { 30  ;   ;Comment             ;Boolean       ;FieldClass=FlowField;
+                                                   CalcFormula=Exist("Phys. Inventory Comment Line" WHERE (Document Type=CONST(Posted Order),
+                                                                                                           Order No.=FIELD(No.),
+                                                                                                           Recording No.=CONST(0)));
+                                                   CaptionML=[DEU=Bemerkung;
+                                                              ENU=Comment];
+                                                   Editable=No }
+    { 31  ;   ;Person Responsible  ;Code20        ;TableRelation=Employee;
+                                                   ValidateTableRelation=No;
+                                                   TestTableRelation=No;
+                                                   CaptionML=[DEU=Verantwortlich;
+                                                              ENU=Person Responsible] }
+    { 40  ;   ;Reason Code         ;Code10        ;TableRelation="Reason Code";
+                                                   CaptionML=[DEU=Ursachencode;
+                                                              ENU=Reason Code] }
+    { 41  ;   ;Gen. Bus. Posting Group;Code10     ;TableRelation="Gen. Business Posting Group";
+                                                   CaptionML=[DEU=Gesch„ftsbuchungsgruppe;
+                                                              ENU=Gen. Bus. Posting Group] }
+    { 50  ;   ;Shortcut Dimension 1 Code;Code20   ;TableRelation="Dimension Value".Code WHERE (Global Dimension No.=CONST(1));
+                                                   CaptionML=[DEU=Shortcutdimensionencode 1;
+                                                              ENU=Shortcut Dimension 1 Code];
+                                                   CaptionClass='1,2,1' }
+    { 51  ;   ;Shortcut Dimension 2 Code;Code20   ;TableRelation="Dimension Value".Code WHERE (Global Dimension No.=CONST(2));
+                                                   CaptionML=[DEU=Shortcutdimensionencode 2;
+                                                              ENU=Shortcut Dimension 2 Code];
+                                                   CaptionClass='1,2,2' }
+    { 60  ;   ;Pre-Assigned No. Series;Code10     ;TableRelation="No. Series";
+                                                   CaptionML=[DEU=Zugeordnete Nr. Serie;
+                                                              ENU=Pre-Assigned No. Series];
+                                                   Editable=No }
+    { 61  ;   ;No. Series          ;Code10        ;TableRelation="No. Series";
+                                                   CaptionML=[DEU=Nummernserie;
+                                                              ENU=No. Series] }
+    { 62  ;   ;Pre-Assigned No.    ;Code20        ;CaptionML=[DEU=Zugeordnete Nr.;
+                                                              ENU=Pre-Assigned No.] }
+    { 63  ;   ;User ID             ;Code20        ;TableRelation=User;
+                                                   OnLookup=VAR
+                                                              LoginMgt@1140000 : Codeunit 418;
+                                                            BEGIN
+                                                              LoginMgt.LookupUserID("User ID");
+                                                            END;
+
+                                                   TestTableRelation=No;
+                                                   CaptionML=[DEU=Benutzer-ID;
+                                                              ENU=User ID] }
+    { 66  ;   ;Source Code         ;Code10        ;TableRelation="Source Code";
+                                                   CaptionML=[DEU=Herkunftscode;
+                                                              ENU=Source Code] }
+    { 71  ;   ;No. Finished Recordings;Integer    ;FieldClass=FlowField;
+                                                   CalcFormula=Count("Phys. Invt. Recording Header" WHERE (Order No.=FIELD(No.),
+                                                                                                           Status=CONST(Finished)));
+                                                   CaptionML=[DEU=Anzahl beendete Erfassungen;
+                                                              ENU=No. Finished Recordings];
+                                                   Editable=No }
+    { 110 ;   ;Location Code       ;Code10        ;TableRelation=Location;
+                                                   CaptionML=[DEU=Lagerortcode;
+                                                              ENU=Location Code] }
+    { 111 ;   ;Bin Code            ;Code20        ;TableRelation=Bin.Code WHERE (Location Code=FIELD(Location Code));
+                                                   CaptionML=[DEU=Lagerplatzcode;
+                                                              ENU=Bin Code] }
+  }
+  KEYS
+  {
+    {    ;No.                                     ;Clustered=Yes }
+  }
+  FIELDGROUPS
+  {
+  }
+  CODE
+  {
+    VAR
+      PostedPhysInvtOrderLine@1140000 : Record 5005355;
+      PhysInvtCommentLine@1140001 : Record 5005358;
+      PostedPhysInvtRecordingHeader@1140002 : Record 5005356;
+      DimManagement@1140003 : Codeunit 408;
+
+    PROCEDURE Navigate@1140000();
+    VAR
+      NavigateForm@1140000 : Form 344;
+    BEGIN
+      NavigateForm.SetDoc("Posting Date","No.");
+      NavigateForm.RUN;
+    END;
+
+    BEGIN
+    END.
+  }
+}
+

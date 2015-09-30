@@ -1,0 +1,438 @@
+OBJECT Page 5052 Contact List
+{
+  OBJECT-PROPERTIES
+  {
+    Date=13.02.07;
+    Time=12:00:00;
+    Version List=NAVW15.00;
+  }
+  PROPERTIES
+  {
+    Editable=No;
+    CaptionML=[DEU=KontaktÅbersicht;
+               ENU=Contact List];
+    SourceTable=Table5050;
+    SourceTableView=SORTING(Company Name,Company No.,Type,Name);
+    DataCaptionFields=Company No.;
+    PageType=List;
+    CardFormID=Page5050;
+    OnAfterGetRecord=BEGIN
+                       NameIndent := 0;
+                       NoOnFormat;
+                       NameOnFormat;
+                     END;
+
+    ActionList=ACTIONS
+    {
+      { 1900000003;0 ;ActionContainer;
+                      ActionContainerType=RelatedInformation }
+      { 29      ;1   ;ActionGroup;
+                      CaptionML=[DEU=Ko&ntakt;
+                                 ENU=C&ontact] }
+      { 33      ;2   ;Action    ;
+                      CaptionML=[DEU=Zugehîrige Ko&ntakte;
+                                 ENU=Relate&d Contacts];
+                      RunObject=Page 5052;
+                      RunFormLink=Company No.=FIELD(Company No.) }
+      { 34      ;2   ;ActionGroup;
+                      CaptionML=[DEU=Un&ternehmen;
+                                 ENU=Comp&any] }
+      { 35      ;3   ;Action    ;
+                      CaptionML=[DEU=GeschÑftsbeziehungen;
+                                 ENU=Business Relations];
+                      RunObject=Page 5061;
+                      RunFormLink=Contact No.=FIELD(Company No.) }
+      { 36      ;3   ;Action    ;
+                      CaptionML=[DEU=Branchen;
+                                 ENU=Industry Groups];
+                      RunObject=Page 5067;
+                      RunFormLink=Contact No.=FIELD(Company No.) }
+      { 37      ;3   ;Action    ;
+                      CaptionML=[DEU=Internetfavoriten;
+                                 ENU=Web Sources];
+                      RunObject=Page 5070;
+                      RunFormLink=Contact No.=FIELD(Company No.) }
+      { 38      ;2   ;ActionGroup;
+                      CaptionML=[DEU=&Person;
+                                 ENU=P&erson] }
+      { 39      ;3   ;Action    ;
+                      CaptionML=[DEU=Verantwortlichkeiten;
+                                 ENU=Job Responsibilities];
+                      OnAction=VAR
+                                 ContJobResp@1001 : Record 5067;
+                               BEGIN
+                                 TESTFIELD(Type,Type::Person);
+                                 ContJobResp.SETRANGE("Contact No.","No.");
+                                 FORM.RUNMODAL(FORM::"Contact Job Responsibilities",ContJobResp);
+                               END;
+                                }
+      { 40      ;2   ;Action    ;
+                      CaptionML=[DEU=&Verteiler;
+                                 ENU=Mailing &Groups];
+                      RunObject=Page 5064;
+                      RunFormLink=Contact No.=FIELD(No.) }
+      { 41      ;2   ;Action    ;
+                      CaptionML=[DEU=Pr&ofile;
+                                 ENU=Pro&files];
+                      OnAction=VAR
+                                 ProfileManagement@1001 : Codeunit 5059;
+                               BEGIN
+                                 ProfileManagement.ShowContactQuestionnaireCard(Rec,'',0);
+                               END;
+                                }
+      { 42      ;2   ;Action    ;
+                      ShortCutKey=F7;
+                      CaptionML=[DEU=Statistik;
+                                 ENU=Statistics];
+                      RunObject=Page 5053;
+                      RunFormLink=No.=FIELD(No.);
+                      Promoted=Yes;
+                      Image=Statistics;
+                      PromotedCategory=Process }
+      { 43      ;2   ;Action    ;
+                      CaptionML=[DEU=Bi&ld;
+                                 ENU=&Picture];
+                      RunObject=Page 5104;
+                      RunFormLink=No.=FIELD(No.) }
+      { 44      ;2   ;Action    ;
+                      CaptionML=[DEU=Be&merkungen;
+                                 ENU=Co&mments];
+                      RunObject=Page 5072;
+                      RunFormLink=Table Name=CONST(Contact),
+                                  No.=FIELD(No.),
+                                  Sub No.=CONST(0);
+                      Image=ViewComments }
+      { 45      ;2   ;ActionGroup;
+                      CaptionML=[DEU=Al&ternative Adressen;
+                                 ENU=Alternati&ve Address] }
+      { 46      ;3   ;Action    ;
+                      CaptionML=[DEU=Karte;
+                                 ENU=Card];
+                      RunObject=Page 5057;
+                      RunFormLink=Contact No.=FIELD(No.);
+                      Image=EditLines }
+      { 47      ;3   ;Action    ;
+                      CaptionML=[DEU=GÅltigkeiten;
+                                 ENU=Date Ranges];
+                      RunObject=Page 5059;
+                      RunFormLink=Contact No.=FIELD(No.) }
+      { 48      ;2   ;Separator ;
+                      CaptionML=[DEU="";
+                                 ENU=""] }
+      { 49      ;2   ;Action    ;
+                      ShortCutKey=Ctrl+F7;
+                      CaptionML=[DEU=Aktivit&Ñtenprotokollposten;
+                                 ENU=Interaction Log E&ntries];
+                      RunObject=Page 5076;
+                      RunFormView=SORTING(Contact Company No.,Contact No.);
+                      RunFormLink=Contact Company No.=FIELD(Company No.),
+                                  Contact No.=FILTER(<>''),
+                                  Contact No.=FIELD(FILTER(Lookup Contact No.)) }
+      { 76      ;2   ;Action    ;
+                      CaptionML=[DEU=ZurÅckgestellte &AktivitÑten;
+                                 ENU=Postponed &Interactions];
+                      RunObject=Page 5082;
+                      RunFormView=SORTING(Contact Company No.,Contact No.);
+                      RunFormLink=Contact Company No.=FIELD(Company No.),
+                                  Contact No.=FILTER(<>''),
+                                  Contact No.=FIELD(FILTER(Lookup Contact No.)) }
+      { 50      ;2   ;Action    ;
+                      CaptionML=[DEU=Aufga&ben;
+                                 ENU=T&o-dos];
+                      RunObject=Page 5096;
+                      RunFormView=SORTING(Contact Company No.,Contact No.);
+                      RunFormLink=Contact Company No.=FIELD(Company No.),
+                                  Contact No.=FIELD(FILTER(Lookup Contact No.)),
+                                  System To-do Type=FILTER(Contact Attendee) }
+      { 78      ;2   ;ActionGroup;
+                      CaptionML=[DEU=Verkaufs&chancen;
+                                 ENU=Oppo&rtunities] }
+      { 51      ;3   ;Action    ;
+                      CaptionML=[DEU=öbersicht;
+                                 ENU=List];
+                      RunObject=Page 5123;
+                      RunFormView=SORTING(Contact Company No.,Contact No.);
+                      RunFormLink=Contact Company No.=FIELD(Company No.),
+                                  Contact No.=FILTER(<>''),
+                                  Contact No.=FIELD(FILTER(Lookup Contact No.)) }
+      { 55      ;2   ;Action    ;
+                      CaptionML=[DEU=S&egmente;
+                                 ENU=Segmen&ts];
+                      RunObject=Page 5150;
+                      RunFormView=SORTING(Contact No.,Segment No.);
+                      RunFormLink=Contact Company No.=FIELD(Company No.),
+                                  Contact No.=FILTER(<>''),
+                                  Contact No.=FIELD(FILTER(Lookup Contact No.));
+                      Image=Segment }
+      { 52      ;2   ;Separator ;
+                      CaptionML=[DEU="";
+                                 ENU=""] }
+      { 68      ;2   ;Action    ;
+                      CaptionML=[DEU=&Angebote;
+                                 ENU=Sales &Quotes];
+                      RunObject=Page 9300;
+                      RunFormView=SORTING(Document Type,Sell-to Contact No.);
+                      RunFormLink=Sell-to Contact No.=FIELD(No.);
+                      Image=Quote }
+      { 69      ;2   ;Separator  }
+      { 53      ;2   ;Action    ;
+                      CaptionML=[DEU=&Debitor/Kreditor/Bankkonto;
+                                 ENU=C&ustomer/Vendor/Bank Acc.];
+                      OnAction=BEGIN
+                                 ShowCustVendBank;
+                               END;
+                                }
+      { 1900000004;0 ;ActionContainer;
+                      ActionContainerType=ActionItems }
+      { 30      ;1   ;ActionGroup;
+                      CaptionML=[DEU=F&unktion;
+                                 ENU=F&unctions] }
+      { 54      ;2   ;Action    ;
+                      CaptionML=[DEU=&Telefonverbindung herstellen;
+                                 ENU=Make &Phone Call];
+                      OnAction=VAR
+                                 TAPIManagement@1001 : Codeunit 5053;
+                               BEGIN
+                                 TAPIManagement.DialContCustVendBank(DATABASE::Contact,"No.","Phone No.",'');
+                               END;
+                                }
+      { 56      ;2   ;Action    ;
+                      CaptionML=[DEU=&Internetfavorit aufrufen;
+                                 ENU=Launch &Web Source];
+                      OnAction=VAR
+                                 ContactWebSource@1001 : Record 5060;
+                               BEGIN
+                                 ContactWebSource.SETRANGE("Contact No.","Company No.");
+                                 IF FORM.RUNMODAL(FORM::"Web Source Launch",ContactWebSource) = ACTION::LookupOK THEN
+                                   ContactWebSource.Launch;
+                               END;
+                                }
+      { 57      ;2   ;Action    ;
+                      CaptionML=[DEU=&Deckblatt drucken;
+                                 ENU=Print Cover &Sheet];
+                      OnAction=VAR
+                                 Cont@1001 : Record 5050;
+                               BEGIN
+                                 Cont := Rec;
+                                 Cont.SETRECFILTER;
+                                 REPORT.RUN(REPORT::"Contact - Cover Sheet",TRUE,FALSE,Cont);
+                               END;
+                                }
+      { 58      ;2   ;ActionGroup;
+                      CaptionML=[DEU=Erstellen als;
+                                 ENU=Create as] }
+      { 59      ;3   ;Action    ;
+                      CaptionML=[DEU=Debitor;
+                                 ENU=Customer];
+                      OnAction=BEGIN
+                                 CreateCustomer(ChooseCustomerTemplate);
+                               END;
+                                }
+      { 60      ;3   ;Action    ;
+                      CaptionML=[DEU=Kreditor;
+                                 ENU=Vendor];
+                      OnAction=BEGIN
+                                 CreateVendor;
+                               END;
+                                }
+      { 61      ;3   ;Action    ;
+                      CaptionML=[DEU=Bankkonto;
+                                 ENU=Bank];
+                      OnAction=BEGIN
+                                 CreateBankAccount;
+                               END;
+                                }
+      { 62      ;2   ;ActionGroup;
+                      CaptionML=[DEU=VerknÅpfen mit;
+                                 ENU=Link with existing] }
+      { 63      ;3   ;Action    ;
+                      CaptionML=[DEU=Debitor;
+                                 ENU=Customer];
+                      OnAction=BEGIN
+                                 CreateCustomerLink;
+                               END;
+                                }
+      { 64      ;3   ;Action    ;
+                      CaptionML=[DEU=Kreditor;
+                                 ENU=Vendor];
+                      OnAction=BEGIN
+                                 CreateVendorLink;
+                               END;
+                                }
+      { 65      ;3   ;Action    ;
+                      CaptionML=[DEU=Bankkonto;
+                                 ENU=Bank];
+                      OnAction=BEGIN
+                                 CreateBankAccountLink;
+                               END;
+                                }
+      { 74      ;2   ;Action    ;
+                      CaptionML=[DEU=&Kontaktsuche;
+                                 ENU=Co&ntact Search];
+                      OnAction=VAR
+                                 SearchResult@1001 : Record 5113;
+                                 ContactSearchForm@1000 : Form 5177;
+                               BEGIN
+                                 ContactSearchForm.LOOKUPMODE(TRUE);
+                                 IF ContactSearchForm.RUNMODAL = ACTION::LookupOK THEN BEGIN
+                                   ContactSearchForm.GETRECORD(SearchResult);
+                                   IF GET(SearchResult."Contact No.") THEN;
+                                 END;
+                               END;
+                                }
+      { 31      ;1   ;Action    ;
+                      CaptionML=[DEU=AktivitÑt &erst.;
+                                 ENU=Create &Interact];
+                      Promoted=Yes;
+                      Image=CreateInteraction;
+                      PromotedCategory=Process;
+                      OnAction=BEGIN
+                                 CreateInteraction;
+                               END;
+                                }
+      { 1900000005;0 ;ActionContainer;
+                      ActionContainerType=NewDocumentItems }
+      { 1900900305;1 ;Action    ;
+                      CaptionML=[DEU=Neues Verkaufsangebot;
+                                 ENU=New Sales Quote];
+                      RunObject=Page 41;
+                      RunFormLink=Sell-to Contact No.=FIELD(No.);
+                      Promoted=Yes;
+                      Image=Quote;
+                      PromotedCategory=New;
+                      RunFormMode=Create }
+      { 1900000006;0 ;ActionContainer;
+                      ActionContainerType=Reports }
+      { 1907415106;1 ;Action    ;
+                      CaptionML=[DEU=Kontakt Deckblatt;
+                                 ENU=Contact Cover Sheet];
+                      RunObject=Report 5055;
+                      Promoted=No;
+                      PromotedCategory=Report }
+      { 1907778706;1 ;Action    ;
+                      CaptionML=[DEU=Kontakt - UnternehmensÅbersicht;
+                                 ENU=Contact Company Summary];
+                      RunObject=Report 5051;
+                      Promoted=Yes;
+                      PromotedCategory=Report }
+      { 1904205506;1 ;Action    ;
+                      CaptionML=[DEU=Kontaktetiketten;
+                                 ENU=Contact Labels];
+                      RunObject=Report 5056;
+                      Promoted=No;
+                      PromotedCategory=Report }
+      { 1905922906;1 ;Action    ;
+                      CaptionML=[DEU=Befragung Handzettel;
+                                 ENU=Questionnaire Handout];
+                      RunObject=Report 5066;
+                      Promoted=No;
+                      PromotedCategory=Report }
+      { 1900800206;1 ;Action    ;
+                      CaptionML=[DEU=Verkaufsprozess Analyse;
+                                 ENU=Sales Cycle Analysis];
+                      RunObject=Report 5062;
+                      Promoted=Yes;
+                      PromotedCategory=Report }
+    }
+  }
+  CONTROLS
+  {
+    { 1900000001;0;Container;
+                ContainerType=ContentArea }
+
+    { 1   ;1   ;Group     ;
+                IndentationColumnName=NameIndent;
+                IndentationControls=Name;
+                GroupType=Repeater }
+
+    { 2   ;2   ;Field     ;
+                SourceExpr="No." }
+
+    { 4   ;2   ;Field     ;
+                SourceExpr=Name }
+
+    { 66  ;2   ;Field     ;
+                SourceExpr="Company Name";
+                Visible=FALSE }
+
+    { 6   ;2   ;Field     ;
+                SourceExpr="Post Code";
+                Visible=FALSE }
+
+    { 8   ;2   ;Field     ;
+                SourceExpr="Country/Region Code";
+                Visible=FALSE }
+
+    { 10  ;2   ;Field     ;
+                SourceExpr="Phone No." }
+
+    { 24  ;2   ;Field     ;
+                SourceExpr="Mobile Phone No.";
+                Visible=FALSE }
+
+    { 12  ;2   ;Field     ;
+                SourceExpr="Fax No.";
+                Visible=FALSE }
+
+    { 14  ;2   ;Field     ;
+                SourceExpr="Salesperson Code" }
+
+    { 16  ;2   ;Field     ;
+                SourceExpr="Territory Code" }
+
+    { 18  ;2   ;Field     ;
+                SourceExpr="Currency Code";
+                Visible=FALSE }
+
+    { 20  ;2   ;Field     ;
+                SourceExpr="Language Code";
+                Visible=FALSE }
+
+    { 22  ;2   ;Field     ;
+                SourceExpr="Search Name" }
+
+    { 1900000007;0;Container;
+                ContainerType=FactBoxArea }
+
+    { 1900383207;1;Part   ;
+                Visible=TRUE;
+                PartType=System;
+                SystemPartID=RecordLinks }
+
+    { 1905767507;1;Part   ;
+                Visible=TRUE;
+                PartType=System;
+                SystemPartID=Notes }
+
+  }
+  CODE
+  {
+    VAR
+      Cont@1000 : Record 5050;
+      "No.Emphasize"@19074284 : Boolean INDATASET;
+      NameEmphasize@19018670 : Boolean INDATASET;
+      NameIndent@19079073 : Integer INDATASET;
+
+    LOCAL PROCEDURE NoOnFormat@19031395();
+    BEGIN
+      IF Type = Type::Company THEN
+        "No.Emphasize" := TRUE;
+    END;
+
+    LOCAL PROCEDURE NameOnFormat@19039177();
+    BEGIN
+      IF Type = Type::Company THEN
+        NameEmphasize := TRUE
+      ELSE BEGIN
+        Cont.SETCURRENTKEY("Company Name","Company No.",Type,Name);
+        IF ("Company No." <> '') AND (NOT HASFILTER) AND (NOT MARKEDONLY) AND (CURRENTKEY = Cont.CURRENTKEY)
+        THEN
+          NameIndent := 1;
+      END;
+    END;
+
+    BEGIN
+    END.
+  }
+}
+

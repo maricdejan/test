@@ -1,0 +1,99 @@
+OBJECT Table 320 Tax Jurisdiction
+{
+  OBJECT-PROPERTIES
+  {
+    Date=05.11.08;
+    Time=12:00:00;
+    Version List=NAVW16.00;
+  }
+  PROPERTIES
+  {
+    DataCaptionFields=Code,Description;
+    CaptionML=[DEU=Steuerzust„ndigkeit;
+               ENU=Tax Jurisdiction];
+    LookupFormID=Form466;
+  }
+  FIELDS
+  {
+    { 1   ;   ;Code                ;Code10        ;CaptionML=[DEU=Code;
+                                                              ENU=Code];
+                                                   NotBlank=Yes }
+    { 2   ;   ;Description         ;Text30        ;CaptionML=[DEU=Beschreibung;
+                                                              ENU=Description] }
+    { 3   ;   ;Tax Account (Sales) ;Code20        ;TableRelation="G/L Account";
+                                                   CaptionML=[DEU=Steuerkonto (Verkauf);
+                                                              ENU=Tax Account (Sales)] }
+    { 4   ;   ;Tax Account (Purchases);Code20     ;TableRelation="G/L Account";
+                                                   CaptionML=[DEU=Steuerkonto (Einkauf);
+                                                              ENU=Tax Account (Purchases)] }
+    { 5   ;   ;Report-to Jurisdiction;Code10      ;TableRelation="Tax Jurisdiction";
+                                                   CaptionML=[DEU=Meldung an Zust„ndigkeit;
+                                                              ENU=Report-to Jurisdiction] }
+    { 6   ;   ;Date Filter         ;Date          ;FieldClass=FlowFilter;
+                                                   CaptionML=[DEU=Datumsfilter;
+                                                              ENU=Date Filter] }
+    { 7   ;   ;Tax Group Filter    ;Code10        ;FieldClass=FlowFilter;
+                                                   TableRelation="Tax Group";
+                                                   CaptionML=[DEU=Steuergruppenfilter;
+                                                              ENU=Tax Group Filter] }
+    { 8   ;   ;Unreal. Tax Acc. (Sales);Code20    ;TableRelation="G/L Account";
+                                                   CaptionML=[DEU=Unreal. Steuerkonto (Verkauf);
+                                                              ENU=Unreal. Tax Acc. (Sales)] }
+    { 9   ;   ;Unreal. Tax Acc. (Purchases);Code20;TableRelation="G/L Account";
+                                                   CaptionML=[DEU=Unreal. Steuerkonto (Einkauf);
+                                                              ENU=Unreal. Tax Acc. (Purchases)] }
+    { 10  ;   ;Reverse Charge (Purchases);Code20  ;TableRelation="G/L Account";
+                                                   CaptionML=[DEU=Einkaufsbesteuerungskonto;
+                                                              ENU=Reverse Charge (Purchases)] }
+    { 11  ;   ;Unreal. Rev. Charge (Purch.);Code20;TableRelation="G/L Account";
+                                                   CaptionML=[DEU=Unreal. Eink.-Besteuerungskto.;
+                                                              ENU=Unreal. Rev. Charge (Purch.)] }
+    { 12  ;   ;Unrealized VAT Type ;Option        ;OnValidate=BEGIN
+                                                                IF "Unrealized VAT Type" > 0 THEN BEGIN
+                                                                  GLSetup.GET;
+                                                                  GLSetup.TESTFIELD("Unrealized VAT",TRUE);
+                                                                END;
+                                                              END;
+
+                                                   CaptionML=[DEU=Unreal. MwSt.-Art;
+                                                              ENU=Unrealized VAT Type];
+                                                   OptionCaptionML=[DEU=" ,Prozentsatz,Erste,Letzte,Erste (ganz bezahlt),Letzte (ganz bezahlt)";
+                                                                    ENU=" ,Percentage,First,Last,First (Fully Paid),Last (Fully Paid)"];
+                                                   OptionString=[ ,Percentage,First,Last,First (Fully Paid),Last (Fully Paid)] }
+    { 13  ;   ;Calculate Tax on Tax;Boolean       ;OnValidate=BEGIN
+                                                                TaxDetail.SETRANGE("Tax Jurisdiction Code",Code);
+                                                                TaxDetail.MODIFYALL("Calculate Tax on Tax","Calculate Tax on Tax");
+                                                                MODIFY;
+                                                              END;
+
+                                                   CaptionML=[DEU=Steuer auf Steuer berechnen;
+                                                              ENU=Calculate Tax on Tax] }
+    { 14  ;   ;Adjust for Payment Discount;Boolean;OnValidate=BEGIN
+                                                                IF "Adjust for Payment Discount" THEN BEGIN
+                                                                  GLSetup.GET;
+                                                                  GLSetup.TESTFIELD("Adjust for Payment Disc.",TRUE);
+                                                                END;
+                                                              END;
+
+                                                   CaptionML=[DEU=Skonto berichtigen;
+                                                              ENU=Adjust for Payment Discount] }
+  }
+  KEYS
+  {
+    {    ;Code                                    ;Clustered=Yes }
+    {    ;Report-to Jurisdiction                   }
+  }
+  FIELDGROUPS
+  {
+  }
+  CODE
+  {
+    VAR
+      GLSetup@1000 : Record 98;
+      TaxDetail@1001 : Record 322;
+
+    BEGIN
+    END.
+  }
+}
+

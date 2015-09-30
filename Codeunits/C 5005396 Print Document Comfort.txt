@@ -1,0 +1,115 @@
+OBJECT Codeunit 5005396 Print Document Comfort
+{
+  OBJECT-PROPERTIES
+  {
+    Date=05.11.08;
+    Time=12:00:00;
+    Version List=NAVDACH6.00;
+  }
+  PROPERTIES
+  {
+    OnRun=BEGIN
+          END;
+
+  }
+  CODE
+  {
+
+    PROCEDURE DeliveryRemindPrint@1140000(DeliveryReminderHeader@1140000 : Record 5005270);
+    VAR
+      DACHReportSelections@1140001 : Record 26100;
+    BEGIN
+      DeliveryReminderHeader.SETRANGE("No.",DeliveryReminderHeader."No.");
+      DACHReportSelections.SETRANGE(Usage,DACHReportSelections.Usage::"Delivery Reminder Test");
+      DACHReportSelections.SETFILTER("Report ID",'<>0');
+      DACHReportSelections.FIND('-');
+      REPEAT
+        REPORT.RUNMODAL(DACHReportSelections."Report ID",TRUE,FALSE,DeliveryReminderHeader)
+      UNTIL DACHReportSelections.NEXT = 0;
+    END;
+
+    PROCEDURE IssuedDeliveryRemindPrint@114001(IssuedDeliveryReminderHeader@1140000 : Record 5005272;ShowRequestForm@1140001 : Boolean);
+    VAR
+      DACHReportSelections@1140002 : Record 26100;
+    BEGIN
+      IssuedDeliveryReminderHeader.SETRANGE("No.",IssuedDeliveryReminderHeader."No.");
+      DACHReportSelections.SETRANGE(Usage,DACHReportSelections.Usage::"Issued Delivery Reminder");
+      DACHReportSelections.SETFILTER("Report ID",'<>0');
+      DACHReportSelections.FIND('-');
+      REPEAT
+        REPORT.RUNMODAL(DACHReportSelections."Report ID",ShowRequestForm,FALSE,IssuedDeliveryReminderHeader)
+      UNTIL DACHReportSelections.NEXT = 0;
+    END;
+
+    PROCEDURE PhysInvtOrderPrintTest@1140002(PhysInvtOrderHeader@1140000 : Record 5005350;ShowRequestForm@1140001 : Boolean);
+    VAR
+      DACHReportSelections@1140002 : Record 26100;
+    BEGIN
+      PhysInvtOrderHeader.SETRANGE("No.",PhysInvtOrderHeader."No.");
+      DACHReportSelections.SETRANGE(Usage,DACHReportSelections.Usage::"Phys. Invt. Order Test");
+      DACHReportSelections.SETFILTER("Report ID",'<>0');
+      DACHReportSelections.FIND('-');
+      REPEAT
+        REPORT.RUNMODAL(DACHReportSelections."Report ID",ShowRequestForm,FALSE,PhysInvtOrderHeader);
+      UNTIL DACHReportSelections.NEXT = 0;
+    END;
+
+    PROCEDURE PhysInvtOrderPrint@1140003(PhysInvtOrderHeader@1140000 : Record 5005350;ShowRequestForm@1140001 : Boolean);
+    VAR
+      DACHReportSelections@1140002 : Record 26100;
+    BEGIN
+      PhysInvtOrderHeader.SETRANGE("No.",PhysInvtOrderHeader."No.");
+      DACHReportSelections.SETRANGE(Usage,DACHReportSelections.Usage::"Phys. Invt. Order");
+      DACHReportSelections.SETFILTER("Report ID",'<>0');
+      DACHReportSelections.FIND('-');
+      REPEAT
+        REPORT.RUNMODAL(DACHReportSelections."Report ID",ShowRequestForm,FALSE,PhysInvtOrderHeader);
+      UNTIL DACHReportSelections.NEXT = 0;
+    END;
+
+    PROCEDURE PostedPhysInvtOrderPrint@1140004(PostedPhysInvtOrderHeader@1140000 : Record 5005354;ShowRequestForm@1140001 : Boolean);
+    VAR
+      DACHReportSelections@1140002 : Record 26100;
+    BEGIN
+      PostedPhysInvtOrderHeader.SETRANGE("No.",PostedPhysInvtOrderHeader."No.");
+      DACHReportSelections.SETRANGE(Usage,DACHReportSelections.Usage::"Posted Phys. Invt. Order");
+      DACHReportSelections.SETFILTER("Report ID",'<>0');
+      DACHReportSelections.FIND('-');
+      REPEAT
+        REPORT.RUNMODAL(DACHReportSelections."Report ID",ShowRequestForm,FALSE,PostedPhysInvtOrderHeader);
+      UNTIL DACHReportSelections.NEXT = 0;
+    END;
+
+    PROCEDURE PhysInvtRecPrint@1140005(PhysInvtRecordingHeader@1140000 : Record 5005352;ShowRequestForm@1140001 : Boolean);
+    VAR
+      DACHReportSelections@1140002 : Record 26100;
+    BEGIN
+      PhysInvtRecordingHeader.SETRANGE("Order No.",PhysInvtRecordingHeader."Order No.");
+      PhysInvtRecordingHeader.SETRANGE("Recording No.",PhysInvtRecordingHeader."Recording No.");
+      DACHReportSelections.SETRANGE(Usage,DACHReportSelections.Usage::"Phys. Invt. Recording");
+      DACHReportSelections.SETFILTER("Report ID",'<>0');
+      DACHReportSelections.FIND('-');
+      REPEAT
+        REPORT.RUNMODAL(DACHReportSelections."Report ID",ShowRequestForm,FALSE,PhysInvtRecordingHeader);
+      UNTIL DACHReportSelections.NEXT = 0;
+    END;
+
+    PROCEDURE PostedPhysInvtRecPrint@1140006(PostedPhysInvtRecordingHeader@1140000 : Record 5005356;ShowRequestForm@1140001 : Boolean);
+    VAR
+      DACHReportSelections@1140002 : Record 26100;
+    BEGIN
+      PostedPhysInvtRecordingHeader.SETRANGE("Order No.",PostedPhysInvtRecordingHeader."Order No.");
+      PostedPhysInvtRecordingHeader.SETRANGE("Recording No.",PostedPhysInvtRecordingHeader."Recording No.");
+      DACHReportSelections.SETRANGE(Usage,DACHReportSelections.Usage::"Posted Phys. Invt. Recording");
+      DACHReportSelections.SETFILTER("Report ID",'<>0');
+      DACHReportSelections.FIND('-');
+      REPEAT
+        REPORT.RUNMODAL(DACHReportSelections."Report ID",ShowRequestForm,FALSE,PostedPhysInvtRecordingHeader);
+      UNTIL DACHReportSelections.NEXT = 0;
+    END;
+
+    BEGIN
+    END.
+  }
+}
+

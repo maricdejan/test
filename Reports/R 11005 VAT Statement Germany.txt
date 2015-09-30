@@ -1,0 +1,2081 @@
+OBJECT Report 11005 VAT Statement Germany
+{
+  OBJECT-PROPERTIES
+  {
+    Date=14.08.09;
+    Time=12:00:00;
+    Version List=NAVDACH6.00.01;
+  }
+  PROPERTIES
+  {
+    CaptionML=[DEU=MwSt.-Abrechnung Meldung;
+               ENU=VAT Statement Germany];
+    OnPreReport=BEGIN
+                  IF EndDateReq = 0D THEN
+                    EndDate := 31129999D
+                  ELSE
+                    EndDate := EndDateReq;
+                  VATStmtLine.SETRANGE("Date Filter",StartDate,EndDateReq);
+                  IF PeriodSelection = PeriodSelection::"Before and Within Period" THEN
+                    Heading := Text1140000
+                  ELSE
+                    Heading := Text1140003;
+                  Heading2 := STRSUBSTNO(Text1140004,StartDate,EndDateReq);
+                  VATStmtLineFilter := VATStmtLine.GETFILTERS;
+
+                  SelectionInt := Selection;
+                END;
+
+  }
+  DATAITEMS
+  {
+    { PROPERTIES
+      {
+        DataItemTable=Table257;
+        DataItemTableView=SORTING(Statement Template Name,Name);
+        NewPagePerRecord=Yes;
+        OnPreDataItem=BEGIN
+                        GLSetup.GET;
+
+                        PageGroupNo := 1;
+                        NewPage := FALSE;
+                      END;
+
+        OnAfterGetRecord=BEGIN
+                           CurrReport.PAGENO := 1;
+                         END;
+
+        ReqFilterFields=Statement Template Name,Name;
+      }
+      SECTIONS
+      {
+      }
+       }
+    { PROPERTIES
+      {
+        DataItemIndent=1;
+        DataItemTable=Table256;
+        DataItemTableView=SORTING(Statement Template Name,Statement Name)
+                          WHERE(Print=CONST(Yes));
+        OnPreDataItem=BEGIN
+                        // moved from Section
+
+                        IF UseAmtsInAddCurr THEN
+                          HeaderText := STRSUBSTNO(Text1140001,GLSetup."Additional Reporting Currency")
+                        ELSE BEGIN
+                          GLSetup.TESTFIELD("LCY Code");
+                          HeaderText := STRSUBSTNO(Text1140001,GLSetup."LCY Code");
+                        END;
+                      END;
+
+        OnAfterGetRecord=BEGIN
+                           CalcLineTotal("VAT Statement Line",TotalAmount,TotalEmpty,TotalBase,TotalUnrealizedAmount,TotalUnrealizedBase,0);
+                           IF PrintInIntegers THEN BEGIN
+                             TotalEmpty :=  ROUND(TotalEmpty,1,'<');
+                             TotalAmount := ROUND(TotalAmount,1,'<');
+                             TotalBase := ROUND(TotalBase,1,'<');
+                             TotalUnrealizedAmount := ROUND(TotalUnrealizedAmount,1,'<');
+                             TotalUnrealizedBase := ROUND(TotalUnrealizedBase,1,'<');
+                           END;
+                           IF "Print with" = "Print with"::"Opposite Sign" THEN BEGIN
+                             TotalEmpty := - TotalEmpty;
+                             TotalAmount := -TotalAmount;
+                             TotalBase := -TotalBase;
+                             TotalUnrealizedAmount := -TotalUnrealizedAmount;
+                             TotalUnrealizedBase := -TotalUnrealizedBase;
+                           END;
+
+                           CASE "Amount Type" OF
+                             "Amount Type"::Base:
+                               TotalAmount := 0;
+                             "Amount Type"::Amount:
+                               TotalBase := 0;
+                             "Amount Type"::"Unrealized Base":
+                               TotalUnrealizedAmount := 0;
+                             "Amount Type"::"Unrealized Amount":
+                               TotalUnrealizedBase := 0;
+                           END;
+
+                           IF NewPage THEN BEGIN
+                             PageGroupNo := PageGroupNo + 1;
+                             NewPage := FALSE;
+                           END;
+                           NewPage := "New Page";
+                         END;
+
+        ReqFilterFields=Row No.;
+        DataItemLink=Statement Template Name=FIELD(Statement Template Name),
+                     Statement Name=FIELD(Name);
+      }
+      SECTIONS
+      {
+        { PROPERTIES
+          {
+            SectionType=Header;
+            PrintOnEveryPage=Yes;
+            SectionWidth=18300;
+            SectionHeight=3384;
+          }
+          CONTROLS
+          {
+            { 1140001;Label     ;0    ;0    ;7500 ;423  ;FontSize=8;
+                                                         FontBold=Yes;
+                                                         CaptionML=[DEU=MwSt.-Abrechnung;
+                                                                    ENU=VAT Statement];
+                                                         DataSetFieldName=VAT_StatementCaption }
+            { 1140002;TextBox   ;15000;0    ;3150 ;423  ;HorzAlign=Right;
+                                                         SourceExpr=FORMAT(TODAY,0,4);
+                                                         DataSetFieldName=FORMAT_TODAY_0_4_ }
+            { 1140003;TextBox   ;0    ;423  ;7500 ;423  ;SourceExpr=Heading;
+                                                         DataSetFieldName=Heading }
+            { 1140004;Label     ;16950;423  ;750  ;423  ;ParentControl=1140005;
+                                                         DataSetFieldName=CurrReport_PAGENOCaption }
+            { 1140005;TextBox   ;17700;423  ;450  ;423  ;CaptionML=[DEU=Seite;
+                                                                    ENU=Page];
+                                                         SourceExpr=CurrReport.PAGENO;
+                                                         DataSetFieldName=CurrReport_PAGENO }
+            { 1140006;TextBox   ;0    ;1269 ;7500 ;423  ;SourceExpr=COMPANYNAME;
+                                                         DataSetFieldName=COMPANYNAME }
+            { 1140007;TextBox   ;15900;846  ;2250 ;423  ;HorzAlign=Right;
+                                                         SourceExpr=USERID;
+                                                         DataSetFieldName=USERID }
+            { 1140008;Label     ;0    ;2115 ;4050 ;423  ;ParentControl=1140009;
+                                                         DataSetFieldName=VAT_Statement_Name___Statement_Template_Name_Caption }
+            { 1140009;TextBox   ;4200 ;2115 ;2250 ;423  ;CaptionML=[DEU=MwSt.-Abrechnung Vorlage;
+                                                                    ENU=VAT Statement Template];
+                                                         SourceExpr="VAT Statement Name"."Statement Template Name";
+                                                         DataSetFieldName=VAT_Statement_Name___Statement_Template_Name_ }
+            { 1140010;Label     ;0    ;2538 ;4050 ;423  ;ParentControl=1140011;
+                                                         DataSetFieldName=VAT_Statement_Name__NameCaption }
+            { 1140011;TextBox   ;4200 ;2538 ;2250 ;423  ;CaptionML=[DEU=MwSt.-Abrechnungsname;
+                                                                    ENU=VAT Statement Name];
+                                                         SourceExpr="VAT Statement Name".Name;
+                                                         DataSetFieldName=VAT_Statement_Name__Name }
+            { 1140012;TextBox   ;0    ;846  ;7500 ;423  ;SourceExpr=Heading2;
+                                                         DataSetFieldName=Heading2 }
+            { 1140000;TextBox   ;17850;2115 ;150  ;423  ;Name=PrintInIntegers;
+                                                         Visible=No;
+                                                         ForeColor=65535;
+                                                         SourceExpr=PrintInIntegers;
+                                                         DataSetFieldName=PrintInIntegers }
+            { 1140032;TextBox   ;17700;2115 ;150  ;423  ;Name=UseAmtsInAddCurr;
+                                                         Visible=No;
+                                                         ForeColor=65535;
+                                                         SourceExpr=UseAmtsInAddCurr;
+                                                         DataSetFieldName=UseAmtsInAddCurr }
+            { 1140034;TextBox   ;17550;2115 ;200  ;423  ;Name=Selection;
+                                                         Visible=No;
+                                                         ForeColor=65535;
+                                                         SourceExpr=SelectionInt;
+                                                         DataSetFieldName=Selection }
+          }
+           }
+        { PROPERTIES
+          {
+            SectionType=Header;
+            SectionWidth=18300;
+            SectionHeight=846;
+          }
+          CONTROLS
+          {
+            { 1140013;TextBox   ;0    ;0    ;3750 ;423  ;SourceExpr=HeaderText;
+                                                         DataSetFieldName=HeaderText }
+          }
+           }
+        { PROPERTIES
+          {
+            SectionType=Header;
+            PrintOnEveryPage=Yes;
+            SectionWidth=18300;
+            SectionHeight=846;
+            OnPreSection=BEGIN
+                           CurrReport.SHOWOUTPUT(PrintInIntegers AND NOT UseAmtsInAddCurr);
+                         END;
+
+          }
+          CONTROLS
+          {
+            { 1140014;Label     ;0    ;0    ;7500 ;423  ;CaptionML=[DEU=Betr„ge sind auf ganze MW-Einheiten gerundet.;
+                                                                    ENU=Amounts are in whole LCYs.];
+                                                         DataSetFieldName=Amounts_are_in_whole_LCYs_Caption }
+          }
+           }
+        { PROPERTIES
+          {
+            SectionType=Header;
+            SectionWidth=18300;
+            SectionHeight=846;
+            OnPreSection=BEGIN
+                           CurrReport.SHOWOUTPUT(PrintInIntegers AND UseAmtsInAddCurr);
+                         END;
+
+          }
+          CONTROLS
+          {
+            { 1140015;TextBox   ;0    ;0    ;7500 ;423  ;SourceExpr=STRSUBSTNO(Text1140002,GLSetup."Additional Reporting Currency");
+                                                         DataSetFieldName=STRSUBSTNO_Text1140002_GLSetup__Additional_Reporting_Currency__ }
+          }
+           }
+        { PROPERTIES
+          {
+            SectionType=Header;
+            PrintOnEveryPage=Yes;
+            SectionWidth=18300;
+            SectionHeight=423;
+            OnPreSection=BEGIN
+                           CurrReport.SHOWOUTPUT(Selection = Selection::"Open and Closed");
+                         END;
+
+          }
+          CONTROLS
+          {
+            { 1140016;Label     ;0    ;0    ;7500 ;423  ;CaptionML=[DEU=Der Bericht beinhaltet alle MwSt.-Posten.;
+                                                                    ENU=The report includes all VAT entries.];
+                                                         DataSetFieldName=The_report_includes_all_VAT_entries_Caption }
+          }
+           }
+        { PROPERTIES
+          {
+            SectionType=Header;
+            PrintOnEveryPage=Yes;
+            SectionWidth=18300;
+            SectionHeight=423;
+            OnPreSection=BEGIN
+                           CurrReport.SHOWOUTPUT(Selection = Selection::Closed);
+                         END;
+
+          }
+          CONTROLS
+          {
+            { 1140017;Label     ;0    ;0    ;7500 ;423  ;CaptionML=[DEU=Der Bericht beinhaltet nur geschlossene MwSt.-Posten.;
+                                                                    ENU=The report includes only closed VAT entries.];
+                                                         DataSetFieldName=The_report_includes_only_closed_VAT_entries_Caption }
+          }
+           }
+        { PROPERTIES
+          {
+            SectionType=Header;
+            PrintOnEveryPage=Yes;
+            SectionWidth=18300;
+            SectionHeight=423;
+            OnPreSection=BEGIN
+                           CurrReport.SHOWOUTPUT(Selection IN [Selection::Closed,Selection::"Open and Closed"]);
+                         END;
+
+          }
+          CONTROLS
+          {
+          }
+           }
+        { PROPERTIES
+          {
+            SectionType=Header;
+            PrintOnEveryPage=Yes;
+            SectionWidth=18300;
+            SectionHeight=846;
+            OnPreSection=BEGIN
+                           CurrReport.SHOWOUTPUT((CurrReport.PAGENO = 1) AND (VATStmtLineFilter <> ''));
+                         END;
+
+          }
+          CONTROLS
+          {
+            { 1140018;TextBox   ;0    ;0    ;17700;423  ;SourceExpr="VAT Statement Line".TABLECAPTION + ': ' + VATStmtLineFilter;
+                                                         DataSetFieldName=VAT_Statement_Line__TABLECAPTION__________VATStmtLineFilter }
+            { 1140033;TextBox   ;17850;0    ;150  ;423  ;Name=VATStmtLineFilter;
+                                                         Visible=No;
+                                                         ForeColor=65535;
+                                                         SourceExpr=VATStmtLineFilter;
+                                                         DataSetFieldName=VATStmtLineFilter }
+          }
+           }
+        { PROPERTIES
+          {
+            SectionType=Header;
+            PrintOnEveryPage=Yes;
+            SectionWidth=18300;
+            SectionHeight=1269;
+          }
+          CONTROLS
+          {
+            { 1140019;Label     ;16350;0    ;1800 ;846  ;HorzAlign=Right;
+                                                         VertAlign=Bottom;
+                                                         FontBold=Yes;
+                                                         MultiLine=Yes;
+                                                         CaptionML=[DEU=Unrealisierter MwSt.-Betrag;
+                                                                    ENU=Unrealized VAT Amount];
+                                                         DataSetFieldName=Unrealized_VAT_AmountCaption }
+            { 1140020;Label     ;14400;0    ;1800 ;846  ;HorzAlign=Right;
+                                                         VertAlign=Bottom;
+                                                         FontBold=Yes;
+                                                         MultiLine=Yes;
+                                                         CaptionML=[DEU=Unrealisierte Bemessungsgrundlage;
+                                                                    ENU=Unrealizied Base Amount];
+                                                         DataSetFieldName=Unrealizied_Base_AmountCaption }
+            { 1140021;Label     ;12450;0    ;1800 ;846  ;HorzAlign=Right;
+                                                         VertAlign=Bottom;
+                                                         FontBold=Yes;
+                                                         CaptionML=[DEU=MwSt.-Betrag;
+                                                                    ENU=VAT Amount];
+                                                         DataSetFieldName=VAT_AmountCaption }
+            { 1140022;Label     ;10500;0    ;1800 ;846  ;HorzAlign=Right;
+                                                         VertAlign=Bottom;
+                                                         FontBold=Yes;
+                                                         CaptionML=[DEU=Bemessungsgrundlage;
+                                                                    ENU=Base Amount];
+                                                         DataSetFieldName=Base_AmountCaption }
+            { 1140023;Label     ;1650 ;0    ;6750 ;846  ;ParentControl=1140030;
+                                                         VertAlign=Bottom;
+                                                         FontBold=Yes;
+                                                         DataSetFieldName=VAT_Statement_Line_DescriptionCaption }
+            { 1140024;Label     ;0    ;0    ;1500 ;846  ;ParentControl=1140031;
+                                                         VertAlign=Bottom;
+                                                         FontBold=Yes;
+                                                         DataSetFieldName=VAT_Statement_Line__Row_No__Caption }
+          }
+           }
+        { PROPERTIES
+          {
+            SectionType=Body;
+            SectionWidth=18300;
+            SectionHeight=423;
+          }
+          CONTROLS
+          {
+            { 1140025;TextBox   ;16350;0    ;1800 ;423  ;BlankZero=Yes;
+                                                         SourceExpr=TotalUnrealizedAmount;
+                                                         AutoFormatType=1;
+                                                         AutoFormatExpr=GetCurrency;
+                                                         DataSetFieldName=TotalUnrealizedAmount }
+            { 1140026;TextBox   ;14400;0    ;1800 ;423  ;BlankZero=Yes;
+                                                         SourceExpr=TotalUnrealizedBase;
+                                                         AutoFormatType=1;
+                                                         AutoFormatExpr=GetCurrency;
+                                                         DataSetFieldName=TotalUnrealizedBase }
+            { 1140027;TextBox   ;12450;0    ;1800 ;423  ;CaptionML=[DEU=Betrag;
+                                                                    ENU=Amount];
+                                                         BlankZero=Yes;
+                                                         SourceExpr=TotalAmount;
+                                                         AutoFormatType=1;
+                                                         AutoFormatExpr=GetCurrency;
+                                                         DataSetFieldName=TotalAmount }
+            { 1140028;TextBox   ;10500;0    ;1800 ;423  ;CaptionML=[DEU=Betrag;
+                                                                    ENU=Amount];
+                                                         BlankZero=Yes;
+                                                         SourceExpr=TotalBase;
+                                                         AutoFormatType=1;
+                                                         AutoFormatExpr=GetCurrency;
+                                                         DataSetFieldName=TotalBase }
+            { 1140029;TextBox   ;8550 ;0    ;1800 ;423  ;CaptionML=[DEU=Betrag;
+                                                                    ENU=Amount];
+                                                         BlankZero=Yes;
+                                                         SourceExpr=TotalEmpty;
+                                                         AutoFormatType=1;
+                                                         AutoFormatExpr=GetCurrency;
+                                                         DataSetFieldName=TotalEmpty }
+            { 1140030;TextBox   ;1650 ;0    ;6750 ;423  ;SourceExpr=Description;
+                                                         DataSetFieldName=VAT_Statement_Line_Description }
+            { 1140031;TextBox   ;0    ;0    ;1500 ;423  ;SourceExpr="Row No.";
+                                                         DataSetFieldName=VAT_Statement_Line__Row_No__ }
+            { 1140035;TextBox   ;18150;0    ;150  ;423  ;Name=PageGroupNo;
+                                                         Visible=No;
+                                                         ForeColor=65535;
+                                                         SourceExpr=PageGroupNo;
+                                                         DataSetFieldName=PageGroupNo;
+                                                         Format=<Standard Format,2> }
+          }
+           }
+        { PROPERTIES
+          {
+            SectionType=Body;
+            SectionWidth=18300;
+            SectionHeight=0;
+            OnPreSection=BEGIN
+                           IF "New Page" THEN
+                             CurrReport.NEWPAGE;
+                         END;
+
+          }
+          CONTROLS
+          {
+          }
+           }
+      }
+       }
+  }
+  REQUESTFORM
+  {
+    PROPERTIES
+    {
+      Width=8360;
+      Height=6160;
+      SaveValues=Yes;
+    }
+    CONTROLS
+    {
+      { 1140013;TextBox   ;3520 ;440  ;1650 ;440  ;ParentControl=1140015;
+                                                   InFrame=Yes;
+                                                   CaptionML=[DEU=Startdatum;
+                                                              ENU=Starting Date];
+                                                   SourceExpr=StartDate }
+      { 1140011;TextBox   ;3520 ;990  ;1650 ;440  ;ParentControl=1140015;
+                                                   InFrame=Yes;
+                                                   CaptionML=[DEU=Enddatum;
+                                                              ENU=Ending Date];
+                                                   SourceExpr=EndDateReq }
+      { 1140012;Label     ;110  ;990  ;3300 ;440  ;ParentControl=1140015;
+                                                   InFrame=Yes;
+                                                   CaptionML=[DEU=Enddatum;
+                                                              ENU=Ending Date] }
+      { 1140014;Label     ;110  ;440  ;3300 ;440  ;ParentControl=1140015;
+                                                   InFrame=Yes;
+                                                   CaptionML=[DEU=Startdatum;
+                                                              ENU=Starting Date] }
+      { 1140000;OptionButton;3410;1650;4950 ;440  ;CaptionML=[DEU=Offen;
+                                                              ENU=Open];
+                                                   SourceExpr=Selection;
+                                                   OptionValue=Open }
+      { 1140001;Label     ;0    ;1650 ;3300 ;440  ;ParentControl=1140000;
+                                                   CaptionML=[DEU=MwSt.-Posten einschlieáen;
+                                                              ENU=Include VAT Entries] }
+      { 1140002;OptionButton;3410;2200;4950 ;440  ;CaptionML=[DEU=Geschlossen;
+                                                              ENU=Closed];
+                                                   SourceExpr=Selection;
+                                                   OptionValue=Closed }
+      { 1140003;OptionButton;3410;2750;4950 ;440  ;CaptionML=[DEU=Offen und geschlossen;
+                                                              ENU=Open and Closed];
+                                                   SourceExpr=Selection;
+                                                   OptionValue=Open and Closed }
+      { 1140004;OptionButton;3410;3410;4950 ;440  ;CaptionML=[DEU=Innerhalb Periode;
+                                                              ENU=Within Period];
+                                                   SourceExpr=PeriodSelection;
+                                                   OptionValue=Within Period }
+      { 1140005;Label     ;0    ;3410 ;3300 ;440  ;ParentControl=1140004;
+                                                   CaptionML=[DEU=MwSt.-Posten einschlieáen;
+                                                              ENU=Include VAT Entries] }
+      { 1140006;OptionButton;3410;3960;4950 ;440  ;CaptionML=[DEU=Vor und innerhalb Periode;
+                                                              ENU=Before and Within Period];
+                                                   SourceExpr=PeriodSelection;
+                                                   OptionValue=Before and Within Period }
+      { 1140007;CheckBox  ;3410 ;4620 ;440  ;440  ;ShowCaption=No;
+                                                   CaptionML=[DEU=Auf ganze Zahlen runden;
+                                                              ENU=Round to Whole Numbers];
+                                                   SourceExpr=PrintInIntegers }
+      { 1140008;Label     ;0    ;4620 ;3300 ;440  ;ParentControl=1140007 }
+      { 1140009;CheckBox  ;3410 ;5720 ;440  ;440  ;ShowCaption=No;
+                                                   CaptionML=[DEU=Betr„ge in Berichtsw„hrung ausgeben;
+                                                              ENU=Show Amounts in Add. Reporting Currency];
+                                                   SourceExpr=UseAmtsInAddCurr }
+      { 1140010;Label     ;0    ;5280 ;3300 ;880  ;ParentControl=1140009;
+                                                   MultiLine=Yes }
+      { 1140015;Frame     ;0    ;0    ;5280 ;1540 ;CaptionML=[DEU=Abrechnungsperiode;
+                                                              ENU=Statement Period] }
+    }
+  }
+  REQUESTPAGE
+  {
+    PROPERTIES
+    {
+      SaveValues=Yes;
+    }
+    CONTROLS
+    {
+      { 1900000001;0;Container;
+                  ContainerType=ContentArea }
+
+      { 1900000002;1;Group  ;
+                  CaptionML=[DEU=Optionen;
+                             ENU=Options] }
+
+      { 1140015;2;Group     ;
+                  CaptionML=[DEU=Abrechnungsperiode;
+                             ENU=Statement Period] }
+
+      { 1140013;3;Field     ;
+                  CaptionML=[DEU=Startdatum;
+                             ENU=Starting Date];
+                  SourceExpr=StartDate }
+
+      { 1140011;3;Field     ;
+                  CaptionML=[DEU=Enddatum;
+                             ENU=Ending Date];
+                  SourceExpr=EndDateReq }
+
+      { 1140000;2;Field     ;
+                  CaptionML=[DEU=MwSt.-Posten einschlieáen;
+                             ENU=Include VAT Entries];
+                  OptionCaptionML=[DEU=Offen,Geschlossen,Offen und geschlossen;
+                                   ENU=Open,Closed,Open and Closed];
+                  SourceExpr=Selection }
+
+      { 1140004;2;Field     ;
+                  CaptionML=[DEU=MwSt.-Posten einschlieáen;
+                             ENU=Include VAT Entries];
+                  OptionCaptionML=[DEU=Vor und innerhalb Periode,Innerhalb Periode;
+                                   ENU=Before and Within Period,Within Period];
+                  SourceExpr=PeriodSelection }
+
+      { 1140007;2;Field     ;
+                  CaptionML=[DEU=Auf ganze Zahlen runden;
+                             ENU=Round to Whole Numbers];
+                  SourceExpr=PrintInIntegers }
+
+      { 1140009;2;Field     ;
+                  CaptionML=[DEU=Betr„ge in Berichtsw„hrung ausgeben;
+                             ENU=Show Amounts in Add. Reporting Currency];
+                  SourceExpr=UseAmtsInAddCurr;
+                  MultiLine=Yes }
+
+    }
+  }
+  CODE
+  {
+    VAR
+      Text1140000@1140000 : TextConst 'DEU=MwSt.-Posten vor und innerhalb der Periode;ENU=VAT entries before and within the period';
+      Text1140001@1140001 : TextConst 'DEU=Alle Betr„ge in %1;ENU=All amounts are in %1';
+      Text1140002@1140002 : TextConst 'DEU=Betr„ge sind auf ganze %1 gerundet.;ENU=Amounts are in whole %1s.';
+      Text1140003@1140003 : TextConst 'DEU=MwSt.-Posten innerhalb der Periode;ENU=VAT entries within the period';
+      Text1140004@1140004 : TextConst 'DEU=Periode: %1..%2;ENU=Period: %1..%2';
+      GLAcc@1140005 : Record 15;
+      VATEntry@1140006 : Record 254;
+      GLSetup@1140007 : Record 98;
+      Selection@1140008 : 'Open,Closed,Open and Closed';
+      PeriodSelection@1140009 : 'Before and Within Period,Within Period';
+      PrintInIntegers@1140010 : Boolean;
+      VATStmtLineFilter@1140011 : Text[250];
+      Heading@1140012 : Text[50];
+      Amount@1140013 : Decimal;
+      TotalAmount@1140014 : Decimal;
+      RowNo@1140015 : ARRAY [6] OF Code[10];
+      ErrorText@1140016 : Text[80];
+      i@1140017 : Integer;
+      UseAmtsInAddCurr@1140018 : Boolean;
+      HeaderText@1140019 : Text[50];
+      EndDate@1140020 : Date;
+      StartDate@1140021 : Date;
+      EndDateReq@1140022 : Date;
+      VATStmtLine@1140023 : Record 256;
+      Heading2@1140024 : Text[50];
+      TotalEmpty@1140025 : Decimal;
+      TotalBase@1140026 : Decimal;
+      TotalUnrealizedAmount@1140027 : Decimal;
+      TotalUnrealizedBase@1140028 : Decimal;
+      PageGroupNo@1140029 : Integer;
+      NewPage@1140030 : Boolean;
+      SelectionInt@1140031 : Integer;
+
+    PROCEDURE CalcLineTotal@1140000(VATStmtLine2@1140000 : Record 256;VAR TotalAmount@1140001 : Decimal;VAR TotalEmpty@1140002 : Decimal;VAR TotalBase@1140003 : Decimal;VAR TotalUnrealizedAmount@1140004 : Decimal;VAR TotalUnrealizedBase@1140005 : Decimal;Level@1140006 : Integer) : Boolean;
+    BEGIN
+      IF Level = 0 THEN BEGIN
+        TotalAmount := 0;
+        TotalEmpty := 0;
+        TotalBase := 0;
+        TotalUnrealizedAmount := 0;
+        TotalUnrealizedBase := 0;
+      END;
+      CASE VATStmtLine2.Type OF
+        VATStmtLine2.Type::"Account Totaling":
+          BEGIN
+            GLAcc.SETFILTER("No.",VATStmtLine2."Account Totaling");
+            IF EndDateReq = 0D THEN
+              EndDate := 31129999D
+            ELSE
+              EndDate := EndDateReq;
+            IF PeriodSelection = PeriodSelection::"Before and Within Period" THEN
+              GLAcc.SETRANGE("Date Filter",0D,EndDate)
+            ELSE
+              GLAcc.SETRANGE("Date Filter",StartDate,EndDate);
+            Amount := 0;
+            IF GLAcc.FIND('-') AND (VATStmtLine2."Account Totaling" <> '') THEN
+              REPEAT
+                GLAcc.CALCFIELDS("Net Change","Additional-Currency Net Change");
+                Amount := ConditionalAdd(Amount,GLAcc."Net Change",GLAcc."Additional-Currency Net Change");
+              UNTIL GLAcc.NEXT = 0;
+            CalcTotalAmount(VATStmtLine2,TotalAmount,TotalEmpty,TotalBase,TotalUnrealizedAmount,TotalUnrealizedBase);
+          END;
+        VATStmtLine2.Type::"VAT Entry Totaling":
+          BEGIN
+            VATEntry.RESET;
+            VATEntry.SETCURRENTKEY(
+              Type,Closed,"VAT Bus. Posting Group","VAT Prod. Posting Group",
+              "Tax Jurisdiction Code","Use Tax","Posting Date");
+            VATEntry.SETRANGE(Type,VATStmtLine2."Gen. Posting Type");
+            VATEntry.SETRANGE("VAT Bus. Posting Group",VATStmtLine2."VAT Bus. Posting Group");
+            VATEntry.SETRANGE("VAT Prod. Posting Group",VATStmtLine2."VAT Prod. Posting Group");
+            VATEntry.SETRANGE("Tax Jurisdiction Code",VATStmtLine2."Tax Jurisdiction Code");
+            VATEntry.SETRANGE("Use Tax",VATStmtLine2."Use Tax");
+            IF (EndDateReq <> 0D) OR (StartDate <> 0D) THEN
+              IF PeriodSelection = PeriodSelection::"Before and Within Period" THEN
+                VATEntry.SETRANGE("Posting Date",0D,EndDate)
+              ELSE
+                VATEntry.SETRANGE("Posting Date",StartDate,EndDate);
+            CASE Selection OF
+              Selection::Open:
+                VATEntry.SETRANGE(Closed,FALSE);
+              Selection::Closed:
+                VATEntry.SETRANGE(Closed,TRUE);
+              ELSE
+                VATEntry.SETRANGE(Closed);
+            END;
+            CASE VATStmtLine2."Amount Type" OF
+              VATStmtLine2."Amount Type"::Amount:
+                BEGIN
+                  VATEntry.CALCSUMS(Amount,"Additional-Currency Amount");
+                  Amount := ConditionalAdd(0,VATEntry.Amount,VATEntry."Additional-Currency Amount");
+                END;
+              VATStmtLine2."Amount Type"::Base:
+                BEGIN
+                  VATEntry.CALCSUMS(Base,"Additional-Currency Base");
+                  Amount := ConditionalAdd(0,VATEntry.Base,VATEntry."Additional-Currency Base");
+                END;
+              VATStmtLine2."Amount Type"::"Unrealized Amount":
+                BEGIN
+                  VATEntry.CALCSUMS("Unrealized Amount","Add.-Currency Unrealized Amt.");
+                  Amount := ConditionalAdd(0,VATEntry."Unrealized Amount",VATEntry."Add.-Currency Unrealized Amt.");
+                END;
+              VATStmtLine2."Amount Type"::"Unrealized Base":
+                BEGIN
+                  VATEntry.CALCSUMS("Unrealized Base","Add.-Currency Unrealized Base");
+                  Amount := ConditionalAdd(0,VATEntry."Unrealized Base",VATEntry."Add.-Currency Unrealized Base");
+                END;
+              ELSE
+                VATStmtLine2.TESTFIELD("Amount Type");
+            END;
+            CalcTotalAmount(VATStmtLine2,TotalAmount,TotalEmpty,TotalBase,TotalUnrealizedAmount,TotalUnrealizedBase);
+          END;
+        VATStmtLine2.Type::"Row Totaling":
+          BEGIN
+            IF Level >= ARRAYLEN(RowNo) THEN
+              EXIT(FALSE);
+            Level := Level + 1;
+            RowNo[Level] := VATStmtLine2."Row No.";
+
+            IF VATStmtLine2."Row Totaling" = '' THEN
+              EXIT(TRUE);
+            VATStmtLine2.SETRANGE("Statement Template Name",VATStmtLine2."Statement Template Name");
+            VATStmtLine2.SETRANGE("Statement Name",VATStmtLine2."Statement Name");
+            VATStmtLine2.SETFILTER("Row No.",VATStmtLine2."Row Totaling");
+            IF VATStmtLine2.FIND('-') THEN
+              REPEAT
+                IF NOT CalcLineTotal(VATStmtLine2,TotalAmount,TotalEmpty,TotalBase,TotalUnrealizedAmount,TotalUnrealizedBase,Level) THEN
+                  BEGIN
+                    IF Level > 1 THEN
+                      EXIT(FALSE);
+                    FOR i := 1 TO ARRAYLEN(RowNo) DO
+                      ErrorText := ErrorText + RowNo[i] + ' => ';
+                    ErrorText := ErrorText + '...';
+                    VATStmtLine2.FIELDERROR("Row No.",ErrorText);
+                  END;
+              UNTIL VATStmtLine2.NEXT = 0;
+          END;
+        VATStmtLine2.Type::Description:
+          ;
+      END;
+
+      EXIT(TRUE);
+    END;
+
+    LOCAL PROCEDURE CalcTotalAmount@1140001(VATStmtLine2@1140000 : Record 256;VAR TotalAmount@1140001 : Decimal;VAR TotalEmpty@1140002 : Decimal;VAR TotalBase@1140003 : Decimal;VAR TotalUnrealizedAmount@1140004 : Decimal;VAR TotalUnrealizedBase@1140005 : Decimal);
+    BEGIN
+
+      IF VATStmtLine2."Calculate with" = 1 THEN
+        Amount := -Amount;
+      IF PrintInIntegers AND VATStmtLine2.Print THEN
+        Amount := ROUND(Amount,1,'<');
+
+      CASE VATStmtLine2."Amount Type" OF
+        VATStmtLine2."Amount Type" :: " " : TotalEmpty := TotalEmpty + Amount;
+        VATStmtLine2."Amount Type" :: Base : TotalBase := TotalBase + Amount;
+        VATStmtLine2."Amount Type" :: Amount : TotalAmount := TotalAmount + Amount;
+        VATStmtLine2."Amount Type" :: "Unrealized Amount" : TotalUnrealizedAmount := TotalUnrealizedAmount + Amount;
+        VATStmtLine2."Amount Type" :: "Unrealized Base" : TotalUnrealizedBase := TotalUnrealizedBase + Amount;
+      END;
+    END;
+
+    PROCEDURE InitializeRequest@1140002(VAR NewVATStatementName@1140000 : Record 257;VAR NewVATStatementLine@1140001 : Record 256;NewSelection@1140002 : 'Open,Closed,Open and Closed';NewPeriodSelection@1140003 : 'Before and Within Period,Within Period';NewPrintInIntegers@1140004 : Boolean;NewUseAmtsInAddCurr@1005 : Boolean);
+    BEGIN
+
+      "VAT Statement Name".COPY(NewVATStatementName);
+      "VAT Statement Line".COPY(NewVATStatementLine);
+      Selection := NewSelection;
+      PeriodSelection := NewPeriodSelection;
+      PrintInIntegers := NewPrintInIntegers;
+      UseAmtsInAddCurr := NewUseAmtsInAddCurr;
+      IF NewVATStatementLine.GETFILTER("Date Filter") <> '' THEN BEGIN
+        StartDate := NewVATStatementLine.GETRANGEMIN("Date Filter");
+        EndDateReq := NewVATStatementLine.GETRANGEMAX("Date Filter");
+        EndDate := EndDateReq;
+      END ELSE BEGIN
+        StartDate := 0D;
+        EndDateReq := 0D;
+        EndDate := 31129999D
+      END;
+    END;
+
+    PROCEDURE ConditionalAdd@1140003(Amount@1140000 : Decimal;AmountToAdd@1140001 : Decimal;AddCurrAmountToAdd@1140002 : Decimal) : Decimal;
+    BEGIN
+      IF UseAmtsInAddCurr THEN
+        EXIT(Amount + AddCurrAmountToAdd)
+      ELSE
+        EXIT(Amount + AmountToAdd);
+    END;
+
+    LOCAL PROCEDURE GetCurrency@1140004() : Code[10];
+    BEGIN
+      IF UseAmtsInAddCurr THEN
+        EXIT(GLSetup."Additional Reporting Currency")
+      ELSE
+        EXIT('');
+    END;
+
+    BEGIN
+    END.
+  }
+  RDLDATA
+  {
+    <?xml version="1.0" encoding="utf-8"?>
+<Report xmlns="http://schemas.microsoft.com/sqlserver/reporting/2005/01/reportdefinition" xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner">
+  <Body>
+    <Height>6.42437cm</Height>
+    <ReportItems>
+      <Table Name="table1">
+        <DataSetName>DataSet_Result</DataSetName>
+        <Details>
+          <TableRows>
+            <TableRow>
+              <Height>0.423cm</Height>
+              <TableCells>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="VAT_Statement_Line__Row_No__">
+                      <Style>
+                        <FontSize>7pt</FontSize>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <TextAlign>=IIF(IsNumeric(Fields!VAT_Statement_Line__Row_No__.Value),"Right","Left")</TextAlign>
+                        <VerticalAlign>Middle</VerticalAlign>
+                      </Style>
+                      <Value>=Fields!VAT_Statement_Line__Row_No__.Value</Value>
+                      <ZIndex>15</ZIndex>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ColSpan>4</ColSpan>
+                  <ReportItems>
+                    <Textbox Name="VAT_Statement_Line_Description">
+                      <Style>
+                        <FontSize>7pt</FontSize>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <VerticalAlign>Middle</VerticalAlign>
+                      </Style>
+                      <Value>=Fields!VAT_Statement_Line_Description.Value</Value>
+                      <ZIndex>14</ZIndex>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="TotalEmpty">
+                      <Style>
+                        <FontSize>7pt</FontSize>
+                        <Format>=Fields!TotalEmptyFormat.Value</Format>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <VerticalAlign>Middle</VerticalAlign>
+                      </Style>
+                      <Value>=Code.BlankZero(Fields!TotalEmpty.Value)</Value>
+                      <ZIndex>13</ZIndex>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="TotalBase">
+                      <Style>
+                        <FontSize>7pt</FontSize>
+                        <Format>=Fields!TotalBaseFormat.Value</Format>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <VerticalAlign>Middle</VerticalAlign>
+                      </Style>
+                      <Value>=Code.BlankZero(Fields!TotalBase.Value)</Value>
+                      <ZIndex>12</ZIndex>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="TotalAmount">
+                      <Style>
+                        <FontSize>7pt</FontSize>
+                        <Format>=Fields!TotalAmountFormat.Value</Format>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <VerticalAlign>Middle</VerticalAlign>
+                      </Style>
+                      <Value>=Code.BlankZero(Fields!TotalAmount.Value)</Value>
+                      <ZIndex>11</ZIndex>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="TotalUnrealizedBase">
+                      <Style>
+                        <FontSize>7pt</FontSize>
+                        <Format>=Fields!TotalUnrealizedBaseFormat.Value</Format>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingTop>2pt</PaddingTop>
+                        <VerticalAlign>Middle</VerticalAlign>
+                      </Style>
+                      <Value>=Code.BlankZero(Fields!TotalUnrealizedBase.Value)</Value>
+                      <ZIndex>10</ZIndex>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="NewPage">
+                      <DataElementOutput>Output</DataElementOutput>
+                      <Style>
+                        <Color>#ff0000</Color>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <VerticalAlign>Middle</VerticalAlign>
+                      </Style>
+                      <Value>=IIF(Code.IsNewPage(Fields!VAT_Statement_Name___Statement_Template_Name_.Value,Fields!VAT_Statement_Name__Name.Value),true,false)</Value>
+                      <Visibility>
+                        <Hidden>true</Hidden>
+                      </Visibility>
+                      <ZIndex>12</ZIndex>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="TotalUnrealizedAmount">
+                      <Style>
+                        <FontSize>7pt</FontSize>
+                        <Format>=Fields!TotalUnrealizedAmountFormat.Value</Format>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingTop>2pt</PaddingTop>
+                        <VerticalAlign>Middle</VerticalAlign>
+                      </Style>
+                      <Value>=Code.BlankZero(Fields!TotalUnrealizedAmount.Value)</Value>
+                      <ZIndex>9</ZIndex>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+              </TableCells>
+            </TableRow>
+          </TableRows>
+        </Details>
+        <TableColumns>
+          <TableColumn>
+            <Width>1.65cm</Width>
+          </TableColumn>
+          <TableColumn>
+            <Width>1.5cm</Width>
+          </TableColumn>
+          <TableColumn>
+            <Width>1.5cm</Width>
+          </TableColumn>
+          <TableColumn>
+            <Width>2.9cm</Width>
+          </TableColumn>
+          <TableColumn>
+            <Width>1cm</Width>
+          </TableColumn>
+          <TableColumn>
+            <Width>1.95cm</Width>
+          </TableColumn>
+          <TableColumn>
+            <Width>1.95cm</Width>
+          </TableColumn>
+          <TableColumn>
+            <Width>1.95cm</Width>
+          </TableColumn>
+          <TableColumn>
+            <Width>1.86cm</Width>
+          </TableColumn>
+          <TableColumn>
+            <Width>0.09cm</Width>
+          </TableColumn>
+          <TableColumn>
+            <Width>1.8cm</Width>
+          </TableColumn>
+        </TableColumns>
+        <TableGroups>
+          <TableGroup>
+            <Grouping Name="table1_Group1">
+              <GroupExpressions>
+                <GroupExpression>=Fields!VAT_Statement_Name___Statement_Template_Name_.Value</GroupExpression>
+                <GroupExpression>=Fields!VAT_Statement_Name_Name.Value</GroupExpression>
+              </GroupExpressions>
+            </Grouping>
+            <Header>
+              <RepeatOnNewPage>true</RepeatOnNewPage>
+              <TableRows>
+                <TableRow>
+                  <Height>0.03125in</Height>
+                  <TableCells>
+                    <TableCell>
+                      <ReportItems>
+                        <Textbox Name="Heading">
+                          <Style>
+                            <Color>#ff0000</Color>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <VerticalAlign>Middle</VerticalAlign>
+                          </Style>
+                          <Value>=Fields!Heading.Value</Value>
+                          <Visibility>
+                            <Hidden>true</Hidden>
+                          </Visibility>
+                          <ZIndex>8</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ReportItems>
+                        <Textbox Name="COMPANYNAME">
+                          <Style>
+                            <Color>#ff0000</Color>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <VerticalAlign>Middle</VerticalAlign>
+                          </Style>
+                          <Value>=Fields!COMPANYNAME.Value</Value>
+                          <Visibility>
+                            <Hidden>true</Hidden>
+                          </Visibility>
+                          <ZIndex>7</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ReportItems>
+                        <Textbox Name="VAT_Statement_Name___Statement_Template_Name_">
+                          <Style>
+                            <Color>#ff0000</Color>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <VerticalAlign>Middle</VerticalAlign>
+                          </Style>
+                          <Value>=Fields!VAT_Statement_Name___Statement_Template_Name_.Value</Value>
+                          <Visibility>
+                            <Hidden>true</Hidden>
+                          </Visibility>
+                          <ZIndex>6</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ReportItems>
+                        <Textbox Name="VAT_Statement_Name__Name">
+                          <Style>
+                            <Color>#ff0000</Color>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <VerticalAlign>Middle</VerticalAlign>
+                          </Style>
+                          <Value>=Fields!VAT_Statement_Name__Name.Value</Value>
+                          <Visibility>
+                            <Hidden>true</Hidden>
+                          </Visibility>
+                          <ZIndex>5</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ReportItems>
+                        <Textbox Name="Heading2">
+                          <Style>
+                            <Color>#ff0000</Color>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <VerticalAlign>Middle</VerticalAlign>
+                          </Style>
+                          <Value>=Fields!Heading2.Value</Value>
+                          <Visibility>
+                            <Hidden>true</Hidden>
+                          </Visibility>
+                          <ZIndex>4</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ReportItems>
+                        <Textbox Name="VAT_StatementCaption">
+                          <Style>
+                            <Color>#ff0000</Color>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <VerticalAlign>Middle</VerticalAlign>
+                          </Style>
+                          <Value>=Fields!VAT_StatementCaption.Value</Value>
+                          <Visibility>
+                            <Hidden>true</Hidden>
+                          </Visibility>
+                          <ZIndex>3</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ReportItems>
+                        <Textbox Name="CurrReport_PAGENOCaption">
+                          <Style>
+                            <Color>#ff0000</Color>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <VerticalAlign>Middle</VerticalAlign>
+                          </Style>
+                          <Value>=Fields!CurrReport_PAGENOCaption.Value</Value>
+                          <Visibility>
+                            <Hidden>true</Hidden>
+                          </Visibility>
+                          <ZIndex>2</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ReportItems>
+                        <Textbox Name="VAT_Statement_Name___Statement_Template_Name_Caption">
+                          <Style>
+                            <Color>#ff0000</Color>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <VerticalAlign>Middle</VerticalAlign>
+                          </Style>
+                          <Value>=Fields!VAT_Statement_Name___Statement_Template_Name_Caption.Value</Value>
+                          <Visibility>
+                            <Hidden>true</Hidden>
+                          </Visibility>
+                          <ZIndex>1</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ReportItems>
+                        <Textbox Name="VAT_Statement_Name__NameCaption">
+                          <Style>
+                            <Color>#ff0000</Color>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <VerticalAlign>Middle</VerticalAlign>
+                          </Style>
+                          <Value>=Fields!VAT_Statement_Name__NameCaption.Value</Value>
+                          <Visibility>
+                            <Hidden>true</Hidden>
+                          </Visibility>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ReportItems>
+                        <Textbox Name="textbox92">
+                          <CanGrow>true</CanGrow>
+                          <Style>
+                            <Color>#ff0000</Color>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <VerticalAlign>Middle</VerticalAlign>
+                          </Style>
+                          <Value />
+                          <rd:DefaultName>textbox92</rd:DefaultName>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ReportItems>
+                        <Textbox Name="textbox4">
+                          <CanGrow>true</CanGrow>
+                          <Style>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <Value />
+                          <rd:DefaultName>textbox4</rd:DefaultName>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                  </TableCells>
+                </TableRow>
+                <TableRow>
+                  <Height>0.423cm</Height>
+                  <TableCells>
+                    <TableCell>
+                      <ColSpan>3</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="textbox35">
+                          <CanGrow>true</CanGrow>
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <VerticalAlign>Bottom</VerticalAlign>
+                          </Style>
+                          <Value>=Fields!HeaderText.Value</Value>
+                          <ZIndex>122</ZIndex>
+                          <rd:DefaultName>textbox35</rd:DefaultName>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ColSpan>8</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="textbox176">
+                          <CanGrow>true</CanGrow>
+                          <Style>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <VerticalAlign>Middle</VerticalAlign>
+                          </Style>
+                          <Value />
+                          <rd:DefaultName>textbox176</rd:DefaultName>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                  </TableCells>
+                  <Visibility>
+                    <Hidden>=IIf(Fields!VAT_Statement_Name___Statement_Template_Name_.Value&lt;&gt;Previous(Fields!VAT_Statement_Name___Statement_Template_Name_.Value) OR Fields!VAT_Statement_Name_Name.Value&lt;&gt;Previous(Fields!VAT_Statement_Name_Name.Value),FALSE,TRUE)</Hidden>
+                  </Visibility>
+                </TableRow>
+                <TableRow>
+                  <Height>0.423cm</Height>
+                  <TableCells>
+                    <TableCell>
+                      <ColSpan>11</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="textbox196">
+                          <CanGrow>true</CanGrow>
+                          <Style>
+                            <Color>#ff0000</Color>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <VerticalAlign>Middle</VerticalAlign>
+                          </Style>
+                          <Value />
+                          <rd:DefaultName>textbox196</rd:DefaultName>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                  </TableCells>
+                  <Visibility>
+                    <Hidden>=IIf(Fields!VAT_Statement_Name___Statement_Template_Name_.Value&lt;&gt;Previous(Fields!VAT_Statement_Name___Statement_Template_Name_.Value) OR Fields!VAT_Statement_Name_Name.Value&lt;&gt;Previous(Fields!VAT_Statement_Name_Name.Value),FALSE,TRUE)</Hidden>
+                  </Visibility>
+                </TableRow>
+                <TableRow>
+                  <Height>0.423cm</Height>
+                  <TableCells>
+                    <TableCell>
+                      <ColSpan>4</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="textbox19">
+                          <CanGrow>true</CanGrow>
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <VerticalAlign>Bottom</VerticalAlign>
+                          </Style>
+                          <Value>=Fields!Amounts_are_in_whole_LCYs_Caption.Value</Value>
+                          <ZIndex>109</ZIndex>
+                          <rd:DefaultName>textbox19</rd:DefaultName>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ColSpan>7</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="textbox320">
+                          <CanGrow>true</CanGrow>
+                          <Style>
+                            <Color>#ff0000</Color>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <VerticalAlign>Middle</VerticalAlign>
+                          </Style>
+                          <Value />
+                          <rd:DefaultName>textbox320</rd:DefaultName>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                  </TableCells>
+                  <Visibility>
+                    <Hidden>=IIF(Fields!PrintInIntegers.Value AND (NOT Fields!UseAmtsInAddCurr.Value),FALSE,TRUE)</Hidden>
+                  </Visibility>
+                </TableRow>
+                <TableRow>
+                  <Height>0.423cm</Height>
+                  <TableCells>
+                    <TableCell>
+                      <ColSpan>11</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="textbox226">
+                          <CanGrow>true</CanGrow>
+                          <Style>
+                            <Color>#ff0000</Color>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <VerticalAlign>Middle</VerticalAlign>
+                          </Style>
+                          <Value />
+                          <rd:DefaultName>textbox226</rd:DefaultName>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                  </TableCells>
+                  <Visibility>
+                    <Hidden>=IIF(Fields!PrintInIntegers.Value AND (NOT Fields!UseAmtsInAddCurr.Value),FALSE,TRUE)</Hidden>
+                  </Visibility>
+                </TableRow>
+                <TableRow>
+                  <Height>0.423cm</Height>
+                  <TableCells>
+                    <TableCell>
+                      <ColSpan>4</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="textbox108">
+                          <CanGrow>true</CanGrow>
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <VerticalAlign>Bottom</VerticalAlign>
+                          </Style>
+                          <Value>=Fields!STRSUBSTNO_Text1140002_GLSetup__Additional_Reporting_Currency__.Value</Value>
+                          <ZIndex>96</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ColSpan>7</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="textbox210">
+                          <CanGrow>true</CanGrow>
+                          <Style>
+                            <Color>#ff0000</Color>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <VerticalAlign>Middle</VerticalAlign>
+                          </Style>
+                          <Value />
+                          <rd:DefaultName>textbox210</rd:DefaultName>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                  </TableCells>
+                  <Visibility>
+                    <Hidden>=IIF((Fields!VAT_Statement_Name___Statement_Template_Name_.Value&lt;&gt;Previous(Fields!VAT_Statement_Name___Statement_Template_Name_.Value) OR Fields!VAT_Statement_Name_Name.Value&lt;&gt;Previous(Fields!VAT_Statement_Name_Name.Value)) AND Fields!PrintInIntegers.Value AND Fields!UseAmtsInAddCurr.Value,FALSE,TRUE)</Hidden>
+                  </Visibility>
+                </TableRow>
+                <TableRow>
+                  <Height>0.423cm</Height>
+                  <TableCells>
+                    <TableCell>
+                      <ColSpan>11</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="textbox216">
+                          <CanGrow>true</CanGrow>
+                          <Style>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <VerticalAlign>Middle</VerticalAlign>
+                          </Style>
+                          <Value />
+                          <rd:DefaultName>textbox216</rd:DefaultName>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                  </TableCells>
+                  <Visibility>
+                    <Hidden>=IIF((Fields!VAT_Statement_Name___Statement_Template_Name_.Value&lt;&gt;Previous(Fields!VAT_Statement_Name___Statement_Template_Name_.Value) OR Fields!VAT_Statement_Name_Name.Value&lt;&gt;Previous(Fields!VAT_Statement_Name_Name.Value)) AND Fields!PrintInIntegers.Value AND Fields!UseAmtsInAddCurr.Value,FALSE,TRUE)</Hidden>
+                  </Visibility>
+                </TableRow>
+                <TableRow>
+                  <Height>0.423cm</Height>
+                  <TableCells>
+                    <TableCell>
+                      <ColSpan>4</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="textbox116">
+                          <CanGrow>true</CanGrow>
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <VerticalAlign>Bottom</VerticalAlign>
+                          </Style>
+                          <Value>=Fields!The_report_includes_all_VAT_entries_Caption.Value</Value>
+                          <ZIndex>81</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ColSpan>7</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="textbox250">
+                          <CanGrow>true</CanGrow>
+                          <Style>
+                            <Color>#ff0000</Color>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <VerticalAlign>Middle</VerticalAlign>
+                          </Style>
+                          <Value />
+                          <rd:DefaultName>textbox250</rd:DefaultName>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                  </TableCells>
+                  <Visibility>
+                    <Hidden>=IIf(Fields!Selection.Value = 2,False,True)</Hidden>
+                  </Visibility>
+                </TableRow>
+                <TableRow>
+                  <Height>0.423cm</Height>
+                  <TableCells>
+                    <TableCell>
+                      <ColSpan>4</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="textbox61">
+                          <CanGrow>true</CanGrow>
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <VerticalAlign>Bottom</VerticalAlign>
+                          </Style>
+                          <Value>=Fields!The_report_includes_only_closed_VAT_entries_Caption.Value</Value>
+                          <ZIndex>66</ZIndex>
+                          <rd:DefaultName>textbox61</rd:DefaultName>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ColSpan>7</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="textbox260">
+                          <CanGrow>true</CanGrow>
+                          <Style>
+                            <Color>#ff0000</Color>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <VerticalAlign>Middle</VerticalAlign>
+                          </Style>
+                          <Value />
+                          <rd:DefaultName>textbox260</rd:DefaultName>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                  </TableCells>
+                  <Visibility>
+                    <Hidden>=IIf(Fields!Selection.Value = 1,False,True)</Hidden>
+                  </Visibility>
+                </TableRow>
+                <TableRow>
+                  <Height>0.423cm</Height>
+                  <TableCells>
+                    <TableCell>
+                      <ColSpan>11</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="textbox266">
+                          <CanGrow>true</CanGrow>
+                          <Style>
+                            <Color>#ff0000</Color>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <VerticalAlign>Middle</VerticalAlign>
+                          </Style>
+                          <Value />
+                          <rd:DefaultName>textbox266</rd:DefaultName>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                  </TableCells>
+                  <Visibility>
+                    <Hidden>=IIf(Fields!Selection.Value = 1 OR Fields!Selection.Value = 2,False,True)</Hidden>
+                  </Visibility>
+                </TableRow>
+                <TableRow>
+                  <Height>0.423cm</Height>
+                  <TableCells>
+                    <TableCell>
+                      <ColSpan>9</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="textbox23">
+                          <CanGrow>true</CanGrow>
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingTop>2pt</PaddingTop>
+                            <VerticalAlign>Bottom</VerticalAlign>
+                          </Style>
+                          <Value>=Fields!VAT_Statement_Line__TABLECAPTION__________VATStmtLineFilter.Value</Value>
+                          <ZIndex>51</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ColSpan>2</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="textbox102">
+                          <CanGrow>true</CanGrow>
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingTop>2pt</PaddingTop>
+                            <VerticalAlign>Bottom</VerticalAlign>
+                          </Style>
+                          <Value />
+                          <rd:DefaultName>textbox102</rd:DefaultName>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                  </TableCells>
+                  <Visibility>
+                    <Hidden>=IIf((Fields!VAT_Statement_Name___Statement_Template_Name_.Value&lt;&gt;Previous(Fields!VAT_Statement_Name___Statement_Template_Name_.Value) OR Fields!VAT_Statement_Name_Name.Value&lt;&gt;Previous(Fields!VAT_Statement_Name_Name.Value)) AND Fields!VATStmtLineFilter.Value&lt;&gt;"",FALSE,TRUE)</Hidden>
+                  </Visibility>
+                </TableRow>
+                <TableRow>
+                  <Height>0.423cm</Height>
+                  <TableCells>
+                    <TableCell>
+                      <ColSpan>11</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="textbox286">
+                          <CanGrow>true</CanGrow>
+                          <Style>
+                            <Color>#ff0000</Color>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <VerticalAlign>Middle</VerticalAlign>
+                          </Style>
+                          <Value />
+                          <rd:DefaultName>textbox286</rd:DefaultName>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                  </TableCells>
+                  <Visibility>
+                    <Hidden>=IIf((Fields!VAT_Statement_Name___Statement_Template_Name_.Value&lt;&gt;Previous(Fields!VAT_Statement_Name___Statement_Template_Name_.Value) OR Fields!VAT_Statement_Name_Name.Value&lt;&gt;Previous(Fields!VAT_Statement_Name_Name.Value)) AND Fields!VATStmtLineFilter.Value&lt;&gt;"",FALSE,TRUE)</Hidden>
+                  </Visibility>
+                </TableRow>
+                <TableRow>
+                  <Height>0.846cm</Height>
+                  <TableCells>
+                    <TableCell>
+                      <ReportItems>
+                        <Textbox Name="VAT_Statement_Line__Row_No__Caption">
+                          <CanGrow>true</CanGrow>
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <FontWeight>700</FontWeight>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <VerticalAlign>Bottom</VerticalAlign>
+                          </Style>
+                          <Value>=First(Fields!VAT_Statement_Line__Row_No__Caption.Value)</Value>
+                          <ZIndex>39</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ColSpan>4</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="VAT_Statement_Line_DescriptionCaption">
+                          <CanGrow>true</CanGrow>
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <FontWeight>700</FontWeight>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <VerticalAlign>Bottom</VerticalAlign>
+                          </Style>
+                          <Value>=First(Fields!VAT_Statement_Line_DescriptionCaption.Value)</Value>
+                          <ZIndex>38</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ReportItems>
+                        <Textbox Name="textbox301">
+                          <CanGrow>true</CanGrow>
+                          <Style>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <VerticalAlign>Middle</VerticalAlign>
+                          </Style>
+                          <Value />
+                          <rd:DefaultName>textbox301</rd:DefaultName>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ReportItems>
+                        <Textbox Name="Base_AmountCaption">
+                          <CanGrow>true</CanGrow>
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <FontWeight>700</FontWeight>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <TextAlign>Right</TextAlign>
+                            <VerticalAlign>Bottom</VerticalAlign>
+                          </Style>
+                          <Value>=First(Fields!Base_AmountCaption.Value)</Value>
+                          <ZIndex>36</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ReportItems>
+                        <Textbox Name="VAT_AmountCaption">
+                          <CanGrow>true</CanGrow>
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <FontWeight>700</FontWeight>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <TextAlign>Right</TextAlign>
+                            <VerticalAlign>Bottom</VerticalAlign>
+                          </Style>
+                          <Value>=First(Fields!VAT_AmountCaption.Value)</Value>
+                          <ZIndex>35</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ColSpan>2</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="Unrealizied_Base_AmountCaption">
+                          <CanGrow>true</CanGrow>
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <FontWeight>700</FontWeight>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingTop>2pt</PaddingTop>
+                            <TextAlign>Right</TextAlign>
+                            <VerticalAlign>Bottom</VerticalAlign>
+                          </Style>
+                          <Value>=First(Fields!Unrealizied_Base_AmountCaption.Value)</Value>
+                          <ZIndex>34</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ReportItems>
+                        <Textbox Name="Unrealized_VAT_AmountCaption">
+                          <CanGrow>true</CanGrow>
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <FontWeight>700</FontWeight>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingTop>2pt</PaddingTop>
+                            <TextAlign>Right</TextAlign>
+                            <VerticalAlign>Bottom</VerticalAlign>
+                          </Style>
+                          <Value>=First(Fields!Unrealized_VAT_AmountCaption.Value)</Value>
+                          <ZIndex>33</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                  </TableCells>
+                </TableRow>
+                <TableRow>
+                  <Height>0.423cm</Height>
+                  <TableCells>
+                    <TableCell>
+                      <ColSpan>11</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="textbox306">
+                          <CanGrow>true</CanGrow>
+                          <Style>
+                            <Color>#ff0000</Color>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <VerticalAlign>Middle</VerticalAlign>
+                          </Style>
+                          <Value />
+                          <rd:DefaultName>textbox306</rd:DefaultName>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                  </TableCells>
+                </TableRow>
+              </TableRows>
+            </Header>
+          </TableGroup>
+          <TableGroup>
+            <Grouping Name="table1_Group2">
+              <GroupExpressions>
+                <GroupExpression>=Fields!PageGroupNo.Value</GroupExpression>
+              </GroupExpressions>
+              <PageBreakAtEnd>true</PageBreakAtEnd>
+            </Grouping>
+          </TableGroup>
+        </TableGroups>
+      </Table>
+    </ReportItems>
+  </Body>
+  <BottomMargin>2cm</BottomMargin>
+  <Code>Public Function BlankZero(ByVal Value As Decimal)
+    if Value = 0 then
+        Return ""
+    end if
+    Return Value
+End Function
+
+Public Function BlankPos(ByVal Value As Decimal)
+    if Value &gt; 0 then
+        Return ""
+    end if
+    Return Value
+End Function
+
+Public Function BlankZeroAndPos(ByVal Value As Decimal)
+    if Value &gt;= 0 then
+        Return ""
+    end if
+    Return Value
+End Function
+
+Public Function BlankNeg(ByVal Value As Decimal)
+    if Value &lt; 0 then
+        Return ""
+    end if
+    Return Value
+End Function
+
+Public Function BlankNegAndZero(ByVal Value As Decimal)
+    if Value &lt;= 0 then
+        Return ""
+    end if
+    Return Value
+End Function
+
+Shared offset as Integer
+Shared newPage as Object
+Shared currentgroup1 as Object
+Shared currentgroup2 as Object
+Public Function GetGroupPageNumber(NewPage as Boolean, pagenumber as Integer) as Object
+  If NewPage
+    offset = pagenumber - 1
+  End If
+  Return pagenumber - offset
+End Function
+
+Public Function IsNewPage(group1 as Object, group2 as Object) As Boolean
+newPage = FALSE
+If (group1 &lt;&gt; currentgroup1) OR (group2 &lt;&gt; currentgroup2)
+    newPage = TRUE
+    currentgroup1 = group1
+    currentgroup2 = group2
+End If
+  Return newPage
+End Function</Code>
+  <DataSets>
+    <DataSet Name="DataSet_Result">
+      <Fields>
+        <Field Name="VAT_Statement_Name_Statement_Template_Name">
+          <DataField>VAT_Statement_Name_Statement_Template_Name</DataField>
+        </Field>
+        <Field Name="VAT_Statement_Name_Name">
+          <DataField>VAT_Statement_Name_Name</DataField>
+        </Field>
+        <Field Name="VAT_StatementCaption">
+          <DataField>VAT_StatementCaption</DataField>
+        </Field>
+        <Field Name="FORMAT_TODAY_0_4_">
+          <DataField>FORMAT_TODAY_0_4_</DataField>
+        </Field>
+        <Field Name="Heading">
+          <DataField>Heading</DataField>
+        </Field>
+        <Field Name="CurrReport_PAGENOCaption">
+          <DataField>CurrReport_PAGENOCaption</DataField>
+        </Field>
+        <Field Name="CurrReport_PAGENO">
+          <DataField>CurrReport_PAGENO</DataField>
+        </Field>
+        <Field Name="COMPANYNAME">
+          <DataField>COMPANYNAME</DataField>
+        </Field>
+        <Field Name="USERID">
+          <DataField>USERID</DataField>
+        </Field>
+        <Field Name="VAT_Statement_Name___Statement_Template_Name_Caption">
+          <DataField>VAT_Statement_Name___Statement_Template_Name_Caption</DataField>
+        </Field>
+        <Field Name="VAT_Statement_Name___Statement_Template_Name_">
+          <DataField>VAT_Statement_Name___Statement_Template_Name_</DataField>
+        </Field>
+        <Field Name="VAT_Statement_Name__NameCaption">
+          <DataField>VAT_Statement_Name__NameCaption</DataField>
+        </Field>
+        <Field Name="VAT_Statement_Name__Name">
+          <DataField>VAT_Statement_Name__Name</DataField>
+        </Field>
+        <Field Name="Heading2">
+          <DataField>Heading2</DataField>
+        </Field>
+        <Field Name="PrintInIntegers">
+          <DataField>PrintInIntegers</DataField>
+        </Field>
+        <Field Name="UseAmtsInAddCurr">
+          <DataField>UseAmtsInAddCurr</DataField>
+        </Field>
+        <Field Name="Selection">
+          <DataField>Selection</DataField>
+        </Field>
+        <Field Name="HeaderText">
+          <DataField>HeaderText</DataField>
+        </Field>
+        <Field Name="Amounts_are_in_whole_LCYs_Caption">
+          <DataField>Amounts_are_in_whole_LCYs_Caption</DataField>
+        </Field>
+        <Field Name="STRSUBSTNO_Text1140002_GLSetup__Additional_Reporting_Currency__">
+          <DataField>STRSUBSTNO_Text1140002_GLSetup__Additional_Reporting_Currency__</DataField>
+        </Field>
+        <Field Name="The_report_includes_all_VAT_entries_Caption">
+          <DataField>The_report_includes_all_VAT_entries_Caption</DataField>
+        </Field>
+        <Field Name="The_report_includes_only_closed_VAT_entries_Caption">
+          <DataField>The_report_includes_only_closed_VAT_entries_Caption</DataField>
+        </Field>
+        <Field Name="VAT_Statement_Line__TABLECAPTION__________VATStmtLineFilter">
+          <DataField>VAT_Statement_Line__TABLECAPTION__________VATStmtLineFilter</DataField>
+        </Field>
+        <Field Name="VATStmtLineFilter">
+          <DataField>VATStmtLineFilter</DataField>
+        </Field>
+        <Field Name="Unrealized_VAT_AmountCaption">
+          <DataField>Unrealized_VAT_AmountCaption</DataField>
+        </Field>
+        <Field Name="Unrealizied_Base_AmountCaption">
+          <DataField>Unrealizied_Base_AmountCaption</DataField>
+        </Field>
+        <Field Name="VAT_AmountCaption">
+          <DataField>VAT_AmountCaption</DataField>
+        </Field>
+        <Field Name="Base_AmountCaption">
+          <DataField>Base_AmountCaption</DataField>
+        </Field>
+        <Field Name="VAT_Statement_Line_DescriptionCaption">
+          <DataField>VAT_Statement_Line_DescriptionCaption</DataField>
+        </Field>
+        <Field Name="VAT_Statement_Line__Row_No__Caption">
+          <DataField>VAT_Statement_Line__Row_No__Caption</DataField>
+        </Field>
+        <Field Name="TotalUnrealizedAmount">
+          <DataField>TotalUnrealizedAmount</DataField>
+        </Field>
+        <Field Name="TotalUnrealizedAmountFormat">
+          <DataField>TotalUnrealizedAmountFormat</DataField>
+        </Field>
+        <Field Name="TotalUnrealizedBase">
+          <DataField>TotalUnrealizedBase</DataField>
+        </Field>
+        <Field Name="TotalUnrealizedBaseFormat">
+          <DataField>TotalUnrealizedBaseFormat</DataField>
+        </Field>
+        <Field Name="TotalAmount">
+          <DataField>TotalAmount</DataField>
+        </Field>
+        <Field Name="TotalAmountFormat">
+          <DataField>TotalAmountFormat</DataField>
+        </Field>
+        <Field Name="TotalBase">
+          <DataField>TotalBase</DataField>
+        </Field>
+        <Field Name="TotalBaseFormat">
+          <DataField>TotalBaseFormat</DataField>
+        </Field>
+        <Field Name="TotalEmpty">
+          <DataField>TotalEmpty</DataField>
+        </Field>
+        <Field Name="TotalEmptyFormat">
+          <DataField>TotalEmptyFormat</DataField>
+        </Field>
+        <Field Name="VAT_Statement_Line_Description">
+          <DataField>VAT_Statement_Line_Description</DataField>
+        </Field>
+        <Field Name="VAT_Statement_Line__Row_No__">
+          <DataField>VAT_Statement_Line__Row_No__</DataField>
+        </Field>
+        <Field Name="PageGroupNo">
+          <DataField>PageGroupNo</DataField>
+        </Field>
+        <Field Name="VAT_Statement_Line_Statement_Template_Name">
+          <DataField>VAT_Statement_Line_Statement_Template_Name</DataField>
+        </Field>
+        <Field Name="VAT_Statement_Line_Statement_Name">
+          <DataField>VAT_Statement_Line_Statement_Name</DataField>
+        </Field>
+        <Field Name="VAT_Statement_Line_Line_No_">
+          <DataField>VAT_Statement_Line_Line_No_</DataField>
+        </Field>
+      </Fields>
+      <Query>
+        <CommandText />
+        <DataSourceName>DummyDataSource</DataSourceName>
+      </Query>
+      <rd:DataSetInfo>
+        <rd:DataSetName>DataSet</rd:DataSetName>
+        <rd:TableName>Result</rd:TableName>
+      </rd:DataSetInfo>
+    </DataSet>
+  </DataSets>
+  <DataSources>
+    <DataSource Name="DummyDataSource">
+      <ConnectionProperties>
+        <ConnectString />
+        <DataProvider>SQL</DataProvider>
+      </ConnectionProperties>
+      <rd:DataSourceID>df749eb0-4822-41c5-8103-025c881abefc</rd:DataSourceID>
+    </DataSource>
+  </DataSources>
+  <InteractiveHeight>11in</InteractiveHeight>
+  <InteractiveWidth>8.5in</InteractiveWidth>
+  <Language>=User!Language</Language>
+  <LeftMargin>1.5cm</LeftMargin>
+  <PageHeader>
+    <Height>3.384cm</Height>
+    <PrintOnFirstPage>true</PrintOnFirstPage>
+    <PrintOnLastPage>true</PrintOnLastPage>
+    <ReportItems>
+      <Textbox Name="PageNumberTextBox">
+        <Height>0.423cm</Height>
+        <Left>17.7cm</Left>
+        <Style>
+          <FontSize>7pt</FontSize>
+          <TextAlign>Right</TextAlign>
+          <VerticalAlign>Middle</VerticalAlign>
+        </Style>
+        <Top>0.423cm</Top>
+        <Value>=Code.GetGroupPageNumber(ReportItems!NewPage.Value,Globals!PageNumber)</Value>
+        <ZIndex>11</ZIndex>
+      </Textbox>
+      <Textbox Name="UserIdTextBox">
+        <Height>0.423cm</Height>
+        <Left>15.9cm</Left>
+        <Style>
+          <FontSize>7pt</FontSize>
+          <TextAlign>Right</TextAlign>
+          <VerticalAlign>Middle</VerticalAlign>
+        </Style>
+        <Top>0.846cm</Top>
+        <Value>=User!UserID</Value>
+        <ZIndex>10</ZIndex>
+      </Textbox>
+      <Textbox Name="ExecutionTimeTextBox">
+        <Height>0.423cm</Height>
+        <Left>15cm</Left>
+        <Style>
+          <FontSize>7pt</FontSize>
+          <Format>g</Format>
+          <TextAlign>Right</TextAlign>
+          <VerticalAlign>Middle</VerticalAlign>
+        </Style>
+        <Value>=Globals!ExecutionTime</Value>
+        <ZIndex>9</ZIndex>
+      </Textbox>
+      <Textbox Name="Heading1">
+        <Height>0.423cm</Height>
+        <Style>
+          <FontSize>7pt</FontSize>
+          <VerticalAlign>Middle</VerticalAlign>
+        </Style>
+        <Top>0.423cm</Top>
+        <Value>=ReportItems!Heading.Value</Value>
+        <Width>7.5cm</Width>
+        <ZIndex>8</ZIndex>
+      </Textbox>
+      <Textbox Name="COMPANYNAME1">
+        <Height>0.423cm</Height>
+        <Style>
+          <FontSize>7pt</FontSize>
+          <VerticalAlign>Middle</VerticalAlign>
+        </Style>
+        <Top>1.269cm</Top>
+        <Value>=ReportItems!COMPANYNAME.Value</Value>
+        <Width>7.5cm</Width>
+        <ZIndex>7</ZIndex>
+      </Textbox>
+      <Textbox Name="VAT_Statement_Name___Statement_Template_Name_1">
+        <Height>0.423cm</Height>
+        <Left>5.07937cm</Left>
+        <Style>
+          <FontSize>7pt</FontSize>
+          <PaddingBottom>2pt</PaddingBottom>
+          <PaddingTop>2pt</PaddingTop>
+          <VerticalAlign>Middle</VerticalAlign>
+        </Style>
+        <Top>2.115cm</Top>
+        <Value>=ReportItems!VAT_Statement_Name___Statement_Template_Name_.Value</Value>
+        <Width>2.22222cm</Width>
+        <ZIndex>6</ZIndex>
+      </Textbox>
+      <Textbox Name="VAT_Statement_Name__Name1">
+        <Height>0.423cm</Height>
+        <Left>5.07937cm</Left>
+        <Style>
+          <FontSize>7pt</FontSize>
+          <PaddingBottom>2pt</PaddingBottom>
+          <PaddingTop>2pt</PaddingTop>
+          <VerticalAlign>Middle</VerticalAlign>
+        </Style>
+        <Top>2.538cm</Top>
+        <Value>=ReportItems!VAT_Statement_Name__Name.Value</Value>
+        <Width>2.22222cm</Width>
+        <ZIndex>5</ZIndex>
+      </Textbox>
+      <Textbox Name="Heading21">
+        <Height>0.423cm</Height>
+        <Style>
+          <FontSize>7pt</FontSize>
+          <VerticalAlign>Middle</VerticalAlign>
+        </Style>
+        <Top>0.846cm</Top>
+        <Value>=ReportItems!Heading2.Value</Value>
+        <Width>7.5cm</Width>
+        <ZIndex>4</ZIndex>
+      </Textbox>
+      <Textbox Name="VAT_StatementCaption1">
+        <Height>0.423cm</Height>
+        <Style>
+          <FontSize>8pt</FontSize>
+          <FontWeight>700</FontWeight>
+          <VerticalAlign>Middle</VerticalAlign>
+        </Style>
+        <Value>=ReportItems!VAT_StatementCaption.Value</Value>
+        <Width>7.5cm</Width>
+        <ZIndex>3</ZIndex>
+      </Textbox>
+      <Textbox Name="CurrReport_PAGENOCaption1">
+        <Height>0.423cm</Height>
+        <Left>16.95cm</Left>
+        <Style>
+          <FontSize>7pt</FontSize>
+          <VerticalAlign>Middle</VerticalAlign>
+        </Style>
+        <Top>0.423cm</Top>
+        <Value>=ReportItems!CurrReport_PAGENOCaption.Value</Value>
+        <Width>0.75cm</Width>
+        <ZIndex>2</ZIndex>
+      </Textbox>
+      <Textbox Name="VAT_Statement_Name___Statement_Template_Name_Caption1">
+        <Height>0.423cm</Height>
+        <Style>
+          <FontSize>7pt</FontSize>
+          <PaddingBottom>2pt</PaddingBottom>
+          <PaddingTop>2pt</PaddingTop>
+          <VerticalAlign>Middle</VerticalAlign>
+        </Style>
+        <Top>2.115cm</Top>
+        <Value>=ReportItems!VAT_Statement_Name___Statement_Template_Name_Caption.Value</Value>
+        <Width>4.7619cm</Width>
+        <ZIndex>1</ZIndex>
+      </Textbox>
+      <Textbox Name="VAT_Statement_Name__NameCaption1">
+        <Height>0.423cm</Height>
+        <Style>
+          <FontSize>7pt</FontSize>
+          <PaddingBottom>2pt</PaddingBottom>
+          <PaddingTop>2pt</PaddingTop>
+          <VerticalAlign>Middle</VerticalAlign>
+        </Style>
+        <Top>2.538cm</Top>
+        <Value>=ReportItems!VAT_Statement_Name__NameCaption.Value</Value>
+        <Width>4.7619cm</Width>
+      </Textbox>
+    </ReportItems>
+  </PageHeader>
+  <PageHeight>29.7cm</PageHeight>
+  <PageWidth>21cm</PageWidth>
+  <TopMargin>2cm</TopMargin>
+  <Width>18.15cm</Width>
+  <rd:DrawGrid>true</rd:DrawGrid>
+  <rd:ReportID>73a07fd1-9aa9-4f23-8f3a-aed291ec2dcb</rd:ReportID>
+  <rd:SnapToGrid>true</rd:SnapToGrid>
+</Report>
+    END_OF_RDLDatA
+  }
+}
+

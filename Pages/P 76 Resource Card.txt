@@ -1,0 +1,322 @@
+OBJECT Page 76 Resource Card
+{
+  OBJECT-PROPERTIES
+  {
+    Date=14.08.09;
+    Time=12:00:00;
+    Version List=NAVW16.00.01;
+  }
+  PROPERTIES
+  {
+    CaptionML=[DEU=Ressourcenkarte;
+               ENU=Resource Card];
+    SourceTable=Table156;
+    PageType=Card;
+    RefreshOnActivate=Yes;
+    OnInit=BEGIN
+             MapPointVisible := TRUE;
+           END;
+
+    OnOpenPage=VAR
+                 MapMgt@1000 : Codeunit 802;
+               BEGIN
+                 IF NOT MapMgt.TestSetup THEN
+                   MapPointVisible := FALSE;
+               END;
+
+    ActionList=ACTIONS
+    {
+      { 1900000003;0 ;ActionContainer;
+                      ActionContainerType=RelatedInformation }
+      { 56      ;1   ;ActionGroup;
+                      CaptionML=[DEU=&Ressource;
+                                 ENU=&Resource] }
+      { 58      ;2   ;Action    ;
+                      ShortCutKey=F7;
+                      CaptionML=[DEU=Statistik;
+                                 ENU=Statistics];
+                      RunObject=Page 223;
+                      RunFormLink=No.=FIELD(No.),
+                                  Date Filter=FIELD(Date Filter),
+                                  Unit of Measure Filter=FIELD(Unit of Measure Filter),
+                                  Chargeable Filter=FIELD(Chargeable Filter);
+                      Promoted=Yes;
+                      Image=Statistics;
+                      PromotedCategory=Process }
+      { 59      ;2   ;Action    ;
+                      CaptionML=[DEU=Be&merkungen;
+                                 ENU=Co&mments];
+                      RunObject=Page 124;
+                      RunFormLink=Table Name=CONST(Resource),
+                                  No.=FIELD(No.);
+                      Image=ViewComments }
+      { 84      ;2   ;Action    ;
+                      ShortCutKey=Shift+Ctrl+D;
+                      CaptionML=[DEU=Dimensionen;
+                                 ENU=Dimensions];
+                      RunObject=Page 540;
+                      RunFormLink=Table ID=CONST(156),
+                                  No.=FIELD(No.);
+                      Image=Dimensions }
+      { 73      ;2   ;Action    ;
+                      CaptionML=[DEU=Bi&ld;
+                                 ENU=&Picture];
+                      RunObject=Page 407;
+                      RunFormLink=No.=FIELD(No.) }
+      { 60      ;2   ;Action    ;
+                      ShortCutKey=Ctrl+F7;
+                      CaptionML=[DEU=&Posten;
+                                 ENU=Ledger E&ntries];
+                      RunObject=Page 202;
+                      RunFormView=SORTING(Resource No.);
+                      RunFormLink=Resource No.=FIELD(No.);
+                      Promoted=Yes;
+                      Image=ReservationLedger;
+                      PromotedCategory=Process }
+      { 70      ;2   ;Action    ;
+                      CaptionML=[DEU=&Textbausteine;
+                                 ENU=E&xtended Texts];
+                      RunObject=Page 391;
+                      RunFormView=SORTING(Table Name,No.,Language Code,All Language Codes,Starting Date,Ending Date);
+                      RunFormLink=Table Name=CONST(Resource),
+                                  No.=FIELD(No.) }
+      { 34      ;2   ;Separator ;
+                      CaptionML=[DEU="";
+                                 ENU=""] }
+      { 77      ;2   ;Action    ;
+                      CaptionML=[DEU=Einheiten;
+                                 ENU=Units of Measure];
+                      RunObject=Page 210;
+                      RunFormLink=Resource No.=FIELD(No.) }
+      { 35      ;2   ;Action    ;
+                      CaptionML=[DEU=Servicege&biete;
+                                 ENU=Service &Zones];
+                      RunObject=Page 6021;
+                      RunFormLink=Resource No.=FIELD(No.) }
+      { 36      ;2   ;Action    ;
+                      CaptionML=[DEU=&Qualifikationen;
+                                 ENU=S&kills];
+                      RunObject=Page 6019;
+                      RunFormLink=Type=CONST(Resource),
+                                  No.=FIELD(No.) }
+      { 37      ;2   ;Action    ;
+                      CaptionML=[DEU=&Ressourcenlagerorte;
+                                 ENU=Resource L&ocations];
+                      RunObject=Page 6015;
+                      RunFormView=SORTING(Resource No.);
+                      RunFormLink=Resource No.=FIELD(No.) }
+      { 69      ;2   ;Separator  }
+      { 80      ;2   ;Action    ;
+                      CaptionML=[DEU=Online Map;
+                                 ENU=Online Map];
+                      OnAction=BEGIN
+                                 DisplayMap;
+                               END;
+                                }
+      { 51      ;1   ;ActionGroup;
+                      CaptionML=[DEU=&Preise;
+                                 ENU=&Prices] }
+      { 61      ;2   ;Action    ;
+                      CaptionML=[DEU=Einstandspreise;
+                                 ENU=Costs];
+                      RunObject=Page 203;
+                      RunFormLink=Type=CONST(Resource),
+                                  Code=FIELD(No.);
+                      Promoted=Yes;
+                      Image=ResourceCosts;
+                      PromotedCategory=Process }
+      { 62      ;2   ;Action    ;
+                      CaptionML=[DEU=VK-Preise;
+                                 ENU=Prices];
+                      RunObject=Page 204;
+                      RunFormLink=Type=CONST(Resource),
+                                  Code=FIELD(No.);
+                      Promoted=Yes;
+                      Image=ResourcePrice;
+                      PromotedCategory=Process }
+      { 50      ;1   ;ActionGroup;
+                      CaptionML=[DEU=P&lanung;
+                                 ENU=Plan&ning] }
+      { 63      ;2   ;Action    ;
+                      CaptionML=[DEU=Ressourcen &KapazitÑt;
+                                 ENU=Resource &Capacity];
+                      RunObject=Page 213;
+                      RunFormOnRec=Yes }
+      { 64      ;2   ;Action    ;
+                      CaptionML=[DEU=Ressourcen pro &Projekt;
+                                 ENU=Resource &Allocated per Job];
+                      RunObject=Page 221;
+                      RunFormLink=Resource Filter=FIELD(No.) }
+      { 76      ;2   ;Action    ;
+                      CaptionML=[DEU=&Ressourcen pro Serviceauftrag;
+                                 ENU=Resource Allocated per Service &Order];
+                      RunObject=Page 6008;
+                      RunFormLink=Resource Filter=FIELD(No.) }
+      { 66      ;2   ;Action    ;
+                      CaptionML=[DEU=Ressourcen &verfÅgbar;
+                                 ENU=Resource A&vailability];
+                      RunObject=Page 225;
+                      RunFormLink=No.=FIELD(No.),
+                                  Base Unit of Measure=FIELD(Base Unit of Measure),
+                                  Chargeable Filter=FIELD(Chargeable Filter) }
+      { 1900000006;0 ;ActionContainer;
+                      ActionContainerType=Reports }
+      { 1901205806;1 ;Action    ;
+                      CaptionML=[DEU=Ressourcenstatistik;
+                                 ENU=Resource Statistics];
+                      RunObject=Report 1105;
+                      Promoted=Yes;
+                      PromotedCategory=Report }
+      { 1907688806;1 ;Action    ;
+                      CaptionML=[DEU=Ressourcenverwendung;
+                                 ENU=Resource Utilization];
+                      RunObject=Report 1106;
+                      Promoted=Yes;
+                      PromotedCategory=Report }
+      { 1907042906;1 ;Action    ;
+                      CaptionML=[DEU=Ressource - Kostenanalyse;
+                                 ENU=Resource - Cost Breakdown];
+                      RunObject=Report 1107;
+                      Promoted=Yes;
+                      PromotedCategory=Report }
+    }
+  }
+  CONTROLS
+  {
+    { 1900000001;0;Container;
+                ContainerType=ContentArea }
+
+    { 1   ;1   ;Group     ;
+                CaptionML=[DEU=Allgemein;
+                           ENU=General] }
+
+    { 2   ;2   ;Field     ;
+                SourceExpr="No.";
+                Importance=Promoted;
+                OnAssistEdit=BEGIN
+                               IF AssistEdit(xRec) THEN
+                                 CurrPage.UPDATE;
+                             END;
+                              }
+
+    { 6   ;2   ;Field     ;
+                SourceExpr=Name }
+
+    { 4   ;2   ;Field     ;
+                SourceExpr=Type;
+                Importance=Promoted }
+
+    { 20  ;2   ;Field     ;
+                SourceExpr="Base Unit of Measure";
+                Importance=Promoted }
+
+    { 26  ;2   ;Field     ;
+                SourceExpr="Search Name" }
+
+    { 30  ;2   ;Field     ;
+                SourceExpr="Resource Group No.";
+                Importance=Promoted }
+
+    { 24  ;2   ;Field     ;
+                SourceExpr=Blocked }
+
+    { 28  ;2   ;Field     ;
+                SourceExpr="Last Date Modified" }
+
+    { 1905885101;1;Group  ;
+                CaptionML=[DEU=Fakturierung;
+                           ENU=Invoicing] }
+
+    { 38  ;2   ;Field     ;
+                SourceExpr="Direct Unit Cost" }
+
+    { 40  ;2   ;Field     ;
+                SourceExpr="Indirect Cost %" }
+
+    { 42  ;2   ;Field     ;
+                SourceExpr="Unit Cost" }
+
+    { 46  ;2   ;Field     ;
+                SourceExpr="Price/Profit Calculation" }
+
+    { 44  ;2   ;Field     ;
+                SourceExpr="Profit %" }
+
+    { 48  ;2   ;Field     ;
+                SourceExpr="Unit Price" }
+
+    { 32  ;2   ;Field     ;
+                SourceExpr="Gen. Prod. Posting Group";
+                Importance=Promoted }
+
+    { 74  ;2   ;Field     ;
+                SourceExpr="VAT Prod. Posting Group";
+                Importance=Promoted }
+
+    { 71  ;2   ;Field     ;
+                SourceExpr="Automatic Ext. Texts" }
+
+    { 78  ;2   ;Field     ;
+                SourceExpr="IC Partner Purch. G/L Acc. No." }
+
+    { 1904603601;1;Group  ;
+                CaptionML=[DEU=Persînliche Daten;
+                           ENU=Personal Data] }
+
+    { 14  ;2   ;Field     ;
+                SourceExpr="Job Title" }
+
+    { 8   ;2   ;Field     ;
+                SourceExpr=Address }
+
+    { 23  ;2   ;Field     ;
+                SourceExpr="Address 2" }
+
+    { 11  ;2   ;Field     ;
+                SourceExpr="Post Code" }
+
+    { 10  ;2   ;Field     ;
+                SourceExpr=City }
+
+    { 12  ;2   ;Field     ;
+                SourceExpr="Social Security No." }
+
+    { 16  ;2   ;Field     ;
+                SourceExpr=Education }
+
+    { 54  ;2   ;Field     ;
+                SourceExpr="Contract Class" }
+
+    { 18  ;2   ;Field     ;
+                SourceExpr="Employment Date" }
+
+    { 1900000007;0;Container;
+                ContainerType=FactBoxArea }
+
+    { 1906609707;1;Part   ;
+                SubFormLink=No.=FIELD(No.);
+                PagePartID=Page9107;
+                Visible=TRUE;
+                PartType=Page }
+
+    { 1900383207;1;Part   ;
+                Visible=FALSE;
+                PartType=System;
+                SystemPartID=RecordLinks }
+
+    { 1905767507;1;Part   ;
+                Visible=TRUE;
+                PartType=System;
+                SystemPartID=Notes }
+
+  }
+  CODE
+  {
+    VAR
+      MapPointVisible@19022708 : Boolean INDATASET;
+
+    BEGIN
+    END.
+  }
+}
+

@@ -1,0 +1,177 @@
+OBJECT Table 313 Inventory Setup
+{
+  OBJECT-PROPERTIES
+  {
+    Date=14.08.09;
+    Time=12:00:00;
+    Version List=NAVW16.00.01,NAVDACH4.00;
+  }
+  PROPERTIES
+  {
+    CaptionML=[DEU=Lager Einrichtung;
+               ENU=Inventory Setup];
+  }
+  FIELDS
+  {
+    { 1   ;   ;Primary Key         ;Code10        ;CaptionML=[DEU=PrimÑrschlÅssel;
+                                                              ENU=Primary Key] }
+    { 2   ;   ;Automatic Cost Posting;Boolean     ;CaptionML=[DEU=Automatische Lagerbuchung;
+                                                              ENU=Automatic Cost Posting] }
+    { 3   ;   ;Location Mandatory  ;Boolean       ;CaptionML=[DEU=Lagerort notwendig;
+                                                              ENU=Location Mandatory] }
+    { 4   ;   ;Item Nos.           ;Code10        ;TableRelation="No. Series";
+                                                   CaptionML=[DEU=Artikelnummern;
+                                                              ENU=Item Nos.] }
+    { 30  ;   ;Automatic Cost Adjustment;Option   ;OnValidate=BEGIN
+                                                                IF "Automatic Cost Adjustment" <> "Automatic Cost Adjustment"::Never THEN BEGIN
+                                                                  Item.SETCURRENTKEY("Cost is Adjusted","Allow Online Adjustment");
+                                                                  Item.SETRANGE("Cost is Adjusted",FALSE);
+                                                                  Item.SETRANGE("Allow Online Adjustment",FALSE);
+
+                                                                  ProdOrderLine.SETCURRENTKEY(Status,"Cost is Adjusted","Allow Online Adjustment");
+                                                                  ProdOrderLine.SETRANGE(Status,ProdOrderLine.Status::Finished);
+                                                                  ProdOrderLine.SETRANGE("Cost is Adjusted",FALSE);
+                                                                  ProdOrderLine.SETRANGE("Allow Online Adjustment",FALSE);
+
+                                                                  IF Item.FIND('-') OR ProdOrderLine.FIND('-') THEN
+                                                                    MESSAGE(Text000);
+                                                                 END;
+                                                              END;
+
+                                                   CaptionML=[DEU=Automatische Lagerregulierung;
+                                                              ENU=Automatic Cost Adjustment];
+                                                   OptionCaptionML=[DEU=Nie,Tag,Woche,Monat,Quartal,Jahr,Immer;
+                                                                    ENU=Never,Day,Week,Month,Quarter,Year,Always];
+                                                   OptionString=Never,Day,Week,Month,Quarter,Year,Always }
+    { 5700;   ;Transfer Order Nos. ;Code10        ;TableRelation="No. Series";
+                                                   CaptionML=[DEU=Umlag.-Auftragsnummern;
+                                                              ENU=Transfer Order Nos.] }
+    { 5701;   ;Posted Transfer Shpt. Nos.;Code10  ;TableRelation="No. Series";
+                                                   CaptionML=[DEU=Geb. Umlag.-Ausgangsnummern;
+                                                              ENU=Posted Transfer Shpt. Nos.] }
+    { 5702;   ;Posted Transfer Rcpt. Nos.;Code10  ;TableRelation="No. Series";
+                                                   CaptionML=[DEU=Geb. Umlag.-Eingangsnummern;
+                                                              ENU=Posted Transfer Rcpt. Nos.] }
+    { 5703;   ;Copy Comments Order to Shpt.;Boolean;
+                                                   InitValue=Yes;
+                                                   CaptionML=[DEU=Bem. Uml.-Auftr. in Ausg. kop.;
+                                                              ENU=Copy Comments Order to Shpt.] }
+    { 5704;   ;Copy Comments Order to Rcpt.;Boolean;
+                                                   InitValue=Yes;
+                                                   CaptionML=[DEU=Bem. Uml.-Auftr. in Eing. kop.;
+                                                              ENU=Copy Comments Order to Rcpt.] }
+    { 5718;   ;Nonstock Item Nos.  ;Code10        ;TableRelation="No. Series";
+                                                   CaptionML=[DEU=Katalogartikelnummern;
+                                                              ENU=Nonstock Item Nos.] }
+    { 5790;   ;Outbound Whse. Handling Time;DateFormula;
+                                                   CaptionML=[DEU=Ausgeh. Lagerdurchlaufzeit;
+                                                              ENU=Outbound Whse. Handling Time] }
+    { 5791;   ;Inbound Whse. Handling Time;DateFormula;
+                                                   CaptionML=[DEU=Eingeh. Lagerdurchlaufzeit;
+                                                              ENU=Inbound Whse. Handling Time] }
+    { 5800;   ;Expected Cost Posting to G/L;Boolean;
+                                                   OnValidate=VAR
+                                                                ChangeExpCostPostToGL@1000 : Codeunit 5811;
+                                                              BEGIN
+                                                                IF "Expected Cost Posting to G/L" <> xRec."Expected Cost Posting to G/L" THEN BEGIN
+                                                                  IF ItemLedgEntry.FIND('-') THEN BEGIN
+                                                                    ChangeExpCostPostToGL.ChangeExpCostPostingToGL(Rec,"Expected Cost Posting to G/L");
+                                                                    FIND;
+                                                                  END;
+                                                                END;
+                                                              END;
+
+                                                   CaptionML=[DEU=Soll-Kosten buchen;
+                                                              ENU=Expected Cost Posting to G/L] }
+    { 5804;   ;Average Cost Calc. Type;Option     ;InitValue=Item;
+                                                   OnValidate=BEGIN
+                                                                TESTFIELD("Average Cost Calc. Type");
+                                                                IF "Average Cost Calc. Type" <> xRec."Average Cost Calc. Type" THEN
+                                                                  UpdateAvgCostItemSettings(FIELDCAPTION("Average Cost Calc. Type"),FORMAT("Average Cost Calc. Type"));
+                                                              END;
+
+                                                   CaptionML=[DEU=Einst.-Pr.(durchschn.)Ber.-Art;
+                                                              ENU=Average Cost Calc. Type];
+                                                   OptionCaptionML=[DEU=" ,Artikel,Artikel & Lagerort & Variante";
+                                                                    ENU=" ,Item,Item & Location & Variant"];
+                                                   OptionString=[ ,Item,Item & Location & Variant];
+                                                   NotBlank=Yes }
+    { 5805;   ;Average Cost Period ;Option        ;InitValue=Day;
+                                                   OnValidate=BEGIN
+                                                                TESTFIELD("Average Cost Period");
+                                                                IF "Average Cost Period" <> xRec."Average Cost Period" THEN
+                                                                  UpdateAvgCostItemSettings(FIELDCAPTION("Average Cost Period"),FORMAT("Average Cost Period"));
+                                                              END;
+
+                                                   CaptionML=[DEU=Durchschnittskostenperiode;
+                                                              ENU=Average Cost Period];
+                                                   OptionCaptionML=[DEU=" ,Tag,Woche,Monat,Quartal,Jahr,Buchhaltungsperiode";
+                                                                    ENU=" ,Day,Week,Month,Quarter,Year,Accounting Period"];
+                                                   OptionString=[ ,Day,Week,Month,Quarter,Year,Accounting Period];
+                                                   NotBlank=Yes }
+    { 7101;   ;Item Group Dimension Code;Code20   ;TableRelation=Dimension;
+                                                   CaptionML=[DEU=Artikelgruppen-Dimensionscode;
+                                                              ENU=Item Group Dimension Code] }
+    { 7300;   ;Inventory Put-away Nos.;Code10     ;TableRelation="No. Series";
+                                                   CaptionML=[DEU=Einlagerungsnummern;
+                                                              ENU=Inventory Put-away Nos.] }
+    { 7301;   ;Inventory Pick Nos. ;Code10        ;TableRelation="No. Series";
+                                                   CaptionML=[DEU=Kommissionierungsnummern;
+                                                              ENU=Inventory Pick Nos.] }
+    { 7302;   ;Posted Invt. Put-away Nos.;Code10  ;TableRelation="No. Series";
+                                                   CaptionML=[DEU=Geb. Einlagerungsnummern;
+                                                              ENU=Posted Invt. Put-away Nos.] }
+    { 7303;   ;Posted Invt. Pick Nos.;Code10      ;TableRelation="No. Series";
+                                                   CaptionML=[DEU=Geb. Kommissionierungsnummern;
+                                                              ENU=Posted Invt. Pick Nos.] }
+    { 5005350;;Phys. Inv. Order Nos.;Code10       ;TableRelation="No. Series";
+                                                   CaptionML=[DEU=Inventurauftrag Nummern;
+                                                              ENU=Phys. Inv. Order Nos.] }
+    { 5005352;;Posted Phys. Inv. Order Nos.;Code10;TableRelation="No. Series";
+                                                   CaptionML=[DEU=Geb. Inventurauftrag Nummern;
+                                                              ENU=Posted Phys. Inv. Order Nos.] }
+  }
+  KEYS
+  {
+    {    ;Primary Key                             ;Clustered=Yes }
+  }
+  FIELDGROUPS
+  {
+  }
+  CODE
+  {
+    VAR
+      ItemLedgEntry@1000 : Record 32;
+      Text000@1001 : TextConst 'DEU="Einige nicht regulierte Werte werden mit der neuen Einstellung nicht erfasst. Sie mÅssen einmalig die Stapelverarbeitung ''Lagerreg. fakt. Einst. Preise'' ausfÅhren, um sie zu regulieren. ";ENU="Some unadjusted value entries will not be covered with the new setting. You must run the Adjust Cost - Item Entries batch job once to adjust these. "';
+      Item@1002 : Record 27;
+      ProdOrderLine@1003 : Record 5406;
+      Text001@1005 : TextConst 'DEU=Wenn Sie die %1 Ñndern, muss das Programm alle Artikelposten regulieren.;ENU=If you change the %1, the program must adjust all item entries.';
+      Text002@1006 : TextConst 'DEU=Die Regulierung aller Artikel kann mehrere Stunden in Anspruch nehmen.\;ENU=The adjustment of all entries can take several hours.\';
+      Text003@1007 : TextConst 'DEU=Mîchten Sie die %1 wirklich Ñndern?;ENU=Do you really want to change the %1?';
+      Text004@1008 : TextConst 'DEU=Das Programm hat die énderung abgebrochen, die zu einer Regulierung aller Artikel gefÅhrt hÑtte.;ENU=The program has cancelled the change that would have caused an adjustment of all items.';
+      Text005@1009 : TextConst 'DEU=%1 wurde zu %2 geÑndert. Sie sollten jetzt %3 ausfÅhren.;ENU=%1 has been changed to %2. You should now run %3.';
+      ObjTransl@1011 : Record 377;
+
+    PROCEDURE UpdateAvgCostItemSettings@1(FieldCaption@1000 : Text[80];FieldValue@1001 : Text[80]);
+    BEGIN
+      IF NOT
+         CONFIRM(
+           STRSUBSTNO(
+             Text001 +
+             Text002 +
+             Text003,FieldCaption),FALSE)
+      THEN
+        ERROR(Text004);
+
+      CODEUNIT.RUN(CODEUNIT::"Change Average Cost Setting",Rec);
+
+      MESSAGE(
+        Text005,FieldCaption,FieldValue,
+        ObjTransl.TranslateObject(ObjTransl."Object Type"::Report,REPORT::"Adjust Cost - Item Entries"));
+    END;
+
+    BEGIN
+    END.
+  }
+}
+

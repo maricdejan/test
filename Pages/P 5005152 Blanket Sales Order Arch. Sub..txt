@@ -1,0 +1,286 @@
+OBJECT Page 5005152 Blanket Sales Order Arch. Sub.
+{
+  OBJECT-PROPERTIES
+  {
+    Date=05.11.08;
+    Time=12:00:00;
+    Version List=NAVDACH6.00;
+  }
+  PROPERTIES
+  {
+    Editable=No;
+    CaptionML=[DEU=Zeilen;
+               ENU=Lines];
+    SourceTable=Table5108;
+    SourceTableView=WHERE(Document Type=CONST(Blanket Order));
+    PageType=ListPart;
+    ActionList=ACTIONS
+    {
+      { 1900000004;0 ;ActionContainer;
+                      ActionContainerType=ActionItems }
+      { 1907935204;1 ;ActionGroup;
+                      CaptionML=[DEU=&Zeile;
+                                 ENU=&Line] }
+      { 1900095904;2 ;Action    ;
+                      ShortCutKey=Shift+Ctrl+D;
+                      CaptionML=[DEU=Dimensionen;
+                                 ENU=Dimensions];
+                      Image=Dimensions;
+                      OnAction=BEGIN
+                                 //This functionality was copied from page #5005151. Unsupported part was commented. Please check it.
+                                 {CurrPage.SalesLinesArchive.FORM.}
+                                 _ShowDimensions;
+                               END;
+                                }
+      { 1907073304;2 ;Action    ;
+                      CaptionML=[DEU=Be&merkungen;
+                                 ENU=Co&mments];
+                      Image=ViewComments;
+                      OnAction=BEGIN
+                                 //This functionality was copied from page #5005151. Unsupported part was commented. Please check it.
+                                 {CurrPage.SalesLinesArchive.FORM.}
+                                 _ShowLineComments;
+                               END;
+                                }
+      { 1900154504;2 ;Action    ;
+                      CaptionML=[DEU=&Belegzeilenverfolgung;
+                                 ENU=Document &Line Tracking];
+                      OnAction=BEGIN
+                                 //This functionality was copied from page #5005151. Unsupported part was commented. Please check it.
+                                 {CurrPage.SalesLinesArchive.FORM.}
+                                 ShowDocumentLineTracking;
+                               END;
+                                }
+    }
+  }
+  CONTROLS
+  {
+    { 1900000001;0;Container;
+                ContainerType=ContentArea }
+
+    { 1140000;1;Group     ;
+                GroupType=Repeater }
+
+    { 1140001;2;Field     ;
+                SourceExpr=Type }
+
+    { 1140003;2;Field     ;
+                SourceExpr="No." }
+
+    { 1140005;2;Field     ;
+                SourceExpr="Cross-Reference No.";
+                Visible=FALSE }
+
+    { 1140007;2;Field     ;
+                SourceExpr="Variant Code";
+                Visible=FALSE }
+
+    { 1140009;2;Field     ;
+                SourceExpr="Substitution Available";
+                Visible=FALSE }
+
+    { 1140011;2;Field     ;
+                SourceExpr="Purchasing Code";
+                Visible=FALSE }
+
+    { 1140013;2;Field     ;
+                SourceExpr=Nonstock;
+                Visible=FALSE }
+
+    { 1140015;2;Field     ;
+                SourceExpr="VAT Prod. Posting Group";
+                Visible=FALSE }
+
+    { 1140017;2;Field     ;
+                SourceExpr=Description }
+
+    { 1140019;2;Field     ;
+                SourceExpr="Drop Shipment";
+                Visible=FALSE }
+
+    { 1140021;2;Field     ;
+                SourceExpr="Special Order";
+                Visible=FALSE }
+
+    { 1140023;2;Field     ;
+                SourceExpr="Return Reason Code";
+                Visible=FALSE }
+
+    { 1140025;2;Field     ;
+                SourceExpr="Location Code" }
+
+    { 1140027;2;Field     ;
+                SourceExpr=Reserve;
+                Visible=FALSE }
+
+    { 1140029;2;Field     ;
+                SourceExpr=Quantity }
+
+    { 1140031;2;Field     ;
+                SourceExpr="Unit of Measure Code" }
+
+    { 1140033;2;Field     ;
+                SourceExpr="Unit of Measure";
+                Visible=FALSE }
+
+    { 1140035;2;Field     ;
+                SourceExpr="Unit Cost (LCY)";
+                Visible=FALSE }
+
+    { 1140037;2;Field     ;
+                SourceExpr="Unit Price";
+                Visible=FALSE }
+
+    { 1140039;2;Field     ;
+                SourceExpr="Line Amount" }
+
+    { 1140041;2;Field     ;
+                SourceExpr="Line Discount %" }
+
+    { 1140043;2;Field     ;
+                SourceExpr="Line Discount Amount";
+                Visible=FALSE }
+
+    { 1140045;2;Field     ;
+                SourceExpr="Allow Invoice Disc.";
+                Visible=FALSE }
+
+    { 1140047;2;Field     ;
+                SourceExpr="Inv. Discount Amount";
+                Visible=FALSE }
+
+    { 1140049;2;Field     ;
+                SourceExpr="Qty. to Ship" }
+
+    { 1140051;2;Field     ;
+                SourceExpr="Quantity Shipped" }
+
+    { 1140053;2;Field     ;
+                SourceExpr="Qty. to Invoice" }
+
+    { 1140055;2;Field     ;
+                SourceExpr="Quantity Invoiced" }
+
+    { 1140057;2;Field     ;
+                SourceExpr="Allow Item Charge Assignment";
+                Visible=FALSE }
+
+    { 1140059;2;Field     ;
+                SourceExpr="Requested Delivery Date";
+                Visible=FALSE }
+
+    { 1140061;2;Field     ;
+                SourceExpr="Promised Delivery Date";
+                Visible=FALSE }
+
+    { 1140063;2;Field     ;
+                SourceExpr="Planned Delivery Date" }
+
+    { 1140065;2;Field     ;
+                SourceExpr="Planned Shipment Date" }
+
+    { 1140067;2;Field     ;
+                SourceExpr="Shipment Date" }
+
+    { 1140069;2;Field     ;
+                SourceExpr="Shipping Agent Code";
+                Visible=FALSE }
+
+    { 1140071;2;Field     ;
+                SourceExpr="Shipping Agent Service Code";
+                Visible=FALSE }
+
+    { 1140073;2;Field     ;
+                SourceExpr="Shipping Time";
+                Visible=FALSE }
+
+    { 1140075;2;Field     ;
+                SourceExpr="Job No.";
+                Visible=FALSE }
+
+    { 1140081;2;Field     ;
+                SourceExpr="Outbound Whse. Handling Time";
+                Visible=FALSE }
+
+    { 1140083;2;Field     ;
+                SourceExpr="Blanket Order No.";
+                Visible=FALSE }
+
+    { 1140085;2;Field     ;
+                SourceExpr="Blanket Order Line No.";
+                Visible=FALSE }
+
+    { 1140087;2;Field     ;
+                SourceExpr="FA Posting Date";
+                Visible=FALSE }
+
+    { 1140089;2;Field     ;
+                SourceExpr="Depr. until FA Posting Date";
+                Visible=FALSE }
+
+    { 1140091;2;Field     ;
+                SourceExpr="Depreciation Book Code";
+                Visible=FALSE }
+
+    { 1140093;2;Field     ;
+                SourceExpr="Use Duplication List";
+                Visible=FALSE }
+
+    { 1140095;2;Field     ;
+                SourceExpr="Duplicate in Depreciation Book";
+                Visible=FALSE }
+
+    { 1140097;2;Field     ;
+                SourceExpr="Appl.-from Item Entry";
+                Visible=FALSE }
+
+    { 1140099;2;Field     ;
+                SourceExpr="Appl.-to Item Entry";
+                Visible=FALSE }
+
+    { 1140101;2;Field     ;
+                SourceExpr="Shortcut Dimension 1 Code";
+                Visible=FALSE }
+
+    { 1140103;2;Field     ;
+                SourceExpr="Shortcut Dimension 2 Code";
+                Visible=FALSE }
+
+  }
+  CODE
+  {
+    VAR
+      DocumentLineTracking@1140000 : Form 5005399;
+
+    PROCEDURE _ShowDimensions@19020529();
+    BEGIN
+      Rec.ShowDimensions;
+    END;
+
+    PROCEDURE ShowDimensions@1140000();
+    BEGIN
+      Rec.ShowDimensions;
+    END;
+
+    PROCEDURE ShowDocumentLineTracking@1140001();
+    BEGIN
+      CLEAR(DocumentLineTracking);
+      DocumentLineTracking.SetDoc(2,"Document No.","Line No.","Blanket Order No.","Blanket Order Line No.",'',0);
+      DocumentLineTracking.RUNMODAL;
+    END;
+
+    PROCEDURE _ShowLineComments@19074756();
+    BEGIN
+      Rec.ShowLineComments;
+    END;
+
+    PROCEDURE ShowLineComments@1140002();
+    BEGIN
+      Rec.ShowLineComments;
+    END;
+
+    BEGIN
+    END.
+  }
+}
+

@@ -1,0 +1,48 @@
+OBJECT Codeunit 11501 GeneralMgt
+{
+  OBJECT-PROPERTIES
+  {
+    Date=31.05.05;
+    Time=12:00:00;
+    Version List=NAVDACH4.00.01;
+  }
+  PROPERTIES
+  {
+    OnRun=BEGIN
+          END;
+
+  }
+  CODE
+  {
+    VAR
+      Text001@1150000 : TextConst 'DEU=Der Ordnername muss auf einen Schr„gstrich enden, d. h. %1.;ENU=The folder name must end with a slash character, i.e. %1.';
+
+    PROCEDURE CheckFolderName@2(VAR _Input@1150000 : Text[250]) _Output@1150001 : Text[250];
+    BEGIN
+      // Check for ending slash of folder name
+      IF _Input = '' THEN
+        EXIT;
+
+      IF NOT (COPYSTR(_Input,STRLEN(_Input)) IN ['\','/']) THEN
+        MESSAGE(Text001,'c:\data\');
+    END;
+
+    PROCEDURE Ansi2Ascii@10(_String@1150001 : Text[250]) _Output@1150000 : Text[250];
+    BEGIN
+      // Converts from ANSI to ASCII
+      EXIT(CONVERTSTR(_String,'ΗόιβδΰεηκλθοξμΔΕΙζΖτφςϋωÿΦάψ£ΨΧƒανσϊρΡªΊΏ®ΑΒΐΚΛΘΝΞΟΜΣίΤÒΪΫΩ',
+                              '€‚ƒ„…†‡‰‹‘’“”•–—™› ΅Ά£¤¥¦§¨©µ¶·ÒΣΤΦΧΨήΰαβγικλ'));
+    END;
+
+    PROCEDURE Ascii2Ansi@1150001(_String@1150001 : Text[1024]) @1150000 : Text[1024];
+    BEGIN
+      // Converts from ASCII to ANSI
+      EXIT(CONVERTSTR(_String,'€‚ƒ„…†‡‰‹‘’“”•–—™› ΅Ά£¤¥¦§¨©µ¶·ÒΣΤΦΧΨήΰαβγικλ',
+                              'ΗόιβδΰεηκλθοξμΔΕΙζΖτφςϋωÿΦάψ£ΨΧƒανσϊρΡªΊΏ®ΑΒΐΚΛΘΝΞΟΜΣίΤÒΪΫΩ'));
+    END;
+
+    BEGIN
+    END.
+  }
+}
+

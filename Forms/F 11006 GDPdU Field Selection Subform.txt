@@ -1,0 +1,102 @@
+OBJECT Form 11006 GDPdU Field Selection Subform
+{
+  OBJECT-PROPERTIES
+  {
+    Date=05.11.08;
+    Time=12:00:00;
+    Version List=NAVDACH6.00;
+  }
+  PROPERTIES
+  {
+    Width=7260;
+    Height=5500;
+    Editable=No;
+    CaptionML=[DEU=GDPdU Feldauswahl Subform;
+               ENU=GDPdU Field Selection Subform];
+    TableBoxID=1140000;
+    SourceTable=Table2000000041;
+    SourceTableTemporary=Yes;
+    SourceTableView=SORTING(TableNo,No.);
+  }
+  CONTROLS
+  {
+    { 1140000;TableBox  ;0    ;0    ;7260 ;5500 ;HorzGlue=Both;
+                                                 VertGlue=Both }
+    { 1140001;TextBox   ;0    ;0    ;1650 ;0    ;ParentControl=1140000;
+                                                 InColumn=Yes;
+                                                 Lookup=No;
+                                                 CaptionML=[DEU=Feldnr.;
+                                                            ENU=Field No.];
+                                                 SourceExpr="No." }
+    { 1140002;Label     ;0    ;0    ;0    ;0    ;ParentControl=1140001;
+                                                 InColumnHeading=Yes }
+    { 1140003;TextBox   ;0    ;0    ;4400 ;0    ;HorzGlue=Both;
+                                                 ParentControl=1140000;
+                                                 InColumn=Yes;
+                                                 DrillDown=No;
+                                                 CaptionML=[DEU=Feldname;
+                                                            ENU=Field Name];
+                                                 SourceExpr="Field Caption" }
+    { 1140004;Label     ;0    ;0    ;0    ;0    ;ParentControl=1140003;
+                                                 InColumnHeading=Yes }
+  }
+  CODE
+  {
+    VAR
+      TempField@1140000 : Record 2000000041;
+      GDPdUMgt@1140001 : Codeunit 11000;
+      GDPdUDefGrpCode@1140002 : Code[10];
+      GDPdURecordCode@1140003 : Code[10];
+      TableID@1140004 : Integer;
+      GDPdURecDefField@1140005 : Record 11005;
+
+    PROCEDURE SelectGDPdUField@1140000();
+    VAR
+      Field@1140000 : Record 2000000041;
+    BEGIN
+      CurrForm.SETSELECTIONFILTER(Field);
+      IF Field.FINDSET THEN BEGIN
+        GDPdUMgt.InsertGDPdURecDefField(Field,GDPdURecDefField,GDPdUDefGrpCode,GDPdURecordCode);
+        FindRecords;
+      END;
+    END;
+
+    PROCEDURE SetGDPdUCode@1140001(NewGDPdUDefGrpCode@1140000 : Code[10];NewGDPdURecordCode@1140001 : Code[10];NewTableID@1140002 : Integer);
+    BEGIN
+      GDPdUDefGrpCode := NewGDPdUDefGrpCode;
+      GDPdURecordCode := NewGDPdURecordCode;
+      TableID := NewTableID;
+
+      CurrForm.UPDATE;
+    END;
+
+    PROCEDURE FormUpdate@1140002();
+    BEGIN
+      CurrForm.UPDATE(FALSE);
+    END;
+
+    PROCEDURE FindRecords@1140003();
+    BEGIN
+      RESET;
+      DELETEALL;
+
+      TempField.SETRANGE(TableNo,TableID);
+      IF TempField.FINDSET THEN
+        REPEAT
+          IF NOT GDPdUMgt.FindGDPdURecDefField(GDPdUDefGrpCode,GDPdURecordCode,TempField.TableNo,TempField."No.") THEN BEGIN
+            Rec := TempField;
+            INSERT;
+          END;
+        UNTIL TempField.NEXT = 0;
+
+      IF FINDFIRST THEN;
+
+      SETRANGE(TableNo,TableID);
+      CurrForm.UPDATE(FALSE);
+    END;
+
+    BEGIN
+    END.
+  }
+}
+

@@ -1,0 +1,78 @@
+OBJECT Form 11103 IFB Periodaccounts
+{
+  OBJECT-PROPERTIES
+  {
+    Date=05.11.08;
+    Time=12:00:00;
+    Version List=NAVDACH6.00;
+  }
+  PROPERTIES
+  {
+    Width=9790;
+    Height=6710;
+    CaptionML=[DEU=IFB-Periodenkonten;
+               ENU=IFB Periodaccounts];
+    TableBoxID=1;
+    SourceTable=Table11102;
+  }
+  CONTROLS
+  {
+    { 1   ;TableBox     ;220  ;220  ;9350 ;5500 ;HorzGlue=Both;
+                                                 VertGlue=Both }
+    { 2   ;TextBox      ;0    ;0    ;1650 ;0    ;ParentControl=1;
+                                                 InColumn=Yes;
+                                                 SourceExpr="FA Posting Group" }
+    { 3   ;Label        ;0    ;0    ;0    ;0    ;ParentControl=2;
+                                                 InColumnHeading=Yes }
+    { 4   ;TextBox      ;0    ;0    ;1650 ;0    ;ParentControl=1;
+                                                 InColumn=Yes;
+                                                 SourceExpr="IFB Ratecode" }
+    { 5   ;Label        ;0    ;0    ;0    ;0    ;ParentControl=4;
+                                                 InColumnHeading=Yes }
+    { 6   ;TextBox      ;0    ;0    ;1650 ;0    ;ParentControl=1;
+                                                 InColumn=Yes;
+                                                 SourceExpr="Starting Date" }
+    { 7   ;Label        ;0    ;0    ;0    ;0    ;ParentControl=6;
+                                                 InColumnHeading=Yes }
+    { 8   ;TextBox      ;0    ;0    ;1650 ;0    ;ParentControl=1;
+                                                 InColumn=Yes;
+                                                 SourceExpr="IFB Account" }
+    { 9   ;Label        ;0    ;0    ;0    ;0    ;ParentControl=8;
+                                                 InColumnHeading=Yes }
+    { 13  ;TextBox      ;5874 ;550  ;1650 ;440  ;ParentControl=1;
+                                                 InColumn=Yes;
+                                                 SourceExpr="Dotation IFB Account" }
+    { 14  ;Label        ;0    ;0    ;0    ;0    ;ParentControl=13;
+                                                 InColumnHeading=Yes }
+    { 15  ;TextBox      ;7524 ;550  ;1650 ;440  ;ParentControl=1;
+                                                 InColumn=Yes;
+                                                 SourceExpr="Diss. against capital Account" }
+    { 16  ;Label        ;0    ;0    ;0    ;0    ;ParentControl=15;
+                                                 InColumnHeading=Yes }
+    { 17  ;TextBox      ;9174 ;550  ;1650 ;440  ;ParentControl=1;
+                                                 InColumn=Yes;
+                                                 SourceExpr="Diss. against Gain Account" }
+    { 18  ;Label        ;0    ;0    ;0    ;0    ;ParentControl=17;
+                                                 InColumnHeading=Yes }
+    { 10  ;CommandButton;2530 ;5940 ;2200 ;550  ;HorzGlue=Right;
+                                                 VertGlue=Bottom;
+                                                 Default=Yes;
+                                                 PushAction=LookupOK;
+                                                 InvalidActionAppearance=Hide }
+    { 11  ;CommandButton;4950 ;5940 ;2200 ;550  ;HorzGlue=Right;
+                                                 VertGlue=Bottom;
+                                                 Cancel=Yes;
+                                                 PushAction=LookupCancel;
+                                                 InvalidActionAppearance=Hide }
+    { 12  ;CommandButton;7370 ;5940 ;2200 ;550  ;HorzGlue=Right;
+                                                 VertGlue=Bottom;
+                                                 PushAction=FormHelp }
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

@@ -1,0 +1,45 @@
+OBJECT Table 2000000067 User Default Style Sheet
+{
+  OBJECT-PROPERTIES
+  {
+    Date=11.12.10;
+    Time=12:00:00;
+    Version List=;
+  }
+  PROPERTIES
+  {
+    DataPerCompany=No;
+    CaptionML=[DEU=Benutzer-Standardformatvorlage;
+               ENU=User Default Style Sheet];
+  }
+  FIELDS
+  {
+    { 1   ;   ;User ID             ;Text132       ;CaptionML=[DEU=Benutzer-ID;
+                                                              ENU=User ID] }
+    { 2   ;   ;Object Type         ;Option        ;CaptionML=[DEU=Objektart;
+                                                              ENU=Object Type];
+                                                   OptionCaptionML=[DEU=Form,Report,Page;
+                                                                    ENU=Form,Report,Page];
+                                                   OptionString=Form,Report,Page }
+    { 3   ;   ;Object ID           ;Integer       ;CaptionML=[DEU=Objekt-ID;
+                                                              ENU=Object ID] }
+    { 4   ;   ;Program ID          ;GUID          ;CaptionML=[DEU=Programm-ID;
+                                                              ENU=Program ID] }
+    { 5   ;   ;Style Sheet ID      ;GUID          ;CaptionML=[DEU=Formatvorlagen-ID;
+                                                              ENU=Style Sheet ID] }
+  }
+  KEYS
+  {
+    {    ;User ID,Object Type,Object ID,Program ID;Clustered=Yes }
+  }
+  FIELDGROUPS
+  {
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

@@ -1,0 +1,100 @@
+OBJECT Table 829 DO Payment Trans. Log Entry
+{
+  OBJECT-PROPERTIES
+  {
+    Date=11.12.10;
+    Time=12:00:00;
+    Version List=NAVW16.00.10;
+  }
+  PROPERTIES
+  {
+    CaptionML=[DEU=DO-Zahlung - Transaktionsprotokolleintrag;
+               ENU=DO Payment Trans. Log Entry];
+  }
+  FIELDS
+  {
+    { 1   ;   ;Entry No.           ;Integer       ;AutoIncrement=Yes;
+                                                   CaptionML=[DEU=Lfd. Nr.;
+                                                              ENU=Entry No.] }
+    { 2   ;   ;Document Type       ;Option        ;CaptionML=[DEU=Belegart;
+                                                              ENU=Document Type];
+                                                   OptionCaptionML=[DEU=" ,Auftrag,Rechnung,Zahlung,Erstattung";
+                                                                    ENU=" ,Order,Invoice,Payment,Refund"];
+                                                   OptionString=[ ,Order,Invoice,Payment,Refund] }
+    { 3   ;   ;Document No.        ;Code20        ;CaptionML=[DEU=Belegnr.;
+                                                              ENU=Document No.] }
+    { 4   ;   ;Customer No.        ;Code20        ;TableRelation=Customer;
+                                                   CaptionML=[DEU=Debitorennr.;
+                                                              ENU=Customer No.] }
+    { 5   ;   ;Credit Card No.     ;Code20        ;TableRelation="DO Payment Credit Card".No.;
+                                                   CaptionML=[DEU=Kreditkartennr.;
+                                                              ENU=Credit Card No.] }
+    { 6   ;   ;Transaction Type    ;Option        ;CaptionML=[DEU=Art des Gesch„ftes;
+                                                              ENU=Transaction Type];
+                                                   OptionCaptionML=[DEU=Autorisierung,Stornierung,Erfassung,Erstattung;
+                                                                    ENU=Authorization,Void,Capture,Refund];
+                                                   OptionString=Authorization,Void,Capture,Refund }
+    { 7   ;   ;Transaction Result  ;Option        ;CaptionML=[DEU=Transaktionsergebnis;
+                                                              ENU=Transaction Result];
+                                                   OptionCaptionML=[DEU=Erfolgreich,Fehler;
+                                                                    ENU=Success,Failed];
+                                                   OptionString=Success,Failed }
+    { 8   ;   ;Transaction Description;Text250    ;CaptionML=[DEU=Transaktionsbeschreibung;
+                                                              ENU=Transaction Description] }
+    { 9   ;   ;Amount              ;Decimal       ;CaptionML=[DEU=Betrag;
+                                                              ENU=Amount];
+                                                   AutoFormatType=1;
+                                                   AutoFormatExpr="Currency Code" }
+    { 10  ;   ;Transaction Date-Time;DateTime     ;CaptionML=[DEU=Transaktion (Datum/Uhrzeit);
+                                                              ENU=Transaction Date-Time] }
+    { 11  ;   ;Transaction Status  ;Option        ;CaptionML=[DEU=Transaktionsstatus;
+                                                              ENU=Transaction Status];
+                                                   OptionCaptionML=[DEU=" ,Storniert,Abgelaufen,Erfasst,Erstattet,Buchung nicht abgeschlossen";
+                                                                    ENU=" ,Voided,Expired,Captured,Refunded,Posting Not Finished"];
+                                                   OptionString=[ ,Voided,Expired,Captured,Refunded,Posting Not Finished] }
+    { 12  ;   ;Cust. Ledger Entry No.;Integer     ;TableRelation="Cust. Ledger Entry";
+                                                   CaptionML=[DEU=Debitorenposten Lfd. Nr.;
+                                                              ENU=Cust. Ledger Entry No.] }
+    { 13  ;   ;Currency Code       ;Code10        ;TableRelation=Currency;
+                                                   CaptionML=[DEU=W„hrungscode;
+                                                              ENU=Currency Code] }
+    { 14  ;   ;Transaction GUID    ;GUID          ;CaptionML=[DEU=Transaktions-GUID;
+                                                              ENU=Transaction GUID] }
+    { 15  ;   ;Transaction ID      ;Text50        ;CaptionML=[DEU=Transaktions-ID;
+                                                              ENU=Transaction ID] }
+    { 16  ;   ;User ID             ;Code20        ;CaptionML=[DEU=Benutzer-ID;
+                                                              ENU=User ID] }
+    { 17  ;   ;Parent Entry No.    ;Integer       ;CaptionML=[DEU=šbergeordnete Laufnr.;
+                                                              ENU=Parent Entry No.] }
+    { 18  ;   ;Reference GUID      ;GUID          ;CaptionML=[DEU=Referenz-GUID;
+                                                              ENU=Reference GUID] }
+  }
+  KEYS
+  {
+    {    ;Entry No.                               ;Clustered=Yes }
+    {    ;Document Type,Document No.,Transaction Type,Transaction Result,Transaction Status }
+    {    ;Cust. Ledger Entry No.                   }
+    {    ;Parent Entry No.,Transaction Type,Transaction Result;
+                                                   SumIndexFields=Amount }
+    {    ;Credit Card No.                          }
+    {    ;Document No.,Customer No.,Transaction Status }
+  }
+  FIELDGROUPS
+  {
+  }
+  CODE
+  {
+
+    PROCEDURE HasTransaction@1(VAR CreditCard@1000 : Record 827) : Boolean;
+    BEGIN
+      SETCURRENTKEY("Credit Card No.");
+      SETRANGE("Credit Card No.",CreditCard."No.");
+      SETFILTER("Transaction Result",'<>%1',"Transaction Result"::Failed);
+      EXIT(FINDFIRST);
+    END;
+
+    BEGIN
+    END.
+  }
+}
+

@@ -1,0 +1,83 @@
+OBJECT Table 9057 Job Cue
+{
+  OBJECT-PROPERTIES
+  {
+    Date=05.11.08;
+    Time=12:00:00;
+    Version List=NAVW16.00;
+  }
+  PROPERTIES
+  {
+    CaptionML=[DEU=Projektstapel;
+               ENU=Job Cue];
+  }
+  FIELDS
+  {
+    { 1   ;   ;Primary Key         ;Code10        ;CaptionML=[DEU=PrimÑrschlÅssel;
+                                                              ENU=Primary Key] }
+    { 2   ;   ;Jobs w/o Resource   ;Integer       ;FieldClass=FlowField;
+                                                   CalcFormula=Count(Job WHERE (Scheduled Res. Qty.=FILTER(0)));
+                                                   CaptionML=[DEU=Projekt ohne Ressource;
+                                                              ENU=Jobs w/o Resource];
+                                                   Editable=No }
+    { 3   ;   ;Upcoming Invoices   ;Integer       ;FieldClass=FlowField;
+                                                   CalcFormula=Count(Job WHERE (Status=FILTER(<>Completed),
+                                                                                Next Invoice Date=FIELD(Date Filter)));
+                                                   CaptionML=[DEU=Anstehende Rechnungen;
+                                                              ENU=Upcoming Invoices];
+                                                   Editable=No }
+    { 4   ;   ;Invoices Due - Not Created;Integer ;FieldClass=FlowField;
+                                                   CalcFormula=Count(Job WHERE (Status=FILTER(<>Completed),
+                                                                                Next Invoice Date=FIELD(Date Filter2)));
+                                                   CaptionML=[DEU=FÑllige Rechnungen - Nicht erstellt;
+                                                              ENU=Invoices Due - Not Created];
+                                                   Editable=No }
+    { 5   ;   ;Jobs - WIP Not Posted;Integer      ;FieldClass=FlowField;
+                                                   CalcFormula=Count(Job WHERE (WIP Posted To G/L=FILTER(No)));
+                                                   CaptionML=[DEU=Projekte - WIP nicht gebucht;
+                                                              ENU=Jobs - WIP Not Posted];
+                                                   Editable=No }
+    { 6   ;   ;Completed Jobs Ready to Post;Integer;
+                                                   FieldClass=FlowField;
+                                                   CalcFormula=Count(Job WHERE (Status=FILTER(Completed),
+                                                                                Completion Calculated=FILTER(No)));
+                                                   CaptionML=[DEU=Abgeschlossene Projekte - Bereit zum Buchen;
+                                                              ENU=Completed Jobs Ready to Post];
+                                                   Editable=No }
+    { 7   ;   ;Available Resources ;Integer       ;FieldClass=FlowField;
+                                                   CalcFormula=Count(Resource WHERE (Qty. on Order (Job)=FILTER(0),
+                                                                                     Qty. Quoted (Job)=FILTER(0),
+                                                                                     Qty. on Service Order=FILTER(0),
+                                                                                     Date Filter=FIELD(Date Filter)));
+                                                   CaptionML=[DEU=VerfÅgbare Ressourcen;
+                                                              ENU=Available Resources];
+                                                   Editable=No }
+    { 8   ;   ;Unassigned Resource Groups;Integer ;FieldClass=FlowField;
+                                                   CalcFormula=Count("Resource Group" WHERE (No. of Resources Assigned=FILTER(0)));
+                                                   CaptionML=[DEU=Nicht zugewiesene Ressourcengruppen;
+                                                              ENU=Unassigned Resource Groups];
+                                                   Editable=No }
+    { 20  ;   ;Date Filter         ;Date          ;FieldClass=FlowFilter;
+                                                   CaptionML=[DEU=Datumsfilter;
+                                                              ENU=Date Filter];
+                                                   Editable=No }
+    { 21  ;   ;Date Filter2        ;Date          ;FieldClass=FlowFilter;
+                                                   CaptionML=[DEU=Datumsfilter2;
+                                                              ENU=Date Filter2];
+                                                   Editable=No }
+  }
+  KEYS
+  {
+    {    ;Primary Key                             ;Clustered=Yes }
+  }
+  FIELDGROUPS
+  {
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

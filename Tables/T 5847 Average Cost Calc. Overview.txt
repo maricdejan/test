@@ -1,0 +1,149 @@
+OBJECT Table 5847 Average Cost Calc. Overview
+{
+  OBJECT-PROPERTIES
+  {
+    Date=05.11.08;
+    Time=12:00:00;
+    Version List=NAVW16.00;
+  }
+  PROPERTIES
+  {
+    CaptionML=[DEU=Einst.-Pr. (durchschn.)-Ber., öbersicht;
+               ENU=Average Cost Calc. Overview];
+  }
+  FIELDS
+  {
+    { 1   ;   ;Entry No.           ;Integer       ;CaptionML=[DEU=Lfd. Nr.;
+                                                              ENU=Entry No.] }
+    { 2   ;   ;Type                ;Option        ;CaptionML=[DEU=Art;
+                                                              ENU=Type];
+                                                   OptionCaptionML=[DEU=Abschlussposten,Zugang,Ausgeglichener Zugang,Ausgeglichener Abgang,Abgang,Neubewertung;
+                                                                    ENU=Closing Entry,Increase,Applied Increase,Applied Decrease,Decrease,Revaluation];
+                                                   OptionString=Closing Entry,Increase,Applied Increase,Applied Decrease,Decrease,Revaluation }
+    { 3   ;   ;Valuation Date      ;Date          ;CaptionML=[DEU=Bewertungsdatum;
+                                                              ENU=Valuation Date] }
+    { 4   ;   ;Item No.            ;Code20        ;TableRelation=Item;
+                                                   CaptionML=[DEU=Artikelnr.;
+                                                              ENU=Item No.] }
+    { 5   ;   ;Location Code       ;Code10        ;TableRelation=Location;
+                                                   CaptionML=[DEU=Lagerortcode;
+                                                              ENU=Location Code] }
+    { 6   ;   ;Variant Code        ;Code10        ;TableRelation="Item Variant".Code WHERE (Item No.=FIELD(Item No.));
+                                                   CaptionML=[DEU=Variantencode;
+                                                              ENU=Variant Code] }
+    { 7   ;   ;Cost is Adjusted    ;Boolean       ;CaptionML=[DEU=Einstandspreis ist reguliert;
+                                                              ENU=Cost is Adjusted] }
+    { 11  ;   ;Attached to Entry No.;Integer      ;TableRelation="Item Ledger Entry";
+                                                   CaptionML=[DEU=Gehîrt zu Postennr.;
+                                                              ENU=Attached to Entry No.] }
+    { 12  ;   ;Attached to Valuation Date;Date    ;CaptionML=[DEU=Gehîrt zu Bewertungsdatum;
+                                                              ENU=Attached to Valuation Date] }
+    { 13  ;   ;Level               ;Integer       ;CaptionML=[DEU=Ebene;
+                                                              ENU=Level] }
+    { 21  ;   ;Item Ledger Entry No.;Integer      ;TableRelation="Item Ledger Entry";
+                                                   CaptionML=[DEU=Artikelposten Lfd. Nr.;
+                                                              ENU=Item Ledger Entry No.] }
+    { 22  ;   ;Posting Date        ;Date          ;CaptionML=[DEU=Buchungsdatum;
+                                                              ENU=Posting Date] }
+    { 23  ;   ;Entry Type          ;Option        ;CaptionML=[DEU=Postenart;
+                                                              ENU=Entry Type];
+                                                   OptionCaptionML=[DEU=Einkauf,Verkauf,Zugang,Abgang,Umlagerung,Verbrauch,Istmeldung;
+                                                                    ENU=Purchase,Sale,Positive Adjmt.,Negative Adjmt.,Transfer,Consumption,Output];
+                                                   OptionString=Purchase,Sale,Positive Adjmt.,Negative Adjmt.,Transfer,Consumption,Output }
+    { 24  ;   ;Document Type       ;Option        ;CaptionML=[DEU=Belegart;
+                                                              ENU=Document Type];
+                                                   OptionCaptionML=[DEU=" ,Verkaufslieferung,Verkaufsrechnung,VerkaufsrÅcksendung,Verkaufsgutschrift,Einkaufslieferung,Einkaufsrechnung,RÅcklieferung,Einkaufsgutschrift,Umlagerungsausgang,Umlagerungseingang,Servicelieferung,Servicerechnung,Servicegutschrift";
+                                                                    ENU=" ,Sales Shipment,Sales Invoice,Sales Return Receipt,Sales Credit Memo,Purchase Receipt,Purchase Invoice,Purchase Return Shipment,Purchase Credit Memo,Transfer Shipment,Transfer Receipt,Service Shipment,Service Invoice,Service Credit Memo"];
+                                                   OptionString=[ ,Sales Shipment,Sales Invoice,Sales Return Receipt,Sales Credit Memo,Purchase Receipt,Purchase Invoice,Purchase Return Shipment,Purchase Credit Memo,Transfer Shipment,Transfer Receipt,Service Shipment,Service Invoice,Service Credit Memo] }
+    { 25  ;   ;Document No.        ;Code20        ;CaptionML=[DEU=Belegnr.;
+                                                              ENU=Document No.] }
+    { 26  ;   ;Document Line No.   ;Integer       ;CaptionML=[DEU=Belegzeilennr.;
+                                                              ENU=Document Line No.] }
+    { 27  ;   ;Description         ;Text50        ;CaptionML=[DEU=Beschreibung;
+                                                              ENU=Description] }
+    { 31  ;   ;Quantity            ;Decimal       ;CaptionML=[DEU=Menge;
+                                                              ENU=Quantity];
+                                                   DecimalPlaces=0:5 }
+    { 32  ;   ;Applied Quantity    ;Integer       ;CaptionML=[DEU=Ausgeglichene Menge;
+                                                              ENU=Applied Quantity] }
+    { 33  ;   ;Cost Amount (Expected);Decimal     ;CaptionML=[DEU=Einstandsbetrag (erwartet);
+                                                              ENU=Cost Amount (Expected)] }
+    { 34  ;   ;Cost Amount (Actual);Decimal       ;CaptionML=[DEU=Einstandsbetrag (tatsÑchl.);
+                                                              ENU=Cost Amount (Actual)] }
+  }
+  KEYS
+  {
+    {    ;Entry No.                               ;Clustered=Yes }
+    {    ;Attached to Valuation Date,Attached to Entry No.,Type }
+    {    ;Item Ledger Entry No.                    }
+  }
+  FIELDGROUPS
+  {
+  }
+  CODE
+  {
+    VAR
+      InvtSetup@1001 : Record 313;
+      ValueEntry@1003 : Record 5802;
+      InvtSetupRead@1002 : Boolean;
+
+    PROCEDURE CalculateAverageCost@5801() AverageCost : Decimal;
+    BEGIN
+      AverageCost := 0;
+      IF Type = Type::"Closing Entry" THEN BEGIN
+        SetItemFilters;
+        ValueEntry.SumCostsTillValuationDate(ValueEntry);
+        IF ValueEntry."Item Ledger Entry Quantity" = 0 THEN
+          EXIT(AverageCost);
+        AverageCost :=
+          (ValueEntry."Cost Amount (Actual)" + ValueEntry."Cost Amount (Expected)") /
+          ValueEntry."Item Ledger Entry Quantity";
+        EXIT(ROUND(AverageCost));
+      END;
+      IF Quantity = 0 THEN
+        EXIT(AverageCost);
+      AverageCost := ("Cost Amount (Actual)" + "Cost Amount (Expected)") / Quantity;
+      EXIT(ROUND(AverageCost));
+    END;
+
+    PROCEDURE CalculateRemainingQty@1() : Decimal;
+    BEGIN
+      IF Type <> Type::"Closing Entry" THEN
+        EXIT(0);
+      SetItemFilters;
+      ValueEntry.SumCostsTillValuationDate(ValueEntry);
+      EXIT(ValueEntry."Item Ledger Entry Quantity");
+    END;
+
+    PROCEDURE CalculateCostAmt@4(Actual@1000 : Boolean) : Decimal;
+    BEGIN
+      IF Type <> Type::"Closing Entry" THEN
+        EXIT(0);
+      SetItemFilters;
+      ValueEntry.SumCostsTillValuationDate(ValueEntry);
+      IF Actual THEN
+        EXIT(ValueEntry."Cost Amount (Actual)");
+      EXIT(ValueEntry."Cost Amount (Expected)");
+    END;
+
+    PROCEDURE SetItemFilters@8();
+    BEGIN
+      ValueEntry."Item No." := "Item No.";
+      ValueEntry."Valuation Date" := "Valuation Date";
+      ValueEntry."Location Code" := "Location Code";
+      ValueEntry."Variant Code" := "Variant Code";
+    END;
+
+    PROCEDURE GetInvtSetup@3();
+    BEGIN
+      IF InvtSetupRead THEN
+        EXIT;
+      InvtSetup.GET;
+      InvtSetupRead := TRUE;
+    END;
+
+    BEGIN
+    END.
+  }
+}
+

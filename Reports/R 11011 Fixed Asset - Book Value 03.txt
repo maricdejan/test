@@ -1,0 +1,3296 @@
+OBJECT Report 11011 Fixed Asset - Book Value 03
+{
+  OBJECT-PROPERTIES
+  {
+    Date=05.11.08;
+    Time=12:00:00;
+    Version List=NAVDACH6.00;
+  }
+  PROPERTIES
+  {
+    CaptionML=[DEU=Anlagenspiegel mit Umbuchung;
+               ENU=Fixed Asset - Book Value 03];
+    OnPreReport=BEGIN
+                  NumberOfTypes := 6;
+                  DeprBook.GET(DeprBookCode);
+                  IF GroupTotals = GroupTotals::"FA Posting Group" THEN
+                    FAGenReport.SetFAPostingGroup("Fixed Asset",DeprBook.Code);
+                  FAGenReport.AppendFAPostingFilter("Fixed Asset",StartingDate,EndingDate);
+                  FAFilter := "Fixed Asset".GETFILTERS;
+                  MainHeadLineText := Text1140000;
+                  IF BudgetReport THEN
+                    MainHeadLineText := STRSUBSTNO('%1 %2',MainHeadLineText,Text1140001);
+                  DeprBookText := STRSUBSTNO('%1%2 %3',DeprBook.TABLECAPTION,':',DeprBookCode);
+                  MakeGroupTotalText;
+                  FAGenReport.ValidateDates(StartingDate,EndingDate);
+                  MakeDateText;
+                  MakeHeadLine;
+                  IF PrintDetails THEN BEGIN
+                    FANo := "Fixed Asset".FIELDCAPTION("No.");
+                    FADescription := "Fixed Asset".FIELDCAPTION(Description);
+                  END;
+                  Period1 := Period1::"Before Starting Date";
+                  Period2 := Period2::"Net Change";
+                END;
+
+    Orientation=Landscape;
+  }
+  DATAITEMS
+  {
+    { PROPERTIES
+      {
+        DataItemTable=Table5600;
+        OnPreDataItem=BEGIN
+                        CASE GroupTotals OF
+                          GroupTotals::"FA Class":
+                           BEGIN
+                            SETCURRENTKEY("FA Class Code");
+                            IF ISSERVICETIER THEN
+                               GroupFieldIndex := 1;
+                           END;
+                          GroupTotals::"FA Subclass":
+                           BEGIN
+                            SETCURRENTKEY("FA Subclass Code");
+                            IF ISSERVICETIER THEN
+                               GroupFieldIndex := 2;
+                           END;
+                          GroupTotals::"FA Location":
+                           BEGIN
+                            SETCURRENTKEY("FA Location Code");
+                            IF ISSERVICETIER THEN
+                               GroupFieldIndex := 3;
+                           END;
+                          GroupTotals::"Main Asset":
+                           BEGIN
+                            SETCURRENTKEY("Component of Main Asset");
+                            IF ISSERVICETIER THEN
+                               GroupFieldIndex := 4;
+                           END;
+                          GroupTotals::"Global Dimension 1":
+                           BEGIN
+                            SETCURRENTKEY("Global Dimension 1 Code");
+                            IF ISSERVICETIER THEN
+                               GroupFieldIndex := 5;
+                           END;
+                          GroupTotals::"Global Dimension 2":
+                           BEGIN
+                            SETCURRENTKEY("Global Dimension 2 Code");
+                            IF ISSERVICETIER THEN
+                               GroupFieldIndex := 6;
+                           END;
+                          GroupTotals::"FA Posting Group":
+                           BEGIN
+                            SETCURRENTKEY("FA Posting Group");
+                            IF ISSERVICETIER THEN
+                               GroupFieldIndex := 7;
+                           END;
+                        END;
+                      END;
+
+        OnAfterGetRecord=BEGIN
+                           IF NOT FADeprBook.GET("No.",DeprBookCode) THEN
+                             CurrReport.SKIP;
+                           IF SkipRecord THEN
+                             CurrReport.SKIP;
+
+                           IF GroupTotals = GroupTotals::"FA Posting Group" THEN
+                             IF "FA Posting Group" <> FADeprBook."FA Posting Group" THEN
+                               ERROR(Text1140007,FIELDCAPTION("FA Posting Group"),"No.");
+
+                           BeforeAmount := 0;
+                           EndingAmount := 0;
+                           IF BudgetReport THEN
+                             BudgetDepreciation.Calculate(
+                               "No.",GetStartingDate(StartingDate),EndingDate,DeprBookCode,BeforeAmount,EndingAmount);
+
+                           i := 0;
+                           WHILE i < NumberOfTypes DO BEGIN
+                             i := i + 1;
+                             CASE i OF
+                               1: PostingType := FADeprBook.FIELDNO("Acquisition Cost");
+                               2: PostingType := FADeprBook.FIELDNO(Depreciation);
+                               3: PostingType := FADeprBook.FIELDNO("Write-Down");
+                               4: PostingType := FADeprBook.FIELDNO(Appreciation);
+                               5: PostingType := FADeprBook.FIELDNO("Custom 1");
+                               6: PostingType := FADeprBook.FIELDNO("Custom 2");
+                             END;
+                             IF StartingDate <= 01010000D THEN
+                               StartAmounts[i] := 0
+                             ELSE
+                               StartAmounts[i] := FAGenReport.CalcFAPostedAmount(
+                                 "No.",PostingType,Period1,StartingDate,
+                                 EndingDate,DeprBookCode,BeforeAmount,EndingAmount,FALSE,TRUE);
+                               NetChangeAmounts[i] :=
+                                 FAGenReport.CalcFAPostedAmount(
+                                   "No.",PostingType,Period2,StartingDate,EndingDate,
+                                   DeprBookCode,BeforeAmount,EndingAmount,FALSE,TRUE);
+                             IF i = 1 THEN
+                               ReclassAmount := FAGenReport.CalcFAPostedAmount(
+                                 "No.",PostingType,Period2,StartingDate,EndingDate,
+                                 DeprBookCode,0,0,TRUE,TRUE);
+
+                             IF GetPeriodDisposal THEN
+                               DisposalAmounts[i] := -(StartAmounts[i] + NetChangeAmounts[i])
+                             ELSE
+                              DisposalAmounts[i] := 0;
+                             IF i >= 3 THEN
+                               AddPostingType(i - 3);
+                           END;
+                           FOR j := 1 TO NumberOfTypes DO
+                             TotalEndingAmounts[j] := StartAmounts[j] + NetChangeAmounts[j] + DisposalAmounts[j];
+                           BookValueAtEndingDate := 0;
+                           BookValueAtStartingDate := 0;
+                           FOR j := 1 TO NumberOfTypes DO BEGIN
+                             BookValueAtEndingDate := BookValueAtEndingDate + TotalEndingAmounts[j];
+                             BookValueAtStartingDate := BookValueAtStartingDate + StartAmounts[j];
+                           END;
+
+                           IF ISSERVICETIER THEN BEGIN
+                             MakeGroupHeadLine;
+                             UpdateTotals;
+                             CreateGroupTotals;
+                           END;
+                         END;
+
+        OnPostDataItem=BEGIN
+                         IF ISSERVICETIER THEN
+                           CreateTotals;
+                       END;
+
+        ReqFilterFields=No.,FA Class Code,FA Subclass Code,Budgeted Asset;
+        GroupTotalFields=FA Class Code,FA Subclass Code,Global Dimension 1 Code,Global Dimension 2 Code,FA Location Code,Component of Main Asset,FA Posting Group;
+      }
+      SECTIONS
+      {
+        { PROPERTIES
+          {
+            SectionType=Header;
+            PrintOnEveryPage=Yes;
+            SectionWidth=24900;
+            SectionHeight=1692;
+          }
+          CONTROLS
+          {
+            { 1140000;TextBox   ;0    ;0    ;10000;423  ;FontSize=8;
+                                                         FontBold=Yes;
+                                                         SourceExpr=MainHeadLineText;
+                                                         DataSetFieldName=MainHeadLineText }
+            { 1140001;TextBox   ;0    ;846  ;7500 ;423  ;SourceExpr=COMPANYNAME;
+                                                         DataSetFieldName=COMPANYNAME }
+            { 1140002;TextBox   ;17400;0    ;7500 ;423  ;HorzAlign=Right;
+                                                         SourceExpr=FORMAT(TODAY,0,4);
+                                                         DataSetFieldName=FORMAT_TODAY_0_4_ }
+            { 1140003;TextBox   ;17400;846  ;7500 ;423  ;HorzAlign=Right;
+                                                         SourceExpr=USERID;
+                                                         DataSetFieldName=USERID }
+            { 1140004;TextBox   ;24450;423  ;450  ;423  ;CaptionML=[DEU=Seite;
+                                                                    ENU=Page];
+                                                         SourceExpr=CurrReport.PAGENO;
+                                                         DataSetFieldName=CurrReport_PAGENO }
+            { 1140005;Label     ;23700;423  ;750  ;423  ;ParentControl=1140004;
+                                                         DataSetFieldName=CurrReport_PAGENOCaption }
+            { 1140006;TextBox   ;0    ;423  ;7500 ;423  ;SourceExpr=DeprBookText;
+                                                         DataSetFieldName=DeprBookText }
+          }
+           }
+        { PROPERTIES
+          {
+            SectionType=Header;
+            PrintOnEveryPage=Yes;
+            SectionWidth=24900;
+            SectionHeight=846;
+            OnPreSection=BEGIN
+                           CurrReport.SHOWOUTPUT((CurrReport.PAGENO = 1) AND (FAFilter <> ''));
+                         END;
+
+          }
+          CONTROLS
+          {
+            { 1140007;TextBox   ;0    ;0    ;18150;423  ;SourceExpr="Fixed Asset".TABLECAPTION + ': ' +FORMAT(FAFilter);
+                                                         DataSetFieldName=Fixed_Asset__TABLECAPTION__________FAFilter }
+          }
+           }
+        { PROPERTIES
+          {
+            SectionType=Header;
+            PrintOnEveryPage=Yes;
+            SectionWidth=24900;
+            SectionHeight=423;
+          }
+          CONTROLS
+          {
+            { 1140056;TextBox   ;300  ;0    ;150  ;423  ;Name=GroupTotals;
+                                                         Visible=No;
+                                                         ForeColor=65535;
+                                                         SourceExpr=FORMAT(GroupTotals);
+                                                         DataSetFieldName=GroupTotals }
+            { 1140057;TextBox   ;150  ;0    ;150  ;423  ;Name=BudgetReport;
+                                                         Visible=No;
+                                                         ForeColor=65535;
+                                                         SourceExpr=BudgetReport;
+                                                         DataSetFieldName=BudgetReport }
+            { 1140058;TextBox   ;0    ;0    ;150  ;423  ;Name=PrintDetails;
+                                                         Visible=No;
+                                                         ForeColor=65535;
+                                                         SourceExpr=PrintDetails;
+                                                         DataSetFieldName=PrintDetails }
+            { 1461001;TextBox   ;450  ;0    ;150  ;423  ;Name=GroupTotals;
+                                                         Visible=No;
+                                                         ForeColor=65535;
+                                                         SourceExpr=GroupFieldIndex;
+                                                         DataSetFieldName=GroupFieldIndex }
+          }
+           }
+        { PROPERTIES
+          {
+            SectionType=Header;
+            PrintOnEveryPage=Yes;
+            SectionWidth=24900;
+            SectionHeight=2115;
+          }
+          CONTROLS
+          {
+            { 1140008;TextBox   ;0    ;0    ;5400 ;423  ;SourceExpr=GroupCodeName;
+                                                         DataSetFieldName=GroupCodeName }
+            { 1140009;TextBox   ;5550 ;423  ;1800 ;1692 ;HorzAlign=Right;
+                                                         VertAlign=Bottom;
+                                                         FontBold=Yes;
+                                                         MultiLine=Yes;
+                                                         SourceExpr=HeadLineText[1];
+                                                         DataSetFieldName=HeadLineText_1_ }
+            { 1140010;TextBox   ;7500 ;423  ;1800 ;1692 ;HorzAlign=Right;
+                                                         VertAlign=Bottom;
+                                                         FontBold=Yes;
+                                                         MultiLine=Yes;
+                                                         SourceExpr=HeadLineText[2];
+                                                         DataSetFieldName=HeadLineText_2_ }
+            { 1140011;TextBox   ;9450 ;423  ;1800 ;1692 ;HorzAlign=Right;
+                                                         VertAlign=Bottom;
+                                                         FontBold=Yes;
+                                                         MultiLine=Yes;
+                                                         SourceExpr=HeadLineText[3];
+                                                         DataSetFieldName=HeadLineText_3_ }
+            { 1140012;TextBox   ;11400;423  ;1800 ;1692 ;HorzAlign=Right;
+                                                         VertAlign=Bottom;
+                                                         FontBold=Yes;
+                                                         MultiLine=Yes;
+                                                         SourceExpr=HeadLineText[4];
+                                                         DataSetFieldName=HeadLineText_4_ }
+            { 1140013;TextBox   ;13350;423  ;1800 ;1692 ;HorzAlign=Right;
+                                                         VertAlign=Bottom;
+                                                         FontBold=Yes;
+                                                         MultiLine=Yes;
+                                                         SourceExpr=HeadLineText[5];
+                                                         DataSetFieldName=HeadLineText_5_ }
+            { 1140014;TextBox   ;15300;423  ;1800 ;1692 ;HorzAlign=Right;
+                                                         VertAlign=Bottom;
+                                                         FontBold=Yes;
+                                                         MultiLine=Yes;
+                                                         SourceExpr=HeadLineText[6];
+                                                         DataSetFieldName=HeadLineText_6_ }
+            { 1140015;TextBox   ;17250;423  ;1800 ;1692 ;HorzAlign=Right;
+                                                         VertAlign=Bottom;
+                                                         FontBold=Yes;
+                                                         MultiLine=Yes;
+                                                         SourceExpr=HeadLineText[7];
+                                                         DataSetFieldName=HeadLineText_7_ }
+            { 1140016;TextBox   ;19200;423  ;1800 ;1692 ;HorzAlign=Right;
+                                                         VertAlign=Bottom;
+                                                         FontBold=Yes;
+                                                         MultiLine=Yes;
+                                                         SourceExpr=HeadLineText[8];
+                                                         DataSetFieldName=HeadLineText_8_ }
+            { 1140017;TextBox   ;21150;423  ;1800 ;1692 ;HorzAlign=Right;
+                                                         VertAlign=Bottom;
+                                                         FontBold=Yes;
+                                                         MultiLine=Yes;
+                                                         SourceExpr=HeadLineText[9];
+                                                         DataSetFieldName=HeadLineText_9_ }
+            { 1140018;TextBox   ;23100;423  ;1800 ;1692 ;HorzAlign=Right;
+                                                         VertAlign=Bottom;
+                                                         FontBold=Yes;
+                                                         MultiLine=Yes;
+                                                         SourceExpr=HeadLineText[10];
+                                                         DataSetFieldName=HeadLineText_10_ }
+            { 1140019;TextBox   ;0    ;1269 ;1500 ;846  ;VertAlign=Bottom;
+                                                         FontBold=Yes;
+                                                         SourceExpr=FANo;
+                                                         DataSetFieldName=FANo }
+            { 1140020;TextBox   ;1650 ;1269 ;3750 ;846  ;VertAlign=Bottom;
+                                                         FontBold=Yes;
+                                                         SourceExpr=FADescription;
+                                                         DataSetFieldName=FADescription }
+          }
+           }
+        { PROPERTIES
+          {
+            SectionType=Header;
+            PrintOnEveryPage=Yes;
+            SectionWidth=24900;
+            SectionHeight=423;
+            OnPreSection=BEGIN
+                           CurrReport.SHOWOUTPUT((GroupTotals = 0) OR NOT PrintDetails);
+                         END;
+
+          }
+          CONTROLS
+          {
+          }
+           }
+        { PROPERTIES
+          {
+            SectionType=GroupHeader;
+            SectionWidth=24900;
+            SectionHeight=846;
+            OnPreSection=BEGIN
+                           MakeGroupHeadLine;
+                           CurrReport.SHOWOUTPUT(PrintDetails AND (GroupTotals <> 0))
+                         END;
+
+          }
+          CONTROLS
+          {
+            { 1140021;TextBox   ;0    ;423  ;5400 ;423  ;FontBold=Yes;
+                                                         SourceExpr=GroupHeadLine;
+                                                         DataSetFieldName=GroupHeadLine }
+          }
+           }
+        { PROPERTIES
+          {
+            SectionType=Body;
+            SectionWidth=24900;
+            SectionHeight=423;
+            OnPreSection=BEGIN
+                           CurrReport.SHOWOUTPUT(PrintDetails);
+                         END;
+
+            OnPostSection=BEGIN
+                            UpdateTotals;
+                          END;
+
+          }
+          CONTROLS
+          {
+            { 1140022;TextBox   ;0    ;0    ;1500 ;423  ;HorzAlign=Left;
+                                                         SourceExpr="No.";
+                                                         DataSetFieldName=Fixed_Asset__No__ }
+            { 1140023;TextBox   ;1650 ;0    ;3750 ;423  ;SourceExpr=Description;
+                                                         DataSetFieldName=Fixed_Asset_Description }
+            { 1140024;TextBox   ;5550 ;0    ;1800 ;423  ;SourceExpr=StartAmounts[1];
+                                                         AutoFormatType=1;
+                                                         DataSetFieldName=StartAmounts_1_ }
+            { 1140025;TextBox   ;7500 ;0    ;1800 ;423  ;SourceExpr=NetChangeAmounts[1] - ReclassAmount;
+                                                         AutoFormatType=1;
+                                                         DataSetFieldName=NetChangeAmounts_1____ReclassAmount }
+            { 1140026;TextBox   ;9450 ;0    ;1800 ;423  ;SourceExpr=DisposalAmounts[1];
+                                                         AutoFormatType=1;
+                                                         DataSetFieldName=DisposalAmounts_1_ }
+            { 1140027;TextBox   ;11400;0    ;1800 ;423  ;SourceExpr=ReclassAmount;
+                                                         AutoFormatType=1;
+                                                         DataSetFieldName=ReclassAmount }
+            { 1140028;TextBox   ;13350;0    ;1800 ;423  ;SourceExpr=NetChangeAmounts[4];
+                                                         AutoFormatType=1;
+                                                         DataSetFieldName=NetChangeAmounts_4_ }
+            { 1140029;TextBox   ;15300;0    ;1800 ;423  ;SourceExpr=StartAmounts[2];
+                                                         AutoFormatType=1;
+                                                         DataSetFieldName=StartAmounts_2_ }
+            { 1140030;TextBox   ;17250;0    ;1800 ;423  ;SourceExpr=NetChangeAmounts[2];
+                                                         AutoFormatType=1;
+                                                         DataSetFieldName=NetChangeAmounts_2_ }
+            { 1140031;TextBox   ;19200;0    ;1800 ;423  ;SourceExpr=DisposalAmounts[2];
+                                                         AutoFormatType=1;
+                                                         DataSetFieldName=DisposalAmounts_2_ }
+            { 1140032;TextBox   ;21150;0    ;1800 ;423  ;SourceExpr=BookValueAtStartingDate;
+                                                         AutoFormatType=1;
+                                                         DataSetFieldName=BookValueAtStartingDate }
+            { 1140033;TextBox   ;23100;0    ;1800 ;423  ;SourceExpr=BookValueAtEndingDate;
+                                                         AutoFormatType=1;
+                                                         DataSetFieldName=BookValueAtEndingDate }
+          }
+           }
+        { PROPERTIES
+          {
+            SectionType=GroupFooter;
+            SectionWidth=24900;
+            SectionHeight=423;
+            OnPreSection=BEGIN
+                           CurrReport.SHOWOUTPUT(GroupTotals <> 0);
+                           CreateGroupTotals;
+                         END;
+
+          }
+          CONTROLS
+          {
+            { 1140034;TextBox   ;0    ;0    ;5400 ;423  ;FontBold=Yes;
+                                                         SourceExpr=FORMAT(Text1140002 + ': ' + GroupHeadLine);
+                                                         DataSetFieldName=FORMAT_Text1140002__________GroupHeadLine_ }
+            { 1140035;TextBox   ;5550 ;0    ;1800 ;423  ;FontBold=Yes;
+                                                         SourceExpr=GroupStartAmounts[1];
+                                                         AutoFormatType=1;
+                                                         DataSetFieldName=GroupStartAmounts_1_ }
+            { 1140036;TextBox   ;7500 ;0    ;1800 ;423  ;FontBold=Yes;
+                                                         SourceExpr=GroupNetChangeAmounts[1] - GroupReclassAmount;
+                                                         AutoFormatType=1;
+                                                         DataSetFieldName=GroupNetChangeAmounts_1____GroupReclassAmount }
+            { 1140037;TextBox   ;9450 ;0    ;1800 ;423  ;FontBold=Yes;
+                                                         SourceExpr=GroupDisposalAmounts[1];
+                                                         AutoFormatType=1;
+                                                         DataSetFieldName=GroupDisposalAmounts_1_ }
+            { 1140038;TextBox   ;11400;0    ;1800 ;423  ;FontBold=Yes;
+                                                         SourceExpr=GroupReclassAmount;
+                                                         AutoFormatType=1;
+                                                         DataSetFieldName=GroupReclassAmount }
+            { 1140039;TextBox   ;13350;0    ;1800 ;423  ;FontBold=Yes;
+                                                         SourceExpr=GroupNetChangeAmounts[4];
+                                                         AutoFormatType=1;
+                                                         DataSetFieldName=GroupNetChangeAmounts_4_ }
+            { 1140040;TextBox   ;15300;0    ;1800 ;423  ;FontBold=Yes;
+                                                         SourceExpr=GroupStartAmounts[2];
+                                                         AutoFormatType=1;
+                                                         DataSetFieldName=GroupStartAmounts_2_ }
+            { 1140041;TextBox   ;17250;0    ;1800 ;423  ;FontBold=Yes;
+                                                         SourceExpr=GroupNetChangeAmounts[2];
+                                                         AutoFormatType=1;
+                                                         DataSetFieldName=GroupNetChangeAmounts_2_ }
+            { 1140042;TextBox   ;19200;0    ;1800 ;423  ;FontBold=Yes;
+                                                         SourceExpr=GroupDisposalAmounts[2];
+                                                         AutoFormatType=1;
+                                                         DataSetFieldName=GroupDisposalAmounts_2_ }
+            { 1140043;TextBox   ;21150;0    ;1800 ;423  ;FontBold=Yes;
+                                                         SourceExpr=BookValueAtStartingDate;
+                                                         AutoFormatType=1;
+                                                         DataSetFieldName=BookValueAtStartingDate_Control1140043 }
+            { 1140044;TextBox   ;23100;0    ;1800 ;423  ;FontBold=Yes;
+                                                         SourceExpr=BookValueAtEndingDate;
+                                                         AutoFormatType=1;
+                                                         DataSetFieldName=BookValueAtEndingDate_Control1140044 }
+            { 1140059;TextBox   ;5400 ;0    ;150  ;423  ;Name=GroupHeadLine;
+                                                         Visible=No;
+                                                         ForeColor=65535;
+                                                         SourceExpr=FORMAT(GroupHeadLine);
+                                                         DataSetFieldName=GroupHeadLine_Control1140059 }
+          }
+           }
+        { PROPERTIES
+          {
+            SectionType=Footer;
+            SectionWidth=24900;
+            SectionHeight=846;
+            OnPreSection=BEGIN
+                           CreateTotals;
+                         END;
+
+          }
+          CONTROLS
+          {
+            { 1140045;Label     ;0    ;423  ;1500 ;423  ;FontBold=Yes;
+                                                         CaptionML=[DEU=Summe;
+                                                                    ENU=Total];
+                                                         DataSetFieldName=TotalCaption }
+            { 1140046;TextBox   ;5550 ;423  ;1800 ;423  ;FontBold=Yes;
+                                                         SourceExpr=TotalStartAmounts[1];
+                                                         AutoFormatType=1;
+                                                         DataSetFieldName=TotalStartAmounts_1_ }
+            { 1140047;TextBox   ;7500 ;423  ;1800 ;423  ;FontBold=Yes;
+                                                         SourceExpr=TotalNetChangeAmounts[1] - TotalReclassAmount;
+                                                         AutoFormatType=1;
+                                                         DataSetFieldName=TotalNetChangeAmounts_1____TotalReclassAmount }
+            { 1140048;TextBox   ;9450 ;423  ;1800 ;423  ;FontBold=Yes;
+                                                         SourceExpr=TotalDisposalAmounts[1];
+                                                         AutoFormatType=1;
+                                                         DataSetFieldName=TotalDisposalAmounts_1_ }
+            { 1140049;TextBox   ;11400;423  ;1800 ;423  ;FontBold=Yes;
+                                                         SourceExpr=TotalReclassAmount;
+                                                         AutoFormatType=1;
+                                                         DataSetFieldName=TotalReclassAmount }
+            { 1140050;TextBox   ;13350;423  ;1800 ;423  ;FontBold=Yes;
+                                                         SourceExpr=TotalNetChangeAmounts[4];
+                                                         AutoFormatType=1;
+                                                         DataSetFieldName=TotalNetChangeAmounts_4_ }
+            { 1140051;TextBox   ;15300;423  ;1800 ;423  ;FontBold=Yes;
+                                                         SourceExpr=TotalStartAmounts[2];
+                                                         AutoFormatType=1;
+                                                         DataSetFieldName=TotalStartAmounts_2_ }
+            { 1140052;TextBox   ;17250;423  ;1800 ;423  ;FontBold=Yes;
+                                                         SourceExpr=TotalNetChangeAmounts[2];
+                                                         AutoFormatType=1;
+                                                         DataSetFieldName=TotalNetChangeAmounts_2_ }
+            { 1140053;TextBox   ;19200;423  ;1800 ;423  ;FontBold=Yes;
+                                                         SourceExpr=TotalDisposalAmounts[2];
+                                                         AutoFormatType=1;
+                                                         DataSetFieldName=TotalDisposalAmounts_2_ }
+            { 1140054;TextBox   ;21150;423  ;1800 ;423  ;FontBold=Yes;
+                                                         SourceExpr=BookValueAtStartingDate;
+                                                         AutoFormatType=1;
+                                                         DataSetFieldName=BookValueAtStartingDate_Control1140054 }
+            { 1140055;TextBox   ;23100;423  ;1800 ;423  ;FontBold=Yes;
+                                                         SourceExpr=BookValueAtEndingDate;
+                                                         AutoFormatType=1;
+                                                         DataSetFieldName=BookValueAtEndingDate_Control1140055 }
+          }
+           }
+      }
+       }
+  }
+  REQUESTFORM
+  {
+    PROPERTIES
+    {
+      Width=6160;
+      Height=3300;
+      SaveValues=Yes;
+      OnOpenForm=BEGIN
+                   IF DeprBookCode = '' THEN BEGIN
+                     FASetup.GET;
+                     DeprBookCode := FASetup."Default Depr. Book";
+                   END;
+                 END;
+
+    }
+    CONTROLS
+    {
+      { 1140000;Label     ;0    ;1760 ;3300 ;440  ;ParentControl=1140001 }
+      { 1140001;TextBox   ;3410 ;1760 ;2750 ;440  ;CaptionML=[DEU=Gruppensummen;
+                                                              ENU=Group Totals];
+                                                   OptionCaptionML=[DEU=" ,Anl. Klasse,Anl. Sachgruppe,Anl. Standort,Hauptanl.,Globale Dimension 1,Globale Dimension 2,Anlagenbuchungsgruppe";
+                                                                    ENU=" ,FA Class,FA Subclass,FA Location,Main Asset,Global Dimension 1,Global Dimension 2,FA Posting Group"];
+                                                   SourceExpr=GroupTotals }
+      { 1140003;Label     ;0    ;660  ;3300 ;440  ;ParentControl=1140005 }
+      { 1140004;Label     ;0    ;1210 ;3300 ;440  ;ParentControl=1140006 }
+      { 1140005;TextBox   ;3410 ;660  ;1650 ;440  ;CaptionML=[DEU=Startdatum;
+                                                              ENU=Starting Date];
+                                                   SourceExpr=StartingDate }
+      { 1140006;TextBox   ;3410 ;1210 ;1650 ;440  ;CaptionML=[DEU=Enddatum;
+                                                              ENU=Ending Date];
+                                                   SourceExpr=EndingDate }
+      { 1140007;Label     ;0    ;2310 ;3300 ;440  ;ParentControl=1140008 }
+      { 1140008;CheckBox  ;3410 ;2310 ;440  ;440  ;ShowCaption=No;
+                                                   CaptionML=[DEU=Druck pro Anlage;
+                                                              ENU=Print per Fixed Asset];
+                                                   SourceExpr=PrintDetails }
+      { 1140009;Label     ;0    ;2860 ;3300 ;440  ;ParentControl=1140010 }
+      { 1140010;CheckBox  ;3410 ;2860 ;440  ;440  ;ShowCaption=No;
+                                                   CaptionML=[DEU=Planbericht;
+                                                              ENU=Budget Report];
+                                                   SourceExpr=BudgetReport }
+      { 1140011;TextBox   ;3410 ;110  ;2750 ;440  ;Lookup=Yes;
+                                                   CaptionML=[DEU=AfA-Buch;
+                                                              ENU=Depreciation Book];
+                                                   SourceExpr=DeprBookCode;
+                                                   TableRelation="Depreciation Book" }
+      { 1140012;Label     ;0    ;110  ;3300 ;440  ;ParentControl=1140011 }
+    }
+  }
+  REQUESTPAGE
+  {
+    PROPERTIES
+    {
+      SaveValues=Yes;
+      OnOpenPage=BEGIN
+                   IF DeprBookCode = '' THEN BEGIN
+                     FASetup.GET;
+                     DeprBookCode := FASetup."Default Depr. Book";
+                   END;
+                 END;
+
+    }
+    CONTROLS
+    {
+      { 1900000001;0;Container;
+                  ContainerType=ContentArea }
+
+      { 1900000002;1;Group  ;
+                  CaptionML=[DEU=Optionen;
+                             ENU=Options] }
+
+      { 1140011;2;Field     ;
+                  Lookup=Yes;
+                  CaptionML=[DEU=AfA-Buch;
+                             ENU=Depreciation Book];
+                  SourceExpr=DeprBookCode;
+                  TableRelation="Depreciation Book" }
+
+      { 1140005;2;Field     ;
+                  CaptionML=[DEU=Startdatum;
+                             ENU=Starting Date];
+                  SourceExpr=StartingDate }
+
+      { 1140006;2;Field     ;
+                  CaptionML=[DEU=Enddatum;
+                             ENU=Ending Date];
+                  SourceExpr=EndingDate }
+
+      { 1140001;2;Field     ;
+                  CaptionML=[DEU=Gruppensummen;
+                             ENU=Group Totals];
+                  OptionCaptionML=[DEU=" ,Anl.-Klasse,Anl.-Sachgruppe,Anl.-Standort,Hauptanl.,Globale Dimension 1,Globale Dimension 2,Anlagenbuchungsgruppe";
+                                   ENU=" ,FA Class,FA Subclass,FA Location,Main Asset,Global Dimension 1,Global Dimension 2,FA Posting Group"];
+                  SourceExpr=GroupTotals }
+
+      { 1140008;2;Field     ;
+                  CaptionML=[DEU=Druck pro Anlage;
+                             ENU=Print per Fixed Asset];
+                  SourceExpr=PrintDetails }
+
+      { 1140010;2;Field     ;
+                  CaptionML=[DEU=Planbericht;
+                             ENU=Budget Report];
+                  SourceExpr=BudgetReport }
+
+    }
+  }
+  CODE
+  {
+    VAR
+      Text1140000@1140000 : TextConst 'DEU=Anlagenspiegel mit Umbuchung;ENU=Fixed Asset - Book Value 03';
+      Text1140001@1140001 : TextConst 'DEU=(Planbericht);ENU=(Budget Report)';
+      Text1140002@1140002 : TextConst 'DEU=Gruppensumme;ENU=Group Total';
+      Text1140003@1140003 : TextConst 'DEU=Gruppensummen;ENU=Group Totals';
+      Text1140004@1140004 : TextConst 'DEU=in Periode;ENU=in Period';
+      Text1140005@1140005 : TextConst 'DEU=Verkauf;ENU=Disposal';
+      Text1140006@1140006 : TextConst 'DEU=Zugang;ENU=Addition';
+      Text1140007@1140007 : TextConst 'DEU=Die %1 wurde in Anlage %2 ge„ndert.;ENU=%1 has been modified in fixed asset %2';
+      Text1140008@1140008 : TextConst 'DEU=Umbuchung;ENU=Reclassification';
+      Text1140009@1140009 : TextConst 'DEU=Zuschr.;ENU=Appreciation';
+      Text1140010@1140010 : TextConst 'DEU=kum. AfA bis;ENU=Accum. Depr. until';
+      Text1140011@1140011 : TextConst 'DEU="     AfA";ENU=Depreciation';
+      FASetup@1140012 : Record 5603;
+      DeprBook@1140013 : Record 5611;
+      FADeprBook@1140014 : Record 5612;
+      FA@1140015 : Record 5600;
+      FAPostingTypeSetup@1140016 : Record 5604;
+      FAGenReport@1140017 : Codeunit 5626;
+      BudgetDepreciation@1140018 : Codeunit 5615;
+      DeprBookCode@1140019 : Code[10];
+      FAFilter@1140020 : Text[250];
+      MainHeadLineText@1140021 : Text[100];
+      DeprBookText@1140022 : Text[50];
+      GroupCodeName@1140023 : Text[50];
+      GroupHeadLine@1140024 : Text[50];
+      FANo@1140025 : Text[50];
+      FADescription@1140026 : Text[50];
+      StartText@1140027 : Text[30];
+      EndText@1140028 : Text[30];
+      HeadLineText@1140029 : ARRAY [10] OF Text[50];
+      BookValueAtStartingDate@1140030 : Decimal;
+      BookValueAtEndingDate@1140031 : Decimal;
+      BeforeAmount@1140032 : Decimal;
+      EndingAmount@1140033 : Decimal;
+      ReclassAmount@1140034 : Decimal;
+      GroupReclassAmount@1140035 : Decimal;
+      TotalReclassAmount@1140036 : Decimal;
+      StartAmounts@1140037 : ARRAY [6] OF Decimal;
+      NetChangeAmounts@1140038 : ARRAY [6] OF Decimal;
+      DisposalAmounts@1140039 : ARRAY [6] OF Decimal;
+      GroupStartAmounts@1140040 : ARRAY [6] OF Decimal;
+      GroupNetChangeAmounts@1140041 : ARRAY [6] OF Decimal;
+      GroupDisposalAmounts@1140042 : ARRAY [6] OF Decimal;
+      TotalStartAmounts@1140043 : ARRAY [6] OF Decimal;
+      TotalNetChangeAmounts@1140044 : ARRAY [6] OF Decimal;
+      TotalDisposalAmounts@1140045 : ARRAY [6] OF Decimal;
+      TotalEndingAmounts@1140046 : ARRAY [6] OF Decimal;
+      i@1140047 : Integer;
+      j@1140048 : Integer;
+      NumberOfTypes@1140049 : Integer;
+      PostingType@1140050 : Integer;
+      GroupTotals@1140051 : ' ,FA Class,FA Subclass,FA Location,Main Asset,Global Dimension 1,Global Dimension 2,FA Posting Group';
+      Period1@1140052 : 'Before Starting Date,Net Change,at Ending Date';
+      Period2@1140053 : 'Before Starting Date,Net Change,at Ending Date';
+      StartingDate@1140054 : Date;
+      EndingDate@1140055 : Date;
+      AcquisitionDate@1140056 : Date;
+      DisposalDate@1140057 : Date;
+      PrintDetails@1140058 : Boolean;
+      BudgetReport@1140059 : Boolean;
+      GroupFieldIndex@1461000 : Integer;
+
+    LOCAL PROCEDURE AddPostingType@1140000(PostingType@1000 : 'Write-Down,Appreciation,Custom 1,Custom 2');
+    VAR
+      i@1140000 : Integer;
+      j@1140001 : Integer;
+    BEGIN
+      i := PostingType + 3;
+      WITH FAPostingTypeSetup DO BEGIN
+        CASE PostingType OF
+          PostingType::"Write-Down":
+            GET(DeprBookCode,"FA Posting Type"::"Write-Down");
+          PostingType::Appreciation:
+            GET(DeprBookCode,"FA Posting Type"::Appreciation);
+          PostingType::"Custom 1":
+            GET(DeprBookCode,"FA Posting Type"::"Custom 1");
+          PostingType::"Custom 2":
+            GET(DeprBookCode,"FA Posting Type"::"Custom 2");
+        END;
+        IF "Depreciation Type" THEN
+          j := 2
+        ELSE IF "Acquisition Type" THEN
+          j := 1;
+      END;
+      IF j > 0 THEN BEGIN
+        StartAmounts[j] := StartAmounts[j] + StartAmounts[i];
+        StartAmounts[i] := 0;
+        NetChangeAmounts[j] := NetChangeAmounts[j] + NetChangeAmounts[i];
+        NetChangeAmounts[i] := 0;
+        DisposalAmounts[j] := DisposalAmounts[j] + DisposalAmounts[i];
+        DisposalAmounts[i] := 0;
+      END;
+    END;
+
+    LOCAL PROCEDURE SkipRecord@1140001() : Boolean;
+    BEGIN
+      AcquisitionDate := FADeprBook."Acquisition Date";
+      DisposalDate := FADeprBook."Disposal Date";
+      EXIT(
+        "Fixed Asset".Inactive OR
+        (AcquisitionDate = 0D) OR
+        (AcquisitionDate > EndingDate) AND (EndingDate > 0D) OR
+        (DisposalDate > 0D) AND (DisposalDate < StartingDate))
+    END;
+
+    LOCAL PROCEDURE GetPeriodDisposal@1140002() : Boolean;
+    BEGIN
+      IF DisposalDate > 0D THEN
+        IF (EndingDate = 0D) OR (DisposalDate <= EndingDate) THEN
+          EXIT(TRUE);
+      EXIT(FALSE);
+    END;
+
+    LOCAL PROCEDURE MakeGroupTotalText@1140003();
+    BEGIN
+      CASE GroupTotals OF
+        GroupTotals::"FA Class":
+          GroupCodeName := FORMAT("Fixed Asset".FIELDCAPTION("FA Class Code"));
+        GroupTotals::"FA Subclass":
+          GroupCodeName := FORMAT("Fixed Asset".FIELDCAPTION("FA Subclass Code"));
+        GroupTotals::"FA Location":
+          GroupCodeName := FORMAT("Fixed Asset".FIELDCAPTION("FA Location Code"));
+        GroupTotals::"Main Asset":
+          GroupCodeName := FORMAT("Fixed Asset".FIELDCAPTION("Main Asset/Component"));
+        GroupTotals::"Global Dimension 1":
+          GroupCodeName := FORMAT("Fixed Asset".FIELDCAPTION("Global Dimension 1 Code"));
+        GroupTotals::"Global Dimension 2":
+          GroupCodeName := FORMAT("Fixed Asset".FIELDCAPTION("Global Dimension 2 Code"));
+        GroupTotals::"FA Posting Group":
+          GroupCodeName := FORMAT("Fixed Asset".FIELDCAPTION("FA Posting Group"));
+      END;
+      IF GroupCodeName <> '' THEN
+        GroupCodeName := FORMAT(STRSUBSTNO('%1%2 %3',Text1140003,':',GroupCodeName));
+    END;
+
+    LOCAL PROCEDURE MakeDateText@1140004();
+    BEGIN
+      StartText := STRSUBSTNO('%1',StartingDate - 1);
+      EndText := STRSUBSTNO('%1',EndingDate);
+    END;
+
+    LOCAL PROCEDURE MakeHeadLine@1140005();
+    VAR
+      InPeriodText@1140000 : Text[30];
+      DisposalText@1140001 : Text[30];
+    BEGIN
+      InPeriodText := Text1140004;
+      DisposalText := Text1140005;
+      HeadLineText[1] := STRSUBSTNO('%1 %2',FADeprBook.FIELDCAPTION("Acquisition Cost"),StartText);
+      HeadLineText[2] := STRSUBSTNO('%1 %2',Text1140006,InPeriodText);
+      HeadLineText[3] := STRSUBSTNO('%1 %2',DisposalText,InPeriodText);
+      HeadLineText[4] := STRSUBSTNO('%1 %2',Text1140008,InPeriodText);
+      HeadLineText[5] := STRSUBSTNO('%1 %2',Text1140009,InPeriodText);
+      HeadLineText[6] := STRSUBSTNO('%1 %2',Text1140010,StartText);
+      HeadLineText[7] :=  STRSUBSTNO('%1 %2',Text1140011,InPeriodText);
+      HeadLineText[8] := STRSUBSTNO('%1 %2 %3',DisposalText,FADeprBook.FIELDCAPTION(Depreciation),InPeriodText);
+      HeadLineText[9] :=  STRSUBSTNO('%1 %2',FADeprBook.FIELDCAPTION("Book Value"),StartText);
+      HeadLineText[10] := STRSUBSTNO('%1 %2',FADeprBook.FIELDCAPTION("Book Value"),EndText);
+    END;
+
+    LOCAL PROCEDURE MakeGroupHeadLine@1140006();
+    BEGIN
+      FOR j := 1 TO NumberOfTypes DO BEGIN
+         GroupStartAmounts[j] := 0;
+         GroupNetChangeAmounts[j] := 0;
+         GroupDisposalAmounts[j] := 0;
+      END;
+      GroupReclassAmount := 0;
+      WITH "Fixed Asset" DO BEGIN
+        CASE GroupTotals OF
+          GroupTotals::"FA Class":
+            GroupHeadLine := FORMAT("FA Class Code");
+          GroupTotals::"FA Subclass":
+            GroupHeadLine := FORMAT("FA Subclass Code");
+          GroupTotals::"FA Location":
+            GroupHeadLine := FORMAT("FA Location Code");
+          GroupTotals::"Main Asset":
+            BEGIN
+              FA."Main Asset/Component" := FA."Main Asset/Component"::"Main Asset";
+              GroupHeadLine :=
+                FORMAT(STRSUBSTNO('%1 %2',FORMAT(FA."Main Asset/Component"),"Component of Main Asset"));
+              IF "Component of Main Asset" = '' THEN
+                GroupHeadLine := FORMAT(STRSUBSTNO('%1 %2',GroupHeadLine,'*****'));
+            END;
+          GroupTotals::"Global Dimension 1":
+            GroupHeadLine := FORMAT("Global Dimension 1 Code");
+          GroupTotals::"Global Dimension 2":
+            GroupHeadLine := FORMAT("Global Dimension 2 Code");
+          GroupTotals::"FA Posting Group":
+            GroupHeadLine := FORMAT("FA Posting Group");
+        END;
+      END;
+      IF GroupHeadLine = '' THEN
+        GroupHeadLine := FORMAT('*****');
+    END;
+
+    LOCAL PROCEDURE UpdateTotals@1140007();
+    BEGIN
+      FOR j := 1 TO NumberOfTypes DO BEGIN
+        GroupStartAmounts[j] := GroupStartAmounts[j] + StartAmounts[j];
+        GroupNetChangeAmounts[j] := GroupNetChangeAmounts[j] + NetChangeAmounts[j];
+        GroupDisposalAmounts[j] := GroupDisposalAmounts[j] + DisposalAmounts[j];
+        TotalStartAmounts[j] := TotalStartAmounts[j] + StartAmounts[j];
+        TotalNetChangeAmounts[j] := TotalNetChangeAmounts[j] + NetChangeAmounts[j];
+        TotalDisposalAmounts[j] := TotalDisposalAmounts[j] + DisposalAmounts[j];
+      END;
+      GroupReclassAmount := GroupReclassAmount + ReclassAmount;
+      TotalReclassAmount := TotalReclassAmount + ReclassAmount;
+    END;
+
+    LOCAL PROCEDURE CreateGroupTotals@1140008();
+    BEGIN
+      FOR j := 1 TO NumberOfTypes DO
+        TotalEndingAmounts[j] :=
+          GroupStartAmounts[j] + GroupNetChangeAmounts[j] + GroupDisposalAmounts[j];
+      BookValueAtEndingDate := 0;
+      BookValueAtStartingDate := 0;
+      FOR j := 1 TO NumberOfTypes DO BEGIN
+        BookValueAtEndingDate := BookValueAtEndingDate + TotalEndingAmounts[j];
+        BookValueAtStartingDate := BookValueAtStartingDate + GroupStartAmounts[j];
+      END;
+    END;
+
+    LOCAL PROCEDURE CreateTotals@1140009();
+    BEGIN
+      FOR j := 1 TO NumberOfTypes DO
+        TotalEndingAmounts[j] :=
+          TotalStartAmounts[j] + TotalNetChangeAmounts[j] + TotalDisposalAmounts[j];
+      BookValueAtEndingDate := 0;
+      BookValueAtStartingDate := 0;
+      FOR j := 1 TO NumberOfTypes DO BEGIN
+        BookValueAtEndingDate := BookValueAtEndingDate + TotalEndingAmounts[j];
+        BookValueAtStartingDate := BookValueAtStartingDate + TotalStartAmounts[j];
+      END;
+    END;
+
+    LOCAL PROCEDURE GetStartingDate@1140010(StartingDate@1000 : Date) : Date;
+    BEGIN
+      IF StartingDate <= 01010000D THEN
+        EXIT(0D)
+      ELSE
+        EXIT(StartingDate - 1);
+    END;
+
+    BEGIN
+    END.
+  }
+  RDLDATA
+  {
+    <?xml version="1.0" encoding="utf-8"?>
+<Report xmlns="http://schemas.microsoft.com/sqlserver/reporting/2005/01/reportdefinition" xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner">
+  <Body>
+    <Height>6.345cm</Height>
+    <ReportItems>
+      <Table Name="Table1">
+        <DataSetName>DataSet_Result</DataSetName>
+        <Details>
+          <TableRows>
+            <TableRow>
+              <Height>0.423cm</Height>
+              <TableCells>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="Fixed_Asset__No__">
+                      <Style>
+                        <FontSize>7pt</FontSize>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <TextAlign>Left</TextAlign>
+                        <VerticalAlign>Middle</VerticalAlign>
+                      </Style>
+                      <Value>=Fields!Fixed_Asset__No__.Value</Value>
+                      <ZIndex>11</ZIndex>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="Fixed_Asset_Description">
+                      <Style>
+                        <FontSize>7pt</FontSize>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <VerticalAlign>Middle</VerticalAlign>
+                      </Style>
+                      <Value>=Fields!Fixed_Asset_Description.Value</Value>
+                      <ZIndex>10</ZIndex>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="StartAmounts_1_">
+                      <Style>
+                        <FontSize>7pt</FontSize>
+                        <Format>=Fields!StartAmounts_1_Format.Value</Format>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <VerticalAlign>Middle</VerticalAlign>
+                      </Style>
+                      <Value>=Fields!StartAmounts_1_.Value</Value>
+                      <ZIndex>9</ZIndex>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="NetChangeAmounts_1____ReclassAmount">
+                      <Style>
+                        <FontSize>7pt</FontSize>
+                        <Format>=Fields!NetChangeAmounts_1____ReclassAmountFormat.Value</Format>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <VerticalAlign>Middle</VerticalAlign>
+                      </Style>
+                      <Value>=Fields!NetChangeAmounts_1____ReclassAmount.Value</Value>
+                      <ZIndex>8</ZIndex>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="DisposalAmounts_1_">
+                      <Style>
+                        <FontSize>7pt</FontSize>
+                        <Format>=Fields!DisposalAmounts_1_Format.Value</Format>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <VerticalAlign>Middle</VerticalAlign>
+                      </Style>
+                      <Value>=Fields!DisposalAmounts_1_.Value</Value>
+                      <ZIndex>7</ZIndex>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="ReclassAmount">
+                      <Style>
+                        <FontSize>7pt</FontSize>
+                        <Format>=Fields!ReclassAmountFormat.Value</Format>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <VerticalAlign>Middle</VerticalAlign>
+                      </Style>
+                      <Value>=Fields!ReclassAmount.Value</Value>
+                      <ZIndex>6</ZIndex>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="NetChangeAmounts_4_">
+                      <Style>
+                        <FontSize>7pt</FontSize>
+                        <Format>=Fields!NetChangeAmounts_4_Format.Value</Format>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <VerticalAlign>Middle</VerticalAlign>
+                      </Style>
+                      <Value>=Fields!NetChangeAmounts_4_.Value</Value>
+                      <ZIndex>5</ZIndex>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="StartAmounts_2_">
+                      <Style>
+                        <FontSize>7pt</FontSize>
+                        <Format>=Fields!StartAmounts_2_Format.Value</Format>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <VerticalAlign>Middle</VerticalAlign>
+                      </Style>
+                      <Value>=Fields!StartAmounts_2_.Value</Value>
+                      <ZIndex>4</ZIndex>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="NetChangeAmounts_2_">
+                      <Style>
+                        <FontSize>7pt</FontSize>
+                        <Format>=Fields!NetChangeAmounts_2_Format.Value</Format>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <VerticalAlign>Middle</VerticalAlign>
+                      </Style>
+                      <Value>=Fields!NetChangeAmounts_2_.Value</Value>
+                      <ZIndex>3</ZIndex>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="DisposalAmounts_2_">
+                      <Style>
+                        <FontSize>7pt</FontSize>
+                        <Format>=Fields!DisposalAmounts_2_Format.Value</Format>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <VerticalAlign>Middle</VerticalAlign>
+                      </Style>
+                      <Value>=Fields!DisposalAmounts_2_.Value</Value>
+                      <ZIndex>2</ZIndex>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="BookValueAtStartingDate">
+                      <Style>
+                        <FontSize>7pt</FontSize>
+                        <Format>=Fields!BookValueAtStartingDateFormat.Value</Format>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <VerticalAlign>Middle</VerticalAlign>
+                      </Style>
+                      <Value>=Fields!BookValueAtStartingDate.Value</Value>
+                      <ZIndex>1</ZIndex>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="BookValueAtEndingDate">
+                      <Style>
+                        <FontSize>7pt</FontSize>
+                        <Format>=Fields!BookValueAtEndingDateFormat.Value</Format>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <VerticalAlign>Middle</VerticalAlign>
+                      </Style>
+                      <Value>=Fields!BookValueAtEndingDate.Value</Value>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+              </TableCells>
+              <Visibility>
+                <Hidden>=IIF(Fields!PrintDetails.Value,false,true)</Hidden>
+              </Visibility>
+            </TableRow>
+          </TableRows>
+        </Details>
+        <Footer>
+          <TableRows>
+            <TableRow>
+              <Height>0.423cm</Height>
+              <TableCells>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="textbox22">
+                      <Style>
+                        <FontSize>7pt</FontSize>
+                        <FontWeight>700</FontWeight>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <VerticalAlign>Middle</VerticalAlign>
+                      </Style>
+                      <Value />
+                      <ZIndex>34</ZIndex>
+                      <rd:DefaultName>textbox22</rd:DefaultName>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="textbox64">
+                      <Style>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <VerticalAlign>Middle</VerticalAlign>
+                      </Style>
+                      <Value />
+                      <ZIndex>33</ZIndex>
+                      <rd:DefaultName>textbox64</rd:DefaultName>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="textbox24">
+                      <Style>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <VerticalAlign>Middle</VerticalAlign>
+                      </Style>
+                      <Value />
+                      <ZIndex>32</ZIndex>
+                      <rd:DefaultName>textbox24</rd:DefaultName>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="textbox25">
+                      <Style>
+                        <FontSize>7pt</FontSize>
+                        <FontWeight>700</FontWeight>
+                        <Format>=First(Fields!TotalStartAmounts_1_Format.Value)</Format>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <VerticalAlign>Middle</VerticalAlign>
+                      </Style>
+                      <Value />
+                      <ZIndex>31</ZIndex>
+                      <rd:DefaultName>textbox25</rd:DefaultName>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="textbox26">
+                      <Style>
+                        <FontSize>7pt</FontSize>
+                        <FontWeight>700</FontWeight>
+                        <Format>=First(Fields!TotalNetChangeAmounts_1____TotalReclassAmountFormat.Value)</Format>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <VerticalAlign>Middle</VerticalAlign>
+                      </Style>
+                      <Value />
+                      <ZIndex>30</ZIndex>
+                      <rd:DefaultName>textbox26</rd:DefaultName>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="textbox27">
+                      <Style>
+                        <FontSize>7pt</FontSize>
+                        <FontWeight>700</FontWeight>
+                        <Format>=First(Fields!TotalDisposalAmounts_1_Format.Value)</Format>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <VerticalAlign>Middle</VerticalAlign>
+                      </Style>
+                      <Value />
+                      <ZIndex>29</ZIndex>
+                      <rd:DefaultName>textbox27</rd:DefaultName>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="textbox28">
+                      <Style>
+                        <FontSize>7pt</FontSize>
+                        <FontWeight>700</FontWeight>
+                        <Format>=First(Fields!TotalReclassAmountFormat.Value)</Format>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <VerticalAlign>Middle</VerticalAlign>
+                      </Style>
+                      <Value />
+                      <ZIndex>28</ZIndex>
+                      <rd:DefaultName>textbox28</rd:DefaultName>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="textbox39">
+                      <Style>
+                        <FontSize>7pt</FontSize>
+                        <FontWeight>700</FontWeight>
+                        <Format>=First(Fields!TotalNetChangeAmounts_4_Format.Value)</Format>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <VerticalAlign>Middle</VerticalAlign>
+                      </Style>
+                      <Value />
+                      <ZIndex>27</ZIndex>
+                      <rd:DefaultName>textbox39</rd:DefaultName>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="textbox40">
+                      <Style>
+                        <FontSize>7pt</FontSize>
+                        <FontWeight>700</FontWeight>
+                        <Format>=First(Fields!TotalStartAmounts_2_Format.Value)</Format>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <VerticalAlign>Middle</VerticalAlign>
+                      </Style>
+                      <Value />
+                      <ZIndex>26</ZIndex>
+                      <rd:DefaultName>textbox40</rd:DefaultName>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="textbox41">
+                      <Style>
+                        <FontSize>7pt</FontSize>
+                        <FontWeight>700</FontWeight>
+                        <Format>=First(Fields!TotalNetChangeAmounts_2_Format.Value)</Format>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <VerticalAlign>Middle</VerticalAlign>
+                      </Style>
+                      <Value />
+                      <ZIndex>25</ZIndex>
+                      <rd:DefaultName>textbox41</rd:DefaultName>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="textbox42">
+                      <Style>
+                        <FontSize>7pt</FontSize>
+                        <FontWeight>700</FontWeight>
+                        <Format>=First(Fields!TotalDisposalAmounts_2_Format.Value)</Format>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <VerticalAlign>Middle</VerticalAlign>
+                      </Style>
+                      <Value />
+                      <ZIndex>24</ZIndex>
+                      <rd:DefaultName>textbox42</rd:DefaultName>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="textbox55">
+                      <Style>
+                        <FontSize>7pt</FontSize>
+                        <FontWeight>700</FontWeight>
+                        <Format>=First(Fields!BookValueAtStartingDate_Control1140054Format.Value)</Format>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <VerticalAlign>Middle</VerticalAlign>
+                      </Style>
+                      <Value />
+                      <ZIndex>23</ZIndex>
+                      <rd:DefaultName>textbox55</rd:DefaultName>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+              </TableCells>
+            </TableRow>
+            <TableRow>
+              <Height>0.423cm</Height>
+              <TableCells>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="TotalCaption">
+                      <Style>
+                        <FontSize>7pt</FontSize>
+                        <FontWeight>700</FontWeight>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <VerticalAlign>Middle</VerticalAlign>
+                      </Style>
+                      <Value>=First(Fields!TotalCaption.Value)</Value>
+                      <ZIndex>46</ZIndex>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="textbox65">
+                      <Style>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <VerticalAlign>Middle</VerticalAlign>
+                      </Style>
+                      <Value />
+                      <ZIndex>45</ZIndex>
+                      <rd:DefaultName>textbox65</rd:DefaultName>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="TotalStartAmounts_1_">
+                      <Style>
+                        <FontSize>7pt</FontSize>
+                        <FontWeight>700</FontWeight>
+                        <Format>=First(Fields!TotalStartAmounts_1_Format.Value)</Format>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <VerticalAlign>Middle</VerticalAlign>
+                      </Style>
+                      <Value>=Last(Fields!TotalStartAmounts_1_.Value)</Value>
+                      <ZIndex>44</ZIndex>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="TotalNetChangeAmounts_1____TotalReclassAmount">
+                      <Style>
+                        <FontSize>7pt</FontSize>
+                        <FontWeight>700</FontWeight>
+                        <Format>=First(Fields!TotalNetChangeAmounts_1____TotalReclassAmountFormat.Value)</Format>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <VerticalAlign>Middle</VerticalAlign>
+                      </Style>
+                      <Value>=Last(Fields!TotalNetChangeAmounts_1____TotalReclassAmount.Value)</Value>
+                      <ZIndex>43</ZIndex>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="TotalDisposalAmounts_1_">
+                      <Style>
+                        <FontSize>7pt</FontSize>
+                        <FontWeight>700</FontWeight>
+                        <Format>=First(Fields!TotalDisposalAmounts_1_Format.Value)</Format>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <VerticalAlign>Middle</VerticalAlign>
+                      </Style>
+                      <Value>=Last(Fields!TotalDisposalAmounts_1_.Value)</Value>
+                      <ZIndex>42</ZIndex>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="TotalReclassAmount">
+                      <Style>
+                        <FontSize>7pt</FontSize>
+                        <FontWeight>700</FontWeight>
+                        <Format>=First(Fields!TotalReclassAmountFormat.Value)</Format>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <VerticalAlign>Middle</VerticalAlign>
+                      </Style>
+                      <Value>=Last(Fields!TotalReclassAmount.Value)</Value>
+                      <ZIndex>41</ZIndex>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="TotalNetChangeAmounts_4_">
+                      <Style>
+                        <FontSize>7pt</FontSize>
+                        <FontWeight>700</FontWeight>
+                        <Format>=First(Fields!TotalNetChangeAmounts_4_Format.Value)</Format>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <VerticalAlign>Middle</VerticalAlign>
+                      </Style>
+                      <Value>=Last(Fields!TotalNetChangeAmounts_4_.Value)</Value>
+                      <ZIndex>40</ZIndex>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="TotalStartAmounts_2_">
+                      <Style>
+                        <FontSize>7pt</FontSize>
+                        <FontWeight>700</FontWeight>
+                        <Format>=First(Fields!TotalStartAmounts_2_Format.Value)</Format>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <VerticalAlign>Middle</VerticalAlign>
+                      </Style>
+                      <Value>=Last(Fields!TotalStartAmounts_2_.Value)</Value>
+                      <ZIndex>39</ZIndex>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="TotalNetChangeAmounts_2_">
+                      <Style>
+                        <FontSize>7pt</FontSize>
+                        <FontWeight>700</FontWeight>
+                        <Format>=First(Fields!TotalNetChangeAmounts_2_Format.Value)</Format>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <VerticalAlign>Middle</VerticalAlign>
+                      </Style>
+                      <Value>=Last(Fields!TotalNetChangeAmounts_2_.Value)</Value>
+                      <ZIndex>38</ZIndex>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="TotalDisposalAmounts_2_">
+                      <Style>
+                        <FontSize>7pt</FontSize>
+                        <FontWeight>700</FontWeight>
+                        <Format>=First(Fields!TotalDisposalAmounts_2_Format.Value)</Format>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <VerticalAlign>Middle</VerticalAlign>
+                      </Style>
+                      <Value>=Last(Fields!TotalDisposalAmounts_2_.Value)</Value>
+                      <ZIndex>37</ZIndex>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="BookValueAtStartingDate_Control1140054">
+                      <Style>
+                        <FontSize>7pt</FontSize>
+                        <FontWeight>700</FontWeight>
+                        <Format>=First(Fields!BookValueAtStartingDate_Control1140054Format.Value)</Format>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <VerticalAlign>Middle</VerticalAlign>
+                      </Style>
+                      <Value>=sum(Fields!BookValueAtStartingDate.Value)</Value>
+                      <ZIndex>36</ZIndex>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="BookValueAtEndingDate_Control1140055">
+                      <Style>
+                        <FontSize>7pt</FontSize>
+                        <FontWeight>700</FontWeight>
+                        <Format>=First(Fields!BookValueAtEndingDate_Control1140055Format.Value)</Format>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <VerticalAlign>Middle</VerticalAlign>
+                      </Style>
+                      <Value>=Sum(Fields!BookValueAtEndingDate.Value)</Value>
+                      <ZIndex>35</ZIndex>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+              </TableCells>
+            </TableRow>
+          </TableRows>
+        </Footer>
+        <Header>
+          <RepeatOnNewPage>true</RepeatOnNewPage>
+          <TableRows>
+            <TableRow>
+              <Height>0.846cm</Height>
+              <TableCells>
+                <TableCell>
+                  <ColSpan>12</ColSpan>
+                  <ReportItems>
+                    <Textbox Name="Fixed_Asset__TABLECAPTION__________FAFilter">
+                      <Style>
+                        <FontSize>7pt</FontSize>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                      </Style>
+                      <Value>=First(Fields!Fixed_Asset__TABLECAPTION__________FAFilter.Value)</Value>
+                      <ZIndex>104</ZIndex>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+              </TableCells>
+            </TableRow>
+            <TableRow>
+              <Height>0.423cm</Height>
+              <TableCells>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="MainHeadLineText">
+                      <Style>
+                        <Color>#ff0000</Color>
+                        <FontSize>7pt</FontSize>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <VerticalAlign>Middle</VerticalAlign>
+                      </Style>
+                      <Value>=Fields!MainHeadLineText.Value</Value>
+                      <Visibility>
+                        <Hidden>true</Hidden>
+                      </Visibility>
+                      <ZIndex>103</ZIndex>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="COMPANYNAME">
+                      <Style>
+                        <Color>#ff0000</Color>
+                        <FontSize>7pt</FontSize>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <VerticalAlign>Middle</VerticalAlign>
+                      </Style>
+                      <Value>=Fields!COMPANYNAME.Value</Value>
+                      <Visibility>
+                        <Hidden>true</Hidden>
+                      </Visibility>
+                      <ZIndex>102</ZIndex>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="DeprBookText">
+                      <Style>
+                        <Color>#ff0000</Color>
+                        <FontSize>7pt</FontSize>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <VerticalAlign>Middle</VerticalAlign>
+                      </Style>
+                      <Value>=Fields!DeprBookText.Value</Value>
+                      <Visibility>
+                        <Hidden>true</Hidden>
+                      </Visibility>
+                      <ZIndex>101</ZIndex>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="CurrReport_PAGENOCaption">
+                      <Style>
+                        <Color>#ff0000</Color>
+                        <FontSize>7pt</FontSize>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <VerticalAlign>Middle</VerticalAlign>
+                      </Style>
+                      <Value>=Fields!CurrReport_PAGENOCaption.Value</Value>
+                      <Visibility>
+                        <Hidden>true</Hidden>
+                      </Visibility>
+                      <ZIndex>100</ZIndex>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="PrintDetails">
+                      <Style>
+                        <Color>#ff0000</Color>
+                        <FontSize>7pt</FontSize>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <VerticalAlign>Middle</VerticalAlign>
+                      </Style>
+                      <Value>=First(Fields!PrintDetails.Value)</Value>
+                      <Visibility>
+                        <Hidden>true</Hidden>
+                      </Visibility>
+                      <ZIndex>99</ZIndex>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="BudgetReport">
+                      <Style>
+                        <Color>#ff0000</Color>
+                        <FontSize>7pt</FontSize>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <VerticalAlign>Middle</VerticalAlign>
+                      </Style>
+                      <Value>=First(Fields!BudgetReport.Value)</Value>
+                      <Visibility>
+                        <Hidden>true</Hidden>
+                      </Visibility>
+                      <ZIndex>98</ZIndex>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="GroupTotals">
+                      <Style>
+                        <Color>#ff0000</Color>
+                        <FontSize>7pt</FontSize>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <VerticalAlign>Middle</VerticalAlign>
+                      </Style>
+                      <Value>=First(Fields!GroupTotals.Value)</Value>
+                      <Visibility>
+                        <Hidden>true</Hidden>
+                      </Visibility>
+                      <ZIndex>97</ZIndex>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="GroupHeadLine_Control1140059">
+                      <Style>
+                        <Color>#ff0000</Color>
+                        <FontSize>7pt</FontSize>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <VerticalAlign>Middle</VerticalAlign>
+                      </Style>
+                      <Value>=First(Fields!GroupHeadLine_Control1140059.Value)</Value>
+                      <Visibility>
+                        <Hidden>true</Hidden>
+                      </Visibility>
+                      <ZIndex>96</ZIndex>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="FORMAT_TODAY_0_4_Value">
+                      <Style>
+                        <Color>#ff0000</Color>
+                        <FontSize>7pt</FontSize>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                      </Style>
+                      <Value>=Fields!FORMAT_TODAY_0_4_.Value</Value>
+                      <Visibility>
+                        <Hidden>true</Hidden>
+                      </Visibility>
+                      <ZIndex>95</ZIndex>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="textbox67">
+                      <Style>
+                        <FontSize>7pt</FontSize>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                      </Style>
+                      <Value />
+                      <Visibility>
+                        <Hidden>true</Hidden>
+                      </Visibility>
+                      <ZIndex>94</ZIndex>
+                      <rd:DefaultName>textbox67</rd:DefaultName>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="textbox68">
+                      <Style>
+                        <FontSize>7pt</FontSize>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                      </Style>
+                      <Value />
+                      <Visibility>
+                        <Hidden>true</Hidden>
+                      </Visibility>
+                      <ZIndex>93</ZIndex>
+                      <rd:DefaultName>textbox68</rd:DefaultName>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="textbox69">
+                      <Style>
+                        <FontSize>7pt</FontSize>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                      </Style>
+                      <Value />
+                      <Visibility>
+                        <Hidden>true</Hidden>
+                      </Visibility>
+                      <ZIndex>92</ZIndex>
+                      <rd:DefaultName>textbox69</rd:DefaultName>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+              </TableCells>
+            </TableRow>
+            <TableRow>
+              <Height>0.423cm</Height>
+              <TableCells>
+                <TableCell>
+                  <ColSpan>3</ColSpan>
+                  <ReportItems>
+                    <Textbox Name="GroupCodeName">
+                      <Style>
+                        <FontSize>7pt</FontSize>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <VerticalAlign>Middle</VerticalAlign>
+                      </Style>
+                      <Value>=First(Fields!GroupCodeName.Value)</Value>
+                      <ZIndex>91</ZIndex>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="textbox29">
+                      <Style>
+                        <FontSize>7pt</FontSize>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                      </Style>
+                      <Value />
+                      <ZIndex>90</ZIndex>
+                      <rd:DefaultName>textbox29</rd:DefaultName>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="textbox30">
+                      <Style>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                      </Style>
+                      <Value />
+                      <ZIndex>89</ZIndex>
+                      <rd:DefaultName>textbox30</rd:DefaultName>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="textbox31">
+                      <Style>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                      </Style>
+                      <Value />
+                      <ZIndex>88</ZIndex>
+                      <rd:DefaultName>textbox31</rd:DefaultName>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="textbox32">
+                      <Style>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                      </Style>
+                      <Value />
+                      <ZIndex>87</ZIndex>
+                      <rd:DefaultName>textbox32</rd:DefaultName>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="textbox33">
+                      <Style>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                      </Style>
+                      <Value />
+                      <ZIndex>86</ZIndex>
+                      <rd:DefaultName>textbox33</rd:DefaultName>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="textbox34">
+                      <Style>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                      </Style>
+                      <Value />
+                      <ZIndex>85</ZIndex>
+                      <rd:DefaultName>textbox34</rd:DefaultName>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="textbox35">
+                      <Style>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                      </Style>
+                      <Value />
+                      <ZIndex>84</ZIndex>
+                      <rd:DefaultName>textbox35</rd:DefaultName>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="textbox36">
+                      <Style>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                      </Style>
+                      <Value />
+                      <ZIndex>83</ZIndex>
+                      <rd:DefaultName>textbox36</rd:DefaultName>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="textbox37">
+                      <Style>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                      </Style>
+                      <Value />
+                      <ZIndex>82</ZIndex>
+                      <rd:DefaultName>textbox37</rd:DefaultName>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+              </TableCells>
+            </TableRow>
+            <TableRow>
+              <Height>1.692cm</Height>
+              <TableCells>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="FANo">
+                      <Style>
+                        <FontSize>7pt</FontSize>
+                        <FontWeight>700</FontWeight>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <VerticalAlign>Bottom</VerticalAlign>
+                      </Style>
+                      <Value>=First(Fields!FANo.Value)</Value>
+                      <ZIndex>81</ZIndex>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="FADescription">
+                      <Style>
+                        <FontSize>7pt</FontSize>
+                        <FontWeight>700</FontWeight>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <VerticalAlign>Bottom</VerticalAlign>
+                      </Style>
+                      <Value>=First(Fields!FADescription.Value)</Value>
+                      <ZIndex>80</ZIndex>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="HeadLineText_1_">
+                      <Style>
+                        <FontSize>7pt</FontSize>
+                        <FontWeight>700</FontWeight>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <TextAlign>Right</TextAlign>
+                        <VerticalAlign>Bottom</VerticalAlign>
+                      </Style>
+                      <Value>=First(Fields!HeadLineText_1_.Value)</Value>
+                      <ZIndex>79</ZIndex>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="HeadLineText_2_">
+                      <Style>
+                        <FontSize>7pt</FontSize>
+                        <FontWeight>700</FontWeight>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <TextAlign>Right</TextAlign>
+                        <VerticalAlign>Bottom</VerticalAlign>
+                      </Style>
+                      <Value>=First(Fields!HeadLineText_2_.Value)</Value>
+                      <ZIndex>78</ZIndex>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="HeadLineText_3_">
+                      <Style>
+                        <FontSize>7pt</FontSize>
+                        <FontWeight>700</FontWeight>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <TextAlign>Right</TextAlign>
+                        <VerticalAlign>Bottom</VerticalAlign>
+                      </Style>
+                      <Value>=First(Fields!HeadLineText_3_.Value)</Value>
+                      <ZIndex>77</ZIndex>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="HeadLineText_4_">
+                      <Style>
+                        <FontSize>7pt</FontSize>
+                        <FontWeight>700</FontWeight>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <TextAlign>Right</TextAlign>
+                        <VerticalAlign>Bottom</VerticalAlign>
+                      </Style>
+                      <Value>=First(Fields!HeadLineText_4_.Value)</Value>
+                      <ZIndex>76</ZIndex>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="HeadLineText_5_">
+                      <Style>
+                        <FontSize>7pt</FontSize>
+                        <FontWeight>700</FontWeight>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <TextAlign>Right</TextAlign>
+                        <VerticalAlign>Bottom</VerticalAlign>
+                      </Style>
+                      <Value>=First(Fields!HeadLineText_5_.Value)</Value>
+                      <ZIndex>75</ZIndex>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="HeadLineText_6_">
+                      <Style>
+                        <FontSize>7pt</FontSize>
+                        <FontWeight>700</FontWeight>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <TextAlign>Right</TextAlign>
+                        <VerticalAlign>Bottom</VerticalAlign>
+                      </Style>
+                      <Value>=First(Fields!HeadLineText_6_.Value)</Value>
+                      <ZIndex>74</ZIndex>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="HeadLineText_7_">
+                      <Style>
+                        <FontSize>7pt</FontSize>
+                        <FontWeight>700</FontWeight>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <TextAlign>Right</TextAlign>
+                        <VerticalAlign>Bottom</VerticalAlign>
+                      </Style>
+                      <Value>=First(Fields!HeadLineText_7_.Value)</Value>
+                      <ZIndex>73</ZIndex>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="HeadLineText_8_">
+                      <Style>
+                        <FontSize>7pt</FontSize>
+                        <FontWeight>700</FontWeight>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <TextAlign>Right</TextAlign>
+                        <VerticalAlign>Bottom</VerticalAlign>
+                      </Style>
+                      <Value>=First(Fields!HeadLineText_8_.Value)</Value>
+                      <ZIndex>72</ZIndex>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="HeadLineText_9_">
+                      <Style>
+                        <FontSize>7pt</FontSize>
+                        <FontWeight>700</FontWeight>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <TextAlign>Right</TextAlign>
+                        <VerticalAlign>Bottom</VerticalAlign>
+                      </Style>
+                      <Value>=First(Fields!HeadLineText_9_.Value)</Value>
+                      <ZIndex>71</ZIndex>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="HeadLineText_10_">
+                      <Style>
+                        <FontSize>7pt</FontSize>
+                        <FontWeight>700</FontWeight>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <TextAlign>Right</TextAlign>
+                        <VerticalAlign>Bottom</VerticalAlign>
+                      </Style>
+                      <Value>=First(Fields!HeadLineText_10_.Value)</Value>
+                      <ZIndex>70</ZIndex>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+              </TableCells>
+            </TableRow>
+            <TableRow>
+              <Height>0.423cm</Height>
+              <TableCells>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="textbox43">
+                      <Style>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                      </Style>
+                      <Value />
+                      <ZIndex>69</ZIndex>
+                      <rd:DefaultName>textbox43</rd:DefaultName>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="textbox59">
+                      <Style>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                      </Style>
+                      <Value />
+                      <ZIndex>68</ZIndex>
+                      <rd:DefaultName>textbox59</rd:DefaultName>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="textbox44">
+                      <Style>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                      </Style>
+                      <Value />
+                      <ZIndex>67</ZIndex>
+                      <rd:DefaultName>textbox44</rd:DefaultName>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="textbox45">
+                      <Style>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                      </Style>
+                      <Value />
+                      <ZIndex>66</ZIndex>
+                      <rd:DefaultName>textbox45</rd:DefaultName>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="textbox46">
+                      <Style>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                      </Style>
+                      <Value />
+                      <ZIndex>65</ZIndex>
+                      <rd:DefaultName>textbox46</rd:DefaultName>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="textbox47">
+                      <Style>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                      </Style>
+                      <Value />
+                      <ZIndex>64</ZIndex>
+                      <rd:DefaultName>textbox47</rd:DefaultName>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="textbox48">
+                      <Style>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                      </Style>
+                      <Value />
+                      <ZIndex>63</ZIndex>
+                      <rd:DefaultName>textbox48</rd:DefaultName>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="textbox49">
+                      <Style>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                      </Style>
+                      <Value />
+                      <ZIndex>62</ZIndex>
+                      <rd:DefaultName>textbox49</rd:DefaultName>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="textbox50">
+                      <Style>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                      </Style>
+                      <Value />
+                      <ZIndex>61</ZIndex>
+                      <rd:DefaultName>textbox50</rd:DefaultName>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="textbox51">
+                      <Style>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                      </Style>
+                      <Value />
+                      <ZIndex>60</ZIndex>
+                      <rd:DefaultName>textbox51</rd:DefaultName>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="textbox52">
+                      <Style>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                      </Style>
+                      <Value />
+                      <ZIndex>59</ZIndex>
+                      <rd:DefaultName>textbox52</rd:DefaultName>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="textbox53">
+                      <Style>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                      </Style>
+                      <Value />
+                      <ZIndex>58</ZIndex>
+                      <rd:DefaultName>textbox53</rd:DefaultName>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+              </TableCells>
+              <Visibility>
+                <Hidden>=IIF(Fields!GroupFieldIndex.Value=0 and not Fields!PrintDetails.Value,false,true)</Hidden>
+              </Visibility>
+            </TableRow>
+          </TableRows>
+        </Header>
+        <TableColumns>
+          <TableColumn>
+            <Width>1.65cm</Width>
+          </TableColumn>
+          <TableColumn>
+            <Width>3.8cm</Width>
+          </TableColumn>
+          <TableColumn>
+            <Width>1.95cm</Width>
+          </TableColumn>
+          <TableColumn>
+            <Width>1.95cm</Width>
+          </TableColumn>
+          <TableColumn>
+            <Width>1.95cm</Width>
+          </TableColumn>
+          <TableColumn>
+            <Width>1.95cm</Width>
+          </TableColumn>
+          <TableColumn>
+            <Width>1.95cm</Width>
+          </TableColumn>
+          <TableColumn>
+            <Width>1.95cm</Width>
+          </TableColumn>
+          <TableColumn>
+            <Width>1.95cm</Width>
+          </TableColumn>
+          <TableColumn>
+            <Width>1.95cm</Width>
+          </TableColumn>
+          <TableColumn>
+            <Width>1.95cm</Width>
+          </TableColumn>
+          <TableColumn>
+            <Width>1.95cm</Width>
+          </TableColumn>
+        </TableColumns>
+        <TableGroups>
+          <TableGroup>
+            <Footer>
+              <TableRows>
+                <TableRow>
+                  <Height>0.423cm</Height>
+                  <TableCells>
+                    <TableCell>
+                      <ColSpan>2</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="FORMAT_Text1140002__________GroupHeadLine_">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <FontWeight>700</FontWeight>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <VerticalAlign>Middle</VerticalAlign>
+                          </Style>
+                          <Value>=First(Fields!FORMAT_Text1140002__________GroupHeadLine_.Value)</Value>
+                          <ZIndex>22</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ReportItems>
+                        <Textbox Name="GroupStartAmounts_1_">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <FontWeight>700</FontWeight>
+                            <Format>=First(Fields!GroupStartAmounts_1_Format.Value)</Format>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <VerticalAlign>Middle</VerticalAlign>
+                          </Style>
+                          <Value>=Sum(Fields!GroupStartAmounts_1_.Value)</Value>
+                          <ZIndex>21</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ReportItems>
+                        <Textbox Name="GroupNetChangeAmounts_1____GroupReclassAmount">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <FontWeight>700</FontWeight>
+                            <Format>=First(Fields!GroupNetChangeAmounts_1____GroupReclassAmountFormat.Value)</Format>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <VerticalAlign>Middle</VerticalAlign>
+                          </Style>
+                          <Value>=Sum(Fields!GroupNetChangeAmounts_1____GroupReclassAmount.Value)</Value>
+                          <ZIndex>20</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ReportItems>
+                        <Textbox Name="GroupDisposalAmounts_1_">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <FontWeight>700</FontWeight>
+                            <Format>=First(Fields!GroupDisposalAmounts_1_Format.Value)</Format>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <VerticalAlign>Middle</VerticalAlign>
+                          </Style>
+                          <Value>=Sum(Fields!GroupDisposalAmounts_1_.Value)</Value>
+                          <ZIndex>19</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ReportItems>
+                        <Textbox Name="GroupReclassAmount">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <FontWeight>700</FontWeight>
+                            <Format>=First(Fields!GroupReclassAmountFormat.Value)</Format>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <VerticalAlign>Middle</VerticalAlign>
+                          </Style>
+                          <Value>=Sum(Fields!GroupReclassAmount.Value)</Value>
+                          <ZIndex>18</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ReportItems>
+                        <Textbox Name="GroupNetChangeAmounts_4_">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <FontWeight>700</FontWeight>
+                            <Format>=First(Fields!GroupNetChangeAmounts_4_Format.Value)</Format>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <VerticalAlign>Middle</VerticalAlign>
+                          </Style>
+                          <Value>=Sum(Fields!GroupNetChangeAmounts_4_.Value)</Value>
+                          <ZIndex>17</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ReportItems>
+                        <Textbox Name="GroupStartAmounts_2_">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <FontWeight>700</FontWeight>
+                            <Format>=First(Fields!GroupStartAmounts_2_Format.Value)</Format>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <VerticalAlign>Middle</VerticalAlign>
+                          </Style>
+                          <Value>=Sum(Fields!GroupStartAmounts_2_.Value)</Value>
+                          <ZIndex>16</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ReportItems>
+                        <Textbox Name="GroupNetChangeAmounts_2_">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <FontWeight>700</FontWeight>
+                            <Format>=First(Fields!GroupNetChangeAmounts_2_Format.Value)</Format>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <VerticalAlign>Middle</VerticalAlign>
+                          </Style>
+                          <Value>=Sum(Fields!GroupNetChangeAmounts_2_.Value)</Value>
+                          <ZIndex>15</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ReportItems>
+                        <Textbox Name="GroupDisposalAmounts_2_">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <FontWeight>700</FontWeight>
+                            <Format>=First(Fields!GroupDisposalAmounts_2_Format.Value)</Format>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <VerticalAlign>Middle</VerticalAlign>
+                          </Style>
+                          <Value>=Sum(Fields!GroupDisposalAmounts_2_.Value)</Value>
+                          <ZIndex>14</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ReportItems>
+                        <Textbox Name="BookValueAtStartingDate_Control1140043">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <FontWeight>700</FontWeight>
+                            <Format>=First(Fields!BookValueAtStartingDate_Control1140043Format.Value)</Format>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <VerticalAlign>Middle</VerticalAlign>
+                          </Style>
+                          <Value>=Sum(Fields!BookValueAtStartingDate.Value)</Value>
+                          <ZIndex>13</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ReportItems>
+                        <Textbox Name="BookValueAtEndingDate_Control1140044">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <FontWeight>700</FontWeight>
+                            <Format>=First(Fields!BookValueAtEndingDate_Control1140044Format.Value)</Format>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <VerticalAlign>Middle</VerticalAlign>
+                          </Style>
+                          <Value>=Sum(Fields!BookValueAtEndingDate.Value)</Value>
+                          <ZIndex>12</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                  </TableCells>
+                  <Visibility>
+                    <Hidden>=IIF(Fields!GroupFieldIndex.Value &lt;&gt;0,false,true)</Hidden>
+                  </Visibility>
+                </TableRow>
+              </TableRows>
+            </Footer>
+            <Grouping Name="Table1_Group">
+              <GroupExpressions>
+                <GroupExpression>=Choose(CInt(Fields!GroupFieldIndex.Value),
+Fields!Fixed_Asset_FA_Class_Code.Value,
+Fields!Fixed_Asset_FA_Subclass_Code.Value,
+Fields!Fixed_Asset_FA_Location_Code.Value,
+Fields!Fixed_Asset_Component_of_Main_Asset.Value,
+Fields!Fixed_Asset_Global_Dimension_1_Code.Value,
+Fields!Fixed_Asset_Global_Dimension_2_Code.Value,
+Fields!Fixed_Asset_FA_Posting_Group.Value)</GroupExpression>
+              </GroupExpressions>
+            </Grouping>
+            <Header>
+              <TableRows>
+                <TableRow>
+                  <Height>0.846cm</Height>
+                  <TableCells>
+                    <TableCell>
+                      <ColSpan>2</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="GroupHeadLine">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <FontWeight>700</FontWeight>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <VerticalAlign>Bottom</VerticalAlign>
+                          </Style>
+                          <Value>=First(Fields!GroupHeadLine.Value)</Value>
+                          <ZIndex>57</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ReportItems>
+                        <Textbox Name="textbox23">
+                          <Style>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <VerticalAlign>Bottom</VerticalAlign>
+                          </Style>
+                          <Value />
+                          <ZIndex>56</ZIndex>
+                          <rd:DefaultName>textbox23</rd:DefaultName>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ReportItems>
+                        <Textbox Name="TextBox11">
+                          <Style>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <VerticalAlign>Bottom</VerticalAlign>
+                          </Style>
+                          <Value />
+                          <ZIndex>55</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ReportItems>
+                        <Textbox Name="TextBox12">
+                          <Style>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <VerticalAlign>Bottom</VerticalAlign>
+                          </Style>
+                          <Value />
+                          <ZIndex>54</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ReportItems>
+                        <Textbox Name="TextBox13">
+                          <Style>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <VerticalAlign>Bottom</VerticalAlign>
+                          </Style>
+                          <Value />
+                          <ZIndex>53</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ReportItems>
+                        <Textbox Name="TextBox14">
+                          <Style>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <VerticalAlign>Bottom</VerticalAlign>
+                          </Style>
+                          <Value />
+                          <ZIndex>52</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ReportItems>
+                        <Textbox Name="TextBox15">
+                          <Style>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <VerticalAlign>Bottom</VerticalAlign>
+                          </Style>
+                          <Value />
+                          <ZIndex>51</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ReportItems>
+                        <Textbox Name="TextBox16">
+                          <Style>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <VerticalAlign>Bottom</VerticalAlign>
+                          </Style>
+                          <Value />
+                          <ZIndex>50</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ReportItems>
+                        <Textbox Name="TextBox17">
+                          <Style>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <VerticalAlign>Bottom</VerticalAlign>
+                          </Style>
+                          <Value />
+                          <ZIndex>49</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ReportItems>
+                        <Textbox Name="TextBox18">
+                          <Style>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <VerticalAlign>Bottom</VerticalAlign>
+                          </Style>
+                          <Value />
+                          <ZIndex>48</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ReportItems>
+                        <Textbox Name="TextBox19">
+                          <Style>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <VerticalAlign>Bottom</VerticalAlign>
+                          </Style>
+                          <Value />
+                          <ZIndex>47</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                  </TableCells>
+                  <Visibility>
+                    <Hidden>=IIF(Fields!GroupFieldIndex.Value &lt;&gt;0 and Fields!PrintDetails.Value,false,true)</Hidden>
+                  </Visibility>
+                </TableRow>
+              </TableRows>
+            </Header>
+          </TableGroup>
+        </TableGroups>
+      </Table>
+    </ReportItems>
+  </Body>
+  <BottomMargin>2cm</BottomMargin>
+  <Code>Public Function BlankZero(ByVal Value As Decimal)
+    if Value = 0 then
+        Return ""
+    end if
+    Return Value
+End Function
+
+Public Function BlankPos(ByVal Value As Decimal)
+    if Value &gt; 0 then
+        Return ""
+    end if
+    Return Value
+End Function
+
+Public Function BlankZeroAndPos(ByVal Value As Decimal)
+    if Value &gt;= 0 then
+        Return ""
+    end if
+    Return Value
+End Function
+
+Public Function BlankNeg(ByVal Value As Decimal)
+    if Value &lt; 0 then
+        Return ""
+    end if
+    Return Value
+End Function
+
+Public Function BlankNegAndZero(ByVal Value As Decimal)
+    if Value &lt;= 0 then
+        Return ""
+    end if
+    Return Value
+End Function
+
+Function GetGroupField(ByVal groupField As String)As Object
+    Return Microsoft.VisualBasic.Switch( _
+        groupField = "FA Class"," Fields!Fixed_Asset_FA_Class_Code.Value", _
+        groupField = "FA Subclass", "Fields!Fixed_Asset_FA_Subclass_Code.Value", _
+        groupField = "Paris", "French")
+End Function
+</Code>
+  <DataSets>
+    <DataSet Name="DataSet_Result">
+      <rd:DataSetInfo>
+        <rd:DataSetName>DataSet</rd:DataSetName>
+        <rd:TableName>Result</rd:TableName>
+      </rd:DataSetInfo>
+      <Query>
+        <CommandText />
+        <DataSourceName>DummyDataSource</DataSourceName>
+      </Query>
+      <Fields>
+        <Field Name="MainHeadLineText">
+          <DataField>MainHeadLineText</DataField>
+        </Field>
+        <Field Name="COMPANYNAME">
+          <DataField>COMPANYNAME</DataField>
+        </Field>
+        <Field Name="FORMAT_TODAY_0_4_">
+          <DataField>FORMAT_TODAY_0_4_</DataField>
+        </Field>
+        <Field Name="USERID">
+          <DataField>USERID</DataField>
+        </Field>
+        <Field Name="CurrReport_PAGENO">
+          <DataField>CurrReport_PAGENO</DataField>
+        </Field>
+        <Field Name="CurrReport_PAGENOCaption">
+          <DataField>CurrReport_PAGENOCaption</DataField>
+        </Field>
+        <Field Name="DeprBookText">
+          <DataField>DeprBookText</DataField>
+        </Field>
+        <Field Name="Fixed_Asset__TABLECAPTION__________FAFilter">
+          <DataField>Fixed_Asset__TABLECAPTION__________FAFilter</DataField>
+        </Field>
+        <Field Name="GroupTotals">
+          <DataField>GroupTotals</DataField>
+        </Field>
+        <Field Name="BudgetReport">
+          <DataField>BudgetReport</DataField>
+        </Field>
+        <Field Name="PrintDetails">
+          <DataField>PrintDetails</DataField>
+        </Field>
+        <Field Name="GroupFieldIndex">
+          <DataField>GroupFieldIndex</DataField>
+        </Field>
+        <Field Name="GroupCodeName">
+          <DataField>GroupCodeName</DataField>
+        </Field>
+        <Field Name="HeadLineText_1_">
+          <DataField>HeadLineText_1_</DataField>
+        </Field>
+        <Field Name="HeadLineText_2_">
+          <DataField>HeadLineText_2_</DataField>
+        </Field>
+        <Field Name="HeadLineText_3_">
+          <DataField>HeadLineText_3_</DataField>
+        </Field>
+        <Field Name="HeadLineText_4_">
+          <DataField>HeadLineText_4_</DataField>
+        </Field>
+        <Field Name="HeadLineText_5_">
+          <DataField>HeadLineText_5_</DataField>
+        </Field>
+        <Field Name="HeadLineText_6_">
+          <DataField>HeadLineText_6_</DataField>
+        </Field>
+        <Field Name="HeadLineText_7_">
+          <DataField>HeadLineText_7_</DataField>
+        </Field>
+        <Field Name="HeadLineText_8_">
+          <DataField>HeadLineText_8_</DataField>
+        </Field>
+        <Field Name="HeadLineText_9_">
+          <DataField>HeadLineText_9_</DataField>
+        </Field>
+        <Field Name="HeadLineText_10_">
+          <DataField>HeadLineText_10_</DataField>
+        </Field>
+        <Field Name="FANo">
+          <DataField>FANo</DataField>
+        </Field>
+        <Field Name="FADescription">
+          <DataField>FADescription</DataField>
+        </Field>
+        <Field Name="GroupHeadLine">
+          <DataField>GroupHeadLine</DataField>
+        </Field>
+        <Field Name="Fixed_Asset__No__">
+          <DataField>Fixed_Asset__No__</DataField>
+        </Field>
+        <Field Name="Fixed_Asset_Description">
+          <DataField>Fixed_Asset_Description</DataField>
+        </Field>
+        <Field Name="StartAmounts_1_">
+          <DataField>StartAmounts_1_</DataField>
+        </Field>
+        <Field Name="StartAmounts_1_Format">
+          <DataField>StartAmounts_1_Format</DataField>
+        </Field>
+        <Field Name="NetChangeAmounts_1____ReclassAmount">
+          <DataField>NetChangeAmounts_1____ReclassAmount</DataField>
+        </Field>
+        <Field Name="NetChangeAmounts_1____ReclassAmountFormat">
+          <DataField>NetChangeAmounts_1____ReclassAmountFormat</DataField>
+        </Field>
+        <Field Name="DisposalAmounts_1_">
+          <DataField>DisposalAmounts_1_</DataField>
+        </Field>
+        <Field Name="DisposalAmounts_1_Format">
+          <DataField>DisposalAmounts_1_Format</DataField>
+        </Field>
+        <Field Name="ReclassAmount">
+          <DataField>ReclassAmount</DataField>
+        </Field>
+        <Field Name="ReclassAmountFormat">
+          <DataField>ReclassAmountFormat</DataField>
+        </Field>
+        <Field Name="NetChangeAmounts_4_">
+          <DataField>NetChangeAmounts_4_</DataField>
+        </Field>
+        <Field Name="NetChangeAmounts_4_Format">
+          <DataField>NetChangeAmounts_4_Format</DataField>
+        </Field>
+        <Field Name="StartAmounts_2_">
+          <DataField>StartAmounts_2_</DataField>
+        </Field>
+        <Field Name="StartAmounts_2_Format">
+          <DataField>StartAmounts_2_Format</DataField>
+        </Field>
+        <Field Name="NetChangeAmounts_2_">
+          <DataField>NetChangeAmounts_2_</DataField>
+        </Field>
+        <Field Name="NetChangeAmounts_2_Format">
+          <DataField>NetChangeAmounts_2_Format</DataField>
+        </Field>
+        <Field Name="DisposalAmounts_2_">
+          <DataField>DisposalAmounts_2_</DataField>
+        </Field>
+        <Field Name="DisposalAmounts_2_Format">
+          <DataField>DisposalAmounts_2_Format</DataField>
+        </Field>
+        <Field Name="BookValueAtStartingDate">
+          <DataField>BookValueAtStartingDate</DataField>
+        </Field>
+        <Field Name="BookValueAtStartingDateFormat">
+          <DataField>BookValueAtStartingDateFormat</DataField>
+        </Field>
+        <Field Name="BookValueAtEndingDate">
+          <DataField>BookValueAtEndingDate</DataField>
+        </Field>
+        <Field Name="BookValueAtEndingDateFormat">
+          <DataField>BookValueAtEndingDateFormat</DataField>
+        </Field>
+        <Field Name="FORMAT_Text1140002__________GroupHeadLine_">
+          <DataField>FORMAT_Text1140002__________GroupHeadLine_</DataField>
+        </Field>
+        <Field Name="GroupStartAmounts_1_">
+          <DataField>GroupStartAmounts_1_</DataField>
+        </Field>
+        <Field Name="GroupStartAmounts_1_Format">
+          <DataField>GroupStartAmounts_1_Format</DataField>
+        </Field>
+        <Field Name="GroupNetChangeAmounts_1____GroupReclassAmount">
+          <DataField>GroupNetChangeAmounts_1____GroupReclassAmount</DataField>
+        </Field>
+        <Field Name="GroupNetChangeAmounts_1____GroupReclassAmountFormat">
+          <DataField>GroupNetChangeAmounts_1____GroupReclassAmountFormat</DataField>
+        </Field>
+        <Field Name="GroupDisposalAmounts_1_">
+          <DataField>GroupDisposalAmounts_1_</DataField>
+        </Field>
+        <Field Name="GroupDisposalAmounts_1_Format">
+          <DataField>GroupDisposalAmounts_1_Format</DataField>
+        </Field>
+        <Field Name="GroupReclassAmount">
+          <DataField>GroupReclassAmount</DataField>
+        </Field>
+        <Field Name="GroupReclassAmountFormat">
+          <DataField>GroupReclassAmountFormat</DataField>
+        </Field>
+        <Field Name="GroupNetChangeAmounts_4_">
+          <DataField>GroupNetChangeAmounts_4_</DataField>
+        </Field>
+        <Field Name="GroupNetChangeAmounts_4_Format">
+          <DataField>GroupNetChangeAmounts_4_Format</DataField>
+        </Field>
+        <Field Name="GroupStartAmounts_2_">
+          <DataField>GroupStartAmounts_2_</DataField>
+        </Field>
+        <Field Name="GroupStartAmounts_2_Format">
+          <DataField>GroupStartAmounts_2_Format</DataField>
+        </Field>
+        <Field Name="GroupNetChangeAmounts_2_">
+          <DataField>GroupNetChangeAmounts_2_</DataField>
+        </Field>
+        <Field Name="GroupNetChangeAmounts_2_Format">
+          <DataField>GroupNetChangeAmounts_2_Format</DataField>
+        </Field>
+        <Field Name="GroupDisposalAmounts_2_">
+          <DataField>GroupDisposalAmounts_2_</DataField>
+        </Field>
+        <Field Name="GroupDisposalAmounts_2_Format">
+          <DataField>GroupDisposalAmounts_2_Format</DataField>
+        </Field>
+        <Field Name="BookValueAtStartingDate_Control1140043Format">
+          <DataField>BookValueAtStartingDate_Control1140043Format</DataField>
+        </Field>
+        <Field Name="BookValueAtEndingDate_Control1140044Format">
+          <DataField>BookValueAtEndingDate_Control1140044Format</DataField>
+        </Field>
+        <Field Name="GroupHeadLine_Control1140059">
+          <DataField>GroupHeadLine_Control1140059</DataField>
+        </Field>
+        <Field Name="TotalCaption">
+          <DataField>TotalCaption</DataField>
+        </Field>
+        <Field Name="TotalStartAmounts_1_">
+          <DataField>TotalStartAmounts_1_</DataField>
+        </Field>
+        <Field Name="TotalStartAmounts_1_Format">
+          <DataField>TotalStartAmounts_1_Format</DataField>
+        </Field>
+        <Field Name="TotalNetChangeAmounts_1____TotalReclassAmount">
+          <DataField>TotalNetChangeAmounts_1____TotalReclassAmount</DataField>
+        </Field>
+        <Field Name="TotalNetChangeAmounts_1____TotalReclassAmountFormat">
+          <DataField>TotalNetChangeAmounts_1____TotalReclassAmountFormat</DataField>
+        </Field>
+        <Field Name="TotalDisposalAmounts_1_">
+          <DataField>TotalDisposalAmounts_1_</DataField>
+        </Field>
+        <Field Name="TotalDisposalAmounts_1_Format">
+          <DataField>TotalDisposalAmounts_1_Format</DataField>
+        </Field>
+        <Field Name="TotalReclassAmount">
+          <DataField>TotalReclassAmount</DataField>
+        </Field>
+        <Field Name="TotalReclassAmountFormat">
+          <DataField>TotalReclassAmountFormat</DataField>
+        </Field>
+        <Field Name="TotalNetChangeAmounts_4_">
+          <DataField>TotalNetChangeAmounts_4_</DataField>
+        </Field>
+        <Field Name="TotalNetChangeAmounts_4_Format">
+          <DataField>TotalNetChangeAmounts_4_Format</DataField>
+        </Field>
+        <Field Name="TotalStartAmounts_2_">
+          <DataField>TotalStartAmounts_2_</DataField>
+        </Field>
+        <Field Name="TotalStartAmounts_2_Format">
+          <DataField>TotalStartAmounts_2_Format</DataField>
+        </Field>
+        <Field Name="TotalNetChangeAmounts_2_">
+          <DataField>TotalNetChangeAmounts_2_</DataField>
+        </Field>
+        <Field Name="TotalNetChangeAmounts_2_Format">
+          <DataField>TotalNetChangeAmounts_2_Format</DataField>
+        </Field>
+        <Field Name="TotalDisposalAmounts_2_">
+          <DataField>TotalDisposalAmounts_2_</DataField>
+        </Field>
+        <Field Name="TotalDisposalAmounts_2_Format">
+          <DataField>TotalDisposalAmounts_2_Format</DataField>
+        </Field>
+        <Field Name="BookValueAtStartingDate_Control1140054Format">
+          <DataField>BookValueAtStartingDate_Control1140054Format</DataField>
+        </Field>
+        <Field Name="BookValueAtEndingDate_Control1140055Format">
+          <DataField>BookValueAtEndingDate_Control1140055Format</DataField>
+        </Field>
+        <Field Name="Fixed_Asset_FA_Class_Code">
+          <DataField>Fixed_Asset_FA_Class_Code</DataField>
+        </Field>
+        <Field Name="Fixed_Asset_FA_Subclass_Code">
+          <DataField>Fixed_Asset_FA_Subclass_Code</DataField>
+        </Field>
+        <Field Name="Fixed_Asset_Global_Dimension_1_Code">
+          <DataField>Fixed_Asset_Global_Dimension_1_Code</DataField>
+        </Field>
+        <Field Name="Fixed_Asset_Global_Dimension_2_Code">
+          <DataField>Fixed_Asset_Global_Dimension_2_Code</DataField>
+        </Field>
+        <Field Name="Fixed_Asset_FA_Location_Code">
+          <DataField>Fixed_Asset_FA_Location_Code</DataField>
+        </Field>
+        <Field Name="Fixed_Asset_Component_of_Main_Asset">
+          <DataField>Fixed_Asset_Component_of_Main_Asset</DataField>
+        </Field>
+        <Field Name="Fixed_Asset_FA_Posting_Group">
+          <DataField>Fixed_Asset_FA_Posting_Group</DataField>
+        </Field>
+      </Fields>
+    </DataSet>
+  </DataSets>
+  <DataSources>
+    <DataSource Name="DummyDataSource">
+      <ConnectionProperties>
+        <ConnectString />
+        <DataProvider>SQL</DataProvider>
+      </ConnectionProperties>
+      <rd:DataSourceID>43b4cb11-a547-4fde-9165-ea4ce706c951</rd:DataSourceID>
+    </DataSource>
+  </DataSources>
+  <InteractiveHeight>11in</InteractiveHeight>
+  <InteractiveWidth>8.5in</InteractiveWidth>
+  <Language>=User!Language</Language>
+  <LeftMargin>1.5cm</LeftMargin>
+  <PageHeader>
+    <Height>1.692cm</Height>
+    <PrintOnFirstPage>true</PrintOnFirstPage>
+    <PrintOnLastPage>true</PrintOnLastPage>
+    <ReportItems>
+      <Textbox Name="PageNumberTextBox">
+        <Height>0.423cm</Height>
+        <Left>24.45cm</Left>
+        <Style>
+          <FontSize>7pt</FontSize>
+          <TextAlign>Right</TextAlign>
+          <VerticalAlign>Middle</VerticalAlign>
+        </Style>
+        <Top>0.423cm</Top>
+        <Value>=Globals!PageNumber</Value>
+        <Width>0.45cm</Width>
+        <ZIndex>6</ZIndex>
+      </Textbox>
+      <Textbox Name="UserIdTextBox">
+        <Height>0.423cm</Height>
+        <Left>16.4cm</Left>
+        <Style>
+          <FontSize>7pt</FontSize>
+          <TextAlign>Right</TextAlign>
+          <VerticalAlign>Middle</VerticalAlign>
+        </Style>
+        <Top>0.846cm</Top>
+        <Value>=User!UserID</Value>
+        <Width>8.5cm</Width>
+        <ZIndex>5</ZIndex>
+      </Textbox>
+      <Textbox Name="ExecutionTimeTextBox">
+        <Height>0.423cm</Height>
+        <Left>17.4cm</Left>
+        <Style>
+          <FontSize>7pt</FontSize>
+          <Format>g</Format>
+          <TextAlign>Right</TextAlign>
+          <VerticalAlign>Middle</VerticalAlign>
+        </Style>
+        <Value>=ReportItems!FORMAT_TODAY_0_4_Value.Value</Value>
+        <Width>7.5cm</Width>
+        <ZIndex>4</ZIndex>
+      </Textbox>
+      <Textbox Name="MainHeadLineText1">
+        <Height>0.423cm</Height>
+        <Style>
+          <FontSize>8pt</FontSize>
+          <FontWeight>700</FontWeight>
+          <VerticalAlign>Middle</VerticalAlign>
+        </Style>
+        <Value>=ReportItems!MainHeadLineText.Value</Value>
+        <Width>10cm</Width>
+        <ZIndex>3</ZIndex>
+      </Textbox>
+      <Textbox Name="COMPANYNAME1">
+        <Height>0.423cm</Height>
+        <Style>
+          <FontSize>7pt</FontSize>
+          <VerticalAlign>Middle</VerticalAlign>
+        </Style>
+        <Top>0.846cm</Top>
+        <Value>=ReportItems!COMPANYNAME.Value</Value>
+        <Width>7.5cm</Width>
+        <ZIndex>2</ZIndex>
+      </Textbox>
+      <Textbox Name="DeprBookText1">
+        <Height>0.423cm</Height>
+        <Style>
+          <FontSize>7pt</FontSize>
+          <VerticalAlign>Middle</VerticalAlign>
+        </Style>
+        <Top>0.423cm</Top>
+        <Value>=ReportItems!DeprBookText.Value</Value>
+        <Width>7.5cm</Width>
+        <ZIndex>1</ZIndex>
+      </Textbox>
+      <Textbox Name="CurrReport_PAGENOCaption1">
+        <Height>0.423cm</Height>
+        <Left>23.7cm</Left>
+        <Style>
+          <FontSize>7pt</FontSize>
+          <VerticalAlign>Middle</VerticalAlign>
+        </Style>
+        <Top>0.423cm</Top>
+        <Value>=ReportItems!CurrReport_PAGENOCaption.Value</Value>
+        <Width>0.75cm</Width>
+      </Textbox>
+    </ReportItems>
+  </PageHeader>
+  <PageHeight>21cm</PageHeight>
+  <PageWidth>29.7cm</PageWidth>
+  <TopMargin>2cm</TopMargin>
+  <Width>24.95cm</Width>
+  <rd:DrawGrid>true</rd:DrawGrid>
+  <rd:ReportID>f1bf3966-4982-4a4b-af6e-7d3acc549adb</rd:ReportID>
+  <rd:SnapToGrid>true</rd:SnapToGrid>
+</Report>
+    END_OF_RDLDatA
+  }
+}
+

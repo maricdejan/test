@@ -1,0 +1,109 @@
+OBJECT Table 461 Prepayment Inv. Line Buffer
+{
+  OBJECT-PROPERTIES
+  {
+    Date=05.11.08;
+    Time=12:00:00;
+    Version List=NAVW16.00;
+  }
+  PROPERTIES
+  {
+    CaptionML=[DEU=Zeilenpuffer Vorauszahlungsrechnung;
+               ENU=Prepayment Inv. Line Buffer];
+  }
+  FIELDS
+  {
+    { 1   ;   ;G/L Account No.     ;Code20        ;TableRelation="G/L Account";
+                                                   CaptionML=[DEU=Sachkontonr.;
+                                                              ENU=G/L Account No.] }
+    { 2   ;   ;Line No.            ;Integer       ;CaptionML=[DEU=Zeilennr.;
+                                                              ENU=Line No.] }
+    { 3   ;   ;Amount              ;Decimal       ;CaptionML=[DEU=Betrag;
+                                                              ENU=Amount];
+                                                   AutoFormatType=2 }
+    { 4   ;   ;Description         ;Text50        ;CaptionML=[DEU=Beschreibung;
+                                                              ENU=Description] }
+    { 5   ;   ;Gen. Bus. Posting Group;Code10     ;TableRelation="Gen. Business Posting Group";
+                                                   CaptionML=[DEU=Gesch„ftsbuchungsgruppe;
+                                                              ENU=Gen. Bus. Posting Group] }
+    { 6   ;   ;Gen. Prod. Posting Group;Code10    ;TableRelation="Gen. Product Posting Group";
+                                                   CaptionML=[DEU=Produktbuchungsgruppe;
+                                                              ENU=Gen. Prod. Posting Group] }
+    { 7   ;   ;VAT Bus. Posting Group;Code10      ;TableRelation="VAT Business Posting Group";
+                                                   CaptionML=[DEU=MwSt.-Gesch„ftsbuchungsgruppe;
+                                                              ENU=VAT Bus. Posting Group] }
+    { 8   ;   ;VAT Prod. Posting Group;Code10     ;TableRelation="VAT Product Posting Group";
+                                                   CaptionML=[DEU=MwSt.-Produktbuchungsgruppe;
+                                                              ENU=VAT Prod. Posting Group] }
+    { 9   ;   ;VAT Amount          ;Decimal       ;CaptionML=[DEU=MwSt.-Betrag;
+                                                              ENU=VAT Amount];
+                                                   AutoFormatType=1 }
+    { 10  ;   ;VAT Calculation Type;Option        ;CaptionML=[DEU=MwSt.-Berechnungsart;
+                                                              ENU=VAT Calculation Type];
+                                                   OptionCaptionML=[DEU=Normale MwSt.,Erwerbsbesteuerung,Nur MwSt.,Verkaufssteuer;
+                                                                    ENU=Normal VAT,Reverse Charge VAT,Full VAT,Sales Tax];
+                                                   OptionString=Normal VAT,Reverse Charge VAT,Full VAT,Sales Tax }
+    { 11  ;   ;VAT Base Amount     ;Decimal       ;CaptionML=[DEU=MwSt.-Bemessungsgrundlage;
+                                                              ENU=VAT Base Amount];
+                                                   AutoFormatType=1 }
+    { 12  ;   ;Amount (ACY)        ;Decimal       ;CaptionML=[DEU=Betrag (BW);
+                                                              ENU=Amount (ACY)];
+                                                   AutoFormatType=1 }
+    { 13  ;   ;VAT Amount (ACY)    ;Decimal       ;CaptionML=[DEU=MwSt.-Betrag (BW);
+                                                              ENU=VAT Amount (ACY)];
+                                                   AutoFormatType=1 }
+    { 14  ;   ;VAT Base Amount (ACY);Decimal      ;CaptionML=[DEU=MwSt.-Bemessungsgrundlage (BW);
+                                                              ENU=VAT Base Amount (ACY)];
+                                                   AutoFormatType=1 }
+    { 15  ;   ;VAT Difference      ;Decimal       ;CaptionML=[DEU=MwSt.-Differenz;
+                                                              ENU=VAT Difference];
+                                                   AutoFormatType=1 }
+    { 16  ;   ;VAT %               ;Decimal       ;CaptionML=[DEU=MwSt. %;
+                                                              ENU=VAT %];
+                                                   DecimalPlaces=1:1 }
+    { 17  ;   ;VAT Identifier      ;Code10        ;CaptionML=[DEU=MwSt.-Kennzeichen;
+                                                              ENU=VAT Identifier];
+                                                   Editable=No }
+    { 18  ;   ;Dimension Entry No. ;Integer       ;CaptionML=[DEU=Dimension Lfd. Nr.;
+                                                              ENU=Dimension Entry No.] }
+    { 19  ;   ;Global Dimension 1 Code;Code20     ;TableRelation="Dimension Value".Code WHERE (Global Dimension No.=CONST(1));
+                                                   CaptionML=[DEU=Globaler Dimensionscode 1;
+                                                              ENU=Global Dimension 1 Code];
+                                                   CaptionClass='1,1,1' }
+    { 20  ;   ;Global Dimension 2 Code;Code20     ;TableRelation="Dimension Value".Code WHERE (Global Dimension No.=CONST(2));
+                                                   CaptionML=[DEU=Globaler Dimensionscode 2;
+                                                              ENU=Global Dimension 2 Code];
+                                                   CaptionClass='1,1,2' }
+    { 21  ;   ;Job No.             ;Code20        ;TableRelation=Job;
+                                                   CaptionML=[DEU=Projektnr.;
+                                                              ENU=Job No.] }
+    { 22  ;   ;Amount Incl. VAT    ;Decimal       ;CaptionML=[DEU=Betrag inkl. MwSt.;
+                                                              ENU=Amount Incl. VAT];
+                                                   AutoFormatType=1 }
+    { 24  ;   ;Tax Area Code       ;Code20        ;TableRelation="Tax Area";
+                                                   CaptionML=[DEU=Steuergebietscode;
+                                                              ENU=Tax Area Code] }
+    { 25  ;   ;Tax Liable          ;Boolean       ;CaptionML=[DEU=Steuerpflichtig;
+                                                              ENU=Tax Liable] }
+    { 26  ;   ;Tax Group Code      ;Code10        ;TableRelation="Tax Group";
+                                                   CaptionML=[DEU=Steuergruppencode;
+                                                              ENU=Tax Group Code] }
+    { 27  ;   ;Invoice Rounding    ;Boolean       ;CaptionML=[DEU=Rechnungsrundung;
+                                                              ENU=Invoice Rounding] }
+  }
+  KEYS
+  {
+    {    ;G/L Account No.,Dimension Entry No.,Job No.,Tax Area Code,Tax Liable,Tax Group Code,Invoice Rounding,Line No.;
+                                                   Clustered=Yes }
+  }
+  FIELDGROUPS
+  {
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

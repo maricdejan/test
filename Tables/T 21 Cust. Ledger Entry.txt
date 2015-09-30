@@ -1,0 +1,438 @@
+OBJECT Table 21 Cust. Ledger Entry
+{
+  OBJECT-PROPERTIES
+  {
+    Date=14.08.09;
+    Time=12:00:00;
+    Version List=NAVW16.00.01;
+  }
+  PROPERTIES
+  {
+    CaptionML=[DEU=Debitorenposten;
+               ENU=Cust. Ledger Entry];
+    LookupFormID=Form25;
+    DrillDownFormID=Form25;
+  }
+  FIELDS
+  {
+    { 1   ;   ;Entry No.           ;Integer       ;CaptionML=[DEU=Lfd. Nr.;
+                                                              ENU=Entry No.] }
+    { 3   ;   ;Customer No.        ;Code20        ;TableRelation=Customer;
+                                                   CaptionML=[DEU=Debitorennr.;
+                                                              ENU=Customer No.] }
+    { 4   ;   ;Posting Date        ;Date          ;CaptionML=[DEU=Buchungsdatum;
+                                                              ENU=Posting Date] }
+    { 5   ;   ;Document Type       ;Option        ;CaptionML=[DEU=Belegart;
+                                                              ENU=Document Type];
+                                                   OptionCaptionML=[DEU=" ,Zahlung,Rechnung,Gutschrift,Zinsrechnung,Mahnung,Erstattung";
+                                                                    ENU=" ,Payment,Invoice,Credit Memo,Finance Charge Memo,Reminder,Refund"];
+                                                   OptionString=[ ,Payment,Invoice,Credit Memo,Finance Charge Memo,Reminder,Refund] }
+    { 6   ;   ;Document No.        ;Code20        ;CaptionML=[DEU=Belegnr.;
+                                                              ENU=Document No.] }
+    { 7   ;   ;Description         ;Text50        ;CaptionML=[DEU=Beschreibung;
+                                                              ENU=Description] }
+    { 11  ;   ;Currency Code       ;Code10        ;TableRelation=Currency;
+                                                   CaptionML=[DEU=W„hrungscode;
+                                                              ENU=Currency Code] }
+    { 13  ;   ;Amount              ;Decimal       ;FieldClass=FlowField;
+                                                   CalcFormula=Sum("Detailed Cust. Ledg. Entry".Amount WHERE (Cust. Ledger Entry No.=FIELD(Entry No.),
+                                                                                                              Entry Type=FILTER(Initial Entry|Unrealized Loss|Unrealized Gain|Realized Loss|Realized Gain|Payment Discount|'Payment Discount (VAT Excl.)'|'Payment Discount (VAT Adjustment)'|Payment Tolerance|Payment Discount Tolerance|'Payment Tolerance (VAT Excl.)'|'Payment Tolerance (VAT Adjustment)'|'Payment Discount Tolerance (VAT Excl.)'|'Payment Discount Tolerance (VAT Adjustment)'),
+                                                                                                              Posting Date=FIELD(Date Filter)));
+                                                   CaptionML=[DEU=Betrag;
+                                                              ENU=Amount];
+                                                   Editable=No;
+                                                   AutoFormatType=1;
+                                                   AutoFormatExpr="Currency Code" }
+    { 14  ;   ;Remaining Amount    ;Decimal       ;FieldClass=FlowField;
+                                                   CalcFormula=Sum("Detailed Cust. Ledg. Entry".Amount WHERE (Cust. Ledger Entry No.=FIELD(Entry No.),
+                                                                                                              Posting Date=FIELD(Date Filter)));
+                                                   CaptionML=[DEU=Restbetrag;
+                                                              ENU=Remaining Amount];
+                                                   Editable=No;
+                                                   AutoFormatType=1;
+                                                   AutoFormatExpr="Currency Code" }
+    { 15  ;   ;Original Amt. (LCY) ;Decimal       ;FieldClass=FlowField;
+                                                   CalcFormula=Sum("Detailed Cust. Ledg. Entry"."Amount (LCY)" WHERE (Cust. Ledger Entry No.=FIELD(Entry No.),
+                                                                                                                      Entry Type=FILTER(Initial Entry),
+                                                                                                                      Posting Date=FIELD(Date Filter)));
+                                                   CaptionML=[DEU=Ursprungsbetrag (MW);
+                                                              ENU=Original Amt. (LCY)];
+                                                   Editable=No;
+                                                   AutoFormatType=1 }
+    { 16  ;   ;Remaining Amt. (LCY);Decimal       ;FieldClass=FlowField;
+                                                   CalcFormula=Sum("Detailed Cust. Ledg. Entry"."Amount (LCY)" WHERE (Cust. Ledger Entry No.=FIELD(Entry No.),
+                                                                                                                      Posting Date=FIELD(Date Filter)));
+                                                   CaptionML=[DEU=Restbetrag (MW);
+                                                              ENU=Remaining Amt. (LCY)];
+                                                   Editable=No;
+                                                   AutoFormatType=1 }
+    { 17  ;   ;Amount (LCY)        ;Decimal       ;FieldClass=FlowField;
+                                                   CalcFormula=Sum("Detailed Cust. Ledg. Entry"."Amount (LCY)" WHERE (Cust. Ledger Entry No.=FIELD(Entry No.),
+                                                                                                                      Entry Type=FILTER(Initial Entry|Unrealized Loss|Unrealized Gain|Realized Loss|Realized Gain|Payment Discount|'Payment Discount (VAT Excl.)'|'Payment Discount (VAT Adjustment)'|Payment Tolerance|Payment Discount Tolerance|'Payment Tolerance (VAT Excl.)'|'Payment Tolerance (VAT Adjustment)'|'Payment Discount Tolerance (VAT Excl.)'|'Payment Discount Tolerance (VAT Adjustment)'),
+                                                                                                                      Posting Date=FIELD(Date Filter)));
+                                                   CaptionML=[DEU=Betrag (MW);
+                                                              ENU=Amount (LCY)];
+                                                   Editable=No;
+                                                   AutoFormatType=1 }
+    { 18  ;   ;Sales (LCY)         ;Decimal       ;CaptionML=[DEU=Verkauf (MW);
+                                                              ENU=Sales (LCY)];
+                                                   AutoFormatType=1 }
+    { 19  ;   ;Profit (LCY)        ;Decimal       ;CaptionML=[DEU=DB (MW);
+                                                              ENU=Profit (LCY)];
+                                                   AutoFormatType=1 }
+    { 20  ;   ;Inv. Discount (LCY) ;Decimal       ;CaptionML=[DEU=Rechnungsrabatt (MW);
+                                                              ENU=Inv. Discount (LCY)];
+                                                   AutoFormatType=1 }
+    { 21  ;   ;Sell-to Customer No.;Code20        ;TableRelation=Customer;
+                                                   CaptionML=[DEU=Verk. an Deb.-Nr.;
+                                                              ENU=Sell-to Customer No.] }
+    { 22  ;   ;Customer Posting Group;Code10      ;TableRelation="Customer Posting Group";
+                                                   CaptionML=[DEU=Debitorenbuchungsgruppe;
+                                                              ENU=Customer Posting Group] }
+    { 23  ;   ;Global Dimension 1 Code;Code20     ;TableRelation="Dimension Value".Code WHERE (Global Dimension No.=CONST(1));
+                                                   CaptionML=[DEU=Globaler Dimensionscode 1;
+                                                              ENU=Global Dimension 1 Code];
+                                                   CaptionClass='1,1,1' }
+    { 24  ;   ;Global Dimension 2 Code;Code20     ;TableRelation="Dimension Value".Code WHERE (Global Dimension No.=CONST(2));
+                                                   CaptionML=[DEU=Globaler Dimensionscode 2;
+                                                              ENU=Global Dimension 2 Code];
+                                                   CaptionClass='1,1,2' }
+    { 25  ;   ;Salesperson Code    ;Code10        ;TableRelation=Salesperson/Purchaser;
+                                                   CaptionML=[DEU=Verk„ufercode;
+                                                              ENU=Salesperson Code] }
+    { 27  ;   ;User ID             ;Code20        ;TableRelation=User;
+                                                   OnLookup=VAR
+                                                              LoginMgt@1000 : Codeunit 418;
+                                                            BEGIN
+                                                              LoginMgt.LookupUserID("User ID");
+                                                            END;
+
+                                                   TestTableRelation=No;
+                                                   CaptionML=[DEU=Benutzer-ID;
+                                                              ENU=User ID] }
+    { 28  ;   ;Source Code         ;Code10        ;TableRelation="Source Code";
+                                                   CaptionML=[DEU=Herkunftscode;
+                                                              ENU=Source Code] }
+    { 33  ;   ;On Hold             ;Code3         ;CaptionML=[DEU=Abwarten;
+                                                              ENU=On Hold] }
+    { 34  ;   ;Applies-to Doc. Type;Option        ;CaptionML=[DEU=Ausgleich mit Belegart;
+                                                              ENU=Applies-to Doc. Type];
+                                                   OptionCaptionML=[DEU=" ,Zahlung,Rechnung,Gutschrift,Zinsrechnung,Mahnung,Erstattung";
+                                                                    ENU=" ,Payment,Invoice,Credit Memo,Finance Charge Memo,Reminder,Refund"];
+                                                   OptionString=[ ,Payment,Invoice,Credit Memo,Finance Charge Memo,Reminder,Refund] }
+    { 35  ;   ;Applies-to Doc. No. ;Code20        ;CaptionML=[DEU=Ausgleich mit Belegnr.;
+                                                              ENU=Applies-to Doc. No.] }
+    { 36  ;   ;Open                ;Boolean       ;CaptionML=[DEU=Offen;
+                                                              ENU=Open] }
+    { 37  ;   ;Due Date            ;Date          ;OnValidate=VAR
+                                                                ReminderEntry@1000 : Record 300;
+                                                                ReminderIssue@1102601000 : Codeunit 393;
+                                                              BEGIN
+                                                                TESTFIELD(Open,TRUE);
+                                                                IF "Due Date" <> xRec."Due Date" THEN BEGIN
+                                                                  ReminderEntry.SETCURRENTKEY("Customer Entry No.",Type);
+                                                                  ReminderEntry.SETRANGE("Customer Entry No.","Entry No.");
+                                                                  ReminderEntry.SETRANGE(Type,ReminderEntry.Type::Reminder);
+                                                                  ReminderEntry.SETRANGE("Reminder Level","Last Issued Reminder Level");
+                                                                  IF ReminderEntry.FINDLAST THEN
+                                                                    ReminderIssue.ChangeDueDate(ReminderEntry,"Due Date",xRec."Due Date");
+                                                                END;
+                                                              END;
+
+                                                   CaptionML=[DEU=F„lligkeitsdatum;
+                                                              ENU=Due Date] }
+    { 38  ;   ;Pmt. Discount Date  ;Date          ;OnValidate=BEGIN
+                                                                TESTFIELD(Open,TRUE);
+                                                              END;
+
+                                                   CaptionML=[DEU=Skontodatum;
+                                                              ENU=Pmt. Discount Date] }
+    { 39  ;   ;Original Pmt. Disc. Possible;Decimal;
+                                                   CaptionML=[DEU=Urspr. Skonto m”glich;
+                                                              ENU=Original Pmt. Disc. Possible];
+                                                   Editable=No;
+                                                   AutoFormatType=1;
+                                                   AutoFormatExpr="Currency Code" }
+    { 40  ;   ;Pmt. Disc. Given (LCY);Decimal     ;CaptionML=[DEU=Skonto gew„hrt (MW);
+                                                              ENU=Pmt. Disc. Given (LCY)];
+                                                   AutoFormatType=1 }
+    { 43  ;   ;Positive            ;Boolean       ;CaptionML=[DEU=Positiv;
+                                                              ENU=Positive] }
+    { 44  ;   ;Closed by Entry No. ;Integer       ;TableRelation="Cust. Ledger Entry";
+                                                   CaptionML=[DEU=Geschlossen von Lfd. Nr.;
+                                                              ENU=Closed by Entry No.] }
+    { 45  ;   ;Closed at Date      ;Date          ;CaptionML=[DEU=Geschlossen am;
+                                                              ENU=Closed at Date] }
+    { 46  ;   ;Closed by Amount    ;Decimal       ;CaptionML=[DEU=Geschlossen mit Betrag;
+                                                              ENU=Closed by Amount];
+                                                   AutoFormatType=1;
+                                                   AutoFormatExpr="Currency Code" }
+    { 47  ;   ;Applies-to ID       ;Code20        ;OnValidate=BEGIN
+                                                                TESTFIELD(Open,TRUE);
+                                                              END;
+
+                                                   CaptionML=[DEU=Ausgleichs-ID;
+                                                              ENU=Applies-to ID] }
+    { 49  ;   ;Journal Batch Name  ;Code10        ;CaptionML=[DEU=Buch.-Blattname;
+                                                              ENU=Journal Batch Name] }
+    { 50  ;   ;Reason Code         ;Code10        ;TableRelation="Reason Code";
+                                                   CaptionML=[DEU=Ursachencode;
+                                                              ENU=Reason Code] }
+    { 51  ;   ;Bal. Account Type   ;Option        ;CaptionML=[DEU=Gegenkontoart;
+                                                              ENU=Bal. Account Type];
+                                                   OptionCaptionML=[DEU=Sachkonto,Debitor,Kreditor,Bankkonto,Anlage;
+                                                                    ENU=G/L Account,Customer,Vendor,Bank Account,Fixed Asset];
+                                                   OptionString=G/L Account,Customer,Vendor,Bank Account,Fixed Asset }
+    { 52  ;   ;Bal. Account No.    ;Code20        ;TableRelation=IF (Bal. Account Type=CONST(G/L Account)) "G/L Account"
+                                                                 ELSE IF (Bal. Account Type=CONST(Customer)) Customer
+                                                                 ELSE IF (Bal. Account Type=CONST(Vendor)) Vendor
+                                                                 ELSE IF (Bal. Account Type=CONST(Bank Account)) "Bank Account"
+                                                                 ELSE IF (Bal. Account Type=CONST(Fixed Asset)) "Fixed Asset";
+                                                   CaptionML=[DEU=Gegenkontonr.;
+                                                              ENU=Bal. Account No.] }
+    { 53  ;   ;Transaction No.     ;Integer       ;CaptionML=[DEU=Transaktionsnr.;
+                                                              ENU=Transaction No.] }
+    { 54  ;   ;Closed by Amount (LCY);Decimal     ;CaptionML=[DEU=Geschlossen mit Betrag (MW);
+                                                              ENU=Closed by Amount (LCY)];
+                                                   AutoFormatType=1 }
+    { 58  ;   ;Debit Amount        ;Decimal       ;FieldClass=FlowField;
+                                                   CalcFormula=Sum("Detailed Cust. Ledg. Entry"."Debit Amount" WHERE (Cust. Ledger Entry No.=FIELD(Entry No.),
+                                                                                                                      Entry Type=FILTER(<>Application),
+                                                                                                                      Posting Date=FIELD(Date Filter)));
+                                                   CaptionML=[DEU=Sollbetrag;
+                                                              ENU=Debit Amount];
+                                                   BlankZero=Yes;
+                                                   Editable=No;
+                                                   AutoFormatType=1;
+                                                   AutoFormatExpr="Currency Code" }
+    { 59  ;   ;Credit Amount       ;Decimal       ;FieldClass=FlowField;
+                                                   CalcFormula=Sum("Detailed Cust. Ledg. Entry"."Credit Amount" WHERE (Cust. Ledger Entry No.=FIELD(Entry No.),
+                                                                                                                       Entry Type=FILTER(<>Application),
+                                                                                                                       Posting Date=FIELD(Date Filter)));
+                                                   CaptionML=[DEU=Habenbetrag;
+                                                              ENU=Credit Amount];
+                                                   BlankZero=Yes;
+                                                   Editable=No;
+                                                   AutoFormatType=1;
+                                                   AutoFormatExpr="Currency Code" }
+    { 60  ;   ;Debit Amount (LCY)  ;Decimal       ;FieldClass=FlowField;
+                                                   CalcFormula=Sum("Detailed Cust. Ledg. Entry"."Debit Amount (LCY)" WHERE (Cust. Ledger Entry No.=FIELD(Entry No.),
+                                                                                                                            Entry Type=FILTER(<>Application),
+                                                                                                                            Posting Date=FIELD(Date Filter)));
+                                                   CaptionML=[DEU=Sollbetrag (MW);
+                                                              ENU=Debit Amount (LCY)];
+                                                   BlankZero=Yes;
+                                                   Editable=No;
+                                                   AutoFormatType=1 }
+    { 61  ;   ;Credit Amount (LCY) ;Decimal       ;FieldClass=FlowField;
+                                                   CalcFormula=Sum("Detailed Cust. Ledg. Entry"."Credit Amount (LCY)" WHERE (Cust. Ledger Entry No.=FIELD(Entry No.),
+                                                                                                                             Entry Type=FILTER(<>Application),
+                                                                                                                             Posting Date=FIELD(Date Filter)));
+                                                   CaptionML=[DEU=Habenbetrag (MW);
+                                                              ENU=Credit Amount (LCY)];
+                                                   BlankZero=Yes;
+                                                   Editable=No;
+                                                   AutoFormatType=1 }
+    { 62  ;   ;Document Date       ;Date          ;CaptionML=[DEU=Belegdatum;
+                                                              ENU=Document Date] }
+    { 63  ;   ;External Document No.;Code20       ;CaptionML=[DEU=Externe Belegnummer;
+                                                              ENU=External Document No.] }
+    { 64  ;   ;Calculate Interest  ;Boolean       ;CaptionML=[DEU=Zins berechnen;
+                                                              ENU=Calculate Interest] }
+    { 65  ;   ;Closing Interest Calculated;Boolean;CaptionML=[DEU=Abschlusszinsen berechnet;
+                                                              ENU=Closing Interest Calculated] }
+    { 66  ;   ;No. Series          ;Code10        ;TableRelation="No. Series";
+                                                   CaptionML=[DEU=Nummernserie;
+                                                              ENU=No. Series] }
+    { 67  ;   ;Closed by Currency Code;Code10     ;TableRelation=Currency;
+                                                   CaptionML=[DEU=Geschlossen von W„hrungscode;
+                                                              ENU=Closed by Currency Code] }
+    { 68  ;   ;Closed by Currency Amount;Decimal  ;CaptionML=[DEU=Geschlossen mit W„hrungsbetrag;
+                                                              ENU=Closed by Currency Amount];
+                                                   AutoFormatType=1;
+                                                   AutoFormatExpr="Closed by Currency Code" }
+    { 73  ;   ;Adjusted Currency Factor;Decimal   ;CaptionML=[DEU=Regul. W„hrungsfaktor;
+                                                              ENU=Adjusted Currency Factor];
+                                                   DecimalPlaces=0:15 }
+    { 74  ;   ;Original Currency Factor;Decimal   ;CaptionML=[DEU=Urspr. W„hrungsfaktor;
+                                                              ENU=Original Currency Factor];
+                                                   DecimalPlaces=0:15 }
+    { 75  ;   ;Original Amount     ;Decimal       ;FieldClass=FlowField;
+                                                   CalcFormula=Sum("Detailed Cust. Ledg. Entry".Amount WHERE (Cust. Ledger Entry No.=FIELD(Entry No.),
+                                                                                                              Entry Type=FILTER(Initial Entry),
+                                                                                                              Posting Date=FIELD(Date Filter)));
+                                                   CaptionML=[DEU=Ursprungsbetrag;
+                                                              ENU=Original Amount];
+                                                   Editable=No;
+                                                   AutoFormatType=1;
+                                                   AutoFormatExpr="Currency Code" }
+    { 76  ;   ;Date Filter         ;Date          ;FieldClass=FlowFilter;
+                                                   CaptionML=[DEU=Datumsfilter;
+                                                              ENU=Date Filter] }
+    { 77  ;   ;Remaining Pmt. Disc. Possible;Decimal;
+                                                   OnValidate=BEGIN
+                                                                TESTFIELD(Open,TRUE);
+                                                                CALCFIELDS(Amount,"Original Amount");
+
+                                                                IF "Remaining Pmt. Disc. Possible" * Amount < 0 THEN
+                                                                  FIELDERROR("Remaining Pmt. Disc. Possible",STRSUBSTNO(Text000,FIELDCAPTION(Amount)));
+
+                                                                IF ABS("Remaining Pmt. Disc. Possible") > ABS("Original Amount") THEN
+                                                                  FIELDERROR("Remaining Pmt. Disc. Possible",STRSUBSTNO(Text001,FIELDCAPTION("Original Amount")));
+                                                              END;
+
+                                                   CaptionML=[DEU=Restskonto m”glich;
+                                                              ENU=Remaining Pmt. Disc. Possible];
+                                                   AutoFormatType=1;
+                                                   AutoFormatExpr="Currency Code" }
+    { 78  ;   ;Pmt. Disc. Tolerance Date;Date     ;OnValidate=BEGIN
+                                                                TESTFIELD(Open,TRUE);
+                                                              END;
+
+                                                   CaptionML=[DEU=Skontotoleranzdatum;
+                                                              ENU=Pmt. Disc. Tolerance Date] }
+    { 79  ;   ;Max. Payment Tolerance;Decimal     ;OnValidate=BEGIN
+                                                                TESTFIELD(Open,TRUE);
+                                                                CALCFIELDS(Amount,"Remaining Amount");
+
+                                                                IF "Max. Payment Tolerance" * Amount < 0 THEN
+                                                                  FIELDERROR("Max. Payment Tolerance",STRSUBSTNO(Text000,FIELDCAPTION(Amount)));
+
+                                                                IF ABS("Max. Payment Tolerance") > ABS("Remaining Amount") THEN
+                                                                  FIELDERROR("Max. Payment Tolerance",STRSUBSTNO(Text001,FIELDCAPTION("Remaining Amount")));
+                                                              END;
+
+                                                   CaptionML=[DEU=Max. Zahlungstoleranz;
+                                                              ENU=Max. Payment Tolerance];
+                                                   AutoFormatType=1;
+                                                   AutoFormatExpr="Currency Code" }
+    { 80  ;   ;Last Issued Reminder Level;Integer ;CaptionML=[DEU=Letzte registrierte Mahnstufe;
+                                                              ENU=Last Issued Reminder Level] }
+    { 81  ;   ;Accepted Payment Tolerance;Decimal ;CaptionML=[DEU=Akzeptierte Zahlungstoleranz;
+                                                              ENU=Accepted Payment Tolerance];
+                                                   AutoFormatType=1;
+                                                   AutoFormatExpr="Currency Code" }
+    { 82  ;   ;Accepted Pmt. Disc. Tolerance;Boolean;
+                                                   CaptionML=[DEU=Akzeptierte Skontotoleranz;
+                                                              ENU=Accepted Pmt. Disc. Tolerance] }
+    { 83  ;   ;Pmt. Tolerance (LCY);Decimal       ;CaptionML=[DEU=Zahlungstoleranz (MW);
+                                                              ENU=Pmt. Tolerance (LCY)];
+                                                   AutoFormatType=1 }
+    { 84  ;   ;Amount to Apply     ;Decimal       ;OnValidate=BEGIN
+                                                                TESTFIELD(Open,TRUE);
+                                                                CALCFIELDS("Remaining Amount");
+
+                                                                IF "Amount to Apply" * "Remaining Amount" < 0 THEN
+                                                                  FIELDERROR("Amount to Apply",STRSUBSTNO(Text000,FIELDCAPTION("Remaining Amount")));
+
+                                                                IF ABS("Amount to Apply") > ABS("Remaining Amount") THEN
+                                                                  FIELDERROR("Amount to Apply",STRSUBSTNO(Text001,FIELDCAPTION("Remaining Amount")));
+                                                              END;
+
+                                                   CaptionML=[DEU=Ausgleichsbetrag;
+                                                              ENU=Amount to Apply];
+                                                   AutoFormatType=1;
+                                                   AutoFormatExpr="Currency Code" }
+    { 85  ;   ;IC Partner Code     ;Code20        ;TableRelation="IC Partner";
+                                                   CaptionML=[DEU=IC-Partnercode;
+                                                              ENU=IC Partner Code] }
+    { 86  ;   ;Applying Entry      ;Boolean       ;CaptionML=[DEU=Ausgleichsposten;
+                                                              ENU=Applying Entry] }
+    { 87  ;   ;Reversed            ;Boolean       ;CaptionML=[DEU=Storniert;
+                                                              ENU=Reversed];
+                                                   BlankZero=Yes }
+    { 88  ;   ;Reversed by Entry No.;Integer      ;TableRelation="Cust. Ledger Entry";
+                                                   CaptionML=[DEU=Storniert durch Lfd. Nr.;
+                                                              ENU=Reversed by Entry No.];
+                                                   BlankZero=Yes }
+    { 89  ;   ;Reversed Entry No.  ;Integer       ;TableRelation="Cust. Ledger Entry";
+                                                   CaptionML=[DEU=Stornierter Posten Lfd. Nr.;
+                                                              ENU=Reversed Entry No.];
+                                                   BlankZero=Yes }
+    { 90  ;   ;Prepayment          ;Boolean       ;CaptionML=[DEU=Vorauszahlung;
+                                                              ENU=Prepayment] }
+  }
+  KEYS
+  {
+    {    ;Entry No.                               ;Clustered=Yes }
+    {    ;Customer No.,Posting Date,Currency Code ;SumIndexFields=Sales (LCY),Profit (LCY),Inv. Discount (LCY);
+                                                   SIFTLevelsToMaintain=[{Customer No.},
+                                                                         {Customer No.,Posting Date:Year},
+                                                                         {Customer No.,Posting Date:Month}] }
+    { No ;Customer No.,Currency Code,Posting Date ;KeyGroups=Cust(Curr) }
+    {    ;Document No.                             }
+    {    ;External Document No.                    }
+    {    ;Customer No.,Open,Positive,Due Date,Currency Code }
+    {    ;Open,Due Date                            }
+    {    ;Document Type,Customer No.,Posting Date,Currency Code;
+                                                   SumIndexFields=Sales (LCY),Profit (LCY),Inv. Discount (LCY);
+                                                   MaintainSQLIndex=No;
+                                                   MaintainSIFTIndex=No }
+    {    ;Salesperson Code,Posting Date           ;KeyGroups=Cust(Comm) }
+    {    ;Closed by Entry No.                      }
+    {    ;Transaction No.                          }
+    { No ;Customer No.,Open,Positive,Calculate Interest,Due Date;
+                                                   KeyGroups=Cust(int) }
+    { No ;Customer No.,Global Dimension 1 Code,Global Dimension 2 Code,Posting Date,Currency Code;
+                                                   SumIndexFields=Sales (LCY),Profit (LCY),Inv. Discount (LCY);
+                                                   KeyGroups=Cust(Dim) }
+    { No ;Customer No.,Open,Global Dimension 1 Code,Global Dimension 2 Code,Positive,Due Date,Currency Code;
+                                                   KeyGroups=Cust(Dim) }
+    { No ;Open,Global Dimension 1 Code,Global Dimension 2 Code,Due Date;
+                                                   KeyGroups=Cust(Dim) }
+    { No ;Document Type,Customer No.,Global Dimension 1 Code,Global Dimension 2 Code,Posting Date,Currency Code;
+                                                   KeyGroups=Cust(Dim) }
+    {    ;Customer No.,Applies-to ID,Open,Positive,Due Date }
+  }
+  FIELDGROUPS
+  {
+    { 1   ;DropDown            ;Entry No.,Description,Customer No.,Posting Date,Document Type,Document No. }
+  }
+  CODE
+  {
+    VAR
+      Text000@1000 : TextConst 'DEU=muss dasselbe Vorzeichen haben wie %1;ENU=must have the same sign as %1';
+      Text001@1001 : TextConst 'DEU=darf nicht gr”áer sein als %1;ENU=must not be larger than %1';
+
+    PROCEDURE DrillDownOnEntries@1(VAR DtldCustLedgEntry@1000 : Record 379);
+    VAR
+      CustLedgEntry@1001 : Record 21;
+    BEGIN
+      CustLedgEntry.RESET;
+      DtldCustLedgEntry.COPYFILTER("Customer No.",CustLedgEntry."Customer No.");
+      DtldCustLedgEntry.COPYFILTER("Currency Code",CustLedgEntry."Currency Code");
+      DtldCustLedgEntry.COPYFILTER("Initial Entry Global Dim. 1",CustLedgEntry."Global Dimension 1 Code");
+      DtldCustLedgEntry.COPYFILTER("Initial Entry Global Dim. 2",CustLedgEntry."Global Dimension 2 Code");
+      CustLedgEntry.SETCURRENTKEY("Customer No.","Posting Date");
+      CustLedgEntry.SETRANGE(Open,TRUE);
+      FORM.RUN(0,CustLedgEntry);
+    END;
+
+    PROCEDURE DrillDownOnOverdueEntries@4(VAR DtldCustLedgEntry@1000 : Record 379);
+    VAR
+      CustLedgEntry@1001 : Record 21;
+    BEGIN
+      CustLedgEntry.RESET;
+      DtldCustLedgEntry.COPYFILTER("Customer No.",CustLedgEntry."Customer No.");
+      DtldCustLedgEntry.COPYFILTER("Currency Code",CustLedgEntry."Currency Code");
+      DtldCustLedgEntry.COPYFILTER("Initial Entry Global Dim. 1",CustLedgEntry."Global Dimension 1 Code");
+      DtldCustLedgEntry.COPYFILTER("Initial Entry Global Dim. 2",CustLedgEntry."Global Dimension 2 Code");
+      CustLedgEntry.SETCURRENTKEY("Customer No.","Posting Date");
+      CustLedgEntry.SETFILTER("Date Filter",'..%1',WORKDATE);
+      CustLedgEntry.SETFILTER("Due Date",'..%1',WORKDATE);
+      CustLedgEntry.SETFILTER("Remaining Amount",'<>%1',0);
+      FORM.RUN(0,CustLedgEntry);
+    END;
+
+    PROCEDURE GetOriginalCurrencyFactor@2() : Decimal;
+    BEGIN
+      IF "Original Currency Factor" = 0 THEN
+        EXIT(1);
+      EXIT("Original Currency Factor");
+    END;
+
+    BEGIN
+    END.
+  }
+}
+

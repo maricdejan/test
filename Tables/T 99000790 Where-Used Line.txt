@@ -1,0 +1,48 @@
+OBJECT Table 99000790 Where-Used Line
+{
+  OBJECT-PROPERTIES
+  {
+    Date=05.11.08;
+    Time=12:00:00;
+    Version List=NAVW16.00;
+  }
+  PROPERTIES
+  {
+    CaptionML=[DEU=Verwendungszeile;
+               ENU=Where-Used Line];
+  }
+  FIELDS
+  {
+    { 1   ;   ;Entry No.           ;Integer       ;CaptionML=[DEU=Lfd. Nr.;
+                                                              ENU=Entry No.] }
+    { 3   ;   ;Item No.            ;Code20        ;TableRelation=Item;
+                                                   CaptionML=[DEU=Artikelnr.;
+                                                              ENU=Item No.] }
+    { 4   ;   ;Version Code        ;Code10        ;CaptionML=[DEU=Versionscode;
+                                                              ENU=Version Code] }
+    { 5   ;   ;Description         ;Text30        ;CaptionML=[DEU=Beschreibung;
+                                                              ENU=Description] }
+    { 6   ;   ;Quantity Needed     ;Decimal       ;CaptionML=[DEU=Bedarfsmenge;
+                                                              ENU=Quantity Needed];
+                                                   DecimalPlaces=0:5 }
+    { 7   ;   ;Level Code          ;Integer       ;CaptionML=[DEU=Ebenencode;
+                                                              ENU=Level Code] }
+    { 8   ;   ;Production BOM No.  ;Code20        ;TableRelation="Production BOM Header";
+                                                   CaptionML=[DEU=Fert.-StÅcklistennr.;
+                                                              ENU=Production BOM No.] }
+  }
+  KEYS
+  {
+    {    ;Entry No.                               ;Clustered=Yes }
+  }
+  FIELDGROUPS
+  {
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

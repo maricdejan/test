@@ -1,0 +1,45 @@
+OBJECT Table 8615 Migration Data
+{
+  OBJECT-PROPERTIES
+  {
+    Date=14.08.09;
+    Time=12:00:00;
+    Version List=NAVW16.00.01;
+  }
+  PROPERTIES
+  {
+    CaptionML=[DEU=Migrationsdaten;
+               ENU=Migration Data];
+  }
+  FIELDS
+  {
+    { 1   ;   ;TableID             ;Integer       ;TableRelation=Object.ID WHERE (Type=CONST(Table));
+                                                   CaptionML=[DEU=TableID;
+                                                              ENU=TableID] }
+    { 2   ;   ;No.                 ;Integer       ;TableRelation="Migration Record".No. WHERE (TableID=FIELD(TableID));
+                                                   CaptionML=[DEU=Nr.;
+                                                              ENU=No.] }
+    { 3   ;   ;FieldID             ;Integer       ;TableRelation="Migration Table Field".FieldID WHERE (TableID=FIELD(TableID));
+                                                   CaptionML=[DEU=Feld-ID;
+                                                              ENU=FieldID] }
+    { 4   ;   ;Value               ;Text250       ;CaptionML=[DEU=Wert;
+                                                              ENU=Value] }
+    { 5   ;   ;Invalid             ;Boolean       ;CaptionML=[DEU=UngÅltig;
+                                                              ENU=Invalid] }
+  }
+  KEYS
+  {
+    {    ;TableID,No.,FieldID                     ;Clustered=Yes }
+    {    ;TableID,FieldID                          }
+  }
+  FIELDGROUPS
+  {
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

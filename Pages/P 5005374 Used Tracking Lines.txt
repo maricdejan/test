@@ -1,0 +1,77 @@
+OBJECT Page 5005374 Used Tracking Lines
+{
+  OBJECT-PROPERTIES
+  {
+    Date=01.10.04;
+    Time=12:00:00;
+    Version List=NAVDACH4.00;
+  }
+  PROPERTIES
+  {
+    Editable=No;
+    CaptionML=[DEU=Verwendete Artikelverfolgungszeilen;
+               ENU=Used Tracking Lines];
+    SourceTable=Table5005360;
+    PageType=List;
+    OnClosePage=BEGIN
+                  TempPhysInvtTrackBuffer := Rec;
+                END;
+
+    OnFindRecord=BEGIN
+                   TempPhysInvtTrackBuffer.SETVIEW(GETVIEW);
+                   TempPhysInvtTrackBuffer := Rec;
+                   IF NOT TempPhysInvtTrackBuffer.FIND(Which) THEN
+                     EXIT(FALSE);
+                   Rec := TempPhysInvtTrackBuffer;
+                   EXIT(TRUE);
+                 END;
+
+    OnNextRecord=VAR
+                   CurrentSteps@1140000 : Integer;
+                 BEGIN
+                   TempPhysInvtTrackBuffer := Rec;
+                   CurrentSteps := TempPhysInvtTrackBuffer.NEXT(Steps);
+                   IF CurrentSteps <> 0 THEN
+                     Rec := TempPhysInvtTrackBuffer;
+                   EXIT(CurrentSteps);
+                 END;
+
+  }
+  CONTROLS
+  {
+    { 1900000001;0;Container;
+                ContainerType=ContentArea }
+
+    { 1140000;1;Group     ;
+                GroupType=Repeater }
+
+    { 1140001;2;Field     ;
+                SourceExpr="Serial No." }
+
+    { 1140003;2;Field     ;
+                SourceExpr="Lot No" }
+
+    { 1140005;2;Field     ;
+                SourceExpr="Qty. Expected (Base)" }
+
+  }
+  CODE
+  {
+    VAR
+      TempPhysInvtTrackBuffer@1140000 : TEMPORARY Record 5005360;
+
+    PROCEDURE SetSources@1140000(VAR PhysInvtTrackBuffer@1140000 : Record 5005360);
+    BEGIN
+      TempPhysInvtTrackBuffer.RESET;
+      TempPhysInvtTrackBuffer.DELETEALL;
+      IF PhysInvtTrackBuffer.FIND('-') THEN REPEAT
+        TempPhysInvtTrackBuffer := PhysInvtTrackBuffer;
+        TempPhysInvtTrackBuffer.INSERT;
+      UNTIL PhysInvtTrackBuffer.NEXT = 0;
+    END;
+
+    BEGIN
+    END.
+  }
+}
+

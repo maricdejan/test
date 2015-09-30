@@ -1,0 +1,40 @@
+OBJECT Table 5113 Search Result
+{
+  OBJECT-PROPERTIES
+  {
+    Date=05.11.08;
+    Time=12:00:00;
+    Version List=NAVW16.00;
+  }
+  PROPERTIES
+  {
+    CaptionML=[DEU=Suchergebnis;
+               ENU=Search Result];
+  }
+  FIELDS
+  {
+    { 1   ;   ;Line No.            ;Integer       ;CaptionML=[DEU=Zeilennr.;
+                                                              ENU=Line No.] }
+    { 2   ;   ;Contact No.         ;Code20        ;TableRelation=Contact WHERE (No.=FIELD(Contact No.));
+                                                   CaptionML=[DEU=Kontaktnr.;
+                                                              ENU=Contact No.] }
+    { 3   ;   ;Contact Name        ;Text50        ;CaptionML=[DEU=Kontaktname;
+                                                              ENU=Contact Name] }
+    { 4   ;   ;No. of Records      ;Integer       ;CaptionML=[DEU=Anzahl Datens„tze;
+                                                              ENU=No. of Records] }
+  }
+  KEYS
+  {
+    {    ;Line No.                                ;Clustered=Yes }
+  }
+  FIELDGROUPS
+  {
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

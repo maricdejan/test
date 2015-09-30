@@ -1,0 +1,50 @@
+OBJECT Table 11010 GDPdU Primary Key Buffer
+{
+  OBJECT-PROPERTIES
+  {
+    Date=01.10.04;
+    Time=12:00:00;
+    Version List=NAVDACH4.00;
+  }
+  PROPERTIES
+  {
+    CaptionML=[DEU=GDPdU PrimÑrschlÅsselpuffer;
+               ENU=GDPdU Primary Key Buffer];
+  }
+  FIELDS
+  {
+    { 1   ;   ;Table No.           ;Integer       ;CaptionML=[DEU=Tabellennr.;
+                                                              ENU=Table No.] }
+    { 2   ;   ;Index Value 1       ;Text30        ;CaptionML=[DEU=Indexwert 1;
+                                                              ENU=Index Value 1] }
+    { 3   ;   ;Index Value 2       ;Text30        ;CaptionML=[DEU=Indexwert 2;
+                                                              ENU=Index Value 2] }
+    { 4   ;   ;Index Value 3       ;Text30        ;CaptionML=[DEU=Indexwert 3;
+                                                              ENU=Index Value 3] }
+    { 5   ;   ;Index Value 4       ;Text30        ;CaptionML=[DEU=Indexwert 4;
+                                                              ENU=Index Value 4] }
+    { 6   ;   ;Index Value 5       ;Text30        ;CaptionML=[DEU=Indexwert 5;
+                                                              ENU=Index Value 5] }
+    { 7   ;   ;Index Value 6       ;Text30        ;CaptionML=[DEU=Indexwert 6;
+                                                              ENU=Index Value 6] }
+    { 8   ;   ;Index Value 7       ;Text30        ;CaptionML=[DEU=Indexwert 7;
+                                                              ENU=Index Value 7] }
+    { 9   ;   ;Best Key Index      ;Integer       ;CaptionML=[DEU=Bester SchlÅsselindex;
+                                                              ENU=Best Key Index] }
+  }
+  KEYS
+  {
+    {    ;Table No.,Index Value 1,Index Value 2,Index Value 3,Index Value 4,Index Value 5,Index Value 6,Index Value 7;
+                                                   Clustered=Yes }
+  }
+  FIELDGROUPS
+  {
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

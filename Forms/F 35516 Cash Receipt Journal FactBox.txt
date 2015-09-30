@@ -1,0 +1,362 @@
+OBJECT Form 35516 Cash Receipt Journal FactBox
+{
+  OBJECT-PROPERTIES
+  {
+    Date=14.08.09;
+    Time=12:00:00;
+    Version List=NAVDACH6.00.01;
+  }
+  PROPERTIES
+  {
+    Width=5500;
+    Height=8030;
+    CaptionML=ENU=Cash Receipt Journal Details;
+    TableBoxID=1;
+    SourceTable=Table81;
+    OnFindRecord=BEGIN
+                   IF FIND(Which) THEN BEGIN
+                     GenJnlManagement.GetAccounts(Rec,AccName,BalAccName);
+                     UpdateBalance;
+                     UpdateInfoBox;
+                   END ELSE BEGIN
+                     PaymentAmt := 0;
+                     AccName := '';
+                     BalAccName := '';
+                     AgeDays := 0;
+                     PaymDiscDays := 0;
+                     DueDays := 0;
+                     OeRemainAmountFC := 0;
+                     PaymDiscDeductAmount := 0;
+                     RemainAfterPayment := 0;
+                     PMTDiscount := 0;
+                     AcceptedPaymentTol := 0;
+                     PostingDate := 0D;
+                     DueDate :=  0D;
+                     PmtDiscDate := 0D;
+                     CustPaymtTerm := '';
+                   END;
+                   EXIT(FIND(Which));
+                 END;
+
+    OnAfterGetRecord=BEGIN
+                       GenJnlManagement.GetAccounts(Rec,AccName,BalAccName);
+
+                       UpdateBalance;
+                       UpdateInfoBox;
+                     END;
+
+  }
+  CONTROLS
+  {
+    { 1150027;TextBox   ;2750 ;220  ;2420 ;440  ;VertGlue=Bottom;
+                                                 Editable=No;
+                                                 CaptionML=ENU=Name;
+                                                 SourceExpr=AccName }
+    { 1150028;Label     ;220  ;220  ;2420 ;440  ;VertGlue=Bottom;
+                                                 ParentControl=1150027;
+                                                 LeaderDots=No }
+    { 1150029;TextBox   ;2750 ;770  ;2420 ;440  ;VertGlue=Bottom;
+                                                 Editable=No;
+                                                 CaptionML=ENU=Payment Terms;
+                                                 ToolTipML=ENU=Payment term of customer;
+                                                 SourceExpr=CustPaymtTerm }
+    { 1150030;Label     ;220  ;770  ;2420 ;440  ;ParentControl=1150029 }
+    { 1150021;TextBox   ;2750 ;1320 ;2420 ;440  ;VertGlue=Bottom;
+                                                 Editable=No;
+                                                 CaptionML=ENU=Open Amt.;
+                                                 ToolTipML=ENU=Remaining amount of open entry;
+                                                 SourceExpr=OeRemainAmountFC }
+    { 1150024;Label     ;220  ;1320 ;2420 ;440  ;VertGlue=Bottom;
+                                                 ParentControl=1150021;
+                                                 LeaderDots=No }
+    { 1150022;TextBox   ;2750 ;1870 ;2420 ;440  ;VertGlue=Bottom;
+                                                 Editable=No;
+                                                 CaptionML=ENU=Payment;
+                                                 ToolTipML=ENU=Payment amount of actual line;
+                                                 SourceExpr=PaymentAmt }
+    { 1150025;Label     ;220  ;1870 ;2420 ;440  ;VertGlue=Bottom;
+                                                 ParentControl=1150022;
+                                                 LeaderDots=No }
+    { 1150026;TextBox   ;220  ;2420 ;2420 ;440  ;Editable=No;
+                                                 Focusable=No;
+                                                 Border=No;
+                                                 SourceExpr=RemainAfterPaymentCaption }
+    { 1150023;TextBox   ;2750 ;2420 ;2420 ;440  ;VertGlue=Bottom;
+                                                 Editable=No;
+                                                 CaptionML=ENU=Remaining after Payment;
+                                                 SourceExpr=RemainAfterPaymentText }
+    { 1150010;TextBox   ;2750 ;2970 ;2420 ;440  ;VertGlue=Bottom;
+                                                 Editable=No;
+                                                 CaptionML=ENU=Pmt. Discount;
+                                                 ToolTipML=ENU=Payment discount possible;
+                                                 SourceExpr=PMTDiscount }
+    { 1150012;Label     ;220  ;2970 ;2420 ;440  ;VertGlue=Bottom;
+                                                 ParentControl=1150010;
+                                                 LeaderDots=No }
+    { 1150011;TextBox   ;2750 ;3520 ;2420 ;440  ;VertGlue=Bottom;
+                                                 Editable=No;
+                                                 CaptionML=ENU=Deduction;
+                                                 ToolTipML=ENU=Accepted payment discount;
+                                                 SourceExpr=PaymDiscDeductAmount }
+    { 1150013;Label     ;220  ;3520 ;2420 ;440  ;VertGlue=Bottom;
+                                                 ParentControl=1150011;
+                                                 LeaderDots=No }
+    { 1150019;TextBox   ;2750 ;4070 ;2420 ;440  ;VertGlue=Bottom;
+                                                 Editable=No;
+                                                 CaptionML=ENU=Pmt. Tolerance;
+                                                 ToolTipML=ENU=Accepted payment tolerance;
+                                                 SourceExpr=AcceptedPaymentTol }
+    { 1150020;Label     ;220  ;4070 ;2420 ;440  ;VertGlue=Bottom;
+                                                 ParentControl=1150019;
+                                                 LeaderDots=No }
+    { 1150007;TextBox   ;2750 ;4620 ;1540 ;440  ;VertGlue=Bottom;
+                                                 Editable=No;
+                                                 CaptionML=ENU=Age;
+                                                 ToolTipML=ENU=Posting date of open entry;
+                                                 BlankZero=Yes;
+                                                 SourceExpr=PostingDate }
+    { 1150009;Label     ;220  ;4620 ;2420 ;440  ;VertGlue=Bottom;
+                                                 ParentControl=1150007;
+                                                 LeaderDots=No }
+    { 1150005;TextBox   ;4400 ;4620 ;770  ;440  ;VertGlue=Bottom;
+                                                 Editable=No;
+                                                 CaptionML=ENU=Age Days;
+                                                 ToolTipML=ENU=Number of days since posting date of open entry;
+                                                 BlankZero=Yes;
+                                                 SourceExpr=AgeDays }
+    { 1150006;TextBox   ;2750 ;5170 ;1540 ;440  ;VertGlue=Bottom;
+                                                 Editable=No;
+                                                 CaptionML=ENU=Due;
+                                                 ToolTipML=ENU=Due date of open entry;
+                                                 BlankZero=Yes;
+                                                 SourceExpr=DueDate }
+    { 1150008;Label     ;220  ;5170 ;2420 ;440  ;VertGlue=Bottom;
+                                                 ParentControl=1150006;
+                                                 LeaderDots=No }
+    { 1150004;TextBox   ;4400 ;5170 ;770  ;440  ;VertGlue=Bottom;
+                                                 Editable=No;
+                                                 CaptionML=ENU=Due Days;
+                                                 ToolTipML=ENU=Number of days until due date of open entry;
+                                                 BlankZero=Yes;
+                                                 SourceExpr=DueDays }
+    { 1150014;TextBox   ;2750 ;5720 ;1540 ;440  ;VertGlue=Bottom;
+                                                 Editable=No;
+                                                 CaptionML=ENU=Cash Discount;
+                                                 ToolTipML=ENU=Payment disc. date of open entry;
+                                                 BlankZero=Yes;
+                                                 SourceExpr=PmtDiscDate }
+    { 1150016;Label     ;220  ;5720 ;2420 ;440  ;VertGlue=Bottom;
+                                                 ParentControl=1150014;
+                                                 LeaderDots=No }
+    { 1150015;TextBox   ;4400 ;5720 ;770  ;440  ;VertGlue=Bottom;
+                                                 Editable=No;
+                                                 CaptionML=ENU=Cash Discount Days;
+                                                 ToolTipML=ENU=Days to payment disc. date;
+                                                 BlankZero=Yes;
+                                                 SourceExpr=PaymDiscDays }
+    { 1150000;TextBox   ;2750 ;6270 ;2420 ;440  ;Name=TotalPayment;
+                                                 HorzGlue=Right;
+                                                 VertGlue=Bottom;
+                                                 Editable=No;
+                                                 CaptionML=ENU=Payments;
+                                                 ToolTipML=ENU=Total of payments in local currency;
+                                                 SourceExpr=TotalPayAmount;
+                                                 AutoFormatType=1 }
+    { 1150003;Label     ;220  ;6270 ;2420 ;440  ;HorzGlue=Right;
+                                                 VertGlue=Bottom;
+                                                 ParentControl=1150000;
+                                                 HorzAlign=Left;
+                                                 LeaderDots=No }
+    { 1150001;TextBox   ;2750 ;6820 ;2420 ;440  ;Name=Balance;
+                                                 HorzGlue=Right;
+                                                 VertGlue=Bottom;
+                                                 Editable=No;
+                                                 CaptionML=ENU=Balance;
+                                                 ToolTipML=ENU=Balance in LCY to actual line;
+                                                 SourceExpr=Balance;
+                                                 AutoFormatType=1 }
+    { 1150002;Label     ;220  ;6820 ;2420 ;440  ;HorzGlue=Right;
+                                                 VertGlue=Bottom;
+                                                 ParentControl=1150001;
+                                                 HorzAlign=Left;
+                                                 LeaderDots=No }
+    { 1150017;TextBox   ;2750 ;7370 ;2420 ;440  ;Name=TotalBalance;
+                                                 HorzGlue=Right;
+                                                 VertGlue=Bottom;
+                                                 Editable=No;
+                                                 CaptionML=ENU=Total Balance;
+                                                 ToolTipML=ENU=Total balance in LCY;
+                                                 SourceExpr=TotalBalance;
+                                                 AutoFormatType=1 }
+    { 1150018;Label     ;220  ;7370 ;2420 ;440  ;HorzGlue=Right;
+                                                 VertGlue=Bottom;
+                                                 ParentControl=1150017;
+                                                 HorzAlign=Left;
+                                                 LeaderDots=No }
+  }
+  CODE
+  {
+    VAR
+      GenJnlManagement@1002 : Codeunit 230;
+      AccName@1005 : Text[50];
+      BalAccName@1006 : Text[50];
+      RemainAfterPaymentCaption@1150001 : Text[30];
+      RemainAfterPaymentText@1150004 : Text[30];
+      Balance@1007 : Decimal;
+      TotalBalance@1008 : Decimal;
+      CustLedgEntry@1150019 : Record 21;
+      Cust@1150020 : Record 18;
+      AgeDays@1150021 : Integer;
+      PaymDiscDays@1150022 : Integer;
+      DueDays@1150023 : Integer;
+      OeRemainAmountFC@1150024 : Decimal;
+      PaymDiscDeductAmount@1150026 : Decimal;
+      RemainAfterPayment@1150027 : Decimal;
+      TotalPayAmount@1150028 : Decimal;
+      PMTDiscount@1150002 : Decimal;
+      AcceptedPaymentTol@1150003 : Decimal;
+      Text001@1150000 : TextConst 'ENU=Remaining after Payment';
+      Text002@1150005 : TextConst 'ENU=<Precision,2:2><Standard Format,0>';
+      PaymentAmt@1150029 : Decimal;
+      PostingDate@1150030 : Date;
+      DueDate@1150031 : Date;
+      PmtDiscDate@1150032 : Date;
+      CustPaymtTerm@1150033 : Code[10];
+
+    LOCAL PROCEDURE UpdateBalance@1();
+    VAR
+      GenJnlLine@1150001 : Record 81;
+      LineNo@1150000 : Integer;
+    BEGIN
+      Balance := 0;
+      TotalBalance := 0;
+      TotalPayAmount := 0;
+      PaymentAmt := -Amount;
+
+      LineNo := "Line No.";
+
+      GenJnlLine.SETCURRENTKEY("Journal Template Name","Journal Batch Name","Account Type","Document Type");
+      GenJnlLine.SETRANGE("Journal Template Name","Journal Template Name");
+      GenJnlLine.SETRANGE("Journal Batch Name","Journal Batch Name");
+      IF GenJnlLine.FINDSET THEN
+        REPEAT
+          TotalBalance := TotalBalance + GenJnlLine."Balance (LCY)";
+          IF GenJnlLine."Line No." <= LineNo THEN
+            Balance := Balance + GenJnlLine."Balance (LCY)";
+          IF (GenJnlLine."Document Type" = GenJnlLine."Document Type"::Payment) AND
+             (GenJnlLine."Account Type" = GenJnlLine."Account Type"::Customer)
+          THEN
+            TotalPayAmount := TotalPayAmount - GenJnlLine."Amount (LCY)";
+        UNTIL GenJnlLine.NEXT = 0
+    END;
+
+    PROCEDURE UpdateInfoBox@2();
+    VAR
+      ExchRate@1150000 : Record 330;
+      Currency@1150001 : Record 4;
+    BEGIN
+      AgeDays := 0;
+      PaymDiscDays := 0;
+      DueDays := 0;
+      OeRemainAmountFC := 0;
+      PaymDiscDeductAmount := 0;
+      RemainAfterPayment := 0;
+      PMTDiscount := 0;
+      AcceptedPaymentTol := 0;
+      RemainAfterPaymentCaption := Text001;
+      RemainAfterPaymentText := FORMAT(0.0,0,Text002);;
+      PostingDate := 0D;
+      DueDate :=  0D;
+      PmtDiscDate := 0D;
+      CustPaymtTerm := '';
+
+      CustLedgEntry.INIT;
+      Cust.INIT;
+
+      IF "Applies-to Doc. No." = '' THEN
+        EXIT;
+      CustLedgEntry.SETCURRENTKEY("Document No.");
+      CustLedgEntry.SETRANGE("Document Type","Applies-to Doc. Type");
+      CustLedgEntry.SETRANGE("Document No.","Applies-to Doc. No.");
+      IF NOT CustLedgEntry.FIND('-') THEN
+        EXIT;
+
+      IF Currency.READPERMISSION THEN
+        IF Currency.GET("Currency Code") THEN
+          Currency.InitRoundingPrecision;
+
+      IF NOT Cust.GET(CustLedgEntry."Customer No.") THEN;
+      CustPaymtTerm := Cust."Payment Terms Code";
+
+      // Calculate Days for Age, Payment Discount
+      IF "Posting Date" > 0D THEN BEGIN
+        PostingDate := CustLedgEntry."Posting Date";
+        DueDate :=  CustLedgEntry."Due Date";
+        PmtDiscDate := CustLedgEntry."Pmt. Discount Date";
+        IF CustLedgEntry."Posting Date" > 0D THEN
+          AgeDays := "Posting Date" - CustLedgEntry."Posting Date";
+        IF CustLedgEntry."Pmt. Discount Date" > 0D THEN
+          PaymDiscDays := CustLedgEntry."Pmt. Discount Date" - "Posting Date";
+        IF CustLedgEntry."Due Date" > 0D THEN
+          DueDays := CustLedgEntry."Due Date" - "Posting Date";
+      END;
+
+      CustLedgEntry.CALCFIELDS("Remaining Amount","Remaining Amt. (LCY)");
+      OeRemainAmountFC := CustLedgEntry."Remaining Amount";
+      PMTDiscount :=
+        ExchRate.ExchangeAmtFCYToFCY("Posting Date",CustLedgEntry."Currency Code",
+          "Currency Code",CustLedgEntry."Remaining Pmt. Disc. Possible");
+      PMTDiscount := ROUND(PMTDiscount,Currency."Amount Rounding Precision");
+
+      // calculate FC-amount of open entries and remaining amount
+      IF CustLedgEntry."Currency Code" <> "Currency Code" THEN BEGIN
+        OeRemainAmountFC :=
+          ExchRate.ExchangeAmtLCYToFCY("Posting Date","Currency Code",CustLedgEntry."Remaining Amt. (LCY)","Currency Factor");
+        OeRemainAmountFC := ROUND(OeRemainAmountFC,Currency."Amount Rounding Precision");
+      END;
+
+      IF (CustLedgEntry."Pmt. Discount Date" >= "Posting Date") OR
+         ((CustLedgEntry."Pmt. Disc. Tolerance Date" >= "Posting Date") AND
+         (CustLedgEntry."Accepted Pmt. Disc. Tolerance"))
+      THEN BEGIN
+        PaymDiscDeductAmount := CustLedgEntry."Remaining Pmt. Disc. Possible";
+        IF CustLedgEntry."Currency Code" <> "Currency Code" THEN
+          PaymDiscDeductAmount :=
+            ExchRate.ExchangeAmtFCYToFCY(
+              "Posting Date",CustLedgEntry."Currency Code","Currency Code",PaymDiscDeductAmount);
+      END;
+      PaymDiscDeductAmount := ROUND(PaymDiscDeductAmount,Currency."Amount Rounding Precision");
+
+      // Accepted Payment Tolerance
+      AcceptedPaymentTol := CustLedgEntry."Accepted Payment Tolerance";
+        IF CustLedgEntry."Currency Code" <> "Currency Code" THEN
+          AcceptedPaymentTol :=
+            ExchRate.ExchangeAmtFCYToFCY(
+              "Posting Date",CustLedgEntry."Currency Code","Currency Code",AcceptedPaymentTol);
+      AcceptedPaymentTol := ROUND(AcceptedPaymentTol,Currency."Amount Rounding Precision");
+
+      RemainAfterPayment :=
+        OeRemainAmountFC - (-Amount) - PaymDiscDeductAmount - AcceptedPaymentTol;
+      RemainAfterPaymentText := FORMAT(RemainAfterPayment,0,Text002);
+
+      IF ("Currency Code" <> CustLedgEntry."Currency Code") AND
+         (("Currency Code" <> '') AND (CustLedgEntry."Currency Code" <> ''))
+      THEN BEGIN
+         RemainAfterPaymentCaption := '';
+         RemainAfterPaymentText := '';
+         EXIT;
+      END;
+
+      // Pmt. Disc is not applied if entry is not closed
+      IF RemainAfterPayment > 0 THEN BEGIN
+        RemainAfterPayment := RemainAfterPayment + PaymDiscDeductAmount;
+        RemainAfterPaymentText := FORMAT(RemainAfterPayment,0,Text002);
+        PaymDiscDeductAmount := 0;
+      END;
+    END;
+
+    BEGIN
+    END.
+  }
+}
+

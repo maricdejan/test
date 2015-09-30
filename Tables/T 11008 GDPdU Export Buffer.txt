@@ -1,0 +1,44 @@
+OBJECT Table 11008 GDPdU Export Buffer
+{
+  OBJECT-PROPERTIES
+  {
+    Date=14.08.09;
+    Time=12:00:00;
+    Version List=NAVDACH6.00.01;
+  }
+  PROPERTIES
+  {
+    CaptionML=[DEU=GDPdU Exportpuffer;
+               ENU=GDPdU Export Buffer];
+  }
+  FIELDS
+  {
+    { 1   ;   ;Entry No.           ;Integer       ;CaptionML=[DEU=Lfd. Nr.;
+                                                              ENU=Entry No.] }
+    { 2   ;   ;Table No.           ;Integer       ;CaptionML=[DEU=Tabellennr.;
+                                                              ENU=Table No.] }
+    { 3   ;   ;Line Feed           ;Boolean       ;CaptionML=[DEU=Zeilenvorschub;
+                                                              ENU=Line Feed] }
+    { 4   ;   ;Field Value         ;Text250       ;CaptionML=[DEU=Feldwert;
+                                                              ENU=Field Value] }
+    { 5   ;   ;Line No.            ;Integer       ;CaptionML=[DEU=Zeilennr.;
+                                                              ENU=Line No.] }
+    { 6   ;   ;File No.            ;Integer       ;CaptionML=[DEU=Dateinr.;
+                                                              ENU=File No.] }
+  }
+  KEYS
+  {
+    {    ;Entry No.                               ;Clustered=Yes }
+    {    ;Table No.,Line No.                       }
+  }
+  FIELDGROUPS
+  {
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

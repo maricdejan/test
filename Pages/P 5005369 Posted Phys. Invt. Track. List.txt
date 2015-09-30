@@ -1,0 +1,63 @@
+OBJECT Page 5005369 Posted Phys. Invt. Track. List
+{
+  OBJECT-PROPERTIES
+  {
+    Date=01.10.04;
+    Time=12:00:00;
+    Version List=NAVDACH4.00;
+  }
+  PROPERTIES
+  {
+    Editable=No;
+    CaptionML=[DEU=Geb. Inventurverfolg.-šbers.;
+               ENU=Posted Phys. Invt. Track. List];
+    SourceTable=Table5005359;
+    PageType=List;
+  }
+  CONTROLS
+  {
+    { 1900000001;0;Container;
+                ContainerType=ContentArea }
+
+    { 1140000;1;Group     ;
+                GroupType=Repeater }
+
+    { 1140001;2;Field     ;
+                SourceExpr="Document No." }
+
+    { 1140003;2;Field     ;
+                SourceExpr="Item Tracking No." }
+
+    { 1140005;2;Field     ;
+                SourceExpr="Item No." }
+
+    { 1140007;2;Field     ;
+                SourceExpr="Variant Code" }
+
+    { 1140009;2;Field     ;
+                SourceExpr="Location Code" }
+
+    { 1140011;2;Field     ;
+                SourceExpr="Bin Code" }
+
+    { 1140013;2;Field     ;
+                SourceExpr="Serial No." }
+
+    { 1140015;2;Field     ;
+                SourceExpr="Lot No." }
+
+    { 1140017;2;Field     ;
+                SourceExpr="Entry Type" }
+
+    { 1140019;2;Field     ;
+                SourceExpr=Quantity }
+
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

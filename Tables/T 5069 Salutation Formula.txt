@@ -1,0 +1,83 @@
+OBJECT Table 5069 Salutation Formula
+{
+  OBJECT-PROPERTIES
+  {
+    Date=05.11.08;
+    Time=12:00:00;
+    Version List=NAVW16.00;
+  }
+  PROPERTIES
+  {
+    CaptionML=[DEU=Anredeformel;
+               ENU=Salutation Formula];
+  }
+  FIELDS
+  {
+    { 1   ;   ;Salutation Code     ;Code10        ;TableRelation=Salutation;
+                                                   CaptionML=[DEU=Anredecode;
+                                                              ENU=Salutation Code];
+                                                   NotBlank=Yes }
+    { 2   ;   ;Language Code       ;Code10        ;TableRelation=Language;
+                                                   CaptionML=[DEU=Sprachcode;
+                                                              ENU=Language Code] }
+    { 3   ;   ;Salutation Type     ;Option        ;CaptionML=[DEU=Anredeart;
+                                                              ENU=Salutation Type];
+                                                   OptionCaptionML=[DEU=Formell,Informell;
+                                                                    ENU=Formal,Informal];
+                                                   OptionString=Formal,Informal }
+    { 4   ;   ;Salutation          ;Text50        ;CaptionML=[DEU=Anrede;
+                                                              ENU=Salutation] }
+    { 5   ;   ;Name 1              ;Option        ;CaptionML=[DEU=Name 1;
+                                                              ENU=Name 1];
+                                                   OptionCaptionML=[DEU=" ,Titel,Vorname,Vorname 2,Nachname,Initialen,Unternehmensname";
+                                                                    ENU=" ,Job Title,First Name,Middle Name,Surname,Initials,Company Name"];
+                                                   OptionString=[ ,Job Title,First Name,Middle Name,Surname,Initials,Company Name] }
+    { 6   ;   ;Name 2              ;Option        ;CaptionML=[DEU=Name 2;
+                                                              ENU=Name 2];
+                                                   OptionCaptionML=[DEU=" ,Titel,Vorname,Vorname 2,Nachname,Initialen,Unternehmensname";
+                                                                    ENU=" ,Job Title,First Name,Middle Name,Surname,Initials,Company Name"];
+                                                   OptionString=[ ,Job Title,First Name,Middle Name,Surname,Initials,Company Name] }
+    { 7   ;   ;Name 3              ;Option        ;CaptionML=[DEU=Name 3;
+                                                              ENU=Name 3];
+                                                   OptionCaptionML=[DEU=" ,Titel,Vorname,Vorname 2,Nachname,Initialen,Unternehmensname";
+                                                                    ENU=" ,Job Title,First Name,Middle Name,Surname,Initials,Company Name"];
+                                                   OptionString=[ ,Job Title,First Name,Middle Name,Surname,Initials,Company Name] }
+    { 8   ;   ;Name 4              ;Option        ;CaptionML=[DEU=Name 4;
+                                                              ENU=Name 4];
+                                                   OptionCaptionML=[DEU=" ,Titel,Vorname,Vorname 2,Nachname,Initialen,Unternehmensname";
+                                                                    ENU=" ,Job Title,First Name,Middle Name,Surname,Initials,Company Name"];
+                                                   OptionString=[ ,Job Title,First Name,Middle Name,Surname,Initials,Company Name] }
+    { 9   ;   ;Name 5              ;Option        ;CaptionML=[DEU=Name 5;
+                                                              ENU=Name 5];
+                                                   OptionCaptionML=[DEU=" ,Titel,Vorname,Vorname 2,Nachname,Initialen,Unternehmensname";
+                                                                    ENU=" ,Job Title,First Name,Middle Name,Surname,Initials,Company Name"];
+                                                   OptionString=[ ,Job Title,First Name,Middle Name,Surname,Initials,Company Name] }
+    { 10  ;   ;Contact No. Filter  ;Code20        ;FieldClass=FlowFilter;
+                                                   TableRelation=Contact;
+                                                   CaptionML=[DEU=Kontaktnr. Filter;
+                                                              ENU=Contact No. Filter] }
+  }
+  KEYS
+  {
+    {    ;Salutation Code,Language Code,Salutation Type;
+                                                   Clustered=Yes }
+  }
+  FIELDGROUPS
+  {
+  }
+  CODE
+  {
+
+    PROCEDURE GetContactSalutation@1() : Text[260];
+    VAR
+      Cont@1000 : Record 5050;
+    BEGIN
+      Cont.GET(GETFILTER("Contact No. Filter"));
+      EXIT(Cont.GetSalutation("Salutation Type","Language Code"));
+    END;
+
+    BEGIN
+    END.
+  }
+}
+

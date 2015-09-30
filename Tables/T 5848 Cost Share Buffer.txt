@@ -1,0 +1,131 @@
+OBJECT Table 5848 Cost Share Buffer
+{
+  OBJECT-PROPERTIES
+  {
+    Date=05.11.08;
+    Time=12:00:00;
+    Version List=NAVW16.00;
+  }
+  PROPERTIES
+  {
+    CaptionML=[DEU=Kostenanteilspuffer;
+               ENU=Cost Share Buffer];
+  }
+  FIELDS
+  {
+    { 1   ;   ;Item Ledger Entry No.;Integer      ;CaptionML=[DEU=Artikelposten Lfd. Nr.;
+                                                              ENU=Item Ledger Entry No.] }
+    { 2   ;   ;Capacity Ledger Entry No.;Integer  ;CaptionML=[DEU=Kapazit„tsposten Lfd. Nr.;
+                                                              ENU=Capacity Ledger Entry No.] }
+    { 3   ;   ;Item No.            ;Code20        ;CaptionML=[DEU=Artikelnr.;
+                                                              ENU=Item No.] }
+    { 4   ;   ;Location Code       ;Code10        ;CaptionML=[DEU=Lagerortcode;
+                                                              ENU=Location Code] }
+    { 5   ;   ;Variant Code        ;Code10        ;CaptionML=[DEU=Variantencode;
+                                                              ENU=Variant Code] }
+    { 6   ;   ;Entry Type          ;Option        ;CaptionML=[DEU=Postenart;
+                                                              ENU=Entry Type];
+                                                   OptionCaptionML=[DEU="Einkauf,Verkauf,Zugang,Abgang,Umlagerung,Verbrauch,Istmeldung, ";
+                                                                    ENU="Purchase,Sale,Positive Adjmt.,Negative Adjmt.,Transfer,Consumption,Output, "];
+                                                   OptionString=[Purchase,Sale,Positive Adjmt.,Negative Adjmt.,Transfer,Consumption,Output, ] }
+    { 7   ;   ;Document No.        ;Code20        ;CaptionML=[DEU=Belegnr.;
+                                                              ENU=Document No.] }
+    { 8   ;   ;Prod. Order No.     ;Code20        ;CaptionML=[DEU=FA-Nr.;
+                                                              ENU=Prod. Order No.] }
+    { 9   ;   ;Prod. Order Line No.;Integer       ;CaptionML=[DEU=FA-Zeilennr.;
+                                                              ENU=Prod. Order Line No.] }
+    { 10  ;   ;Description         ;Text50        ;CaptionML=[DEU=Beschreibung;
+                                                              ENU=Description] }
+    { 20  ;   ;Quantity            ;Decimal       ;CaptionML=[DEU=Menge;
+                                                              ENU=Quantity] }
+    { 21  ;   ;Direct Cost         ;Decimal       ;CaptionML=[DEU=EK-Preis;
+                                                              ENU=Direct Cost] }
+    { 22  ;   ;Indirect Cost       ;Decimal       ;CaptionML=[DEU=Kosten;
+                                                              ENU=Indirect Cost] }
+    { 23  ;   ;Revaluation         ;Decimal       ;CaptionML=[DEU=Neubewertung;
+                                                              ENU=Revaluation] }
+    { 24  ;   ;Rounding            ;Decimal       ;CaptionML=[DEU=Runden;
+                                                              ENU=Rounding] }
+    { 25  ;   ;Variance            ;Decimal       ;CaptionML=[DEU=Abweichung;
+                                                              ENU=Variance] }
+    { 26  ;   ;Purchase Variance   ;Decimal       ;CaptionML=[DEU=Einkaufsabweichung;
+                                                              ENU=Purchase Variance] }
+    { 27  ;   ;Material Variance   ;Decimal       ;CaptionML=[DEU=Materialabweichung;
+                                                              ENU=Material Variance] }
+    { 28  ;   ;Capacity Variance   ;Decimal       ;CaptionML=[DEU=Abweichung Kapazit„t;
+                                                              ENU=Capacity Variance] }
+    { 29  ;   ;Capacity Overhead Variance;Decimal ;CaptionML=[DEU=Abweichung Kapazit„tsgemeinkosten;
+                                                              ENU=Capacity Overhead Variance] }
+    { 30  ;   ;Mfg. Overhead Variance;Decimal     ;CaptionML=[DEU=Abweichung Prod.-Gemeinkosten;
+                                                              ENU=Mfg. Overhead Variance] }
+    { 31  ;   ;Subcontracted Variance;Decimal     ;CaptionML=[DEU=Abweichung Fremdarbeit;
+                                                              ENU=Subcontracted Variance] }
+    { 32  ;   ;Material            ;Decimal       ;CaptionML=[DEU=Material;
+                                                              ENU=Material] }
+    { 34  ;   ;Capacity            ;Decimal       ;CaptionML=[DEU=Kapazit„t;
+                                                              ENU=Capacity] }
+    { 35  ;   ;Capacity Overhead   ;Decimal       ;CaptionML=[DEU=Kapazit„tsgemeinkosten;
+                                                              ENU=Capacity Overhead] }
+    { 36  ;   ;Material Overhead   ;Decimal       ;CaptionML=[DEU=Materialgemeinkosten;
+                                                              ENU=Material Overhead] }
+    { 37  ;   ;Subcontracted       ;Decimal       ;CaptionML=[DEU=Fremdarbeit;
+                                                              ENU=Subcontracted] }
+    { 40  ;   ;New Quantity        ;Decimal       ;CaptionML=[DEU=Neue Menge;
+                                                              ENU=New Quantity] }
+    { 41  ;   ;New Direct Cost     ;Decimal       ;CaptionML=[DEU=Neuer EK-Preis;
+                                                              ENU=New Direct Cost];
+                                                   AutoFormatType=2 }
+    { 42  ;   ;New Indirect Cost   ;Decimal       ;CaptionML=[DEU=Neue Kosten;
+                                                              ENU=New Indirect Cost] }
+    { 43  ;   ;New Revaluation     ;Decimal       ;CaptionML=[DEU=Neue Neubewertung;
+                                                              ENU=New Revaluation] }
+    { 44  ;   ;New Rounding        ;Decimal       ;CaptionML=[DEU=Neue Rundung;
+                                                              ENU=New Rounding] }
+    { 45  ;   ;New Variance        ;Decimal       ;CaptionML=[DEU=Neue Abweichung;
+                                                              ENU=New Variance] }
+    { 46  ;   ;New Purchase Variance;Decimal      ;CaptionML=[DEU=Neue Einkaufsabweichung;
+                                                              ENU=New Purchase Variance] }
+    { 47  ;   ;New Material Variance;Decimal      ;CaptionML=[DEU=Neue Materialabweichung;
+                                                              ENU=New Material Variance] }
+    { 48  ;   ;New Capacity Variance;Decimal      ;CaptionML=[DEU=Neue Kapazit„tsabweichung;
+                                                              ENU=New Capacity Variance] }
+    { 49  ;   ;New Capacity Overhead Variance;Decimal;
+                                                   CaptionML=[DEU=Neue Abweichung Kapazit„tsgemeinkosten;
+                                                              ENU=New Capacity Overhead Variance] }
+    { 50  ;   ;New Mfg. Overhead Variance;Decimal ;CaptionML=[DEU=Neue Abweichung Fertigungsgemeinkosten;
+                                                              ENU=New Mfg. Overhead Variance] }
+    { 51  ;   ;New Subcontracted Variance;Decimal ;CaptionML=[DEU=Neue Abweichung Fremdarbeit;
+                                                              ENU=New Subcontracted Variance] }
+    { 52  ;   ;Share of Cost in Period;Decimal    ;CaptionML=[DEU=Kostenanteil in Periode;
+                                                              ENU=Share of Cost in Period] }
+    { 54  ;   ;New Material        ;Decimal       ;CaptionML=[DEU=Neues Material;
+                                                              ENU=New Material] }
+    { 56  ;   ;New Capacity        ;Decimal       ;CaptionML=[DEU=Neue Kapazit„t;
+                                                              ENU=New Capacity] }
+    { 57  ;   ;New Capacity Overhead;Decimal      ;CaptionML=[DEU=Neue Kapazit„tsgemeinkosten;
+                                                              ENU=New Capacity Overhead] }
+    { 58  ;   ;New Material Overhead;Decimal      ;CaptionML=[DEU=Neue Materialgemeinkosten;
+                                                              ENU=New Material Overhead] }
+    { 59  ;   ;New Subcontracted   ;Decimal       ;CaptionML=[DEU=Neue Fremdarbeit;
+                                                              ENU=New Subcontracted] }
+    { 60  ;   ;Posting Date        ;Date          ;CaptionML=[DEU=Buchungsdatum;
+                                                              ENU=Posting Date] }
+  }
+  KEYS
+  {
+    {    ;Item Ledger Entry No.,Capacity Ledger Entry No.;
+                                                   Clustered=Yes }
+    {    ;Item No.,Location Code,Variant Code,Entry Type }
+    {    ;Prod. Order No.,Prod. Order Line No.,Entry Type }
+  }
+  FIELDGROUPS
+  {
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

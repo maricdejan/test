@@ -1,0 +1,65 @@
+OBJECT Table 452 Approval Setup
+{
+  OBJECT-PROPERTIES
+  {
+    Date=05.11.08;
+    Time=12:00:00;
+    Version List=NAVW16.00;
+  }
+  PROPERTIES
+  {
+    CaptionML=[DEU=Genehmigungseinrichtung;
+               ENU=Approval Setup];
+  }
+  FIELDS
+  {
+    { 1   ;   ;Primary Key         ;Code20        ;CaptionML=[DEU=PrimÑrschlÅssel;
+                                                              ENU=Primary Key] }
+    { 2   ;   ;Due Date Formula    ;DateFormula   ;OnValidate=BEGIN
+                                                                IF COPYSTR(FORMAT("Due Date Formula"),1,1) = '-' THEN
+                                                                  ERROR(STRSUBSTNO(Text001,FIELDCAPTION("Due Date Formula")));
+                                                              END;
+
+                                                   CaptionML=[DEU=FÑlligkeitsdatumsformel;
+                                                              ENU=Due Date Formula] }
+    { 3   ;   ;Approval Administrator;Code20      ;TableRelation="User Setup";
+                                                   CaptionML=[DEU=Genehmigungsadministrator;
+                                                              ENU=Approval Administrator] }
+    { 5   ;   ;Request Rejection Comment;Boolean  ;CaptionML=[DEU=Kommentar Anforderungsablehnung;
+                                                              ENU=Request Rejection Comment] }
+    { 6   ;   ;Approvals           ;Boolean       ;CaptionML=[DEU=Genehmigungen;
+                                                              ENU=Approvals] }
+    { 7   ;   ;Cancellations       ;Boolean       ;CaptionML=[DEU=Stornierungen;
+                                                              ENU=Cancellations] }
+    { 8   ;   ;Rejections          ;Boolean       ;CaptionML=[DEU=Ablehnungen;
+                                                              ENU=Rejections] }
+    { 9   ;   ;Delegations         ;Boolean       ;CaptionML=[DEU=Delegierungen;
+                                                              ENU=Delegations] }
+    { 10  ;   ;Last Run Time       ;Time          ;CaptionML=[DEU=Zeitpunkt letzte AusfÅhrung;
+                                                              ENU=Last Run Time] }
+    { 11  ;   ;Last Run Date       ;Date          ;CaptionML=[DEU=Datum letzte AusfÅhrung;
+                                                              ENU=Last Run Date] }
+    { 12  ;   ;Overdue Template    ;BLOB          ;CaptionML=[DEU=FÑlligkeitsvorlage;
+                                                              ENU=Overdue Template];
+                                                   SubType=User-Defined }
+    { 13  ;   ;Approval Template   ;BLOB          ;CaptionML=[DEU=Genehmigungsvorlage;
+                                                              ENU=Approval Template];
+                                                   SubType=User-Defined }
+  }
+  KEYS
+  {
+    {    ;Primary Key                             ;Clustered=Yes }
+  }
+  FIELDGROUPS
+  {
+  }
+  CODE
+  {
+    VAR
+      Text001@1005 : TextConst 'DEU=%1 darf keine negativen Werte enthalten.;ENU=You cannot have negative values in %1.';
+
+    BEGIN
+    END.
+  }
+}
+

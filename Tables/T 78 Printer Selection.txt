@@ -1,0 +1,62 @@
+OBJECT Table 78 Printer Selection
+{
+  OBJECT-PROPERTIES
+  {
+    Date=05.11.08;
+    Time=12:00:00;
+    Version List=NAVW16.00;
+  }
+  PROPERTIES
+  {
+    DataPerCompany=No;
+    CaptionML=[DEU=Druckerauswahl;
+               ENU=Printer Selection];
+    LookupFormID=Form64;
+  }
+  FIELDS
+  {
+    { 1   ;   ;User ID             ;Code20        ;TableRelation=User;
+                                                   OnValidate=VAR
+                                                                LoginMgt@1000 : Codeunit 418;
+                                                              BEGIN
+                                                                LoginMgt.ValidateUserID("User ID");
+                                                              END;
+
+                                                   OnLookup=VAR
+                                                              LoginMgt@1000 : Codeunit 418;
+                                                            BEGIN
+                                                              LoginMgt.LookupUserID("User ID");
+                                                            END;
+
+                                                   ValidateTableRelation=No;
+                                                   TestTableRelation=No;
+                                                   CaptionML=[DEU=Benutzer-ID;
+                                                              ENU=User ID] }
+    { 2   ;   ;Report ID           ;Integer       ;TableRelation=Object.ID WHERE (Type=CONST(Report));
+                                                   CaptionML=[DEU=Berichts-ID;
+                                                              ENU=Report ID] }
+    { 3   ;   ;Printer Name        ;Text250       ;TableRelation=Printer;
+                                                   CaptionML=[DEU=Druckername;
+                                                              ENU=Printer Name] }
+    { 4   ;   ;Report Name         ;Text80        ;FieldClass=FlowField;
+                                                   CalcFormula=Lookup(AllObjWithCaption."Object Caption" WHERE (Object Type=CONST(Report),
+                                                                                                                Object ID=FIELD(Report ID)));
+                                                   CaptionML=[DEU=Berichtsname;
+                                                              ENU=Report Name];
+                                                   Editable=No }
+  }
+  KEYS
+  {
+    {    ;User ID,Report ID                       ;Clustered=Yes }
+  }
+  FIELDGROUPS
+  {
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

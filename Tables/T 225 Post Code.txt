@@ -1,0 +1,144 @@
+OBJECT Table 225 Post Code
+{
+  OBJECT-PROPERTIES
+  {
+    Date=14.08.09;
+    Time=12:00:00;
+    Version List=NAVW16.00.01;
+  }
+  PROPERTIES
+  {
+    CaptionML=[DEU=PLZ-Code;
+               ENU=Post Code];
+    LookupFormID=Form367;
+  }
+  FIELDS
+  {
+    { 1   ;   ;Code                ;Code20        ;OnValidate=VAR
+                                                                PostCode@1000 : Record 225;
+                                                              BEGIN
+                                                                PostCode.SETCURRENTKEY("Search City");
+                                                                PostCode.SETRANGE("Search City","Search City");
+                                                                PostCode.SETRANGE(Code,Code);
+                                                                IF PostCode.FIND('-') THEN
+                                                                  ERROR(Text000,FIELDCAPTION(Code),Code);
+                                                              END;
+
+                                                   CaptionML=[DEU=Code;
+                                                              ENU=Code];
+                                                   NotBlank=Yes }
+    { 2   ;   ;City                ;Text30        ;OnValidate=VAR
+                                                                PostCode@1000 : Record 225;
+                                                              BEGIN
+                                                                TESTFIELD(Code);
+                                                                "Search City" := City;
+                                                                IF xRec."Search City" <> "Search City" THEN BEGIN
+                                                                  PostCode.SETCURRENTKEY("Search City");
+                                                                  PostCode.SETRANGE("Search City","Search City");
+                                                                  PostCode.SETRANGE(Code,Code);
+                                                                  IF PostCode.FIND('-') THEN
+                                                                    ERROR(Text000,FIELDCAPTION(City),City);
+                                                                END;
+                                                              END;
+
+                                                   CaptionML=[DEU=Ort;
+                                                              ENU=City] }
+    { 3   ;   ;Search City         ;Code30        ;CaptionML=[DEU=Suchbegriff (Ort);
+                                                              ENU=Search City] }
+  }
+  KEYS
+  {
+    {    ;Code,City                               ;Clustered=Yes }
+    {    ;City,Code                                }
+    {    ;Search City                              }
+  }
+  FIELDGROUPS
+  {
+  }
+  CODE
+  {
+    VAR
+      Text000@1000 : TextConst 'DEU=%1 %2 ist bereits vorhanden.;ENU=%1 %2 already exists.';
+
+    PROCEDURE ValidateCity@5(VAR City@1000 : Text[30];VAR PostCode@1001 : Code[20]);
+    VAR
+      PostCodeRec@1002 : Record 225;
+      PostCodeRec2@1004 : Record 225;
+      SearchCity@1003 : Code[30];
+    BEGIN
+      IF NOT GUIALLOWED THEN
+        EXIT;
+      IF City <> '' THEN BEGIN
+        SearchCity := City;
+        PostCodeRec.SETCURRENTKEY("Search City");
+        IF STRPOS(SearchCity,'*') = STRLEN(SearchCity) THEN
+          PostCodeRec.SETFILTER("Search City",SearchCity)
+        ELSE
+          PostCodeRec.SETRANGE("Search City",SearchCity);
+        IF NOT PostCodeRec.FIND('-') THEN
+          EXIT;
+        PostCodeRec2.COPY(PostCodeRec);
+        IF PostCodeRec2.NEXT = 1 THEN
+          IF FORM.RUNMODAL(FORM::"Post Codes",PostCodeRec,PostCodeRec.Code) <> ACTION::LookupOK THEN
+            EXIT;
+        PostCode := PostCodeRec.Code;
+        City := PostCodeRec.City;
+      END;
+    END;
+
+    PROCEDURE ValidatePostCode@6(VAR City@1001 : Text[30];VAR PostCode@1000 : Code[20]);
+    VAR
+      PostCodeRec@1002 : Record 225;
+      PostCodeRec2@1003 : Record 225;
+    BEGIN
+      IF PostCode <> '' THEN BEGIN
+        IF STRPOS(PostCode,'*') = STRLEN(PostCode) THEN
+          PostCodeRec.SETFILTER(Code,PostCode)
+        ELSE
+          PostCodeRec.SETRANGE(Code,PostCode);
+        IF NOT PostCodeRec.FIND('-') THEN
+          EXIT;
+        PostCodeRec2.COPY(PostCodeRec);
+        IF (PostCodeRec2.NEXT = 1) AND GUIALLOWED THEN
+          IF FORM.RUNMODAL(FORM::"Post Codes",PostCodeRec,PostCodeRec.Code) <> ACTION::LookupOK THEN
+            EXIT;
+        PostCode := PostCodeRec.Code;
+        City := PostCodeRec.City;
+      END;
+    END;
+
+    PROCEDURE LookUpCity@7(VAR City@1001 : Text[30];VAR PostCode@1000 : Code[20];ReturnValues@1002 : Boolean);
+    VAR
+      PostCodeRec@1003 : Record 225;
+    BEGIN
+      IF NOT GUIALLOWED THEN
+        EXIT;
+      PostCodeRec.SETCURRENTKEY(City,Code);
+      PostCodeRec.Code := PostCode;
+      PostCodeRec.City := City;
+      IF (FORM.RUNMODAL(FORM::"Post Codes",PostCodeRec,PostCodeRec.City) = ACTION::LookupOK) AND ReturnValues THEN BEGIN
+        PostCode := PostCodeRec.Code;
+        City := PostCodeRec.City;
+      END;
+    END;
+
+    PROCEDURE LookUpPostCode@8(VAR City@1001 : Text[30];VAR PostCode@1000 : Code[20];ReturnValues@1002 : Boolean);
+    VAR
+      PostCodeRec@1003 : Record 225;
+    BEGIN
+      IF NOT GUIALLOWED THEN
+        EXIT;
+      PostCodeRec.SETCURRENTKEY(Code,City);
+      PostCodeRec.Code := PostCode;
+      PostCodeRec.City := City;
+      IF (FORM.RUNMODAL(FORM::"Post Codes",PostCodeRec,PostCodeRec.Code) = ACTION::LookupOK) AND ReturnValues THEN BEGIN
+        PostCode := PostCodeRec.Code;
+        City := PostCodeRec.City;
+      END;
+    END;
+
+    BEGIN
+    END.
+  }
+}
+

@@ -1,0 +1,1940 @@
+OBJECT Report 11006 Vendor Detailed Aging
+{
+  OBJECT-PROPERTIES
+  {
+    Date=05.11.08;
+    Time=12:00:00;
+    Version List=NAVDACH6.00;
+  }
+  PROPERTIES
+  {
+    CaptionML=[DEU=Kreditor - F„llige Posten;
+               ENU=Vendor Detailed Aging];
+    OnPreReport=BEGIN
+                  VendFilter := Vendor.GETFILTERS;
+                END;
+
+  }
+  DATAITEMS
+  {
+    { PROPERTIES
+      {
+        DataItemTable=Table23;
+        PrintOnlyIfDetail=Yes;
+        OnPreDataItem=BEGIN
+                        CurrReport.CREATETOTALS("Vendor Ledger Entry"."Remaining Amt. (LCY)");
+                      END;
+
+        ReqFilterFields=No.,Vendor Posting Group,Currency Filter,Payment Terms Code;
+      }
+      SECTIONS
+      {
+        { PROPERTIES
+          {
+            SectionType=Header;
+            PrintOnEveryPage=Yes;
+            SectionWidth=18150;
+            SectionHeight=1692;
+          }
+          CONTROLS
+          {
+            { 1140001;Label     ;0    ;0    ;7500 ;423  ;FontSize=8;
+                                                         FontBold=Yes;
+                                                         CaptionML=[DEU=Kreditor - F„llige Posten;
+                                                                    ENU=Vendor Detailed Aging];
+                                                         DataSetFieldName=Vendor_Detailed_AgingCaption }
+            { 1140002;TextBox   ;15000;0    ;3150 ;423  ;HorzAlign=Right;
+                                                         SourceExpr=FORMAT(TODAY,0,4);
+                                                         DataSetFieldName=FORMAT_TODAY_0_4_ }
+            { 1140003;TextBox   ;0    ;423  ;7500 ;423  ;SourceExpr=STRSUBSTNO(Text1140000,FORMAT(EndDate));
+                                                         DataSetFieldName=STRSUBSTNO_Text1140000_FORMAT_EndDate__ }
+            { 1140004;Label     ;16950;423  ;750  ;423  ;ParentControl=1140005;
+                                                         DataSetFieldName=CurrReport_PAGENOCaption }
+            { 1140005;TextBox   ;17700;423  ;450  ;423  ;CaptionML=[DEU=Seite;
+                                                                    ENU=Page];
+                                                         SourceExpr=CurrReport.PAGENO;
+                                                         DataSetFieldName=CurrReport_PAGENO }
+            { 1140006;TextBox   ;0    ;846  ;4500 ;423  ;SourceExpr=COMPANYNAME;
+                                                         DataSetFieldName=COMPANYNAME }
+            { 1140007;TextBox   ;16650;846  ;1500 ;423  ;HorzAlign=Right;
+                                                         SourceExpr=USERID;
+                                                         DataSetFieldName=USERID }
+          }
+           }
+        { PROPERTIES
+          {
+            SectionType=Header;
+            PrintOnEveryPage=Yes;
+            SectionWidth=18150;
+            SectionHeight=846;
+            OnPreSection=BEGIN
+                           CurrReport.SHOWOUTPUT((CurrReport.PAGENO = 1) AND (VendFilter <> ''));
+                         END;
+
+          }
+          CONTROLS
+          {
+            { 1140008;TextBox   ;0    ;0    ;18150;423  ;SourceExpr=Vendor.TABLECAPTION + ': ' + VendFilter;
+                                                         DataSetFieldName=Vendor_TABLECAPTION__________VendFilter }
+            { 1140060;TextBox   ;18000;423  ;150  ;423  ;Name=VendFilter;
+                                                         Visible=No;
+                                                         ForeColor=65535;
+                                                         SourceExpr=VendFilter;
+                                                         DataSetFieldName=VendFilter }
+          }
+           }
+        { PROPERTIES
+          {
+            SectionType=Header;
+            PrintOnEveryPage=Yes;
+            SectionWidth=18150;
+            SectionHeight=1269;
+          }
+          CONTROLS
+          {
+            { 1140009;Label     ;0    ;0    ;1200 ;846  ;ParentControl=1140021;
+                                                         VertAlign=Bottom;
+                                                         FontBold=Yes;
+                                                         MultiLine=Yes;
+                                                         DataSetFieldName=Vendor_Ledger_Entry__Posting_Date_Caption }
+            { 1140010;Label     ;1350 ;0    ;1500 ;846  ;ParentControl=1140022;
+                                                         VertAlign=Bottom;
+                                                         FontBold=Yes;
+                                                         MultiLine=Yes;
+                                                         DataSetFieldName=Vendor_Ledger_Entry__Document_No__Caption }
+            { 1140011;Label     ;3000 ;0    ;4500 ;846  ;ParentControl=1140023;
+                                                         VertAlign=Bottom;
+                                                         FontBold=Yes;
+                                                         MultiLine=Yes;
+                                                         DataSetFieldName=Vendor_Ledger_Entry_DescriptionCaption }
+            { 1140012;Label     ;7650 ;0    ;1200 ;846  ;ParentControl=1140024;
+                                                         VertAlign=Bottom;
+                                                         FontBold=Yes;
+                                                         MultiLine=Yes;
+                                                         DataSetFieldName=Vendor_Ledger_Entry__Due_Date_Caption }
+            { 1140013;Label     ;9000 ;0    ;1050 ;846  ;ParentControl=1140025;
+                                                         HorzAlign=Right;
+                                                         VertAlign=Bottom;
+                                                         FontBold=Yes;
+                                                         MultiLine=Yes;
+                                                         DataSetFieldName=OverDueMonthsCaption }
+            { 1140014;Label     ;11100;0    ;1800 ;846  ;ParentControl=1140026;
+                                                         HorzAlign=Right;
+                                                         VertAlign=Bottom;
+                                                         FontBold=Yes;
+                                                         MultiLine=Yes;
+                                                         DataSetFieldName=Vendor_Ledger_Entry__Remaining_Amount_Caption }
+            { 1140015;Label     ;10200;0    ;750  ;846  ;ParentControl=1140027;
+                                                         VertAlign=Bottom;
+                                                         FontBold=Yes;
+                                                         MultiLine=Yes;
+                                                         DataSetFieldName=Vendor_Ledger_Entry__Currency_Code_Caption }
+            { 1140016;Label     ;13050;0    ;1800 ;846  ;ParentControl=1140028;
+                                                         HorzAlign=Right;
+                                                         VertAlign=Bottom;
+                                                         FontBold=Yes;
+                                                         MultiLine=Yes;
+                                                         DataSetFieldName=Vendor_Ledger_Entry__Remaining_Amt___LCY__Caption }
+          }
+           }
+        { PROPERTIES
+          {
+            SectionType=Body;
+            SectionWidth=18150;
+            SectionHeight=1269;
+          }
+          CONTROLS
+          {
+            { 1140017;TextBox   ;0    ;423  ;1500 ;423  ;FontBold=Yes;
+                                                         SourceExpr="No.";
+                                                         DataSetFieldName=Vendor__No__ }
+            { 1140018;TextBox   ;1650 ;423  ;4500 ;423  ;FontBold=Yes;
+                                                         SourceExpr=Name;
+                                                         DataSetFieldName=Vendor_Name }
+            { 1140019;Label     ;1650 ;846  ;1350 ;423  ;ParentControl=1140020;
+                                                         DataSetFieldName=Vendor__Phone_No__Caption }
+            { 1140020;TextBox   ;3150 ;846  ;3000 ;423  ;SourceExpr="Phone No.";
+                                                         DataSetFieldName=Vendor__Phone_No__ }
+          }
+           }
+        { PROPERTIES
+          {
+            SectionType=Footer;
+            SectionWidth=18150;
+            SectionHeight=423;
+          }
+          CONTROLS
+          {
+          }
+           }
+      }
+       }
+    { PROPERTIES
+      {
+        DataItemIndent=1;
+        DataItemTable=Table25;
+        DataItemTableView=SORTING(Vendor No.,Open,Positive,Due Date,Currency Code)
+                          WHERE(Open=CONST(Yes));
+        OnPreDataItem=BEGIN
+                        SETRANGE("Due Date",0D,EndDate);
+                        SETRANGE("Date Filter",0D,EndDate);
+                        CurrReport.CREATETOTALS("Remaining Amount","Remaining Amt. (LCY)");
+                        Counter := 0;
+                      END;
+
+        OnAfterGetRecord=BEGIN
+                           OverDueMonths :=
+                             (DATE2DMY(EndDate,3) - DATE2DMY("Due Date",3)) * 12 +
+                             DATE2DMY(EndDate,2) - DATE2DMY("Due Date",2);
+                           IF DATE2DMY(EndDate,1) < DATE2DMY("Due Date",1) THEN
+                             OverDueMonths := OverDueMonths - 1;
+
+                           CurrencyTotalBuffer.UpdateTotal(
+                             "Currency Code","Remaining Amount","Remaining Amt. (LCY)",Counter);
+                         END;
+
+        DataItemLink=Vendor No.=FIELD(No.),
+                     Global Dimension 2 Code=FIELD(Global Dimension 2 Filter),
+                     Global Dimension 1 Code=FIELD(Global Dimension 1 Filter),
+                     Currency Code=FIELD(Currency Filter),
+                     Date Filter=FIELD(Date Filter);
+      }
+      SECTIONS
+      {
+        { PROPERTIES
+          {
+            SectionType=Body;
+            SectionWidth=18150;
+            SectionHeight=423;
+          }
+          CONTROLS
+          {
+            { 1140021;TextBox   ;0    ;0    ;1200 ;423  ;SourceExpr="Posting Date";
+                                                         DataSetFieldName=Vendor_Ledger_Entry__Posting_Date_ }
+            { 1140022;TextBox   ;1350 ;0    ;1500 ;423  ;SourceExpr="Document No.";
+                                                         DataSetFieldName=Vendor_Ledger_Entry__Document_No__ }
+            { 1140023;TextBox   ;3000 ;0    ;4500 ;423  ;SourceExpr=Description;
+                                                         DataSetFieldName=Vendor_Ledger_Entry_Description }
+            { 1140024;TextBox   ;7650 ;0    ;1200 ;423  ;CaptionML=[DEU=F„lligkeit Datum;
+                                                                    ENU=Due Date];
+                                                         SourceExpr="Due Date";
+                                                         DataSetFieldName=Vendor_Ledger_Entry__Due_Date_ }
+            { 1140025;TextBox   ;9000 ;0    ;1050 ;423  ;CaptionML=[DEU=Monatliche F„lligkeit;
+                                                                    ENU=Months Due];
+                                                         SourceExpr=OverDueMonths;
+                                                         AutoFormatType=1;
+                                                         AutoFormatExpr="Currency Code";
+                                                         DataSetFieldName=OverDueMonths }
+            { 1140026;TextBox   ;11100;0    ;1800 ;423  ;SourceExpr="Remaining Amount";
+                                                         AutoFormatType=1;
+                                                         AutoFormatExpr="Currency Code";
+                                                         DataSetFieldName=Vendor_Ledger_Entry__Remaining_Amount_ }
+            { 1140027;TextBox   ;10200;0    ;750  ;423  ;SourceExpr="Currency Code";
+                                                         DataSetFieldName=Vendor_Ledger_Entry__Currency_Code_ }
+            { 1140028;TextBox   ;13050;0    ;1800 ;423  ;SourceExpr="Remaining Amt. (LCY)";
+                                                         AutoFormatType=1;
+                                                         DataSetFieldName=Vendor_Ledger_Entry__Remaining_Amt___LCY__ }
+            { 1400100;Label     ;15000;0    ;150  ;423  ;Visible=No;
+                                                         ForeColor=65535;
+                                                         FontBold=Yes;
+                                                         CaptionML=[DEU=Summe;
+                                                                    ENU=Total];
+                                                         DataSetFieldName=TotalCaption }
+            { 1140101;TextBox   ;15150;0    ;150  ;423  ;Name=Counter;
+                                                         Visible=No;
+                                                         ForeColor=65535;
+                                                         SourceExpr=Counter;
+                                                         AutoFormatType=1;
+                                                         DataSetFieldName=Counter }
+          }
+           }
+      }
+       }
+    { PROPERTIES
+      {
+        DataItemIndent=1;
+        DataItemTable=Table2000000026;
+        DataItemTableView=SORTING(Number)
+                          WHERE(Number=FILTER(1..));
+        OnAfterGetRecord=BEGIN
+                           IF Number = 1 THEN
+                             OK := CurrencyTotalBuffer.FIND('-')
+                           ELSE
+                             OK := CurrencyTotalBuffer.NEXT <> 0;
+                           IF NOT OK THEN
+                             CurrReport.BREAK;
+                           CurrencyTotalBuffer2.UpdateTotal(
+                             CurrencyTotalBuffer."Currency Code",
+                             CurrencyTotalBuffer."Total Amount",
+                             CurrencyTotalBuffer."Total Amount (LCY)",Counter1);
+                         END;
+
+        OnPostDataItem=BEGIN
+                         CurrencyTotalBuffer.DELETEALL;
+                       END;
+
+      }
+      SECTIONS
+      {
+        { PROPERTIES
+          {
+            SectionType=Body;
+            SectionWidth=18150;
+            SectionHeight=423;
+          }
+          CONTROLS
+          {
+            { 1140029;TextBox   ;11100;0    ;1800 ;423  ;FontBold=Yes;
+                                                         SourceExpr=CurrencyTotalBuffer."Total Amount";
+                                                         AutoFormatType=1;
+                                                         AutoFormatExpr=CurrencyTotalBuffer."Currency Code";
+                                                         DataSetFieldName=CurrencyTotalBuffer__Total_Amount_ }
+            { 1140030;TextBox   ;10200;0    ;750  ;423  ;FontBold=Yes;
+                                                         SourceExpr=CurrencyTotalBuffer."Currency Code";
+                                                         DataSetFieldName=CurrencyTotalBuffer__Currency_Code_ }
+            { 1140031;TextBox   ;1650 ;0    ;4500 ;423  ;FontBold=Yes;
+                                                         SourceExpr=Vendor.Name;
+                                                         DataSetFieldName=Vendor_Name_Control1140031 }
+            { 1140032;TextBox   ;13050;0    ;1800 ;423  ;FontBold=Yes;
+                                                         SourceExpr=CurrencyTotalBuffer."Total Amount (LCY)";
+                                                         AutoFormatType=1;
+                                                         DataSetFieldName=CurrencyTotalBuffer__Total_Amount__LCY__ }
+          }
+           }
+        { PROPERTIES
+          {
+            SectionType=Footer;
+            SectionWidth=18150;
+            SectionHeight=423;
+            OnPostSection=BEGIN
+                            CurrReport.SHOWOUTPUT(Counter <> 1);
+                          END;
+
+          }
+          CONTROLS
+          {
+            { 1140033;TextBox   ;13050;0    ;1800 ;423  ;FontBold=Yes;
+                                                         SourceExpr="Vendor Ledger Entry"."Remaining Amt. (LCY)";
+                                                         AutoFormatType=1;
+                                                         DataSetFieldName=Vendor_Ledger_Entry___Remaining_Amt___LCY__ }
+          }
+           }
+      }
+       }
+    { PROPERTIES
+      {
+        DataItemTable=Table2000000026;
+        DataItemTableView=SORTING(Number)
+                          WHERE(Number=FILTER(1..));
+        DataItemVarName=Integer2;
+        OnAfterGetRecord=BEGIN
+                           IF Number = 1 THEN
+                             OK := CurrencyTotalBuffer2.FIND('-')
+                           ELSE
+                             OK := CurrencyTotalBuffer2.NEXT <> 0;
+                           IF NOT OK THEN
+                             CurrReport.BREAK;
+                         END;
+
+        OnPostDataItem=BEGIN
+                         CurrencyTotalBuffer2.DELETEALL;
+                       END;
+
+      }
+      SECTIONS
+      {
+        { PROPERTIES
+          {
+            SectionType=Body;
+            SectionWidth=18150;
+            SectionHeight=423;
+          }
+          CONTROLS
+          {
+            { 1140034;TextBox   ;10200;0    ;750  ;423  ;FontBold=Yes;
+                                                         SourceExpr=CurrencyTotalBuffer2."Currency Code";
+                                                         DataSetFieldName=CurrencyTotalBuffer2__Currency_Code_ }
+            { 1140035;TextBox   ;11100;0    ;1800 ;423  ;FontBold=Yes;
+                                                         SourceExpr=CurrencyTotalBuffer2."Total Amount";
+                                                         AutoFormatType=1;
+                                                         AutoFormatExpr=CurrencyTotalBuffer."Currency Code";
+                                                         DataSetFieldName=CurrencyTotalBuffer2__Total_Amount_ }
+            { 1140036;TextBox   ;13050;0    ;1800 ;423  ;FontBold=Yes;
+                                                         SourceExpr=CurrencyTotalBuffer2."Total Amount (LCY)";
+                                                         AutoFormatType=1;
+                                                         DataSetFieldName=CurrencyTotalBuffer2__Total_Amount__LCY__ }
+            { 1140037;Label     ;0    ;0    ;2250 ;423  ;FontBold=Yes;
+                                                         CaptionML=[DEU=Summe;
+                                                                    ENU=Total];
+                                                         DataSetFieldName=TotalCaption_Control1140037 }
+          }
+           }
+        { PROPERTIES
+          {
+            SectionType=Footer;
+            SectionWidth=18150;
+            SectionHeight=423;
+          }
+          CONTROLS
+          {
+            { 1140038;TextBox   ;13050;0    ;1800 ;423  ;FontBold=Yes;
+                                                         SourceExpr="Vendor Ledger Entry"."Remaining Amt. (LCY)";
+                                                         AutoFormatType=1;
+                                                         DataSetFieldName=Vendor_Ledger_Entry___Remaining_Amt___LCY___Control1140038 }
+          }
+           }
+      }
+       }
+  }
+  REQUESTFORM
+  {
+    PROPERTIES
+    {
+      Width=5060;
+      Height=440;
+      SaveValues=Yes;
+      OnOpenForm=BEGIN
+                   IF EndDate = 0D THEN
+                     EndDate := WORKDATE;
+                 END;
+
+    }
+    CONTROLS
+    {
+      { 1140000;TextBox   ;3410 ;0    ;1650 ;440  ;CaptionML=[DEU=Enddatum;
+                                                              ENU=Ending Date];
+                                                   SourceExpr=EndDate }
+      { 1140001;Label     ;0    ;0    ;3300 ;440  ;ParentControl=1140000 }
+    }
+  }
+  REQUESTPAGE
+  {
+    PROPERTIES
+    {
+      SaveValues=Yes;
+      OnOpenPage=BEGIN
+                   IF EndDate = 0D THEN
+                     EndDate := WORKDATE;
+                 END;
+
+    }
+    CONTROLS
+    {
+      { 1900000001;0;Container;
+                  ContainerType=ContentArea }
+
+      { 1900000002;1;Group  ;
+                  CaptionML=[DEU=Optionen;
+                             ENU=Options] }
+
+      { 1140000;2;Field     ;
+                  CaptionML=[DEU=Enddatum;
+                             ENU=Ending Date];
+                  SourceExpr=EndDate }
+
+    }
+  }
+  CODE
+  {
+    VAR
+      Text1140000@1140000 : TextConst 'DEU=Per %1;ENU=As of %1';
+      CurrencyTotalBuffer@1140001 : TEMPORARY Record 332;
+      CurrencyTotalBuffer2@1140002 : TEMPORARY Record 332;
+      EndDate@1140003 : Date;
+      VendFilter@1140004 : Text[250];
+      OverDueMonths@1140005 : Integer;
+      OK@1140006 : Boolean;
+      Counter@1140007 : Integer;
+      Counter1@1140008 : Integer;
+
+    BEGIN
+    END.
+  }
+  RDLDATA
+  {
+    <?xml version="1.0" encoding="utf-8"?>
+<Report xmlns="http://schemas.microsoft.com/sqlserver/reporting/2005/01/reportdefinition" xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner">
+  <Body>
+    <Height>5.922cm</Height>
+    <ReportItems>
+      <Table Name="VenderFilter_Table">
+        <Header>
+          <TableRows>
+            <TableRow>
+              <Height>0.423cm</Height>
+              <TableCells>
+                <TableCell>
+                  <ColSpan>4</ColSpan>
+                  <ReportItems>
+                    <Textbox Name="Vendor_TABLECAPTION__________VendFilter">
+                      <CanGrow>true</CanGrow>
+                      <Style>
+                        <FontSize>7pt</FontSize>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                      </Style>
+                      <Value>=First(Fields!Vendor_TABLECAPTION__________VendFilter.Value)</Value>
+                      <ZIndex>1</ZIndex>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+              </TableCells>
+              <Visibility>
+                <Hidden>= IIF(Fields!VendFilter.Value &lt;&gt; "",false, true)</Hidden>
+              </Visibility>
+            </TableRow>
+            <TableRow>
+              <Height>0.423cm</Height>
+              <TableCells>
+                <TableCell>
+                  <ColSpan>4</ColSpan>
+                  <ReportItems>
+                    <Textbox Name="textbox9">
+                      <CanGrow>true</CanGrow>
+                      <Style>
+                        <FontSize>7pt</FontSize>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                      </Style>
+                      <Value />
+                      <rd:DefaultName>textbox9</rd:DefaultName>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+              </TableCells>
+              <Visibility>
+                <Hidden>= IIF(Fields!VendFilter.Value &lt;&gt; "",false, true)</Hidden>
+              </Visibility>
+            </TableRow>
+          </TableRows>
+        </Header>
+        <Height>0.33311in</Height>
+        <TableColumns>
+          <TableColumn>
+            <Width>1.25in</Width>
+          </TableColumn>
+          <TableColumn>
+            <Width>1.75in</Width>
+          </TableColumn>
+          <TableColumn>
+            <Width>1.5in</Width>
+          </TableColumn>
+          <TableColumn>
+            <Width>1.56375in</Width>
+          </TableColumn>
+        </TableColumns>
+        <Width>6.06375in</Width>
+        <ZIndex>2</ZIndex>
+      </Table>
+      <Table Name="TotalSection">
+        <DataSetName>DataSet_Result</DataSetName>
+        <Details>
+          <TableRows>
+            <TableRow>
+              <Height>0.16656in</Height>
+              <TableCells>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="TotalCaption">
+                      <Style>
+                        <FontSize>7pt</FontSize>
+                        <FontWeight>700</FontWeight>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <VerticalAlign>Middle</VerticalAlign>
+                      </Style>
+                      <Value>=Fields!TotalCaption_Control1140037.Value</Value>
+                      <ZIndex>4</ZIndex>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="textbox19">
+                      <Style>
+                        <FontSize>7pt</FontSize>
+                        <FontWeight>700</FontWeight>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                      </Style>
+                      <Value />
+                      <ZIndex>3</ZIndex>
+                      <rd:DefaultName>textbox19</rd:DefaultName>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="CurrencyTotalBuffer2__Currency_Code_">
+                      <Style>
+                        <FontSize>7pt</FontSize>
+                        <FontWeight>700</FontWeight>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <VerticalAlign>Middle</VerticalAlign>
+                      </Style>
+                      <Value>=Fields!CurrencyTotalBuffer2__Currency_Code_.Value</Value>
+                      <ZIndex>2</ZIndex>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="CurrencyTotal_Amount">
+                      <CanGrow>true</CanGrow>
+                      <Style>
+                        <FontSize>7pt</FontSize>
+                        <FontWeight>700</FontWeight>
+                        <Format>=Fields!CurrencyTotalBuffer2__Total_Amount_Format.Value</Format>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                      </Style>
+                      <Value>=Fields!CurrencyTotalBuffer2__Total_Amount_.Value</Value>
+                      <ZIndex>1</ZIndex>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="CurrencyTotalBuffer2__Total_Amount__LCY__">
+                      <CanGrow>true</CanGrow>
+                      <Style>
+                        <FontSize>7pt</FontSize>
+                        <FontWeight>700</FontWeight>
+                        <Format>=Fields!CurrencyTotalBuffer2__Total_Amount__LCY__Format.Value</Format>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <VerticalAlign>Middle</VerticalAlign>
+                      </Style>
+                      <Value>=Fields!CurrencyTotalBuffer2__Total_Amount__LCY__.Value</Value>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+              </TableCells>
+              <Visibility>
+                <Hidden>=IIF(Fields!TotalCaption_Control1140037.Value&gt;"",false,true)</Hidden>
+              </Visibility>
+            </TableRow>
+          </TableRows>
+        </Details>
+        <Footer>
+          <TableRows>
+            <TableRow>
+              <Height>0.34363cm</Height>
+              <TableCells>
+                <TableCell>
+                  <ColSpan>4</ColSpan>
+                  <ReportItems>
+                    <Textbox Name="textbox3">
+                      <CanGrow>true</CanGrow>
+                      <Style>
+                        <FontWeight>700</FontWeight>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                      </Style>
+                      <Value />
+                      <ZIndex>6</ZIndex>
+                      <rd:DefaultName>textbox3</rd:DefaultName>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="Vendor_Ledger_Entry___Remaining_Amt___LCY___Control1140038">
+                      <CanGrow>true</CanGrow>
+                      <Style>
+                        <FontSize>7pt</FontSize>
+                        <FontWeight>700</FontWeight>
+                        <Format>=Fields!Vendor_Ledger_Entry__Remaining_Amt___LCY__Format.Value</Format>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <VerticalAlign>Middle</VerticalAlign>
+                      </Style>
+                      <Value>=SUM(Fields!Vendor_Ledger_Entry__Remaining_Amt___LCY__.Value,"DataSet_Result")</Value>
+                      <ZIndex>5</ZIndex>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+              </TableCells>
+            </TableRow>
+          </TableRows>
+        </Footer>
+        <Header>
+          <RepeatOnNewPage>true</RepeatOnNewPage>
+          <TableRows>
+            <TableRow>
+              <Height>0.03125in</Height>
+              <TableCells>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="STRSUBSTNO_Text1140000_FORMAT_EndDate2">
+                      <CanGrow>true</CanGrow>
+                      <Style>
+                        <Color>Red</Color>
+                        <FontSize>7pt</FontSize>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                      </Style>
+                      <Value>=Fields!STRSUBSTNO_Text1140000_FORMAT_EndDate__.Value</Value>
+                      <Visibility>
+                        <Hidden>true</Hidden>
+                      </Visibility>
+                      <ZIndex>10</ZIndex>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="COMPANYNAME2">
+                      <CanGrow>true</CanGrow>
+                      <Style>
+                        <Color>Red</Color>
+                        <FontSize>7pt</FontSize>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                      </Style>
+                      <Value>=Fields!COMPANYNAME.Value</Value>
+                      <Visibility>
+                        <Hidden>true</Hidden>
+                      </Visibility>
+                      <ZIndex>9</ZIndex>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="Vendor_Detailed_AgingCaption2">
+                      <CanGrow>true</CanGrow>
+                      <Style>
+                        <Color>Red</Color>
+                        <FontSize>7pt</FontSize>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                      </Style>
+                      <Value>=Fields!Vendor_Detailed_AgingCaption.Value</Value>
+                      <Visibility>
+                        <Hidden>true</Hidden>
+                      </Visibility>
+                      <ZIndex>8</ZIndex>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ColSpan>2</ColSpan>
+                  <ReportItems>
+                    <Textbox Name="CurrencyTotalBuffer2__Total_Amount_">
+                      <Style>
+                        <Color>Red</Color>
+                        <FontSize>7pt</FontSize>
+                        <FontWeight>700</FontWeight>
+                        <Format>=Fields!CurrencyTotalBuffer2__Total_Amount_Format.Value</Format>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <VerticalAlign>Middle</VerticalAlign>
+                      </Style>
+                      <Value>=Fields!CurrencyTotalBuffer2__Total_Amount_.Value</Value>
+                      <ZIndex>7</ZIndex>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+              </TableCells>
+            </TableRow>
+          </TableRows>
+        </Header>
+        <TableColumns>
+          <TableColumn>
+            <Width>1.35cm</Width>
+          </TableColumn>
+          <TableColumn>
+            <Width>8.85cm</Width>
+          </TableColumn>
+          <TableColumn>
+            <Width>1.2cm</Width>
+          </TableColumn>
+          <TableColumn>
+            <Width>1.95cm</Width>
+          </TableColumn>
+          <TableColumn>
+            <Width>2.05cm</Width>
+          </TableColumn>
+        </TableColumns>
+        <Top>5.076cm</Top>
+        <Width>15.4cm</Width>
+        <ZIndex>1</ZIndex>
+      </Table>
+      <Table Name="DetaiLTable">
+        <DataSetName>DataSet_Result</DataSetName>
+        <Details>
+          <TableRows>
+            <TableRow>
+              <Height>0.423cm</Height>
+              <TableCells>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="Vendor_Ledger_Entry__Posting_Date_">
+                      <Style>
+                        <FontSize>7pt</FontSize>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <TextAlign>Left</TextAlign>
+                        <VerticalAlign>Middle</VerticalAlign>
+                      </Style>
+                      <Value>=Fields!Vendor_Ledger_Entry__Posting_Date_.Value</Value>
+                      <ZIndex>15</ZIndex>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="Vendor_Ledger_Entry__Document_No__">
+                      <Style>
+                        <FontSize>7pt</FontSize>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <TextAlign>Right</TextAlign>
+                        <VerticalAlign>Middle</VerticalAlign>
+                      </Style>
+                      <Value>=Fields!Vendor_Ledger_Entry__Document_No__.Value</Value>
+                      <ZIndex>14</ZIndex>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="Vendor_Ledger_Entry_Description">
+                      <Style>
+                        <FontSize>7pt</FontSize>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <VerticalAlign>Middle</VerticalAlign>
+                      </Style>
+                      <Value>=Fields!Vendor_Ledger_Entry_Description.Value</Value>
+                      <ZIndex>13</ZIndex>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="Vendor_Ledger_Entry__Due_Date_">
+                      <Style>
+                        <FontSize>7pt</FontSize>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <TextAlign>Left</TextAlign>
+                        <VerticalAlign>Middle</VerticalAlign>
+                      </Style>
+                      <Value>=Fields!Vendor_Ledger_Entry__Due_Date_.Value</Value>
+                      <ZIndex>12</ZIndex>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="OverDueMonths">
+                      <Style>
+                        <FontSize>7pt</FontSize>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <VerticalAlign>Middle</VerticalAlign>
+                      </Style>
+                      <Value>=Fields!OverDueMonths.Value</Value>
+                      <ZIndex>11</ZIndex>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="Vendor_Ledger_Entry__Currency_Code_">
+                      <Style>
+                        <FontSize>7pt</FontSize>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <VerticalAlign>Middle</VerticalAlign>
+                      </Style>
+                      <Value>=Fields!Vendor_Ledger_Entry__Currency_Code_.Value</Value>
+                      <ZIndex>10</ZIndex>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="Vendor_Ledger_Entry__Remaining_Amount_">
+                      <CanGrow>true</CanGrow>
+                      <Style>
+                        <FontSize>7pt</FontSize>
+                        <Format>=Fields!Vendor_Ledger_Entry__Remaining_Amount_Format.Value</Format>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <VerticalAlign>Middle</VerticalAlign>
+                      </Style>
+                      <Value>=Fields!Vendor_Ledger_Entry__Remaining_Amount_.Value</Value>
+                      <ZIndex>9</ZIndex>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="Vendor_Ledger_Entry__Remaining_Amt___LCY__">
+                      <CanGrow>true</CanGrow>
+                      <Style>
+                        <FontSize>7pt</FontSize>
+                        <Format>=Fields!Vendor_Ledger_Entry__Remaining_Amt___LCY__Format.Value</Format>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <VerticalAlign>Middle</VerticalAlign>
+                      </Style>
+                      <Value>=Fields!Vendor_Ledger_Entry__Remaining_Amt___LCY__.Value</Value>
+                      <ZIndex>8</ZIndex>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+              </TableCells>
+              <Visibility>
+                <Hidden>=IIF(Len(Fields!Vendor_Ledger_Entry_Vendor_No_.Value)&gt;0,False,True)</Hidden>
+              </Visibility>
+            </TableRow>
+            <TableRow>
+              <Height>0.423cm</Height>
+              <TableCells>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="textbox5">
+                      <Style>
+                        <FontSize>7pt</FontSize>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                      </Style>
+                      <Value />
+                      <ZIndex>5</ZIndex>
+                      <rd:DefaultName>textbox5</rd:DefaultName>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ColSpan>2</ColSpan>
+                  <ReportItems>
+                    <Textbox Name="Vendor_Name">
+                      <Style>
+                        <FontSize>7pt</FontSize>
+                        <FontWeight>700</FontWeight>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>4pt</PaddingLeft>
+                        <PaddingRight>36pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <VerticalAlign>Middle</VerticalAlign>
+                      </Style>
+                      <Value>=Fields!Vendor_Name.Value</Value>
+                      <ZIndex>4</ZIndex>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ColSpan>2</ColSpan>
+                  <ReportItems>
+                    <Textbox Name="textbox11">
+                      <Style>
+                        <FontSize>7pt</FontSize>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <TextAlign>Left</TextAlign>
+                        <VerticalAlign>Middle</VerticalAlign>
+                      </Style>
+                      <Value />
+                      <ZIndex>3</ZIndex>
+                      <rd:DefaultName>textbox11</rd:DefaultName>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="CurrencyTotalBuffer__Currency_Code_">
+                      <Style>
+                        <FontSize>7pt</FontSize>
+                        <FontWeight>700</FontWeight>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <VerticalAlign>Middle</VerticalAlign>
+                      </Style>
+                      <Value>=Fields!CurrencyTotalBuffer__Currency_Code_.Value</Value>
+                      <ZIndex>2</ZIndex>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="CurrencyTotalBuffer__Total_Amount_">
+                      <CanGrow>true</CanGrow>
+                      <Style>
+                        <FontSize>7pt</FontSize>
+                        <FontWeight>700</FontWeight>
+                        <Format>=Fields!CurrencyTotalBuffer__Total_Amount_Format.Value</Format>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <VerticalAlign>Middle</VerticalAlign>
+                      </Style>
+                      <Value>=Fields!CurrencyTotalBuffer__Total_Amount_.Value</Value>
+                      <ZIndex>1</ZIndex>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="CurrencyTotalBuffer__Total_Amount__LCY__">
+                      <CanGrow>true</CanGrow>
+                      <Style>
+                        <FontSize>7pt</FontSize>
+                        <FontWeight>700</FontWeight>
+                        <Format>=Fields!CurrencyTotalBuffer__Total_Amount__LCY__Format.Value</Format>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                      </Style>
+                      <Value>=Fields!CurrencyTotalBuffer__Total_Amount__LCY__.Value</Value>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+              </TableCells>
+              <Visibility>
+                <Hidden>=IIF(Len(Fields!Vendor_Name_Control1140031.Value),False,True)</Hidden>
+              </Visibility>
+            </TableRow>
+          </TableRows>
+        </Details>
+        <Header>
+          <RepeatOnNewPage>true</RepeatOnNewPage>
+          <TableRows>
+            <TableRow>
+              <Height>0.03125in</Height>
+              <TableCells>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="STRSUBSTNO_Text1140000_FORMAT_EndDate__">
+                      <CanGrow>true</CanGrow>
+                      <Style>
+                        <Color>Red</Color>
+                        <FontSize>7pt</FontSize>
+                        <FontWeight>700</FontWeight>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <VerticalAlign>Bottom</VerticalAlign>
+                      </Style>
+                      <Value>=Fields!STRSUBSTNO_Text1140000_FORMAT_EndDate__.Value</Value>
+                      <Visibility>
+                        <Hidden>true</Hidden>
+                      </Visibility>
+                      <ZIndex>37</ZIndex>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="COMPANYNAME">
+                      <CanGrow>true</CanGrow>
+                      <Style>
+                        <Color>Red</Color>
+                        <FontSize>7pt</FontSize>
+                        <FontWeight>700</FontWeight>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <VerticalAlign>Bottom</VerticalAlign>
+                      </Style>
+                      <Value>=Fields!COMPANYNAME.Value</Value>
+                      <Visibility>
+                        <Hidden>true</Hidden>
+                      </Visibility>
+                      <ZIndex>36</ZIndex>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="Vendor_Detailed_AgingCaption">
+                      <CanGrow>true</CanGrow>
+                      <Style>
+                        <Color>Red</Color>
+                        <FontSize>7pt</FontSize>
+                        <FontWeight>700</FontWeight>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <VerticalAlign>Bottom</VerticalAlign>
+                      </Style>
+                      <Value>=Fields!Vendor_Detailed_AgingCaption.Value</Value>
+                      <Visibility>
+                        <Hidden>true</Hidden>
+                      </Visibility>
+                      <ZIndex>35</ZIndex>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="CurrReport_PAGENOCaption">
+                      <CanGrow>true</CanGrow>
+                      <Style>
+                        <Color>Red</Color>
+                        <FontSize>7pt</FontSize>
+                        <FontWeight>700</FontWeight>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <VerticalAlign>Bottom</VerticalAlign>
+                      </Style>
+                      <Value>=Fields!CurrReport_PAGENOCaption.Value</Value>
+                      <Visibility>
+                        <Hidden>true</Hidden>
+                      </Visibility>
+                      <ZIndex>34</ZIndex>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ColSpan>4</ColSpan>
+                  <ReportItems>
+                    <Textbox Name="textbox13">
+                      <CanGrow>true</CanGrow>
+                      <Style>
+                        <FontSize>7pt</FontSize>
+                        <FontWeight>700</FontWeight>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <TextAlign>Right</TextAlign>
+                        <VerticalAlign>Bottom</VerticalAlign>
+                      </Style>
+                      <Value />
+                      <ZIndex>33</ZIndex>
+                      <rd:DefaultName>textbox13</rd:DefaultName>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+              </TableCells>
+            </TableRow>
+            <TableRow>
+              <Height>0.846cm</Height>
+              <TableCells>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="Vendor_Ledger_Entry__Posting_Date_Caption">
+                      <CanGrow>true</CanGrow>
+                      <Style>
+                        <FontSize>7pt</FontSize>
+                        <FontWeight>700</FontWeight>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <VerticalAlign>Bottom</VerticalAlign>
+                      </Style>
+                      <Value>=First(Fields!Vendor_Ledger_Entry__Posting_Date_Caption.Value)</Value>
+                      <ZIndex>32</ZIndex>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="Vendor_Ledger_Entry__Document_No__Caption">
+                      <CanGrow>true</CanGrow>
+                      <Style>
+                        <FontSize>7pt</FontSize>
+                        <FontWeight>700</FontWeight>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <VerticalAlign>Bottom</VerticalAlign>
+                      </Style>
+                      <Value>=First(Fields!Vendor_Ledger_Entry__Document_No__Caption.Value)</Value>
+                      <ZIndex>31</ZIndex>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="Vendor_Ledger_Entry_DescriptionCaption">
+                      <CanGrow>true</CanGrow>
+                      <Style>
+                        <FontSize>7pt</FontSize>
+                        <FontWeight>700</FontWeight>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <VerticalAlign>Bottom</VerticalAlign>
+                      </Style>
+                      <Value>=First(Fields!Vendor_Ledger_Entry_DescriptionCaption.Value)</Value>
+                      <ZIndex>30</ZIndex>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="Vendor_Ledger_Entry__Due_Date_Caption">
+                      <CanGrow>true</CanGrow>
+                      <Style>
+                        <FontSize>7pt</FontSize>
+                        <FontWeight>700</FontWeight>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <VerticalAlign>Bottom</VerticalAlign>
+                      </Style>
+                      <Value>=First(Fields!Vendor_Ledger_Entry__Due_Date_Caption.Value)</Value>
+                      <ZIndex>29</ZIndex>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="OverDueMonthsCaption">
+                      <CanGrow>true</CanGrow>
+                      <Style>
+                        <FontSize>7pt</FontSize>
+                        <FontWeight>700</FontWeight>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <TextAlign>Right</TextAlign>
+                        <VerticalAlign>Bottom</VerticalAlign>
+                      </Style>
+                      <Value>=First(Fields!OverDueMonthsCaption.Value)</Value>
+                      <ZIndex>28</ZIndex>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="textbox69">
+                      <CanGrow>true</CanGrow>
+                      <Style>
+                        <FontSize>7pt</FontSize>
+                        <FontWeight>700</FontWeight>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingTop>2pt</PaddingTop>
+                        <VerticalAlign>Bottom</VerticalAlign>
+                      </Style>
+                      <Value>=First(Fields!Vendor_Ledger_Entry__Currency_Code_Caption.Value)</Value>
+                      <ZIndex>27</ZIndex>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="Vendor_Ledger_Entry__Remaining_Amount_Caption">
+                      <CanGrow>true</CanGrow>
+                      <Style>
+                        <FontSize>7pt</FontSize>
+                        <FontWeight>700</FontWeight>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <TextAlign>Right</TextAlign>
+                        <VerticalAlign>Bottom</VerticalAlign>
+                      </Style>
+                      <Value>=First(Fields!Vendor_Ledger_Entry__Remaining_Amount_Caption.Value)</Value>
+                      <ZIndex>26</ZIndex>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="Vendor_Ledger_Entry__Remaining_Amt___LCY__Caption">
+                      <CanGrow>true</CanGrow>
+                      <Style>
+                        <FontSize>7pt</FontSize>
+                        <FontWeight>700</FontWeight>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <TextAlign>Right</TextAlign>
+                        <VerticalAlign>Bottom</VerticalAlign>
+                      </Style>
+                      <Value>=First(Fields!Vendor_Ledger_Entry__Remaining_Amt___LCY__Caption.Value)</Value>
+                      <ZIndex>25</ZIndex>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+              </TableCells>
+            </TableRow>
+            <TableRow>
+              <Height>0.423cm</Height>
+              <TableCells>
+                <TableCell>
+                  <ColSpan>8</ColSpan>
+                  <ReportItems>
+                    <Textbox Name="textbox2">
+                      <CanGrow>true</CanGrow>
+                      <Style>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                      </Style>
+                      <Value />
+                      <ZIndex>24</ZIndex>
+                      <rd:DefaultName>textbox2</rd:DefaultName>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+              </TableCells>
+            </TableRow>
+          </TableRows>
+        </Header>
+        <Height>3.88637cm</Height>
+        <TableColumns>
+          <TableColumn>
+            <Width>1.35cm</Width>
+          </TableColumn>
+          <TableColumn>
+            <Width>1.65cm</Width>
+          </TableColumn>
+          <TableColumn>
+            <Width>4.65cm</Width>
+          </TableColumn>
+          <TableColumn>
+            <Width>1.45cm</Width>
+          </TableColumn>
+          <TableColumn>
+            <Width>1.2cm</Width>
+          </TableColumn>
+          <TableColumn>
+            <Width>1.2cm</Width>
+          </TableColumn>
+          <TableColumn>
+            <Width>1.95cm</Width>
+          </TableColumn>
+          <TableColumn>
+            <Width>1.95cm</Width>
+          </TableColumn>
+        </TableColumns>
+        <TableGroups>
+          <TableGroup>
+            <Footer>
+              <TableRows>
+                <TableRow>
+                  <Height>0.423cm</Height>
+                  <TableCells>
+                    <TableCell>
+                      <ColSpan>7</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="textbox1">
+                          <CanGrow>true</CanGrow>
+                          <Style>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <Value />
+                          <ZIndex>7</ZIndex>
+                          <rd:DefaultName>textbox1</rd:DefaultName>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ReportItems>
+                        <Textbox Name="Vendor_Ledger_Entry__Remaining_Amt___LCY">
+                          <CanGrow>true</CanGrow>
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <FontWeight>700</FontWeight>
+                            <Format>=Fields!CurrencyTotalBuffer__Total_Amount__LCY__Format.Value</Format>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <Value>=SUM(Fields!Vendor_Ledger_Entry__Remaining_Amt___LCY__.Value)</Value>
+                          <ZIndex>6</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                  </TableCells>
+                  <Visibility>
+                    <Hidden>=IIF(Max(Fields!Counter.Value)&gt;1,false,true)</Hidden>
+                  </Visibility>
+                </TableRow>
+              </TableRows>
+            </Footer>
+            <Grouping Name="DetaiLTable_Group">
+              <GroupExpressions>
+                <GroupExpression>=Fields!Vendor__No__.Value</GroupExpression>
+              </GroupExpressions>
+            </Grouping>
+            <Header>
+              <TableRows>
+                <TableRow>
+                  <Height>0.16656in</Height>
+                  <TableCells>
+                    <TableCell>
+                      <ColSpan>8</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="textbox7">
+                          <CanGrow>true</CanGrow>
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <TextAlign>Right</TextAlign>
+                            <VerticalAlign>Middle</VerticalAlign>
+                          </Style>
+                          <Value />
+                          <ZIndex>23</ZIndex>
+                          <rd:DefaultName>textbox7</rd:DefaultName>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                  </TableCells>
+                  <Visibility>
+                    <Hidden>=IIF(Fields!Vendor__No__.Value&lt;&gt;"",false,true)</Hidden>
+                  </Visibility>
+                </TableRow>
+                <TableRow>
+                  <Height>0.423cm</Height>
+                  <TableCells>
+                    <TableCell>
+                      <ReportItems>
+                        <Textbox Name="Vendor__No__">
+                          <CanGrow>true</CanGrow>
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <FontWeight>700</FontWeight>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <TextAlign>Right</TextAlign>
+                            <VerticalAlign>Middle</VerticalAlign>
+                          </Style>
+                          <Value>=Fields!Vendor__No__.Value</Value>
+                          <ZIndex>22</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ColSpan>2</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="Name">
+                          <CanGrow>true</CanGrow>
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <FontWeight>700</FontWeight>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>4pt</PaddingLeft>
+                            <PaddingRight>36pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <VerticalAlign>Middle</VerticalAlign>
+                          </Style>
+                          <Value>=Fields!Vendor_Name.Value</Value>
+                          <ZIndex>21</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ColSpan>5</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="textbox8">
+                          <CanGrow>true</CanGrow>
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <FontWeight>700</FontWeight>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <VerticalAlign>Middle</VerticalAlign>
+                          </Style>
+                          <Value />
+                          <ZIndex>20</ZIndex>
+                          <rd:DefaultName>textbox8</rd:DefaultName>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                  </TableCells>
+                  <Visibility>
+                    <Hidden>=IIF(Fields!Vendor__No__.Value&lt;&gt;"",false,true)</Hidden>
+                  </Visibility>
+                </TableRow>
+                <TableRow>
+                  <Height>0.423cm</Height>
+                  <TableCells>
+                    <TableCell>
+                      <ReportItems>
+                        <Textbox Name="textbox16">
+                          <CanGrow>true</CanGrow>
+                          <Style>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <Value />
+                          <ZIndex>19</ZIndex>
+                          <rd:DefaultName>textbox16</rd:DefaultName>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ReportItems>
+                        <Textbox Name="Vendor__Phone_No__Caption">
+                          <CanGrow>true</CanGrow>
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <VerticalAlign>Middle</VerticalAlign>
+                          </Style>
+                          <Value>=Fields!Vendor__Phone_No__Caption.Value</Value>
+                          <ZIndex>18</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ReportItems>
+                        <Textbox Name="Vendor__Phone_No__">
+                          <CanGrow>true</CanGrow>
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>36pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <VerticalAlign>Middle</VerticalAlign>
+                          </Style>
+                          <Value>=Fields!Vendor__Phone_No__.Value</Value>
+                          <ZIndex>17</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ColSpan>5</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="textbox4">
+                          <CanGrow>true</CanGrow>
+                          <Style>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <Value />
+                          <ZIndex>16</ZIndex>
+                          <rd:DefaultName>textbox4</rd:DefaultName>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                  </TableCells>
+                  <Visibility>
+                    <Hidden>=IIF(Fields!Vendor__No__.Value&lt;&gt;"",false,true)</Hidden>
+                  </Visibility>
+                </TableRow>
+              </TableRows>
+            </Header>
+          </TableGroup>
+          <TableGroup>
+            <Grouping Name="Vendor_Name_Group">
+              <GroupExpressions>
+                <GroupExpression>=Fields!Vendor_Name_Control1140031.Value</GroupExpression>
+              </GroupExpressions>
+            </Grouping>
+          </TableGroup>
+        </TableGroups>
+        <Top>0.846cm</Top>
+        <Width>15.4cm</Width>
+      </Table>
+    </ReportItems>
+  </Body>
+  <BottomMargin>2cm</BottomMargin>
+  <Code>Public Function BlankZero(ByVal Value As Decimal)
+    if Value = 0 then
+        Return ""
+    end if
+    Return Value
+End Function
+
+Public Function BlankPos(ByVal Value As Decimal)
+    if Value &gt; 0 then
+        Return ""
+    end if
+    Return Value
+End Function
+
+Public Function BlankZeroAndPos(ByVal Value As Decimal)
+    if Value &gt;= 0 then
+        Return ""
+    end if
+    Return Value
+End Function
+
+Public Function BlankNeg(ByVal Value As Decimal)
+    if Value &lt; 0 then
+        Return ""
+    end if
+    Return Value
+End Function
+
+Public Function BlankNegAndZero(ByVal Value As Decimal)
+    if Value &lt;= 0 then
+        Return ""
+    end if
+    Return Value
+End Function
+</Code>
+  <DataSets>
+    <DataSet Name="DataSet_Result">
+      <Fields>
+        <Field Name="Vendor_Detailed_AgingCaption">
+          <DataField>Vendor_Detailed_AgingCaption</DataField>
+        </Field>
+        <Field Name="FORMAT_TODAY_0_4_">
+          <DataField>FORMAT_TODAY_0_4_</DataField>
+        </Field>
+        <Field Name="STRSUBSTNO_Text1140000_FORMAT_EndDate__">
+          <DataField>STRSUBSTNO_Text1140000_FORMAT_EndDate__</DataField>
+        </Field>
+        <Field Name="CurrReport_PAGENOCaption">
+          <DataField>CurrReport_PAGENOCaption</DataField>
+        </Field>
+        <Field Name="CurrReport_PAGENO">
+          <DataField>CurrReport_PAGENO</DataField>
+        </Field>
+        <Field Name="COMPANYNAME">
+          <DataField>COMPANYNAME</DataField>
+        </Field>
+        <Field Name="USERID">
+          <DataField>USERID</DataField>
+        </Field>
+        <Field Name="Vendor_TABLECAPTION__________VendFilter">
+          <DataField>Vendor_TABLECAPTION__________VendFilter</DataField>
+        </Field>
+        <Field Name="VendFilter">
+          <DataField>VendFilter</DataField>
+        </Field>
+        <Field Name="Vendor_Ledger_Entry__Posting_Date_Caption">
+          <DataField>Vendor_Ledger_Entry__Posting_Date_Caption</DataField>
+        </Field>
+        <Field Name="Vendor_Ledger_Entry__Document_No__Caption">
+          <DataField>Vendor_Ledger_Entry__Document_No__Caption</DataField>
+        </Field>
+        <Field Name="Vendor_Ledger_Entry_DescriptionCaption">
+          <DataField>Vendor_Ledger_Entry_DescriptionCaption</DataField>
+        </Field>
+        <Field Name="Vendor_Ledger_Entry__Due_Date_Caption">
+          <DataField>Vendor_Ledger_Entry__Due_Date_Caption</DataField>
+        </Field>
+        <Field Name="OverDueMonthsCaption">
+          <DataField>OverDueMonthsCaption</DataField>
+        </Field>
+        <Field Name="Vendor_Ledger_Entry__Remaining_Amount_Caption">
+          <DataField>Vendor_Ledger_Entry__Remaining_Amount_Caption</DataField>
+        </Field>
+        <Field Name="Vendor_Ledger_Entry__Currency_Code_Caption">
+          <DataField>Vendor_Ledger_Entry__Currency_Code_Caption</DataField>
+        </Field>
+        <Field Name="Vendor_Ledger_Entry__Remaining_Amt___LCY__Caption">
+          <DataField>Vendor_Ledger_Entry__Remaining_Amt___LCY__Caption</DataField>
+        </Field>
+        <Field Name="Vendor__No__">
+          <DataField>Vendor__No__</DataField>
+        </Field>
+        <Field Name="Vendor_Name">
+          <DataField>Vendor_Name</DataField>
+        </Field>
+        <Field Name="Vendor__Phone_No__Caption">
+          <DataField>Vendor__Phone_No__Caption</DataField>
+        </Field>
+        <Field Name="Vendor__Phone_No__">
+          <DataField>Vendor__Phone_No__</DataField>
+        </Field>
+        <Field Name="Vendor_Global_Dimension_2_Filter">
+          <DataField>Vendor_Global_Dimension_2_Filter</DataField>
+        </Field>
+        <Field Name="Vendor_Global_Dimension_1_Filter">
+          <DataField>Vendor_Global_Dimension_1_Filter</DataField>
+        </Field>
+        <Field Name="Vendor_Currency_Filter">
+          <DataField>Vendor_Currency_Filter</DataField>
+        </Field>
+        <Field Name="Vendor_Date_Filter">
+          <DataField>Vendor_Date_Filter</DataField>
+        </Field>
+        <Field Name="Vendor_Ledger_Entry__Posting_Date_">
+          <DataField>Vendor_Ledger_Entry__Posting_Date_</DataField>
+        </Field>
+        <Field Name="Vendor_Ledger_Entry__Document_No__">
+          <DataField>Vendor_Ledger_Entry__Document_No__</DataField>
+        </Field>
+        <Field Name="Vendor_Ledger_Entry_Description">
+          <DataField>Vendor_Ledger_Entry_Description</DataField>
+        </Field>
+        <Field Name="Vendor_Ledger_Entry__Due_Date_">
+          <DataField>Vendor_Ledger_Entry__Due_Date_</DataField>
+        </Field>
+        <Field Name="OverDueMonths">
+          <DataField>OverDueMonths</DataField>
+        </Field>
+        <Field Name="Vendor_Ledger_Entry__Remaining_Amount_">
+          <DataField>Vendor_Ledger_Entry__Remaining_Amount_</DataField>
+        </Field>
+        <Field Name="Vendor_Ledger_Entry__Remaining_Amount_Format">
+          <DataField>Vendor_Ledger_Entry__Remaining_Amount_Format</DataField>
+        </Field>
+        <Field Name="Vendor_Ledger_Entry__Currency_Code_">
+          <DataField>Vendor_Ledger_Entry__Currency_Code_</DataField>
+        </Field>
+        <Field Name="Vendor_Ledger_Entry__Remaining_Amt___LCY__">
+          <DataField>Vendor_Ledger_Entry__Remaining_Amt___LCY__</DataField>
+        </Field>
+        <Field Name="Vendor_Ledger_Entry__Remaining_Amt___LCY__Format">
+          <DataField>Vendor_Ledger_Entry__Remaining_Amt___LCY__Format</DataField>
+        </Field>
+        <Field Name="TotalCaption">
+          <DataField>TotalCaption</DataField>
+        </Field>
+        <Field Name="Counter">
+          <DataField>Counter</DataField>
+        </Field>
+        <Field Name="Vendor_Ledger_Entry_Entry_No_">
+          <DataField>Vendor_Ledger_Entry_Entry_No_</DataField>
+        </Field>
+        <Field Name="Vendor_Ledger_Entry_Vendor_No_">
+          <DataField>Vendor_Ledger_Entry_Vendor_No_</DataField>
+        </Field>
+        <Field Name="Vendor_Ledger_Entry_Global_Dimension_2_Code">
+          <DataField>Vendor_Ledger_Entry_Global_Dimension_2_Code</DataField>
+        </Field>
+        <Field Name="Vendor_Ledger_Entry_Global_Dimension_1_Code">
+          <DataField>Vendor_Ledger_Entry_Global_Dimension_1_Code</DataField>
+        </Field>
+        <Field Name="Vendor_Ledger_Entry_Date_Filter">
+          <DataField>Vendor_Ledger_Entry_Date_Filter</DataField>
+        </Field>
+        <Field Name="CurrencyTotalBuffer__Total_Amount_">
+          <DataField>CurrencyTotalBuffer__Total_Amount_</DataField>
+        </Field>
+        <Field Name="CurrencyTotalBuffer__Total_Amount_Format">
+          <DataField>CurrencyTotalBuffer__Total_Amount_Format</DataField>
+        </Field>
+        <Field Name="CurrencyTotalBuffer__Currency_Code_">
+          <DataField>CurrencyTotalBuffer__Currency_Code_</DataField>
+        </Field>
+        <Field Name="Vendor_Name_Control1140031">
+          <DataField>Vendor_Name_Control1140031</DataField>
+        </Field>
+        <Field Name="CurrencyTotalBuffer__Total_Amount__LCY__">
+          <DataField>CurrencyTotalBuffer__Total_Amount__LCY__</DataField>
+        </Field>
+        <Field Name="CurrencyTotalBuffer__Total_Amount__LCY__Format">
+          <DataField>CurrencyTotalBuffer__Total_Amount__LCY__Format</DataField>
+        </Field>
+        <Field Name="Vendor_Ledger_Entry___Remaining_Amt___LCY__">
+          <DataField>Vendor_Ledger_Entry___Remaining_Amt___LCY__</DataField>
+        </Field>
+        <Field Name="Vendor_Ledger_Entry___Remaining_Amt___LCY__Format">
+          <DataField>Vendor_Ledger_Entry___Remaining_Amt___LCY__Format</DataField>
+        </Field>
+        <Field Name="CurrencyTotalBuffer2__Currency_Code_">
+          <DataField>CurrencyTotalBuffer2__Currency_Code_</DataField>
+        </Field>
+        <Field Name="CurrencyTotalBuffer2__Total_Amount_">
+          <DataField>CurrencyTotalBuffer2__Total_Amount_</DataField>
+        </Field>
+        <Field Name="CurrencyTotalBuffer2__Total_Amount_Format">
+          <DataField>CurrencyTotalBuffer2__Total_Amount_Format</DataField>
+        </Field>
+        <Field Name="CurrencyTotalBuffer2__Total_Amount__LCY__">
+          <DataField>CurrencyTotalBuffer2__Total_Amount__LCY__</DataField>
+        </Field>
+        <Field Name="CurrencyTotalBuffer2__Total_Amount__LCY__Format">
+          <DataField>CurrencyTotalBuffer2__Total_Amount__LCY__Format</DataField>
+        </Field>
+        <Field Name="TotalCaption_Control1140037">
+          <DataField>TotalCaption_Control1140037</DataField>
+        </Field>
+        <Field Name="Vendor_Ledger_Entry___Remaining_Amt___LCY___Control1140038">
+          <DataField>Vendor_Ledger_Entry___Remaining_Amt___LCY___Control1140038</DataField>
+        </Field>
+        <Field Name="Vendor_Ledger_Entry___Remaining_Amt___LCY___Control1140038Format">
+          <DataField>Vendor_Ledger_Entry___Remaining_Amt___LCY___Control1140038Format</DataField>
+        </Field>
+      </Fields>
+      <Query>
+        <CommandText />
+        <DataSourceName>DummyDataSource</DataSourceName>
+      </Query>
+      <rd:DataSetInfo>
+        <rd:DataSetName>DataSet</rd:DataSetName>
+        <rd:TableName>Result</rd:TableName>
+      </rd:DataSetInfo>
+    </DataSet>
+  </DataSets>
+  <DataSources>
+    <DataSource Name="DummyDataSource">
+      <ConnectionProperties>
+        <ConnectString />
+        <DataProvider>SQL</DataProvider>
+      </ConnectionProperties>
+      <rd:DataSourceID>30ec37e0-eef4-4a8d-82a0-def3ca77a178</rd:DataSourceID>
+    </DataSource>
+  </DataSources>
+  <InteractiveHeight>11in</InteractiveHeight>
+  <InteractiveWidth>8.5in</InteractiveWidth>
+  <Language>=User!Language</Language>
+  <LeftMargin>1.5cm</LeftMargin>
+  <PageHeader>
+    <Height>1.692cm</Height>
+    <PrintOnFirstPage>true</PrintOnFirstPage>
+    <PrintOnLastPage>true</PrintOnLastPage>
+    <ReportItems>
+      <Textbox Name="PageNumberTextBox">
+        <Height>0.423cm</Height>
+        <Left>17.7cm</Left>
+        <Style>
+          <FontSize>7pt</FontSize>
+          <TextAlign>Right</TextAlign>
+          <VerticalAlign>Middle</VerticalAlign>
+        </Style>
+        <Top>0.423cm</Top>
+        <Value>=Globals!PageNumber</Value>
+        <ZIndex>6</ZIndex>
+      </Textbox>
+      <Textbox Name="UserIdTextBox">
+        <Height>0.423cm</Height>
+        <Left>15.65cm</Left>
+        <Style>
+          <FontSize>7pt</FontSize>
+          <TextAlign>Right</TextAlign>
+          <VerticalAlign>Middle</VerticalAlign>
+        </Style>
+        <Top>0.846cm</Top>
+        <Value>=User!UserID</Value>
+        <ZIndex>5</ZIndex>
+      </Textbox>
+      <Textbox Name="ExecutionTimeTextBox">
+        <Height>0.423cm</Height>
+        <Left>15cm</Left>
+        <Style>
+          <FontSize>7pt</FontSize>
+          <Format>g</Format>
+          <TextAlign>Right</TextAlign>
+          <VerticalAlign>Middle</VerticalAlign>
+        </Style>
+        <Value>=Globals!ExecutionTime</Value>
+        <ZIndex>4</ZIndex>
+      </Textbox>
+      <Textbox Name="STRSUBSTNO_Text1140000_FORMAT_EndDate__1">
+        <Height>0.423cm</Height>
+        <Style>
+          <FontSize>7pt</FontSize>
+          <VerticalAlign>Middle</VerticalAlign>
+        </Style>
+        <Top>0.423cm</Top>
+        <Value>=ReportItems!STRSUBSTNO_Text1140000_FORMAT_EndDate__.Value</Value>
+        <Width>7.5cm</Width>
+        <ZIndex>3</ZIndex>
+      </Textbox>
+      <Textbox Name="COMPANYNAME1">
+        <Height>0.423cm</Height>
+        <Style>
+          <FontSize>7pt</FontSize>
+          <VerticalAlign>Middle</VerticalAlign>
+        </Style>
+        <Top>0.846cm</Top>
+        <Value>=ReportItems!COMPANYNAME.Value</Value>
+        <Width>4.5cm</Width>
+        <ZIndex>2</ZIndex>
+      </Textbox>
+      <Textbox Name="Vendor_Detailed_AgingCaption1">
+        <Height>0.423cm</Height>
+        <Style>
+          <FontSize>8pt</FontSize>
+          <FontWeight>700</FontWeight>
+          <VerticalAlign>Middle</VerticalAlign>
+        </Style>
+        <Value>=ReportItems!Vendor_Detailed_AgingCaption.Value</Value>
+        <Width>7.5cm</Width>
+        <ZIndex>1</ZIndex>
+      </Textbox>
+      <Textbox Name="CurrReport_PAGENOCaption1">
+        <Height>0.423cm</Height>
+        <Left>16.95cm</Left>
+        <Style>
+          <FontSize>7pt</FontSize>
+          <VerticalAlign>Middle</VerticalAlign>
+        </Style>
+        <Top>0.423cm</Top>
+        <Value>=ReportItems!CurrReport_PAGENOCaption.Value</Value>
+        <Width>0.75cm</Width>
+      </Textbox>
+    </ReportItems>
+  </PageHeader>
+  <PageHeight>29.7cm</PageHeight>
+  <PageWidth>21cm</PageWidth>
+  <TopMargin>2cm</TopMargin>
+  <Width>18.15cm</Width>
+  <rd:DrawGrid>true</rd:DrawGrid>
+  <rd:ReportID>81769532-75a5-447e-9c40-baddc3841579</rd:ReportID>
+  <rd:SnapToGrid>true</rd:SnapToGrid>
+</Report>
+    END_OF_RDLDatA
+  }
+}
+

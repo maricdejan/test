@@ -1,0 +1,146 @@
+OBJECT Table 454 Approval Entry
+{
+  OBJECT-PROPERTIES
+  {
+    Date=05.11.08;
+    Time=12:00:00;
+    Version List=NAVW16.00;
+  }
+  PROPERTIES
+  {
+    CaptionML=[DEU=Genehmigungsposten;
+               ENU=Approval Entry];
+  }
+  FIELDS
+  {
+    { 1   ;   ;Table ID            ;Integer       ;CaptionML=[DEU=Tabellen-ID;
+                                                              ENU=Table ID] }
+    { 2   ;   ;Document Type       ;Option        ;CaptionML=[DEU=Belegart;
+                                                              ENU=Document Type];
+                                                   OptionCaptionML=[DEU=Angebot,Auftrag,Rechnung,Gutschrift,Rahmenauftrag,Reklamation;
+                                                                    ENU=Quote,Order,Invoice,Credit Memo,Blanket Order,Return Order];
+                                                   OptionString=Quote,Order,Invoice,Credit Memo,Blanket Order,Return Order }
+    { 3   ;   ;Document No.        ;Code20        ;CaptionML=[DEU=Belegnr.;
+                                                              ENU=Document No.] }
+    { 4   ;   ;Sequence No.        ;Integer       ;CaptionML=[DEU=Reihenfolge;
+                                                              ENU=Sequence No.] }
+    { 5   ;   ;Approval Code       ;Code20        ;CaptionML=[DEU=Genehmigungscode;
+                                                              ENU=Approval Code] }
+    { 6   ;   ;Sender ID           ;Code20        ;CaptionML=[DEU=Absender-ID;
+                                                              ENU=Sender ID] }
+    { 7   ;   ;Salespers./Purch. Code;Code10      ;CaptionML=[DEU=Verk.-/EinkÑufercode;
+                                                              ENU=Salespers./Purch. Code] }
+    { 8   ;   ;Approver ID         ;Code20        ;CaptionML=[DEU=Genehmiger-ID;
+                                                              ENU=Approver ID] }
+    { 9   ;   ;Status              ;Option        ;CaptionML=[DEU=Status;
+                                                              ENU=Status];
+                                                   OptionCaptionML=[DEU=Erstellt,Offen,Storniert,Abgelehnt,Genehmigt;
+                                                                    ENU=Created,Open,Canceled,Rejected,Approved];
+                                                   OptionString=Created,Open,Canceled,Rejected,Approved }
+    { 10  ;   ;Date-Time Sent for Approval;DateTime;
+                                                   CaptionML=[DEU=Datum-Uhrzeit der Einsendung zur Genehmigung;
+                                                              ENU=Date-Time Sent for Approval] }
+    { 11  ;   ;Last Date-Time Modified;DateTime   ;CaptionML=[DEU=Datum-Uhrzeit der letzten énderung;
+                                                              ENU=Last Date-Time Modified] }
+    { 12  ;   ;Last Modified By ID ;Code20        ;CaptionML=[DEU=Zuletzt geÑndert von ID;
+                                                              ENU=Last Modified By ID] }
+    { 13  ;   ;Comment             ;Boolean       ;FieldClass=FlowField;
+                                                   CalcFormula=Exist("Approval Comment Line" WHERE (Table ID=FIELD(Table ID),
+                                                                                                    Document Type=FIELD(Document Type),
+                                                                                                    Document No.=FIELD(Document No.)));
+                                                   CaptionML=[DEU=Bemerkung;
+                                                              ENU=Comment];
+                                                   Editable=No }
+    { 14  ;   ;Due Date            ;Date          ;CaptionML=[DEU=FÑlligkeitsdatum;
+                                                              ENU=Due Date] }
+    { 15  ;   ;Amount              ;Decimal       ;CaptionML=[DEU=Betrag;
+                                                              ENU=Amount];
+                                                   AutoFormatType=1;
+                                                   AutoFormatExpr="Currency Code" }
+    { 16  ;   ;Amount (LCY)        ;Decimal       ;CaptionML=[DEU=Betrag (MW);
+                                                              ENU=Amount (LCY)];
+                                                   AutoFormatType=1 }
+    { 17  ;   ;Currency Code       ;Code10        ;TableRelation=Currency;
+                                                   CaptionML=[DEU=WÑhrungscode;
+                                                              ENU=Currency Code] }
+    { 18  ;   ;Approval Type       ;Option        ;CaptionML=[DEU=Genehmigungsart;
+                                                              ENU=Approval Type];
+                                                   OptionCaptionML=[DEU=" ,VerkÑufer/EinkÑufer,Genehmiger";
+                                                                    ENU=" ,Sales Pers./Purchaser,Approver"];
+                                                   OptionString=[ ,Sales Pers./Purchaser,Approver] }
+    { 19  ;   ;Limit Type          ;Option        ;CaptionML=[DEU=EinschrÑnkungsart;
+                                                              ENU=Limit Type];
+                                                   OptionCaptionML=[DEU=Genehmigungsgrenzwerte,Kreditlimits,Anforderungslimits,Keine EinschrÑnkungen;
+                                                                    ENU=Approval Limits,Credit Limits,Request Limits,No Limits];
+                                                   OptionString=Approval Limits,Credit Limits,Request Limits,No Limits }
+    { 20  ;   ;Available Credit Limit (LCY);Decimal;
+                                                   CaptionML=[DEU=VerfÅgbares Kreditlimit (MW);
+                                                              ENU=Available Credit Limit (LCY)] }
+  }
+  KEYS
+  {
+    {    ;Table ID,Document Type,Document No.,Sequence No.;
+                                                   Clustered=Yes }
+    {    ;Approver ID,Status                       }
+    {    ;Sender ID                                }
+  }
+  FIELDGROUPS
+  {
+  }
+  CODE
+  {
+
+    PROCEDURE ShowDocument@1();
+    VAR
+      SalesHeader@1001 : Record 36;
+      PurchHeader@1000 : Record 38;
+    BEGIN
+      CASE "Table ID" OF
+        DATABASE::"Sales Header":
+          BEGIN
+            IF NOT SalesHeader.GET("Document Type","Document No.") THEN
+              EXIT;
+            CASE "Document Type" OF
+              "Document Type"::Quote:
+                FORM.RUN(FORM::"Sales Quote",SalesHeader);
+              "Document Type"::Order:
+                FORM.RUN(FORM::"Sales Order",SalesHeader);
+              "Document Type"::Invoice:
+                FORM.RUN(FORM::"Sales Invoice",SalesHeader);
+              "Document Type"::"Credit Memo":
+                FORM.RUN(FORM::"Sales Credit Memo",SalesHeader);
+              "Document Type"::"Blanket Order":
+                FORM.RUN(FORM::"Blanket Sales Order",SalesHeader);
+              "Document Type"::"Return Order":
+                FORM.RUN(FORM::"Sales Return Order",SalesHeader);
+            END;
+          END;
+        DATABASE::"Purchase Header":
+          BEGIN
+            IF NOT PurchHeader.GET("Document Type","Document No.") THEN
+              EXIT;
+            CASE "Document Type" OF
+              "Document Type"::Quote:
+                FORM.RUN(FORM::"Purchase Quote",PurchHeader);
+              "Document Type"::Order:
+                FORM.RUN(FORM::"Purchase Order",PurchHeader);
+              "Document Type"::Invoice:
+                FORM.RUN(FORM::"Purchase Invoice",PurchHeader);
+              "Document Type"::"Credit Memo":
+                FORM.RUN(FORM::"Purchase Credit Memo",PurchHeader);
+              "Document Type"::"Blanket Order":
+                FORM.RUN(FORM::"Blanket Purchase Order",PurchHeader);
+              "Document Type"::"Return Order":
+                FORM.RUN(FORM::"Purchase Return Order",PurchHeader);
+            END;
+          END;
+        ELSE
+          EXIT;
+      END;
+    END;
+
+    BEGIN
+    END.
+  }
+}
+

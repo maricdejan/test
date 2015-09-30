@@ -1,0 +1,58 @@
+OBJECT Table 345 Setup Checklist Comment
+{
+  OBJECT-PROPERTIES
+  {
+    Date=05.11.08;
+    Time=12:00:00;
+    Version List=NAVW16.00;
+  }
+  PROPERTIES
+  {
+    CaptionML=[DEU=Einrichtungschecklistenbemerk.;
+               ENU=Setup Checklist Comment];
+    LookupFormID=Form532;
+    DrillDownFormID=Form532;
+  }
+  FIELDS
+  {
+    { 1   ;   ;Table Name          ;Text80        ;FieldClass=FlowField;
+                                                   CalcFormula=Lookup("Setup Checklist Line"."Table Name" WHERE (Table ID=FIELD(Table ID)));
+                                                   CaptionML=[DEU=Tabellenname;
+                                                              ENU=Table Name];
+                                                   Editable=No }
+    { 2   ;   ;Table ID            ;Integer       ;TableRelation="Setup Checklist Line";
+                                                   CaptionML=[DEU=Tabellen-ID;
+                                                              ENU=Table ID] }
+    { 3   ;   ;Line No.            ;Integer       ;CaptionML=[DEU=Zeilennr.;
+                                                              ENU=Line No.] }
+    { 4   ;   ;Date                ;Date          ;CaptionML=[DEU=Datum;
+                                                              ENU=Date] }
+    { 5   ;   ;Code                ;Code10        ;CaptionML=[DEU=Code;
+                                                              ENU=Code] }
+    { 6   ;   ;Comment             ;Text80        ;CaptionML=[DEU=Bemerkung;
+                                                              ENU=Comment] }
+  }
+  KEYS
+  {
+    {    ;Table ID,Line No.                       ;Clustered=Yes }
+  }
+  FIELDGROUPS
+  {
+  }
+  CODE
+  {
+
+    PROCEDURE SetUpNewLine@1();
+    VAR
+      CommentLine@1000 : Record 345;
+    BEGIN
+      CommentLine.SETRANGE("Table ID","Table ID");
+      IF NOT CommentLine.FIND('-') THEN
+        Date := WORKDATE;
+    END;
+
+    BEGIN
+    END.
+  }
+}
+

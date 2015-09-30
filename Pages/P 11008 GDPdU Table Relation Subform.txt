@@ -1,0 +1,51 @@
+OBJECT Page 11008 GDPdU Table Relation Subform
+{
+  OBJECT-PROPERTIES
+  {
+    Date=13.02.07;
+    Time=12:00:00;
+    Version List=NAVDACH5.00;
+  }
+  PROPERTIES
+  {
+    CaptionML=[DEU=" ";
+               ENU=" "];
+    SourceTable=Table11006;
+    DelayedInsert=Yes;
+    PopulateAllFields=Yes;
+    PageType=ListPart;
+  }
+  CONTROLS
+  {
+    { 1900000001;0;Container;
+                ContainerType=ContentArea }
+
+    { 1140000;1;Group     ;
+                GroupType=Repeater }
+
+    { 1140001;2;Field     ;
+                SourceExpr="From Field No.";
+                LookupFormID=GDPdU Field List }
+
+    { 1140003;2;Field     ;
+                Lookup=No;
+                DrillDown=No;
+                SourceExpr="From Field Name" }
+
+    { 1140005;2;Field     ;
+                SourceExpr="To Field No." }
+
+    { 1140007;2;Field     ;
+                Lookup=No;
+                DrillDown=No;
+                SourceExpr="To Field Name" }
+
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

@@ -1,0 +1,133 @@
+OBJECT Form 695 Confirm Financial Void
+{
+  OBJECT-PROPERTIES
+  {
+    Date=05.11.08;
+    Time=12:00:00;
+    Version List=NAVW16.00;
+  }
+  PROPERTIES
+  {
+    Width=7590;
+    Height=6050;
+    CaptionML=[DEU=Finanzielle Entwertung best„tigen;
+               ENU=Confirm Financial Void];
+    LookupMode=Yes;
+    OnOpenForm=BEGIN
+                 WITH CheckLedgerEntry DO BEGIN
+                   VoidDate := "Check Date";
+                   IF "Bal. Account Type" IN ["Bal. Account Type"::Vendor,"Bal. Account Type"::Customer] THEN
+                     VoidType := VoidType::"Unapply and void check"
+                   ELSE
+                     VoidType := VoidType::"Void check only";
+                 END;
+               END;
+
+  }
+  CONTROLS
+  {
+    { 14  ;OptionButton ;3630 ;1430 ;3740 ;440  ;CaptionML=[DEU=Ausgleich aufheben und Scheck entwerten;
+                                                            ENU=Unapply and void check];
+                                                 SourceExpr=VoidType;
+                                                 OptionValue=Unapply and void check }
+    { 15  ;Label        ;220  ;1430 ;3300 ;440  ;ParentControl=14;
+                                                 CaptionML=[DEU=Art der Entwertung;
+                                                            ENU=Type of Void] }
+    { 16  ;OptionButton ;3630 ;1980 ;3740 ;440  ;CaptionML=[DEU=Nur Scheck entwerten;
+                                                            ENU=Void check only];
+                                                 SourceExpr=VoidType;
+                                                 OptionValue=Void check only }
+    { 17  ;Frame        ;220  ;2530 ;7150 ;2530 ;ShowCaption=No }
+    { 4   ;TextBox      ;3740 ;2750 ;2750 ;440  ;Editable=No;
+                                                 Focusable=No;
+                                                 ParentControl=17;
+                                                 InFrame=Yes;
+                                                 CaptionML=[DEU=Bankkontonummer;
+                                                            ENU=Bank Account No.];
+                                                 SourceExpr=CheckLedgerEntry."Bank Account No." }
+    { 5   ;Label        ;330  ;2750 ;3300 ;440  ;ParentControl=4 }
+    { 6   ;TextBox      ;3740 ;3300 ;2750 ;440  ;Editable=No;
+                                                 Focusable=No;
+                                                 ParentControl=17;
+                                                 InFrame=Yes;
+                                                 CaptionML=[DEU=Schecknummer;
+                                                            ENU=Check No.];
+                                                 SourceExpr=CheckLedgerEntry."Check No." }
+    { 7   ;Label        ;330  ;3300 ;3300 ;440  ;ParentControl=6 }
+    { 8   ;TextBox      ;3740 ;3850 ;2750 ;440  ;Editable=No;
+                                                 Focusable=No;
+                                                 ParentControl=17;
+                                                 InFrame=Yes;
+                                                 SourceExpr=CheckLedgerEntry."Bal. Account No." }
+    { 9   ;TextBox      ;330  ;3850 ;3300 ;440  ;Editable=No;
+                                                 Focusable=No;
+                                                 ParentControl=8;
+                                                 BackTransparent=Yes;
+                                                 Border=No;
+                                                 BorderStyle=Normal;
+                                                 LeaderDots=Yes;
+                                                 SourceExpr=STRSUBSTNO(Text001,CheckLedgerEntry."Bal. Account Type") }
+    { 10  ;TextBox      ;3740 ;4400 ;2750 ;440  ;Editable=No;
+                                                 Focusable=No;
+                                                 ParentControl=17;
+                                                 InFrame=Yes;
+                                                 CaptionML=[DEU=Betrag;
+                                                            ENU=Amount];
+                                                 SourceExpr=CheckLedgerEntry.Amount }
+    { 11  ;Label        ;330  ;4400 ;3300 ;440  ;ParentControl=10 }
+    { 12  ;TextBox      ;3630 ;880  ;2750 ;440  ;CaptionML=[DEU=Entwertungsdatum;
+                                                            ENU=Void Date];
+                                                 SourceExpr=VoidDate;
+                                                 OnValidate=BEGIN
+                                                              IF VoidDate < CheckLedgerEntry."Check Date" THEN
+                                                                ERROR(Text000,CheckLedgerEntry.FIELDCAPTION("Check Date"));
+                                                            END;
+                                                             }
+    { 13  ;Label        ;220  ;880  ;3300 ;440  ;ParentControl=12 }
+    { 3   ;CommandButton;330  ;5280 ;2200 ;550  ;HorzGlue=Right;
+                                                 VertGlue=Bottom;
+                                                 PushAction=Yes;
+                                                 InvalidActionAppearance=Hide }
+    { 2   ;CommandButton;2750 ;5280 ;2200 ;550  ;HorzGlue=Right;
+                                                 VertGlue=Bottom;
+                                                 Cancel=Yes;
+                                                 PushAction=No;
+                                                 InvalidActionAppearance=Hide }
+    { 1   ;CommandButton;5170 ;5280 ;2200 ;550  ;HorzGlue=Right;
+                                                 VertGlue=Bottom;
+                                                 PushAction=FormHelp }
+    { 19  ;TextBox      ;220  ;330  ;7150 ;440  ;Editable=No;
+                                                 Focusable=No;
+                                                 Border=No;
+                                                 SourceExpr=Text002 }
+  }
+  CODE
+  {
+    VAR
+      CheckLedgerEntry@1002 : Record 272;
+      VoidDate@1001 : Date;
+      VoidType@1000 : 'Unapply and void check,Void check only';
+      Text000@1003 : TextConst 'DEU=Das Entwertungsdatum darf nicht vor dem ursprnglichen %1 liegen.;ENU=Void Date must not be before the original %1.';
+      Text001@1004 : TextConst 'DEU=%1 Nr.;ENU=%1 No.';
+      Text002@1005 : TextConst 'DEU=M”chten Sie diesen Scheck annullieren?;ENU=Do you want to void this check?';
+
+    PROCEDURE SetCheckLedgerEntry@1(VAR NewCheckLedgerEntry@1000 : Record 272);
+    BEGIN
+      CheckLedgerEntry := NewCheckLedgerEntry;
+    END;
+
+    PROCEDURE GetVoidDate@2() : Date;
+    BEGIN
+      EXIT(VoidDate);
+    END;
+
+    PROCEDURE GetVoidType@3() : Integer;
+    BEGIN
+      EXIT(VoidType);
+    END;
+
+    BEGIN
+    END.
+  }
+}
+

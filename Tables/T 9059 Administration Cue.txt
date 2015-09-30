@@ -1,0 +1,58 @@
+OBJECT Table 9059 Administration Cue
+{
+  OBJECT-PROPERTIES
+  {
+    Date=05.11.08;
+    Time=12:00:00;
+    Version List=NAVW16.00;
+  }
+  PROPERTIES
+  {
+    CaptionML=[DEU=Verwaltungsstapel;
+               ENU=Administration Cue];
+  }
+  FIELDS
+  {
+    { 1   ;   ;Primary Key         ;Code10        ;CaptionML=[DEU=PrimÑrschlÅssel;
+                                                              ENU=Primary Key] }
+    { 2   ;   ;Job Queue Entries - Today;Integer  ;FieldClass=FlowField;
+                                                   CalcFormula=Count("Job Queue Entry" WHERE (Earliest Start Date/Time=FIELD(Date Filter2),
+                                                                                              Expiration Date/Time=FIELD(Date Filter3)));
+                                                   CaptionML=[DEU=Projektwarteschlangenposten - Heute;
+                                                              ENU=Job Queue Entries - Today] }
+    { 3   ;   ;User Posting Period ;Integer       ;FieldClass=FlowField;
+                                                   CalcFormula=Count("User Setup" WHERE (Allow Posting To=FIELD(Date Filter)));
+                                                   CaptionML=[DEU=Benutzerbuchungszeitraum;
+                                                              ENU=User Posting Period] }
+    { 4   ;   ;No. Series Period   ;Integer       ;FieldClass=FlowField;
+                                                   CalcFormula=Count("No. Series Line" WHERE (Last Date Used=FIELD(Date Filter)));
+                                                   CaptionML=[DEU=Nummernserie Periode;
+                                                              ENU=No. Series Period] }
+    { 20  ;   ;Date Filter         ;Date          ;FieldClass=FlowFilter;
+                                                   CaptionML=[DEU=Datumsfilter;
+                                                              ENU=Date Filter];
+                                                   Editable=No }
+    { 21  ;   ;Date Filter2        ;DateTime      ;FieldClass=FlowFilter;
+                                                   CaptionML=[DEU=Datumsfilter2;
+                                                              ENU=Date Filter2];
+                                                   Editable=No }
+    { 22  ;   ;Date Filter3        ;DateTime      ;FieldClass=FlowFilter;
+                                                   CaptionML=[DEU=Datumsfilter3;
+                                                              ENU=Date Filter3];
+                                                   Editable=No }
+  }
+  KEYS
+  {
+    {    ;Primary Key                             ;Clustered=Yes }
+  }
+  FIELDGROUPS
+  {
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

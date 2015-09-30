@@ -1,0 +1,66 @@
+OBJECT Table 5500 Production Schedule Setup
+{
+  OBJECT-PROPERTIES
+  {
+    Date=05.11.08;
+    Time=12:00:00;
+    Version List=NAVW16.00;
+  }
+  PROPERTIES
+  {
+    OnModify=BEGIN
+               CheckDates;
+             END;
+
+    CaptionML=[DEU=Grafische Plantafel Einrichtung;
+               ENU=Production Schedule Setup];
+  }
+  FIELDS
+  {
+    { 1   ;   ;Primary Key         ;Code10        ;CaptionML=[DEU=Prim„rschlssel;
+                                                              ENU=Primary Key];
+                                                   Editable=No }
+    { 5   ;   ;Starting Date       ;DateFormula   ;OnValidate=BEGIN
+                                                                CheckDates;
+                                                              END;
+
+                                                   CaptionML=[DEU=Startdatum;
+                                                              ENU=Starting Date] }
+    { 6   ;   ;Ending Date         ;DateFormula   ;OnValidate=BEGIN
+                                                                CheckDates;
+                                                              END;
+
+                                                   CaptionML=[DEU=Enddatum;
+                                                              ENU=Ending Date] }
+    { 7   ;   ;Progress Calculation;Option        ;InitValue=Based on Time;
+                                                   CaptionML=[DEU=Statusberechnung;
+                                                              ENU=Progress Calculation];
+                                                   OptionCaptionML=[DEU=Auf Zeitbasis,Auf Mengenbasis;
+                                                                    ENU=Based on Time,Based on Quantity];
+                                                   OptionString=Based on Time,Based on Quantity }
+    { 10  ;   ;GanttXML            ;BLOB          ;CaptionML=[DEU=GanttXML;
+                                                              ENU=GanttXML] }
+  }
+  KEYS
+  {
+    {    ;Primary Key                             ;Clustered=Yes }
+  }
+  FIELDGROUPS
+  {
+  }
+  CODE
+  {
+    VAR
+      Text000@1000 : TextConst 'DEU=Das Startdatum muss vor dem Enddatum liegen.;ENU=Starting date should be before Ending date.';
+
+    PROCEDURE CheckDates@1();
+    BEGIN
+      IF (CALCDATE("Starting Date",WORKDATE) >= CALCDATE("Ending Date",WORKDATE)) THEN
+        ERROR(Text000);
+    END;
+
+    BEGIN
+    END.
+  }
+}
+

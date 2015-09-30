@@ -1,0 +1,790 @@
+OBJECT Form 21 Customer Card
+{
+  OBJECT-PROPERTIES
+  {
+    Date=11.12.10;
+    Time=12:00:00;
+    Version List=NAVW16.00.10,LIQEM6.00,NAVDACH5.00.01;
+  }
+  PROPERTIES
+  {
+    Width=16170;
+    Height=8030;
+    CaptionML=[DEU=Debitorenkarte;
+               ENU=Customer Card];
+    SourceTable=Table18;
+    UpdateOnActivate=Yes;
+    OnOpenForm=VAR
+                 MapMgt@1000 : Codeunit 802;
+               BEGIN
+                 ActivateFields;
+                 IF NOT MapMgt.TestSetup THEN
+                   CurrForm.MapPoint.VISIBLE(FALSE);
+               END;
+
+    OnFindRecord=VAR
+                   RecordFound@1000 : Boolean;
+                 BEGIN
+                   RecordFound := FIND(Which);
+                   IF NOT RecordFound AND (GETFILTER("No.") <> '') THEN BEGIN
+                   MESSAGE(Text003,GETFILTER("No."));
+                   SETRANGE("No.");
+                   RecordFound := FIND(Which);
+                   END;
+                   EXIT(RecordFound);
+                 END;
+
+    OnAfterGetRecord=BEGIN
+                       SETRANGE("No.");
+                     END;
+
+    OnAfterGetCurrRecord=BEGIN
+                           ActivateFields;
+                         END;
+
+  }
+  CONTROLS
+  {
+    { 1   ;TabControl   ;220  ;220  ;15730;6820 ;HorzGlue=Both;
+                                                 VertGlue=Both;
+                                                 PageNamesML=[DEU=Allgemein,Kommunikation,Fakturierung,Zahlung,Lieferung,Au·enhandel;
+                                                              ENU=General,Communication,Invoicing,Payments,Shipping,Foreign Trade] }
+    { 2   ;TextBox      ;3850 ;990  ;2750 ;440  ;ParentControl=1;
+                                                 InPage=0;
+                                                 SourceExpr="No.";
+                                                 OnAssistEdit=BEGIN
+                                                                IF AssistEdit(xRec) THEN
+                                                                  CurrForm.UPDATE;
+                                                              END;
+                                                               }
+    { 3   ;Label        ;440  ;990  ;3300 ;440  ;ParentControl=2;
+                                                 InPage=0 }
+    { 88  ;PictureBox   ;6710 ;990  ;440  ;440  ;Focusable=No;
+                                                 ParentControl=1;
+                                                 InPage=0;
+                                                 ShowCaption=No;
+                                                 Border=No;
+                                                 BitmapPos=Center;
+                                                 BitmapList=7,6;
+                                                 SourceExpr=Comment }
+    { 89  ;CommandButton;6710 ;990  ;440  ;440  ;ParentControl=1;
+                                                 InPage=0;
+                                                 ShowCaption=No;
+                                                 BackTransparent=Yes;
+                                                 PushAction=RunObject;
+                                                 ToolTipML=[DEU=Bemerkung;
+                                                            ENU=Comment];
+                                                 RunObject=Form 124;
+                                                 RunFormLinkType=OnUpdate;
+                                                 RunFormLink=Table Name=CONST(Customer),
+                                                             No.=FIELD(No.) }
+    { 4   ;TextBox      ;3850 ;1650 ;5500 ;440  ;ParentControl=1;
+                                                 InPage=0;
+                                                 SourceExpr=Name }
+    { 5   ;Label        ;440  ;1650 ;3300 ;440  ;ParentControl=4;
+                                                 InPage=0 }
+    { 6   ;TextBox      ;3850 ;2200 ;5500 ;440  ;ParentControl=1;
+                                                 InPage=0;
+                                                 SourceExpr=Address }
+    { 7   ;Label        ;440  ;2200 ;3300 ;440  ;ParentControl=6;
+                                                 InPage=0 }
+    { 8   ;TextBox      ;3850 ;2750 ;5500 ;440  ;ParentControl=1;
+                                                 InPage=0;
+                                                 SourceExpr="Address 2" }
+    { 9   ;Label        ;440  ;2750 ;3300 ;440  ;ParentControl=8;
+                                                 InPage=0 }
+    { 12  ;TextBox      ;3850 ;4510 ;2750 ;440  ;ParentControl=1;
+                                                 InPage=0;
+                                                 SourceExpr="Phone No." }
+    { 13  ;Label        ;440  ;4510 ;3300 ;440  ;ParentControl=12;
+                                                 InPage=0 }
+    { 16  ;TextBox      ;3850 ;5720 ;5500 ;440  ;ParentControl=1;
+                                                 InPage=0;
+                                                 SourceExpr=Contact;
+                                                 OnAfterValidate=BEGIN
+                                                                   ActivateFields;
+                                                                 END;
+                                                                  }
+    { 17  ;Label        ;440  ;5720 ;3300 ;440  ;ParentControl=16;
+                                                 InPage=0 }
+    { 18  ;TextBox      ;12980;990  ;2750 ;440  ;ParentControl=1;
+                                                 InPage=0;
+                                                 SourceExpr="Search Name" }
+    { 19  ;Label        ;9570 ;990  ;3300 ;440  ;ParentControl=18;
+                                                 InPage=0 }
+    { 22  ;TextBox      ;12980;2200 ;2750 ;440  ;ParentControl=1;
+                                                 InPage=0;
+                                                 SourceExpr="Credit Limit (LCY)" }
+    { 23  ;Label        ;9570 ;2200 ;3300 ;440  ;ParentControl=22;
+                                                 InPage=0 }
+    { 24  ;TextBox      ;12980;2860 ;2750 ;440  ;ParentControl=1;
+                                                 InPage=0;
+                                                 SourceExpr="Salesperson Code" }
+    { 25  ;Label        ;9570 ;2860 ;3300 ;440  ;ParentControl=24;
+                                                 InPage=0 }
+    { 28  ;TextBox      ;12980;5390 ;2750 ;440  ;ParentControl=1;
+                                                 InPage=0;
+                                                 SourceExpr="Last Date Modified" }
+    { 29  ;Label        ;9570 ;5390 ;3300 ;440  ;ParentControl=28;
+                                                 InPage=0 }
+    { 91  ;TextBox      ;3850 ;3850 ;2750 ;440  ;ParentControl=1;
+                                                 InPage=0;
+                                                 SourceExpr="Country/Region Code" }
+    { 92  ;Label        ;440  ;3850 ;3300 ;440  ;ParentControl=91 }
+    { 10  ;TextBox      ;6710 ;3300 ;2640 ;440  ;ParentControl=1;
+                                                 InPage=0;
+                                                 NextControl=91;
+                                                 SourceExpr=City }
+    { 90  ;TextBox      ;3850 ;3300 ;2750 ;440  ;ParentControl=1;
+                                                 InPage=0;
+                                                 NextControl=10;
+                                                 SourceExpr="Post Code" }
+    { 97  ;Label        ;440  ;3300 ;3300 ;440  ;ParentControl=90;
+                                                 CaptionML=[DEU=PLZ-Code/Ort;
+                                                            ENU=Post Code/City] }
+    { 20  ;TextBox      ;12980;1650 ;2750 ;440  ;ParentControl=1;
+                                                 InPage=0;
+                                                 SourceExpr="Balance (LCY)";
+                                                 OnDrillDown=VAR
+                                                               DtldCustLedgEntry@1001 : Record 379;
+                                                               CustLedgEntry@1002 : Record 21;
+                                                             BEGIN
+                                                               DtldCustLedgEntry.SETRANGE("Customer No.","No.");
+                                                               COPYFILTER("Global Dimension 1 Filter",DtldCustLedgEntry."Initial Entry Global Dim. 1");
+                                                               COPYFILTER("Global Dimension 2 Filter",DtldCustLedgEntry."Initial Entry Global Dim. 2");
+                                                               COPYFILTER("Currency Filter",DtldCustLedgEntry."Currency Code");
+                                                               CustLedgEntry.DrillDownOnEntries(DtldCustLedgEntry);
+                                                             END;
+                                                              }
+    { 21  ;Label        ;9570 ;1650 ;3300 ;440  ;ParentControl=20 }
+    { 64  ;TextBox      ;12980;3410 ;2750 ;440  ;ParentControl=1;
+                                                 InPage=0;
+                                                 SourceExpr="Responsibility Center" }
+    { 65  ;Label        ;9570 ;3410 ;3300 ;440  ;ParentControl=64 }
+    { 122 ;TextBox      ;3850 ;5170 ;2750 ;440  ;ParentControl=1;
+                                                 InPage=0;
+                                                 SourceExpr="Primary Contact No.";
+                                                 OnDeactivate=BEGIN
+                                                                ActivateFields;
+                                                              END;
+                                                               }
+    { 133 ;Label        ;440  ;5170 ;3300 ;440  ;ParentControl=122 }
+    { 93  ;TextBox      ;12980;4070 ;2750 ;440  ;ParentControl=1;
+                                                 InPage=0;
+                                                 SourceExpr="Service Zone Code" }
+    { 116 ;Label        ;9570 ;4070 ;3300 ;440  ;ParentControl=93 }
+    { 26  ;TextBox      ;12980;4730 ;2750 ;440  ;ParentControl=1;
+                                                 InPage=0;
+                                                 SourceExpr=Blocked }
+    { 27  ;Label        ;9570 ;4730 ;3300 ;440  ;ParentControl=26 }
+    { 150 ;CommandButton;6710 ;4510 ;440  ;440  ;ParentControl=1;
+                                                 InPage=0;
+                                                 ShowCaption=No;
+                                                 Bitmap=34;
+                                                 ToolTipML=[DEU=Telefonverbindung herstellen;
+                                                            ENU=Make Phone Call];
+                                                 OnPush=VAR
+                                                          TAPIManagement@1001 : Codeunit 5053;
+                                                        BEGIN
+                                                          TAPIManagement.DialContCustVendBank(DATABASE::Customer,"No.","Phone No.",'');
+                                                        END;
+                                                         }
+    { 164 ;CommandButton;6710 ;3850 ;440  ;440  ;Name=MapPoint;
+                                                 ParentControl=1;
+                                                 InPage=0;
+                                                 ShowCaption=No;
+                                                 Bitmap=53;
+                                                 ToolTipML=[DEU=Zuordnung anzeigen;
+                                                            ENU=Display Map];
+                                                 OnPush=BEGIN
+                                                          DisplayMap;
+                                                        END;
+                                                         }
+    { 103 ;TextBox      ;3850 ;990  ;2750 ;440  ;ParentControl=1;
+                                                 InPage=1;
+                                                 SourceExpr="Phone No." }
+    { 106 ;Label        ;440  ;990  ;3300 ;440  ;ParentControl=103 }
+    { 104 ;TextBox      ;3850 ;1540 ;2750 ;440  ;ParentControl=1;
+                                                 InPage=1;
+                                                 SourceExpr="Fax No." }
+    { 105 ;Label        ;440  ;1540 ;3300 ;440  ;ParentControl=104 }
+    { 107 ;TextBox      ;3850 ;2200 ;4950 ;440  ;ParentControl=1;
+                                                 InPage=1;
+                                                 SourceExpr="E-Mail" }
+    { 108 ;Label        ;440  ;2200 ;3300 ;440  ;ParentControl=107 }
+    { 109 ;TextBox      ;3850 ;2750 ;4950 ;440  ;ParentControl=1;
+                                                 InPage=1;
+                                                 SourceExpr="Home Page" }
+    { 110 ;Label        ;440  ;2750 ;3300 ;440  ;ParentControl=109 }
+    { 56  ;CommandButton;8910 ;2750 ;440  ;440  ;ParentControl=1;
+                                                 InPage=1;
+                                                 ShowCaption=No;
+                                                 Bitmap=20;
+                                                 ToolTipML=[DEU=Hyperlink;
+                                                            ENU=Hyperlink];
+                                                 OnPush=BEGIN
+                                                          TESTFIELD("Home Page");
+                                                          HYPERLINK("Home Page");
+                                                        END;
+                                                         }
+    { 57  ;CommandButton;8910 ;2200 ;440  ;440  ;ParentControl=1;
+                                                 InPage=1;
+                                                 ShowCaption=No;
+                                                 Bitmap=21;
+                                                 ToolTipML=[DEU=Neue Nachricht;
+                                                            ENU=New Mail Message];
+                                                 OnPush=VAR
+                                                          Mail@1001 : Codeunit 397;
+                                                        BEGIN
+                                                          Mail.MailContCustVendBank(DATABASE::Customer,"No.","E-Mail");
+                                                        END;
+                                                         }
+    { 1125;CommandButton;6710 ;990  ;440  ;440  ;ParentControl=1;
+                                                 InPage=1;
+                                                 ShowCaption=No;
+                                                 Bitmap=34;
+                                                 ToolTipML=[DEU=Telefonverbindung herstellen;
+                                                            ENU=Make Phone Call];
+                                                 OnPush=VAR
+                                                          TAPIManagement@1001 : Codeunit 5053;
+                                                        BEGIN
+                                                          TAPIManagement.DialContCustVendBank(DATABASE::Customer,"No.","Phone No.",'');
+                                                        END;
+                                                         }
+    { 154 ;TextBox      ;3850 ;3410 ;2750 ;440  ;ParentControl=1;
+                                                 InPage=1;
+                                                 SourceExpr="IC Partner Code";
+                                                 OnAfterValidate=BEGIN
+                                                                   CurrForm.UPDATE;
+                                                                 END;
+                                                                  }
+    { 155 ;Label        ;440  ;3410 ;3300 ;440  ;ParentControl=154 }
+    { 34  ;TextBox      ;3850 ;990  ;2750 ;440  ;ParentControl=1;
+                                                 InPage=2;
+                                                 SourceExpr="Bill-to Customer No." }
+    { 35  ;Label        ;440  ;990  ;3300 ;440  ;ParentControl=34 }
+    { 36  ;TextBox      ;3850 ;1540 ;1650 ;440  ;ParentControl=1;
+                                                 InPage=2;
+                                                 SourceExpr="Invoice Copies" }
+    { 37  ;Label        ;440  ;1540 ;3300 ;440  ;ParentControl=36 }
+    { 38  ;TextBox      ;12980;2200 ;2750 ;440  ;ParentControl=1;
+                                                 InPage=2;
+                                                 SourceExpr="Customer Posting Group" }
+    { 39  ;Label        ;9570 ;2200 ;3300 ;440  ;ParentControl=38 }
+    { 40  ;TextBox      ;12980;2860 ;2750 ;440  ;ParentControl=1;
+                                                 InPage=2;
+                                                 SourceExpr="Customer Price Group" }
+    { 41  ;Label        ;9570 ;2860 ;3300 ;440  ;ParentControl=40 }
+    { 42  ;TextBox      ;3850 ;2090 ;2750 ;440  ;ParentControl=1;
+                                                 InPage=2;
+                                                 SourceExpr="Invoice Disc. Code" }
+    { 43  ;Label        ;440  ;2090 ;3300 ;440  ;ParentControl=42 }
+    { 44  ;TextBox      ;12980;3520 ;2750 ;440  ;ParentControl=1;
+                                                 InPage=2;
+                                                 SourceExpr="Customer Disc. Group" }
+    { 45  ;Label        ;9570 ;3520 ;3300 ;440  ;ParentControl=44 }
+    { 46  ;CheckBox     ;12980;4070 ;440  ;440  ;ParentControl=1;
+                                                 InPage=2;
+                                                 ShowCaption=No;
+                                                 SourceExpr="Allow Line Disc." }
+    { 47  ;Label        ;9570 ;4070 ;3300 ;440  ;ParentControl=46 }
+    { 70  ;TextBox      ;12980;990  ;2750 ;440  ;ParentControl=1;
+                                                 InPage=2;
+                                                 SourceExpr="Gen. Bus. Posting Group" }
+    { 71  ;Label        ;9570 ;990  ;3300 ;440  ;ParentControl=70 }
+    { 58  ;TextBox      ;12980;1540 ;2750 ;440  ;ParentControl=1;
+                                                 InPage=2;
+                                                 SourceExpr="VAT Bus. Posting Group" }
+    { 59  ;Label        ;9570 ;1540 ;3300 ;440  ;ParentControl=58 }
+    { 129 ;CheckBox     ;12980;4730 ;440  ;440  ;ParentControl=1;
+                                                 InPage=2;
+                                                 ShowCaption=No;
+                                                 SourceExpr="Prices Including VAT" }
+    { 130 ;Label        ;9570 ;4730 ;3300 ;440  ;ParentControl=129 }
+    { 156 ;TextBox      ;3850 ;2750 ;2750 ;440  ;ParentControl=1;
+                                                 InPage=2;
+                                                 SourceExpr="Copy Sell-to Addr. to Qte From" }
+    { 157 ;Label        ;440  ;2750 ;3300 ;440  ;ParentControl=156 }
+    { 160 ;TextBox      ;12980;5390 ;1650 ;440  ;ParentControl=1;
+                                                 InPage=2;
+                                                 SourceExpr="Prepayment %" }
+    { 161 ;Label        ;9570 ;5390 ;3300 ;440  ;ParentControl=160 }
+    { 48  ;TextBox      ;3850 ;990  ;2750 ;440  ;ParentControl=1;
+                                                 InPage=3;
+                                                 SourceExpr="Application Method" }
+    { 49  ;Label        ;440  ;990  ;3300 ;440  ;ParentControl=48 }
+    { 50  ;TextBox      ;3850 ;1650 ;2750 ;440  ;ParentControl=1;
+                                                 InPage=3;
+                                                 SourceExpr="Payment Terms Code" }
+    { 51  ;Label        ;440  ;1650 ;3300 ;440  ;ParentControl=50 }
+    { 52  ;TextBox      ;3850 ;3410 ;2750 ;440  ;ParentControl=1;
+                                                 InPage=3;
+                                                 SourceExpr="Fin. Charge Terms Code" }
+    { 53  ;Label        ;440  ;3410 ;3300 ;440  ;ParentControl=52 }
+    { 54  ;CheckBox     ;12980;990  ;440  ;440  ;ParentControl=1;
+                                                 InPage=3;
+                                                 ShowCaption=No;
+                                                 SourceExpr="Print Statements" }
+    { 55  ;Label        ;9570 ;990  ;3300 ;440  ;ParentControl=54 }
+    { 60  ;TextBox      ;12980;1540 ;1650 ;440  ;ParentControl=1;
+                                                 InPage=3;
+                                                 SourceExpr="Last Statement No." }
+    { 61  ;Label        ;9570 ;1540 ;3300 ;440  ;ParentControl=60 }
+    { 15  ;TextBox      ;3850 ;2860 ;2750 ;440  ;ParentControl=1;
+                                                 InPage=3;
+                                                 SourceExpr="Reminder Terms Code" }
+    { 111 ;Label        ;440  ;2860 ;3300 ;440  ;ParentControl=15 }
+    { 11  ;TextBox      ;3850 ;2200 ;2750 ;440  ;ParentControl=1;
+                                                 InPage=3;
+                                                 SourceExpr="Payment Method Code" }
+    { 98  ;Label        ;440  ;2200 ;3300 ;440  ;ParentControl=11 }
+    { 143 ;CheckBox     ;12980;2200 ;440  ;440  ;ParentControl=1;
+                                                 InPage=3;
+                                                 ShowCaption=No;
+                                                 SourceExpr="Block Payment Tolerance";
+                                                 OnValidate=BEGIN
+                                                              IF "Block Payment Tolerance" THEN BEGIN
+                                                                IF CONFIRM(Text002,FALSE) THEN
+                                                                  PaymentToleranceMgt.DelTolCustLedgEntry(Rec);
+                                                              END ELSE BEGIN
+                                                                IF CONFIRM(Text001,FALSE) THEN
+                                                                  PaymentToleranceMgt.CalcTolCustLedgEntry(Rec);
+                                                              END;
+                                                            END;
+                                                             }
+    { 144 ;Label        ;9570 ;2200 ;3300 ;440  ;ParentControl=143 }
+    { 1461000;TextBox   ;3850 ;4070 ;2750 ;440  ;ParentControl=1;
+                                                 InPage=3;
+                                                 SourceExpr="Liq. Payment Terms Code" }
+    { 1461001;Label     ;440  ;4070 ;3300 ;440  ;ParentControl=1461000 }
+    { 123 ;TextBox      ;12980;990  ;2750 ;440  ;ParentControl=1;
+                                                 InPage=4;
+                                                 SourceExpr="Shipping Advice" }
+    { 124 ;Label        ;9570 ;990  ;3300 ;440  ;ParentControl=123 }
+    { 101 ;TextBox      ;12980;2090 ;2750 ;440  ;ParentControl=1;
+                                                 InPage=4;
+                                                 SourceExpr="Shipping Agent Code" }
+    { 102 ;Label        ;9570 ;2090 ;3300 ;440  ;ParentControl=101 }
+    { 30  ;TextBox      ;12980;1540 ;2750 ;440  ;ParentControl=1;
+                                                 InPage=4;
+                                                 SourceExpr="Shipment Method Code" }
+    { 31  ;Label        ;9570 ;1540 ;3300 ;440  ;ParentControl=30 }
+    { 95  ;TextBox      ;3850 ;990  ;2750 ;440  ;ParentControl=1;
+                                                 InPage=4;
+                                                 SourceExpr="Location Code" }
+    { 96  ;Label        ;440  ;990  ;3300 ;440  ;ParentControl=95 }
+    { 32  ;CheckBox     ;3850 ;1650 ;440  ;440  ;ParentControl=1;
+                                                 InPage=4;
+                                                 ShowCaption=No;
+                                                 SourceExpr="Combine Shipments" }
+    { 33  ;Label        ;440  ;1650 ;3300 ;440  ;ParentControl=32 }
+    { 158 ;TextBox      ;3850 ;2310 ;2750 ;440  ;ParentControl=1;
+                                                 InPage=4;
+                                                 SourceExpr=Reserve }
+    { 159 ;Label        ;440  ;2310 ;3300 ;440  ;ParentControl=158 }
+    { 119 ;TextBox      ;12980;3190 ;2750 ;440  ;ParentControl=1;
+                                                 InPage=4;
+                                                 SourceExpr="Shipping Time" }
+    { 120 ;Label        ;9570 ;3190 ;3300 ;440  ;ParentControl=119 }
+    { 131 ;TextBox      ;12980;2640 ;2750 ;440  ;ParentControl=1;
+                                                 InPage=4;
+                                                 SourceExpr="Shipping Agent Service Code" }
+    { 132 ;Label        ;9790 ;2640 ;3080 ;440  ;ParentControl=131 }
+    { 141 ;TextBox      ;12980;3740 ;2750 ;440  ;ParentControl=1;
+                                                 InPage=4;
+                                                 DrillDown=No;
+                                                 SourceExpr="Base Calendar Code" }
+    { 142 ;Label        ;9570 ;3740 ;3300 ;440  ;ParentControl=141 }
+    { 146 ;TextBox      ;12980;4290 ;1700 ;440  ;Name=Customized Calendar;
+                                                 Editable=No;
+                                                 ParentControl=1;
+                                                 InPage=4;
+                                                 CaptionML=[DEU=Spezifischer Kalender;
+                                                            ENU=Customized Calendar];
+                                                 SourceExpr=CalendarMgmt.CustomizedCalendarExistText(CustomizedCalendar."Source Type"::Customer,"No.",'',"Base Calendar Code");
+                                                 OnDrillDown=BEGIN
+                                                               CurrForm.SAVERECORD;
+                                                               TESTFIELD("Base Calendar Code");
+                                                               CalendarMgmt.ShowCustomizedCalendar(CustomizedCalEntry."Source Type"::Customer,"No.",'',"Base Calendar Code");
+                                                             END;
+                                                              }
+    { 145 ;Label        ;9790 ;4290 ;3080 ;440  ;ParentControl=146;
+                                                 InPage=4 }
+    { 66  ;TextBox      ;3850 ;1540 ;2750 ;440  ;ParentControl=1;
+                                                 InPage=5;
+                                                 SourceExpr="Language Code" }
+    { 62  ;Label        ;440  ;1540 ;3300 ;440  ;ParentControl=66 }
+    { 67  ;TextBox      ;3850 ;990  ;1650 ;440  ;ParentControl=1;
+                                                 InPage=5;
+                                                 SourceExpr="Currency Code" }
+    { 63  ;Label        ;440  ;990  ;3300 ;440  ;ParentControl=67 }
+    { 69  ;TextBox      ;12980;990  ;2750 ;440  ;ParentControl=1;
+                                                 InPage=5;
+                                                 SourceExpr="VAT Registration No." }
+    { 68  ;Label        ;9570 ;990  ;3300 ;440  ;ParentControl=69 }
+    { 72  ;CommandButton;1650 ;7260 ;2200 ;550  ;HorzGlue=Right;
+                                                 VertGlue=Bottom;
+                                                 Default=Yes;
+                                                 PushAction=LookupOK;
+                                                 InvalidActionAppearance=Hide }
+    { 73  ;CommandButton;4070 ;7260 ;2200 ;550  ;HorzGlue=Right;
+                                                 VertGlue=Bottom;
+                                                 Cancel=Yes;
+                                                 PushAction=LookupCancel;
+                                                 InvalidActionAppearance=Hide }
+    { 74  ;MenuButton   ;6490 ;7260 ;2200 ;550  ;HorzGlue=Right;
+                                                 VertGlue=Bottom;
+                                                 CaptionML=[DEU=D&ebitor;
+                                                            ENU=&Customer];
+                                                 Menu=MENUITEMS
+                                                 {
+                                                   { ID=75;
+                                                     PushAction=LookupTable;
+                                                     ShortCutKey=F5;
+                                                     CaptionML=[DEU=öbersicht;
+                                                                ENU=List] }
+                                                   { ID=80;
+                                                     PushAction=RunObject;
+                                                     ShortCutKey=Ctrl+F5;
+                                                     CaptionML=[DEU=&Posten;
+                                                                ENU=Ledger E&ntries];
+                                                     RunObject=Form 25;
+                                                     RunFormLinkType=OnUpdate;
+                                                     RunFormView=SORTING(Customer No.);
+                                                     RunFormLink=Customer No.=FIELD(No.) }
+                                                   { ID=134;
+                                                     CaptionML=[DEU=Verkaufs&historie;
+                                                                ENU=Sales &History] }
+                                                   { ID=135;
+                                                     MenuLevel=1;
+                                                     CaptionML=[DEU=Verwendet al&s Verkauf an Debitor;
+                                                                ENU=Used as &Sell-to Customer];
+                                                     OnPush=BEGIN
+                                                              SalesInfoPaneMgt.LookupCustHistory("No.",FALSE);
+                                                            END;
+                                                             }
+                                                   { ID=139;
+                                                     MenuLevel=1;
+                                                     CaptionML=[DEU=Verwendet als Rechnung an De&bitor;
+                                                                ENU=Used as &Bill-to Customer];
+                                                     OnPush=BEGIN
+                                                              SalesInfoPaneMgt.LookupCustHistory("No.",TRUE);
+                                                            END;
+                                                             }
+                                                   { ID=151;
+                                                     CaptionML=[DEU=Registrierte Belege;
+                                                                ENU=Issued Documents] }
+                                                   { ID=152;
+                                                     PushAction=RunObject;
+                                                     MenuLevel=1;
+                                                     CaptionML=[DEU=Registrierte &Mahnungen;
+                                                                ENU=Issued &Reminders];
+                                                     RunObject=Form 438;
+                                                     RunFormLinkType=OnUpdate;
+                                                     RunFormView=SORTING(Customer No.,Posting Date);
+                                                     RunFormLink=Customer No.=FIELD(No.) }
+                                                   { ID=153;
+                                                     PushAction=RunObject;
+                                                     MenuLevel=1;
+                                                     CaptionML=[DEU=Registrierte &Zinsrechnungen;
+                                                                ENU=Issued &Finance Charge Memos];
+                                                     RunObject=Form 450;
+                                                     RunFormLinkType=OnUpdate;
+                                                     RunFormView=SORTING(Customer No.,Posting Date);
+                                                     RunFormLink=Customer No.=FIELD(No.) }
+                                                   { ID=78;
+                                                     PushAction=RunObject;
+                                                     CaptionML=[DEU=Be&merkungen;
+                                                                ENU=Co&mments];
+                                                     RunObject=Form 124;
+                                                     RunFormLinkType=OnUpdate;
+                                                     RunFormLink=Table Name=CONST(Customer),
+                                                                 No.=FIELD(No.) }
+                                                   { ID=84;
+                                                     PushAction=RunObject;
+                                                     ShortCutKey=Shift+Ctrl+D;
+                                                     CaptionML=[DEU=Dimensionen;
+                                                                ENU=Dimensions];
+                                                     RunObject=Form 540;
+                                                     RunFormLinkType=OnUpdate;
+                                                     RunFormLink=Table ID=CONST(18),
+                                                                 No.=FIELD(No.) }
+                                                   { ID=99;
+                                                     PushAction=RunObject;
+                                                     CaptionML=[DEU=Bankk&onten;
+                                                                ENU=Bank Accounts];
+                                                     RunObject=Form 423;
+                                                     RunFormLinkType=OnUpdate;
+                                                     RunFormLink=Customer No.=FIELD(No.) }
+                                                   { ID=81;
+                                                     PushAction=RunObject;
+                                                     CaptionML=[DEU=&Lief. an Adressen;
+                                                                ENU=Ship-&to Addresses];
+                                                     RunObject=Form 300;
+                                                     RunFormLinkType=OnUpdate;
+                                                     RunFormLink=Customer No.=FIELD(No.) }
+                                                   { ID=14;
+                                                     CaptionML=[DEU=Ko&ntakt;
+                                                                ENU=C&ontact];
+                                                     OnPush=BEGIN
+                                                              ShowContact;
+                                                            END;
+                                                             }
+                                                   { ID=100;
+                                                     MenuItemType=Separator }
+                                                   { ID=76;
+                                                     PushAction=RunObject;
+                                                     ShortCutKey=F9;
+                                                     CaptionML=[DEU=Statistik;
+                                                                ENU=Statistics];
+                                                     RunObject=Form 151;
+                                                     RunFormLinkType=OnUpdate;
+                                                     RunFormLink=No.=FIELD(No.),
+                                                                 Date Filter=FIELD(Date Filter),
+                                                                 Global Dimension 1 Filter=FIELD(Global Dimension 1 Filter),
+                                                                 Global Dimension 2 Filter=FIELD(Global Dimension 2 Filter) }
+                                                   { ID=112;
+                                                     PushAction=RunObject;
+                                                     CaptionML=[DEU=Statistik nach &WÑhrungen;
+                                                                ENU=Statistics by C&urrencies];
+                                                     RunObject=Form 481;
+                                                     RunFormLinkType=OnUpdate;
+                                                     RunFormLink=No.=FIELD(No.),
+                                                                 Global Dimension 1 Filter=FIELD(Global Dimension 1 Filter),
+                                                                 Global Dimension 2 Filter=FIELD(Global Dimension 2 Filter),
+                                                                 Date Filter=FIELD(Date Filter) }
+                                                   { ID=77;
+                                                     PushAction=RunObject;
+                                                     CaptionML=[DEU=Buchungsstatistik;
+                                                                ENU=Entry Statistics];
+                                                     RunObject=Form 302;
+                                                     RunFormLinkType=OnUpdate;
+                                                     RunFormLink=No.=FIELD(No.),
+                                                                 Date Filter=FIELD(Date Filter),
+                                                                 Global Dimension 1 Filter=FIELD(Global Dimension 1 Filter),
+                                                                 Global Dimension 2 Filter=FIELD(Global Dimension 2 Filter) }
+                                                   { ID=79;
+                                                     PushAction=RunObject;
+                                                     CaptionML=[DEU=&Verkauf;
+                                                                ENU=S&ales];
+                                                     RunObject=Form 155;
+                                                     RunFormLinkType=OnUpdate;
+                                                     RunFormLink=No.=FIELD(No.),
+                                                                 Global Dimension 1 Filter=FIELD(Global Dimension 1 Filter),
+                                                                 Global Dimension 2 Filter=FIELD(Global Dimension 2 Filter) }
+                                                   { ID=115;
+                                                     MenuItemType=Separator;
+                                                     CaptionML=[DEU="";
+                                                                ENU=""] }
+                                                   { ID=94;
+                                                     PushAction=RunObject;
+                                                     CaptionML=[DEU=Re&ferenzen;
+                                                                ENU=Cross Re&ferences];
+                                                     RunObject=Form 5723;
+                                                     RunFormLinkType=OnUpdate;
+                                                     RunFormView=SORTING(Cross-Reference Type,Cross-Reference Type No.);
+                                                     RunFormLink=Cross-Reference Type=CONST(Customer),
+                                                                 Cross-Reference Type No.=FIELD(No.) }
+                                                   { ID=125;
+                                                     MenuItemType=Separator;
+                                                     CaptionML=[DEU="";
+                                                                ENU=""] }
+                                                   { ID=126;
+                                                     PushAction=RunObject;
+                                                     CaptionML=[DEU=S&ervicevertrÑge;
+                                                                ENU=Ser&vice Contracts];
+                                                     RunObject=Form 6065;
+                                                     RunFormLinkType=OnUpdate;
+                                                     RunFormView=SORTING(Customer No.,Ship-to Code);
+                                                     RunFormLink=Customer No.=FIELD(No.) }
+                                                   { ID=127;
+                                                     PushAction=RunObject;
+                                                     CaptionML=[DEU=Service&artikel;
+                                                                ENU=Service &Items];
+                                                     RunObject=Form 5988;
+                                                     RunFormLinkType=OnUpdate;
+                                                     RunFormView=SORTING(Customer No.,Ship-to Code,Item No.,Serial No.);
+                                                     RunFormLink=Customer No.=FIELD(No.) }
+                                                   { ID=138;
+                                                     MenuItemType=Separator }
+                                                   { ID=147;
+                                                     PushAction=RunObject;
+                                                     CaptionML=[DEU=Proje&kte;
+                                                                ENU=&Jobs];
+                                                     RunObject=Form 88;
+                                                     RunFormView=SORTING(Bill-to Customer No.);
+                                                     RunFormLink=Bill-to Customer No.=FIELD(No.) }
+                                                   { ID=117;
+                                                     MenuItemType=Separator }
+                                                   { ID=118;
+                                                     CaptionML=[DEU=Online Map;
+                                                                ENU=Online Map];
+                                                     OnPush=BEGIN
+                                                              DisplayMap;
+                                                            END;
+                                                             }
+                                                   { ID=140;
+                                                     MenuItemType=Separator }
+                                                   { ID=149;
+                                                     PushAction=RunObject;
+                                                     CaptionML=[DEU=K&reditkarten;
+                                                                ENU=C&redit Cards];
+                                                     RunObject=Form 827;
+                                                     RunFormLinkType=OnUpdate;
+                                                     RunFormLink=Customer No.=FIELD(No.) }
+                                                   { ID=165;
+                                                     PushAction=RunObject;
+                                                     CaptionML=[DEU=Transaktionspro&tokolleintrÑge fÅr Kreditkarten;
+                                                                ENU=Credit Cards Transaction Lo&g Entries];
+                                                     RunObject=Form 829;
+                                                     RunFormLinkType=OnUpdate;
+                                                     RunFormLink=Customer No.=FIELD(No.) }
+                                                 }
+                                                  }
+    { 82  ;MenuButton   ;8910 ;7260 ;2200 ;550  ;HorzGlue=Right;
+                                                 VertGlue=Bottom;
+                                                 CaptionML=[DEU=&Verkauf;
+                                                            ENU=S&ales];
+                                                 Menu=MENUITEMS
+                                                 {
+                                                   { ID=83;
+                                                     PushAction=RunObject;
+                                                     CaptionML=[DEU=&Rechnungsrabatte;
+                                                                ENU=Invoice &Discounts];
+                                                     RunObject=Form 23;
+                                                     RunFormLinkType=OnUpdate;
+                                                     RunFormLink=Code=FIELD(Invoice Disc. Code) }
+                                                   { ID=113;
+                                                     PushAction=RunObject;
+                                                     CaptionML=[DEU=Preise;
+                                                                ENU=Prices];
+                                                     RunObject=Form 7002;
+                                                     RunFormLinkType=OnUpdate;
+                                                     RunFormView=SORTING(Sales Type,Sales Code);
+                                                     RunFormLink=Sales Type=CONST(Customer),
+                                                                 Sales Code=FIELD(No.) }
+                                                   { ID=136;
+                                                     PushAction=RunObject;
+                                                     CaptionML=[DEU=Zeilenrabatte;
+                                                                ENU=Line Discounts];
+                                                     RunObject=Form 7004;
+                                                     RunFormLinkType=OnUpdate;
+                                                     RunFormView=SORTING(Sales Type,Sales Code);
+                                                     RunFormLink=Sales Type=CONST(Customer),
+                                                                 Sales Code=FIELD(No.) }
+                                                   { ID=162;
+                                                     PushAction=RunObject;
+                                                     CaptionML=[DEU=&VorauszahlungsprozentsÑtze;
+                                                                ENU=Prepa&yment Percentages];
+                                                     RunObject=Form 664;
+                                                     RunFormLinkType=OnUpdate;
+                                                     RunFormView=SORTING(Sales Type,Sales Code);
+                                                     RunFormLink=Sales Type=CONST(Customer),
+                                                                 Sales Code=FIELD(No.) }
+                                                   { ID=148;
+                                                     PushAction=RunObject;
+                                                     CaptionML=[DEU=S&td.-Debitorverkaufscodes;
+                                                                ENU=S&td. Cust. Sales Codes];
+                                                     RunObject=Form 173;
+                                                     RunFormLinkType=OnUpdate;
+                                                     RunFormLink=Customer No.=FIELD(No.) }
+                                                   { ID=137;
+                                                     MenuItemType=Separator }
+                                                   { ID=85;
+                                                     PushAction=RunObject;
+                                                     CaptionML=[DEU=Angebote;
+                                                                ENU=Quotes];
+                                                     RunObject=Form 41;
+                                                     RunFormLinkType=OnUpdate;
+                                                     RunFormView=SORTING(Document Type,Sell-to Customer No.,No.);
+                                                     RunFormLink=Sell-to Customer No.=FIELD(No.) }
+                                                   { ID=114;
+                                                     PushAction=RunObject;
+                                                     CaptionML=[DEU=Ra&hmenauftrÑge;
+                                                                ENU=Blanket Orders];
+                                                     RunObject=Form 507;
+                                                     RunFormLinkType=OnUpdate;
+                                                     RunFormView=SORTING(Document Type,Sell-to Customer No.);
+                                                     RunFormLink=Sell-to Customer No.=FIELD(No.) }
+                                                   { ID=86;
+                                                     PushAction=RunObject;
+                                                     CaptionML=[DEU=A&uftrÑge;
+                                                                ENU=Orders];
+                                                     RunObject=Form 42;
+                                                     RunFormLinkType=OnUpdate;
+                                                     RunFormView=SORTING(Document Type,Sell-to Customer No.,No.);
+                                                     RunFormLink=Sell-to Customer No.=FIELD(No.) }
+                                                   { ID=121;
+                                                     PushAction=RunObject;
+                                                     CaptionML=[DEU=Rekla&mationen;
+                                                                ENU=Return Orders];
+                                                     RunObject=Form 6630;
+                                                     RunFormLinkType=OnUpdate;
+                                                     RunFormView=SORTING(Document Type,Sell-to Customer No.,No.);
+                                                     RunFormLink=Sell-to Customer No.=FIELD(No.) }
+                                                   { ID=128;
+                                                     PushAction=RunObject;
+                                                     CaptionML=[DEU=ServiceauftrÑge;
+                                                                ENU=Service Orders];
+                                                     RunObject=Form 5900;
+                                                     RunFormLinkType=OnUpdate;
+                                                     RunFormView=SORTING(Document Type,Customer No.);
+                                                     RunFormLink=Customer No.=FIELD(No.) }
+                                                   { ID=6500;
+                                                     CaptionML=[DEU=Artikel&verfolgungsposten;
+                                                                ENU=Item &Tracking Entries];
+                                                     RunFormLinkType=OnUpdate;
+                                                     OnPush=VAR
+                                                              ItemTrackingMgt@1000 : Codeunit 6500;
+                                                            BEGIN
+                                                              ItemTrackingMgt.CallItemTrackingEntryForm(1,"No.",'','','','','');
+                                                            END;
+                                                             }
+                                                 }
+                                                  }
+    { 87  ;CommandButton;13750;7260 ;2200 ;550  ;HorzGlue=Right;
+                                                 VertGlue=Bottom;
+                                                 PushAction=FormHelp }
+    { 163 ;MenuButton   ;11330;7260 ;2200 ;550  ;HorzGlue=Right;
+                                                 VertGlue=Bottom;
+                                                 CaptionML=[DEU=F&unktionen;
+                                                            ENU=F&unctions];
+                                                 Menu=MENUITEMS
+                                                 {
+                                                   { ID=167;
+                                                     Ellipsis=Yes;
+                                                     CaptionML=[DEU=Vorlage anwenden;
+                                                                ENU=Apply Template];
+                                                     OnPush=VAR
+                                                              TemplateMgt@1000 : Codeunit 8612;
+                                                              RecRef@1001 : RecordRef;
+                                                            BEGIN
+                                                              RecRef.GETTABLE(Rec);
+                                                              TemplateMgt.UpdateFromTemplateSelection(RecRef);
+                                                            END;
+                                                             }
+                                                 }
+                                                  }
+  }
+  CODE
+  {
+    VAR
+      CustomizedCalEntry@1001 : Record 7603;
+      Text001@1003 : TextConst 'DEU=Mîchten Sie Zahlungstoleranzen fÅr momentan offene Posten zulassen?;ENU=Do you want to allow payment tolerance for entries that are currently open?';
+      CustomizedCalendar@1005 : Record 7602;
+      Text002@1006 : TextConst 'DEU=Mîchten Sie Zahlungstoleranzen fÅr momentan offene Posten lîschen?;ENU=Do you want to remove payment tolerance from entries that are currently open?';
+      CalendarMgmt@1002 : Codeunit 7600;
+      PaymentToleranceMgt@1000 : Codeunit 426;
+      SalesInfoPaneMgt@1004 : Codeunit 7171;
+      Text003@1102601000 : TextConst 'DEU=Der Debitor ''%1'' ist nicht vorhanden.;ENU=The customer %1 does not exist.';
+
+    PROCEDURE ActivateFields@3();
+    BEGIN
+      CurrForm.Contact.EDITABLE("Primary Contact No." = '');
+    END;
+
+    BEGIN
+    END.
+  }
+}
+

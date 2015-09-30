@@ -1,0 +1,96 @@
+OBJECT Table 7156 Item Analysis View Budg. Entry
+{
+  OBJECT-PROPERTIES
+  {
+    Date=05.11.08;
+    Time=12:00:00;
+    Version List=NAVW16.00;
+  }
+  PROPERTIES
+  {
+    CaptionML=[DEU=Artikelanalyseansichtsbudgetposten;
+               ENU=Item Analysis View Budg. Entry];
+    LookupFormID=Form7154;
+    DrillDownFormID=Form7154;
+  }
+  FIELDS
+  {
+    { 1   ;   ;Analysis Area       ;Option        ;CaptionML=[DEU=Analysebereich;
+                                                              ENU=Analysis Area];
+                                                   OptionCaptionML=[DEU=Verkauf,Einkauf;
+                                                                    ENU=Sales,Purchase];
+                                                   OptionString=Sales,Purchase }
+    { 2   ;   ;Analysis View Code  ;Code10        ;TableRelation="Item Analysis View".Code WHERE (Analysis Area=FIELD(Analysis Area),
+                                                                                                  Code=FIELD(Analysis View Code));
+                                                   CaptionML=[DEU=Analyseansichtscode;
+                                                              ENU=Analysis View Code];
+                                                   NotBlank=Yes }
+    { 3   ;   ;Budget Name         ;Code10        ;TableRelation="Item Budget Name".Name WHERE (Analysis Area=FIELD(Analysis Area));
+                                                   CaptionML=[DEU=Budgetname;
+                                                              ENU=Budget Name] }
+    { 4   ;   ;Item No.            ;Code20        ;TableRelation=Item;
+                                                   CaptionML=[DEU=Artikelnr.;
+                                                              ENU=Item No.] }
+    { 5   ;   ;Source Type         ;Option        ;CaptionML=[DEU=Herkunftsart;
+                                                              ENU=Source Type];
+                                                   OptionCaptionML=[DEU=" ,Debitor,Kreditor,Artikel";
+                                                                    ENU=" ,Customer,Vendor,Item"];
+                                                   OptionString=[ ,Customer,Vendor,Item] }
+    { 6   ;   ;Source No.          ;Code20        ;TableRelation=IF (Source Type=CONST(Customer)) Customer
+                                                                 ELSE IF (Source Type=CONST(Vendor)) Vendor
+                                                                 ELSE IF (Source Type=CONST(Item)) Item;
+                                                   CaptionML=[DEU=Herkunftsnr.;
+                                                              ENU=Source No.] }
+    { 8   ;   ;Location Code       ;Code10        ;TableRelation=Location;
+                                                   CaptionML=[DEU=Lagerortcode;
+                                                              ENU=Location Code] }
+    { 9   ;   ;Dimension 1 Value Code;Code20      ;CaptionML=[DEU=Dimensionswertcode 1;
+                                                              ENU=Dimension 1 Value Code];
+                                                   CaptionClass=GetCaptionClass(1) }
+    { 10  ;   ;Dimension 2 Value Code;Code20      ;CaptionML=[DEU=Dimensionswertcode 2;
+                                                              ENU=Dimension 2 Value Code];
+                                                   CaptionClass=GetCaptionClass(2) }
+    { 11  ;   ;Dimension 3 Value Code;Code20      ;CaptionML=[DEU=Dimensionswertcode 3;
+                                                              ENU=Dimension 3 Value Code];
+                                                   CaptionClass=GetCaptionClass(3) }
+    { 12  ;   ;Posting Date        ;Date          ;CaptionML=[DEU=Buchungsdatum;
+                                                              ENU=Posting Date] }
+    { 13  ;   ;Entry No.           ;Integer       ;CaptionML=[DEU=Lfd. Nr.;
+                                                              ENU=Entry No.] }
+    { 21  ;   ;Quantity            ;Decimal       ;CaptionML=[DEU=Menge;
+                                                              ENU=Quantity];
+                                                   DecimalPlaces=0:5 }
+    { 22  ;   ;Sales Amount        ;Decimal       ;CaptionML=[DEU=Verkaufsbetrag;
+                                                              ENU=Sales Amount];
+                                                   AutoFormatType=1 }
+    { 23  ;   ;Cost Amount         ;Decimal       ;CaptionML=[DEU=Einstandsbetrag;
+                                                              ENU=Cost Amount];
+                                                   AutoFormatType=1 }
+  }
+  KEYS
+  {
+    {    ;Analysis Area,Analysis View Code,Budget Name,Item No.,Source Type,Source No.,Dimension 1 Value Code,Dimension 2 Value Code,Dimension 3 Value Code,Location Code,Posting Date,Entry No.;
+                                                   SumIndexFields=Sales Amount,Cost Amount,Quantity;
+                                                   Clustered=Yes }
+  }
+  FIELDGROUPS
+  {
+  }
+  CODE
+  {
+
+    PROCEDURE GetCaptionClass@7(AnalysisViewDimType@1000 : Integer) : Text[250];
+    VAR
+      ItemAnalysisViewEntry@1001 : Record 7154;
+    BEGIN
+      ItemAnalysisViewEntry.INIT;
+      ItemAnalysisViewEntry."Analysis Area" := "Analysis Area";
+      ItemAnalysisViewEntry."Analysis View Code" := "Analysis View Code";
+      EXIT(ItemAnalysisViewEntry.GetCaptionClass(AnalysisViewDimType));
+    END;
+
+    BEGIN
+    END.
+  }
+}
+

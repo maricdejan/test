@@ -1,0 +1,204 @@
+OBJECT Form 5186 Interaction Template Setup
+{
+  OBJECT-PROPERTIES
+  {
+    Date=21.05.03;
+    Time=12:00:00;
+    Version List=NAVW13.70;
+  }
+  PROPERTIES
+  {
+    Width=15840;
+    Height=6490;
+    CaptionML=[DEU=AktivitÑtenvorlage Einrichtung;
+               ENU=Interaction Template Setup];
+    InsertAllowed=No;
+    DeleteAllowed=No;
+    SourceTable=Table5122;
+    OnOpenForm=BEGIN
+                 RESET;
+                 IF NOT GET THEN
+                   INSERT;
+               END;
+
+  }
+  CONTROLS
+  {
+    { 1   ;TabControl   ;220  ;220  ;15510;5280 ;HorzGlue=Both;
+                                                 VertGlue=Both;
+                                                 PageNamesML=[DEU=Allgemein,Verkauf,Einkauf,Service;
+                                                              ENU=General,Sales,Purchases,Service] }
+    { 2   ;TextBox      ;3850 ;990  ;2750 ;440  ;ParentControl=1;
+                                                 InPage=0;
+                                                 SourceExpr="E-Mails" }
+    { 3   ;Label        ;440  ;990  ;3300 ;440  ;ParentControl=2 }
+    { 4   ;TextBox      ;3850 ;1540 ;2750 ;440  ;ParentControl=1;
+                                                 InPage=0;
+                                                 SourceExpr="Cover Sheets" }
+    { 5   ;Label        ;440  ;1540 ;3300 ;440  ;ParentControl=4 }
+    { 6   ;TextBox      ;3850 ;2090 ;2750 ;440  ;ParentControl=1;
+                                                 InPage=0;
+                                                 CaptionML=[DEU=Ausgehende Telefonate;
+                                                            ENU=Outgoing Calls];
+                                                 SourceExpr="Outg. Calls" }
+    { 7   ;Label        ;440  ;2090 ;3300 ;440  ;ParentControl=6 }
+    { 41  ;TextBox      ;3850 ;2640 ;2750 ;440  ;ParentControl=1;
+                                                 InPage=0;
+                                                 SourceExpr="Meeting Invitation" }
+    { 42  ;Label        ;440  ;2640 ;3300 ;440  ;ParentControl=41 }
+    { 8   ;TextBox      ;3850 ;990  ;2750 ;440  ;ParentControl=1;
+                                                 InPage=1;
+                                                 CaptionML=[DEU=Rechnungen;
+                                                            ENU=Invoices];
+                                                 SourceExpr="Sales Invoices" }
+    { 9   ;Label        ;440  ;990  ;3300 ;440  ;ParentControl=8 }
+    { 10  ;TextBox      ;3850 ;1540 ;2750 ;440  ;ParentControl=1;
+                                                 InPage=1;
+                                                 CaptionML=[DEU=Gutschriften;
+                                                            ENU=Credit Memos];
+                                                 SourceExpr="Sales Cr. Memo" }
+    { 11  ;Label        ;440  ;1540 ;3300 ;440  ;ParentControl=10 }
+    { 12  ;TextBox      ;3850 ;2090 ;2750 ;440  ;ParentControl=1;
+                                                 InPage=1;
+                                                 CaptionML=[DEU=AuftragsbestÑtigungen;
+                                                            ENU=Order Confirmations];
+                                                 SourceExpr="Sales Ord. Cnfrmn." }
+    { 13  ;Label        ;440  ;2090 ;3300 ;440  ;ParentControl=12 }
+    { 14  ;TextBox      ;3850 ;2640 ;2750 ;440  ;ParentControl=1;
+                                                 InPage=1;
+                                                 CaptionML=[DEU=Angebote;
+                                                            ENU=Quotes];
+                                                 SourceExpr="Sales Quotes" }
+    { 15  ;Label        ;440  ;2640 ;3300 ;440  ;ParentControl=14 }
+    { 16  ;TextBox      ;3850 ;3190 ;2750 ;440  ;ParentControl=1;
+                                                 InPage=1;
+                                                 CaptionML=[DEU=RahmenauftrÑge;
+                                                            ENU=Blanket Orders];
+                                                 SourceExpr="Sales Blnkt. Ord" }
+    { 17  ;Label        ;440  ;3190 ;3300 ;440  ;ParentControl=16 }
+    { 18  ;TextBox      ;3850 ;3740 ;2750 ;440  ;ParentControl=1;
+                                                 InPage=1;
+                                                 CaptionML=[DEU=Lieferungen;
+                                                            ENU=Shipment Notes];
+                                                 SourceExpr="Sales Shpt. Note" }
+    { 19  ;Label        ;440  ;3740 ;3300 ;440  ;ParentControl=18 }
+    { 20  ;TextBox      ;3850 ;4290 ;2750 ;440  ;ParentControl=1;
+                                                 InPage=1;
+                                                 CaptionML=[DEU=KontoauszÅge;
+                                                            ENU=Statements];
+                                                 SourceExpr="Sales Statmnt" }
+    { 21  ;Label        ;440  ;4290 ;3300 ;440  ;ParentControl=20 }
+    { 22  ;TextBox      ;3850 ;4840 ;2750 ;440  ;ParentControl=1;
+                                                 InPage=1;
+                                                 CaptionML=[DEU=Mahnungen;
+                                                            ENU=Reminders];
+                                                 SourceExpr="Sales Rmdr." }
+    { 23  ;Label        ;440  ;4840 ;3300 ;440  ;ParentControl=22 }
+    { 53  ;TextBox      ;12760;990  ;2750 ;440  ;ParentControl=1;
+                                                 InPage=1;
+                                                 CaptionML=[DEU=Reklamationen;
+                                                            ENU=Return Orders];
+                                                 SourceExpr="Sales Return Order" }
+    { 54  ;Label        ;9350 ;990  ;3300 ;440  ;ParentControl=53 }
+    { 55  ;TextBox      ;12760;1540 ;2750 ;440  ;ParentControl=1;
+                                                 InPage=1;
+                                                 CaptionML=[DEU=RÅcksendungen;
+                                                            ENU=Return Receipts];
+                                                 SourceExpr="Sales Return Receipt" }
+    { 56  ;Label        ;9350 ;1540 ;3300 ;440  ;ParentControl=55 }
+    { 57  ;TextBox      ;12760;2090 ;2750 ;440  ;ParentControl=1;
+                                                 InPage=1;
+                                                 CaptionML=[DEU=Zinsrechnungen;
+                                                            ENU=Finance Charge Memos];
+                                                 SourceExpr="Sales Finance Charge Memo" }
+    { 58  ;Label        ;9350 ;2090 ;3300 ;440  ;ParentControl=57 }
+    { 24  ;TextBox      ;3850 ;990  ;2750 ;440  ;ParentControl=1;
+                                                 InPage=2;
+                                                 CaptionML=[DEU=Rechnungen;
+                                                            ENU=Invoices];
+                                                 SourceExpr="Purch Invoices" }
+    { 25  ;Label        ;440  ;990  ;3300 ;440  ;ParentControl=24 }
+    { 26  ;TextBox      ;3850 ;1540 ;2750 ;440  ;ParentControl=1;
+                                                 InPage=2;
+                                                 CaptionML=[DEU=Gutschriften;
+                                                            ENU=Credit Memos];
+                                                 SourceExpr="Purch Cr Memos" }
+    { 27  ;Label        ;440  ;1540 ;3300 ;440  ;ParentControl=26 }
+    { 28  ;TextBox      ;3850 ;2090 ;2750 ;440  ;ParentControl=1;
+                                                 InPage=2;
+                                                 CaptionML=[DEU=Bestellungen;
+                                                            ENU=Orders];
+                                                 SourceExpr="Purch. Orders" }
+    { 29  ;Label        ;440  ;2090 ;3300 ;440  ;ParentControl=28 }
+    { 30  ;TextBox      ;3850 ;2640 ;2750 ;440  ;ParentControl=1;
+                                                 InPage=2;
+                                                 CaptionML=[DEU=Anfragen;
+                                                            ENU=Quotes];
+                                                 SourceExpr="Purch. Quotes" }
+    { 31  ;Label        ;440  ;2640 ;3300 ;440  ;ParentControl=30 }
+    { 32  ;TextBox      ;3850 ;3190 ;2750 ;440  ;ParentControl=1;
+                                                 InPage=2;
+                                                 CaptionML=[DEU=Rahmenbestellungen;
+                                                            ENU=Blanket Orders];
+                                                 SourceExpr="Purch Blnkt Ord" }
+    { 33  ;Label        ;440  ;3190 ;3300 ;440  ;ParentControl=32 }
+    { 34  ;TextBox      ;3850 ;3740 ;2750 ;440  ;ParentControl=1;
+                                                 InPage=2;
+                                                 CaptionML=[DEU=Lieferungen;
+                                                            ENU=Receipts];
+                                                 SourceExpr="Purch. Rcpt." }
+    { 35  ;Label        ;440  ;3740 ;3300 ;440  ;ParentControl=34 }
+    { 49  ;TextBox      ;3850 ;4290 ;2750 ;440  ;ParentControl=1;
+                                                 InPage=2;
+                                                 CaptionML=[DEU=RÅcklieferungen;
+                                                            ENU=Return Shipments];
+                                                 SourceExpr="Purch. Return Shipment" }
+    { 50  ;Label        ;440  ;4290 ;3300 ;440  ;ParentControl=49 }
+    { 51  ;TextBox      ;3850 ;4840 ;2750 ;440  ;ParentControl=1;
+                                                 InPage=2;
+                                                 CaptionML=[DEU=ReklamationsbestÑtigungen;
+                                                            ENU=Return Order Confirmations];
+                                                 SourceExpr="Purch. Return Ord. Cnfrmn." }
+    { 52  ;Label        ;440  ;4840 ;3300 ;440  ;ParentControl=51 }
+    { 36  ;TextBox      ;3850 ;990  ;2750 ;440  ;ParentControl=1;
+                                                 InPage=3;
+                                                 CaptionML=[DEU=Serviceauftrag buchen;
+                                                            ENU=Service Order Post];
+                                                 SourceExpr="Serv Ord Post" }
+    { 37  ;Label        ;440  ;990  ;3300 ;440  ;ParentControl=36 }
+    { 38  ;TextBox      ;3850 ;1540 ;2750 ;440  ;ParentControl=1;
+                                                 InPage=3;
+                                                 CaptionML=[DEU=Serviceauftrag erstellen;
+                                                            ENU=Service Order Create];
+                                                 SourceExpr="Serv Ord Create" }
+    { 39  ;Label        ;440  ;1540 ;3300 ;440  ;ParentControl=38 }
+    { 43  ;TextBox      ;3850 ;2090 ;2750 ;440  ;ParentControl=1;
+                                                 InPage=3;
+                                                 CaptionML=[DEU=VertrÑge;
+                                                            ENU=Contracts];
+                                                 SourceExpr="Service Contract" }
+    { 44  ;Label        ;440  ;2090 ;3300 ;440  ;ParentControl=43 }
+    { 45  ;TextBox      ;3850 ;2640 ;2750 ;440  ;ParentControl=1;
+                                                 InPage=3;
+                                                 CaptionML=[DEU=Vertragsangebote;
+                                                            ENU=Contract Quotes];
+                                                 SourceExpr="Service Contract Quote" }
+    { 46  ;Label        ;440  ;2640 ;3300 ;440  ;ParentControl=45 }
+    { 47  ;TextBox      ;3850 ;3190 ;2750 ;440  ;ParentControl=1;
+                                                 InPage=3;
+                                                 CaptionML=[DEU=Angebote;
+                                                            ENU=Quotes];
+                                                 SourceExpr="Service Quote" }
+    { 48  ;Label        ;440  ;3190 ;3300 ;440  ;ParentControl=47 }
+    { 40  ;CommandButton;13420;5720 ;2200 ;550  ;HorzGlue=Right;
+                                                 VertGlue=Bottom;
+                                                 PushAction=FormHelp }
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

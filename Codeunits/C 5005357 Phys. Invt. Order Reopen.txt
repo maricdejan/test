@@ -1,0 +1,83 @@
+OBJECT Codeunit 5005357 Phys. Invt. Order Reopen
+{
+  OBJECT-PROPERTIES
+  {
+    Date=01.10.04;
+    Time=12:00:00;
+    Version List=NAVDACH4.00;
+  }
+  PROPERTIES
+  {
+    TableNo=5005350;
+    OnRun=BEGIN
+            PhysInvtOrderHeader.COPY(Rec);
+            Code;
+            Rec := PhysInvtOrderHeader;
+          END;
+
+  }
+  CODE
+  {
+    VAR
+      Text1140000@1140000 : TextConst 'DEU=Zeilen zur Bearb. ”ffnen     #2######;ENU=Reopening lines              #2######';
+      PhysInvtOrderHeader@1140001 : Record 5005350;
+      PhysInvtOrderLine@1140002 : Record 5005351;
+      PhysInvtRecordingHeader@1140003 : Record 5005352;
+      ReservEntry@1140004 : Record 337;
+      ItemTrackingMgt@1140005 : Codeunit 6500;
+      Window@1140006 : Dialog;
+      LineCount@1140007 : Integer;
+
+    PROCEDURE Code@1140000();
+    BEGIN
+      WITH PhysInvtOrderHeader DO BEGIN
+        TESTFIELD("No.");
+        TESTFIELD(Status, Status::Finished);
+
+        Window.OPEN(
+          '#1#################################\\' +
+          Text1140000);
+        Window.UPDATE(1,STRSUBSTNO('%1 %2',TABLECAPTION, "No."));
+
+        PhysInvtOrderHeader.LOCKTABLE;
+        PhysInvtOrderLine.LOCKTABLE;
+
+        LineCount := 0;
+        PhysInvtOrderLine.RESET;
+        PhysInvtOrderLine.SETRANGE("Document No.", "No.");
+        IF PhysInvtOrderLine.FIND('-') THEN REPEAT
+          IF NOT PhysInvtOrderLine.EmptyLine THEN BEGIN
+            LineCount := LineCount + 1;
+            Window.UPDATE(2, LineCount);
+
+            ReservEntry.RESET;
+            ReservEntry.SETCURRENTKEY(
+              "Source Type", "Source Subtype", "Source ID",
+              "Source Batch Name", "Source Prod. Order Line",
+              "Source Ref. No.");
+            ReservEntry.SETRANGE("Source Type", 5005351);
+            ReservEntry.SETRANGE("Source Subtype", 0);
+            ReservEntry.SETRANGE("Source ID", PhysInvtOrderLine."Document No.");
+            ReservEntry.SETRANGE("Source Batch Name", '');
+            ReservEntry.SETRANGE("Source Prod. Order Line", 0);
+            ReservEntry.SETRANGE("Source Ref. No.", PhysInvtOrderLine."Line No.");
+            ReservEntry.DELETEALL;
+
+            PhysInvtOrderLine."Pos. Qty. (Base)" := 0;
+            PhysInvtOrderLine."Neg. Qty. (Base)" := 0;
+            PhysInvtOrderLine."Quantity (Base)" := 0;
+            PhysInvtOrderLine."Entry Type" := PhysInvtOrderLine."Entry Type"::" ";
+            PhysInvtOrderLine.MODIFY;
+          END;
+        UNTIL PhysInvtOrderLine.NEXT = 0;
+
+        Status := Status::Open;
+        MODIFY;
+      END;
+    END;
+
+    BEGIN
+    END.
+  }
+}
+

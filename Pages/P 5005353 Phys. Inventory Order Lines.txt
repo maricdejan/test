@@ -1,0 +1,115 @@
+OBJECT Page 5005353 Phys. Inventory Order Lines
+{
+  OBJECT-PROPERTIES
+  {
+    Date=01.10.04;
+    Time=12:00:00;
+    Version List=NAVDACH4.00;
+  }
+  PROPERTIES
+  {
+    Editable=No;
+    CaptionML=[DEU=Inventurauftragszeilen;
+               ENU=Phys. Inventory Order Lines];
+    SourceTable=Table5005351;
+    PageType=List;
+    ActionList=ACTIONS
+    {
+      { 1900000003;0 ;ActionContainer;
+                      ActionContainerType=RelatedInformation }
+      { 1140044 ;1   ;ActionGroup;
+                      CaptionML=[DEU=&Zeile;
+                                 ENU=&Line] }
+      { 1140045 ;2   ;Action    ;
+                      ShortCutKey=Shift+F7;
+                      CaptionML=[DEU=&Karte;
+                                 ENU=Show &Card];
+                      RunObject=Page 5005350;
+                      RunFormView=SORTING(No.);
+                      RunFormLink=No.=FIELD(Document No.) }
+    }
+  }
+  CONTROLS
+  {
+    { 1900000001;0;Container;
+                ContainerType=ContentArea }
+
+    { 1140000;1;Group     ;
+                GroupType=Repeater }
+
+    { 1140001;2;Field     ;
+                SourceExpr="Document No." }
+
+    { 1140003;2;Field     ;
+                SourceExpr="Line No.";
+                Visible=FALSE }
+
+    { 1140005;2;Field     ;
+                SourceExpr="Item No." }
+
+    { 1140007;2;Field     ;
+                SourceExpr="Variant Code";
+                Visible=FALSE }
+
+    { 1140009;2;Field     ;
+                SourceExpr=Description }
+
+    { 1140011;2;Field     ;
+                SourceExpr="Description 2";
+                Visible=FALSE }
+
+    { 1140013;2;Field     ;
+                SourceExpr="Location Code" }
+
+    { 1140015;2;Field     ;
+                SourceExpr="Unit of Measure";
+                Visible=FALSE }
+
+    { 1140017;2;Field     ;
+                SourceExpr="Base Unit of Measure Code" }
+
+    { 1140019;2;Field     ;
+                SourceExpr="Qty. Expected (Base)" }
+
+    { 1140021;2;Field     ;
+                SourceExpr="Qty. Exp. Calculated" }
+
+    { 1140023;2;Field     ;
+                SourceExpr="Qty. Recorded (Base)" }
+
+    { 1140025;2;Field     ;
+                SourceExpr="In Recording Lines" }
+
+    { 1140027;2;Field     ;
+                SourceExpr="No. Finished Rec.-Lines" }
+
+    { 1140029;2;Field     ;
+                SourceExpr="Recorded without Order";
+                Visible=FALSE }
+
+    { 1140031;2;Field     ;
+                SourceExpr="Entry Type" }
+
+    { 1140033;2;Field     ;
+                SourceExpr="Quantity (Base)" }
+
+    { 1140035;2;Field     ;
+                SourceExpr="Unit Amount" }
+
+    { 1140037;2;Field     ;
+                SourceExpr="Unit Cost";
+                Visible=FALSE }
+
+    { 1140039;2;Field     ;
+                SourceExpr="Shelf/Bin No.";
+                Visible=FALSE }
+
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

@@ -1,0 +1,1401 @@
+OBJECT Report 5005353 Phys. Invt. Recording
+{
+  OBJECT-PROPERTIES
+  {
+    Date=05.11.08;
+    Time=12:00:00;
+    Version List=NAVDACH6.00;
+  }
+  PROPERTIES
+  {
+    CaptionML=[DEU=Inventurerfassung;
+               ENU=Phys. Invt. Recording];
+  }
+  DATAITEMS
+  {
+    { PROPERTIES
+      {
+        DataItemTable=Table5005352;
+        DataItemTableView=SORTING(Order No.,Recording No.);
+        NewPagePerRecord=Yes;
+        ReqFilterFields=Order No.,Recording No.;
+      }
+      SECTIONS
+      {
+      }
+       }
+    { PROPERTIES
+      {
+        DataItemIndent=1;
+        DataItemTable=Table2000000026;
+        DataItemTableView=SORTING(Number)
+                          WHERE(Number=CONST(1));
+        DataItemVarName=PageCounter;
+      }
+      SECTIONS
+      {
+        { PROPERTIES
+          {
+            SectionType=Header;
+            PrintOnEveryPage=Yes;
+            SectionWidth=18150;
+            SectionHeight=1269;
+          }
+          CONTROLS
+          {
+            { 6   ;TextBox      ;15900;846  ;2250 ;423  ;HorzAlign=Right;
+                                                         SourceExpr=USERID;
+                                                         DataSetFieldName=USERID }
+            { 3   ;TextBox      ;0    ;423  ;7500 ;423  ;SourceExpr=COMPANYNAME;
+                                                         DataSetFieldName=COMPANYNAME }
+            { 4   ;TextBox      ;17700;423  ;450  ;423  ;CaptionML=[DEU=Seite;
+                                                                    ENU=Page];
+                                                         SourceExpr=CurrReport.PAGENO;
+                                                         DataSetFieldName=CurrReport_PAGENO }
+            { 5   ;Label        ;16950;423  ;750  ;423  ;ParentControl=4;
+                                                         DataSetFieldName=CurrReport_PAGENOCaption }
+            { 1   ;Label        ;0    ;0    ;7500 ;423  ;FontSize=8;
+                                                         FontBold=Yes;
+                                                         CaptionML=[DEU=Inventur Erfassung;
+                                                                    ENU=Phys. Inventory Recording];
+                                                         DataSetFieldName=Phys__Inventory_RecordingCaption }
+            { 2   ;TextBox      ;15000;0    ;3150 ;423  ;HorzAlign=Right;
+                                                         SourceExpr=FORMAT(TODAY,0,4);
+                                                         DataSetFieldName=FORMAT_TODAY_0_4_ }
+          }
+           }
+        { PROPERTIES
+          {
+            SectionType=Body;
+            SectionWidth=18150;
+            SectionHeight=1692;
+            KeepWithNext=No;
+          }
+          CONTROLS
+          {
+            { 8   ;TextBox      ;3150 ;0    ;1500 ;423  ;HorzAlign=Left;
+                                                         SourceExpr="Phys. Invt. Recording Header"."Order No.";
+                                                         DataSetFieldName=Phys__Invt__Recording_Header___Order_No__ }
+            { 9   ;Label        ;0    ;0    ;3000 ;423  ;ParentControl=8;
+                                                         DataSetFieldName=Phys__Invt__Recording_Header___Order_No__Caption }
+            { 11  ;TextBox      ;11100;0    ;1200 ;423  ;HorzAlign=Left;
+                                                         SourceExpr="Phys. Invt. Recording Header".Status;
+                                                         DataSetFieldName=Phys__Invt__Recording_Header__Status }
+            { 12  ;Label        ;7950 ;0    ;3000 ;423  ;ParentControl=11;
+                                                         DataSetFieldName=Phys__Invt__Recording_Header__StatusCaption }
+            { 14  ;TextBox      ;11100;423  ;1500 ;423  ;HorzAlign=Left;
+                                                         SourceExpr="Phys. Invt. Recording Header"."Person Responsible";
+                                                         DataSetFieldName=Phys__Invt__Recording_Header___Person_Responsible_ }
+            { 15  ;Label        ;7950 ;423  ;3000 ;423  ;ParentControl=14;
+                                                         DataSetFieldName=Phys__Invt__Recording_Header___Person_Responsible_Caption }
+            { 7   ;TextBox      ;3150 ;423  ;1500 ;423  ;HorzAlign=Left;
+                                                         SourceExpr="Phys. Invt. Recording Header"."Recording No.";
+                                                         DataSetFieldName=Phys__Invt__Recording_Header___Recording_No__ }
+            { 17  ;Label        ;0    ;423  ;3000 ;423  ;ParentControl=7;
+                                                         DataSetFieldName=Phys__Invt__Recording_Header___Recording_No__Caption }
+            { 34  ;Label        ;0    ;846  ;3000 ;423  ;ParentControl=36;
+                                                         DataSetFieldName=Phys__Invt__Recording_Header__DescriptionCaption }
+            { 36  ;TextBox      ;3150 ;846  ;4350 ;423  ;HorzAlign=Left;
+                                                         SourceExpr="Phys. Invt. Recording Header".Description;
+                                                         DataSetFieldName=Phys__Invt__Recording_Header__Description }
+          }
+           }
+        { PROPERTIES
+          {
+            SectionType=Body;
+            SectionWidth=18150;
+            SectionHeight=1269;
+            KeepWithNext=No;
+          }
+          CONTROLS
+          {
+            { 21  ;TextBox      ;11100;0    ;1800 ;423  ;PadChar=_;
+                                                         SourceExpr='';
+                                                         DataSetFieldName=EmptyString }
+            { 30  ;TextBox      ;3150 ;0    ;1800 ;423  ;PadChar=_;
+                                                         SourceExpr='';
+                                                         DataSetFieldName=EmptyString_Control30 }
+            { 33  ;TextBox      ;3150 ;423  ;1800 ;423  ;PadChar=_;
+                                                         SourceExpr='';
+                                                         DataSetFieldName=EmptyString_Control33 }
+            { 35  ;TextBox      ;7950 ;0    ;3000 ;423  ;SourceExpr="Phys. Invt. Recording Header".FIELDCAPTION("Person Recorded");
+                                                         DataSetFieldName=Phys__Invt__Recording_Header__FIELDCAPTION__Person_Recorded__ }
+            { 31  ;TextBox      ;0    ;0    ;3000 ;423  ;SourceExpr="Phys. Invt. Recording Header".FIELDCAPTION("Date Recorded");
+                                                         DataSetFieldName=Phys__Invt__Recording_Header__FIELDCAPTION__Date_Recorded__ }
+            { 32  ;TextBox      ;0    ;423  ;3000 ;423  ;SourceExpr="Phys. Invt. Recording Header".FIELDCAPTION("Time Recorded");
+                                                         DataSetFieldName=Phys__Invt__Recording_Header__FIELDCAPTION__Time_Recorded__ }
+          }
+           }
+      }
+       }
+    { PROPERTIES
+      {
+        DataItemIndent=2;
+        DataItemTable=Table5005353;
+        DataItemTableView=SORTING(Order No.,Recording No.,Line No.);
+        DataItemLinkReference=Phys. Invt. Recording Header;
+        DataItemLink=Order No.=FIELD(Order No.),
+                     Recording No.=FIELD(Recording No.);
+      }
+      SECTIONS
+      {
+        { PROPERTIES
+          {
+            SectionType=Header;
+            SectionWidth=18150;
+            SectionHeight=1269;
+          }
+          CONTROLS
+          {
+            { 19  ;Label        ;0    ;0    ;1500 ;846  ;ParentControl=16;
+                                                         VertAlign=Bottom;
+                                                         FontBold=Yes;
+                                                         MultiLine=Yes;
+                                                         DataSetFieldName=Phys__Invt__Recording_Line__Item_No__Caption }
+            { 23  ;Label        ;3300 ;0    ;1500 ;846  ;ParentControl=22;
+                                                         VertAlign=Bottom;
+                                                         FontBold=Yes;
+                                                         MultiLine=Yes;
+                                                         DataSetFieldName=Phys__Invt__Recording_Line__Location_Code_Caption }
+            { 25  ;Label        ;4950 ;0    ;1500 ;846  ;ParentControl=24;
+                                                         VertAlign=Bottom;
+                                                         FontBold=Yes;
+                                                         MultiLine=Yes;
+                                                         DataSetFieldName=Phys__Invt__Recording_Line__Bin_Code_Caption }
+            { 27  ;Label        ;6600 ;0    ;3750 ;846  ;ParentControl=26;
+                                                         VertAlign=Bottom;
+                                                         FontBold=Yes;
+                                                         MultiLine=Yes;
+                                                         DataSetFieldName=Phys__Invt__Recording_Line_DescriptionCaption }
+            { 29  ;Label        ;10500;0    ;1500 ;846  ;ParentControl=28;
+                                                         VertAlign=Bottom;
+                                                         FontBold=Yes;
+                                                         MultiLine=Yes;
+                                                         DataSetFieldName=Phys__Invt__Recording_Line__Unit_of_Measure_Code_Caption }
+            { 13  ;Label        ;1650 ;0    ;1500 ;846  ;ParentControl=10;
+                                                         VertAlign=Bottom;
+                                                         FontBold=Yes;
+                                                         MultiLine=Yes;
+                                                         DataSetFieldName=Phys__Invt__Recording_Line__Variant_Code_Caption }
+            { 18  ;TextBox      ;12150;0    ;1800 ;846  ;HorzAlign=Right;
+                                                         VertAlign=Bottom;
+                                                         SourceExpr="Phys. Invt. Recording Line".FIELDCAPTION(Quantity);
+                                                         DataSetFieldName=Phys__Invt__Recording_Line__FIELDCAPTION_Quantity_ }
+          }
+           }
+        { PROPERTIES
+          {
+            SectionType=Body;
+            SectionWidth=18150;
+            SectionHeight=423;
+          }
+          CONTROLS
+          {
+            { 16  ;TextBox      ;0    ;0    ;1500 ;423  ;HorzAlign=Left;
+                                                         SourceExpr="Item No.";
+                                                         DataSetFieldName=Phys__Invt__Recording_Line__Item_No__ }
+            { 22  ;TextBox      ;3300 ;0    ;1500 ;423  ;HorzAlign=Left;
+                                                         SourceExpr="Location Code";
+                                                         DataSetFieldName=Phys__Invt__Recording_Line__Location_Code_ }
+            { 24  ;TextBox      ;4950 ;0    ;1500 ;423  ;HorzAlign=Left;
+                                                         SourceExpr="Bin Code";
+                                                         DataSetFieldName=Phys__Invt__Recording_Line__Bin_Code_ }
+            { 26  ;TextBox      ;6600 ;0    ;3750 ;423  ;SourceExpr=Description;
+                                                         DataSetFieldName=Phys__Invt__Recording_Line_Description }
+            { 28  ;TextBox      ;10500;0    ;1500 ;423  ;SourceExpr="Unit of Measure Code";
+                                                         DataSetFieldName=Phys__Invt__Recording_Line__Unit_of_Measure_Code_ }
+            { 10  ;TextBox      ;1650 ;0    ;1500 ;423  ;HorzAlign=Left;
+                                                         SourceExpr="Variant Code";
+                                                         DataSetFieldName=Phys__Invt__Recording_Line__Variant_Code_ }
+            { 20  ;TextBox      ;12150;0    ;1800 ;423  ;PadChar=_;
+                                                         SourceExpr='';
+                                                         DataSetFieldName=EmptyString_Control20 }
+          }
+           }
+      }
+       }
+  }
+  REQUESTFORM
+  {
+    PROPERTIES
+    {
+      Width=4180;
+      Height=440;
+      SaveValues=Yes;
+    }
+    CONTROLS
+    {
+    }
+  }
+  REQUESTPAGE
+  {
+    PROPERTIES
+    {
+      SaveValues=Yes;
+    }
+    CONTROLS
+    {
+    }
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+  RDLDATA
+  {
+    <?xml version="1.0" encoding="utf-8"?>
+<Report xmlns="http://schemas.microsoft.com/sqlserver/reporting/2005/01/reportdefinition" xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner">
+  <Body>
+    <Height>4.653cm</Height>
+    <ReportItems>
+      <Table Name="Table1">
+        <DataSetName>DataSet_Result</DataSetName>
+        <Details>
+          <TableRows>
+            <TableRow>
+              <Height>0.423cm</Height>
+              <TableCells>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="Phys__Invt__Recording_Line__Item_No__">
+                      <Style>
+                        <FontSize>7pt</FontSize>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>0.075cm</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <TextAlign>Left</TextAlign>
+                        <VerticalAlign>Middle</VerticalAlign>
+                      </Style>
+                      <Value>=Fields!Phys__Invt__Recording_Line__Item_No__.Value</Value>
+                      <ZIndex>9</ZIndex>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="Phys__Invt__Recording_Line__Variant_Code_">
+                      <Style>
+                        <FontSize>7pt</FontSize>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>0.075cm</PaddingLeft>
+                        <PaddingRight>0.075cm</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <TextAlign>Left</TextAlign>
+                        <VerticalAlign>Middle</VerticalAlign>
+                      </Style>
+                      <Value>=Fields!Phys__Invt__Recording_Line__Variant_Code_.Value</Value>
+                      <ZIndex>8</ZIndex>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="Phys__Invt__Recording_Line__Location_Code_">
+                      <Style>
+                        <FontSize>7pt</FontSize>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>0.075cm</PaddingLeft>
+                        <PaddingRight>0.075cm</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <TextAlign>Left</TextAlign>
+                        <VerticalAlign>Middle</VerticalAlign>
+                      </Style>
+                      <Value>=Fields!Phys__Invt__Recording_Line__Location_Code_.Value</Value>
+                      <ZIndex>7</ZIndex>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="Phys__Invt__Recording_Line__Bin_Code_">
+                      <Style>
+                        <FontSize>7pt</FontSize>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>0.075cm</PaddingLeft>
+                        <PaddingRight>0.075cm</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <TextAlign>Left</TextAlign>
+                        <VerticalAlign>Middle</VerticalAlign>
+                      </Style>
+                      <Value>=Fields!Phys__Invt__Recording_Line__Bin_Code_.Value</Value>
+                      <ZIndex>6</ZIndex>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ColSpan>2</ColSpan>
+                  <ReportItems>
+                    <Textbox Name="Phys__Invt__Recording_Line_Description">
+                      <Style>
+                        <FontSize>7pt</FontSize>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>0.075cm</PaddingLeft>
+                        <PaddingRight>0.075cm</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <VerticalAlign>Middle</VerticalAlign>
+                      </Style>
+                      <Value>=Fields!Phys__Invt__Recording_Line_Description.Value</Value>
+                      <ZIndex>5</ZIndex>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ColSpan>2</ColSpan>
+                  <ReportItems>
+                    <Textbox Name="Phys__Invt__Recording_Line__Unit_of_Measure_Code_">
+                      <Style>
+                        <FontSize>7pt</FontSize>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>0.075cm</PaddingLeft>
+                        <PaddingRight>0.075cm</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <VerticalAlign>Middle</VerticalAlign>
+                      </Style>
+                      <Value>=Fields!Phys__Invt__Recording_Line__Unit_of_Measure_Code_.Value</Value>
+                      <ZIndex>4</ZIndex>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ColSpan>2</ColSpan>
+                  <ReportItems>
+                    <Textbox Name="EmptyString_Control20">
+                      <Style>
+                        <BorderColor>
+                          <Bottom>Black</Bottom>
+                        </BorderColor>
+                        <BorderStyle>
+                          <Bottom>Solid</Bottom>
+                        </BorderStyle>
+                        <BorderWidth>
+                          <Bottom>0.25pt</Bottom>
+                        </BorderWidth>
+                        <FontSize>7pt</FontSize>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>0.075cm</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <VerticalAlign>Middle</VerticalAlign>
+                      </Style>
+                      <Value>=Fields!EmptyString_Control20.Value</Value>
+                      <ZIndex>3</ZIndex>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="COMPANYNAME">
+                      <Style>
+                        <Color>#ff0000</Color>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <VerticalAlign>Middle</VerticalAlign>
+                      </Style>
+                      <Value>=Fields!COMPANYNAME.Value</Value>
+                      <Visibility>
+                        <Hidden>true</Hidden>
+                      </Visibility>
+                      <ZIndex>2</ZIndex>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="CurrReport_PAGENOCaption">
+                      <Style>
+                        <Color>#ff0000</Color>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <VerticalAlign>Middle</VerticalAlign>
+                      </Style>
+                      <Value>=Fields!CurrReport_PAGENOCaption.Value</Value>
+                      <Visibility>
+                        <Hidden>true</Hidden>
+                      </Visibility>
+                      <ZIndex>1</ZIndex>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="Phys__Inventory_RecordingCaption">
+                      <Style>
+                        <Color>#ff0000</Color>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <VerticalAlign>Middle</VerticalAlign>
+                      </Style>
+                      <Value>=Fields!Phys__Inventory_RecordingCaption.Value</Value>
+                      <Visibility>
+                        <Hidden>true</Hidden>
+                      </Visibility>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+              </TableCells>
+            </TableRow>
+          </TableRows>
+        </Details>
+        <TableColumns>
+          <TableColumn>
+            <Width>1.65cm</Width>
+          </TableColumn>
+          <TableColumn>
+            <Width>1.65cm</Width>
+          </TableColumn>
+          <TableColumn>
+            <Width>1.65cm</Width>
+          </TableColumn>
+          <TableColumn>
+            <Width>1.65cm</Width>
+          </TableColumn>
+          <TableColumn>
+            <Width>1.2cm</Width>
+          </TableColumn>
+          <TableColumn>
+            <Width>2.7cm</Width>
+          </TableColumn>
+          <TableColumn>
+            <Width>0.65cm</Width>
+          </TableColumn>
+          <TableColumn>
+            <Width>1cm</Width>
+          </TableColumn>
+          <TableColumn>
+            <Width>0.65cm</Width>
+          </TableColumn>
+          <TableColumn>
+            <Width>1.15cm</Width>
+          </TableColumn>
+          <TableColumn>
+            <Width>0.2cm</Width>
+          </TableColumn>
+          <TableColumn>
+            <Width>0.2cm</Width>
+          </TableColumn>
+          <TableColumn>
+            <Width>0.2cm</Width>
+          </TableColumn>
+        </TableColumns>
+        <TableGroups>
+          <TableGroup>
+            <Grouping Name="Table1_Group">
+              <GroupExpressions>
+                <GroupExpression>=Fields!Phys__Invt__Recording_Header_Order_No_.Value</GroupExpression>
+                <GroupExpression>=Fields!Phys__Invt__Recording_Header_Recording_No_.Value</GroupExpression>
+              </GroupExpressions>
+              <PageBreakAtEnd>true</PageBreakAtEnd>
+            </Grouping>
+            <Header>
+              <TableRows>
+                <TableRow>
+                  <Height>0.423cm</Height>
+                  <TableCells>
+                    <TableCell>
+                      <ColSpan>2</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="textbox69">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <Value>=First(Fields!Phys__Invt__Recording_Header___Order_No__Caption.Value)</Value>
+                          <ZIndex>86</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ColSpan>2</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="textbox71">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <TextAlign>Left</TextAlign>
+                          </Style>
+                          <Value>=Fields!Phys__Invt__Recording_Header___Order_No__.Value</Value>
+                          <ZIndex>85</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ReportItems>
+                        <Textbox Name="textbox73">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <Value />
+                          <ZIndex>83</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ColSpan>2</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="textbox74">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <TextAlign>Left</TextAlign>
+                          </Style>
+                          <Value>=First(Fields!Phys__Invt__Recording_Header__StatusCaption.Value)</Value>
+                          <ZIndex>82</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ColSpan>3</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="textbox75">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <TextAlign>Left</TextAlign>
+                          </Style>
+                          <Value>=Fields!Phys__Invt__Recording_Header__Status.Value</Value>
+                          <ZIndex>81</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ColSpan>3</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="textbox76">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <Value />
+                          <ZIndex>80</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                  </TableCells>
+                </TableRow>
+                <TableRow>
+                  <Height>0.423cm</Height>
+                  <TableCells>
+                    <TableCell>
+                      <ColSpan>2</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="textbox79">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <Value>=First(Fields!Phys__Invt__Recording_Header___Recording_No__Caption.Value)</Value>
+                          <ZIndex>77</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ColSpan>3</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="textbox81">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <TextAlign>Left</TextAlign>
+                          </Style>
+                          <Value>=Fields!Phys__Invt__Recording_Header___Recording_No__.Value</Value>
+                          <ZIndex>76</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ColSpan>2</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="textbox84">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <TextAlign>Left</TextAlign>
+                          </Style>
+                          <Value>=First(Fields!Phys__Invt__Recording_Header___Person_Responsible_Caption.Value)</Value>
+                          <ZIndex>73</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ColSpan>3</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="textbox85">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <TextAlign>Left</TextAlign>
+                          </Style>
+                          <Value>=Fields!Phys__Invt__Recording_Header___Person_Responsible_.Value</Value>
+                          <ZIndex>72</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ColSpan>3</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="textbox86">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <Value />
+                          <ZIndex>71</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                  </TableCells>
+                </TableRow>
+                <TableRow>
+                  <Height>0.423cm</Height>
+                  <TableCells>
+                    <TableCell>
+                      <ColSpan>2</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="textbox89">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <Value>=First(Fields!Phys__Invt__Recording_Header__DescriptionCaption.Value)</Value>
+                          <ZIndex>68</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ColSpan>2</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="textbox91">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <TextAlign>Left</TextAlign>
+                          </Style>
+                          <Value>=Fields!Phys__Invt__Recording_Header__Description.Value</Value>
+                          <ZIndex>67</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ColSpan>9</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="textbox93">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <Value />
+                          <ZIndex>65</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                  </TableCells>
+                </TableRow>
+                <TableRow>
+                  <Height>0.423cm</Height>
+                  <TableCells>
+                    <TableCell>
+                      <ColSpan>13</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="textbox99">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <Value />
+                          <ZIndex>58</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                  </TableCells>
+                </TableRow>
+                <TableRow>
+                  <Height>0.423cm</Height>
+                  <TableCells>
+                    <TableCell>
+                      <ColSpan>2</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="textbox109">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <Value>=First(Fields!Phys__Invt__Recording_Header__FIELDCAPTION__Date_Recorded__.Value)</Value>
+                          <ZIndex>47</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ReportItems>
+                        <Textbox Name="textbox111">
+                          <Style>
+                            <BorderColor>
+                              <Bottom>Black</Bottom>
+                            </BorderColor>
+                            <BorderStyle>
+                              <Bottom>Solid</Bottom>
+                            </BorderStyle>
+                            <BorderWidth>
+                              <Bottom>0.25pt</Bottom>
+                            </BorderWidth>
+                            <FontSize>7pt</FontSize>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <Value />
+                          <ZIndex>46</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ColSpan>2</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="textbox112">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <Value />
+                          <ZIndex>45</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ColSpan>2</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="textbox114">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <Value>=First(Fields!Phys__Invt__Recording_Header__FIELDCAPTION__Person_Recorded__.Value)</Value>
+                          <ZIndex>43</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ColSpan>2</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="textbox115">
+                          <Style>
+                            <BorderColor>
+                              <Bottom>Black</Bottom>
+                            </BorderColor>
+                            <BorderStyle>
+                              <Bottom>Solid</Bottom>
+                            </BorderStyle>
+                            <BorderWidth>
+                              <Bottom>0.25pt</Bottom>
+                            </BorderWidth>
+                            <FontSize>7pt</FontSize>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <Value />
+                          <ZIndex>42</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ColSpan>4</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="textbox36">
+                          <CanGrow>true</CanGrow>
+                          <Style>
+                            <BorderColor>
+                              <Bottom>Black</Bottom>
+                            </BorderColor>
+                            <FontSize>7pt</FontSize>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <Value />
+                          <rd:DefaultName>textbox36</rd:DefaultName>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                  </TableCells>
+                </TableRow>
+                <TableRow>
+                  <Height>0.423cm</Height>
+                  <TableCells>
+                    <TableCell>
+                      <ColSpan>2</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="textbox119">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <Value>=First(Fields!Phys__Invt__Recording_Header__FIELDCAPTION__Time_Recorded__.Value)</Value>
+                          <ZIndex>38</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ReportItems>
+                        <Textbox Name="textbox121">
+                          <Style>
+                            <BorderColor>
+                              <Bottom>Black</Bottom>
+                              <Top>Black</Top>
+                            </BorderColor>
+                            <BorderStyle>
+                              <Bottom>Solid</Bottom>
+                            </BorderStyle>
+                            <BorderWidth>
+                              <Bottom>0.25pt</Bottom>
+                            </BorderWidth>
+                            <FontSize>7pt</FontSize>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <Value />
+                          <ZIndex>37</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ColSpan>10</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="textbox122">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                          </Style>
+                          <Value />
+                          <ZIndex>36</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                  </TableCells>
+                </TableRow>
+                <TableRow>
+                  <Height>0.423cm</Height>
+                  <TableCells>
+                    <TableCell>
+                      <ColSpan>13</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="textbox17">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <FontWeight>700</FontWeight>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>0.075cm</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <VerticalAlign>Bottom</VerticalAlign>
+                          </Style>
+                          <Value />
+                          <ZIndex>28</ZIndex>
+                          <rd:DefaultName>textbox17</rd:DefaultName>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                  </TableCells>
+                </TableRow>
+                <TableRow>
+                  <Height>0.846cm</Height>
+                  <TableCells>
+                    <TableCell>
+                      <ReportItems>
+                        <Textbox Name="Phys__Invt__Recording_Line__Item_No__Caption">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <FontWeight>700</FontWeight>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>0.075cm</PaddingRight>
+                            <VerticalAlign>Bottom</VerticalAlign>
+                          </Style>
+                          <Value>=First(Fields!Phys__Invt__Recording_Line__Item_No__Caption.Value)</Value>
+                          <ZIndex>17</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ReportItems>
+                        <Textbox Name="Phys__Invt__Recording_Line__Variant_Code_Caption">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <FontWeight>700</FontWeight>
+                            <PaddingLeft>0.075cm</PaddingLeft>
+                            <PaddingRight>0.075cm</PaddingRight>
+                            <VerticalAlign>Bottom</VerticalAlign>
+                          </Style>
+                          <Value>=First(Fields!Phys__Invt__Recording_Line__Variant_Code_Caption.Value)</Value>
+                          <ZIndex>16</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ReportItems>
+                        <Textbox Name="Phys__Invt__Recording_Line__Location_Code_Caption">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <FontWeight>700</FontWeight>
+                            <PaddingLeft>0.075cm</PaddingLeft>
+                            <PaddingRight>0.075cm</PaddingRight>
+                            <VerticalAlign>Bottom</VerticalAlign>
+                          </Style>
+                          <Value>=First(Fields!Phys__Invt__Recording_Line__Location_Code_Caption.Value)</Value>
+                          <ZIndex>15</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ReportItems>
+                        <Textbox Name="Phys__Invt__Recording_Line__Bin_Code_Caption">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <FontWeight>700</FontWeight>
+                            <PaddingLeft>0.075cm</PaddingLeft>
+                            <PaddingRight>0.075cm</PaddingRight>
+                            <VerticalAlign>Bottom</VerticalAlign>
+                          </Style>
+                          <Value>=First(Fields!Phys__Invt__Recording_Line__Bin_Code_Caption.Value)</Value>
+                          <ZIndex>14</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ColSpan>2</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="Phys__Invt__Recording_Line_DescriptionCaption">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <FontWeight>700</FontWeight>
+                            <PaddingLeft>0.075cm</PaddingLeft>
+                            <PaddingRight>0.075cm</PaddingRight>
+                            <VerticalAlign>Bottom</VerticalAlign>
+                          </Style>
+                          <Value>=First(Fields!Phys__Invt__Recording_Line_DescriptionCaption.Value)</Value>
+                          <ZIndex>13</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ColSpan>2</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="Phys__Invt__Recording_Line__Unit_of_Measure_Code_Caption">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <FontWeight>700</FontWeight>
+                            <PaddingLeft>0.075cm</PaddingLeft>
+                            <PaddingRight>0.075cm</PaddingRight>
+                            <VerticalAlign>Bottom</VerticalAlign>
+                          </Style>
+                          <Value>=First(Fields!Phys__Invt__Recording_Line__Unit_of_Measure_Code_Caption.Value)</Value>
+                          <ZIndex>12</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ColSpan>2</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="Phys__Invt__Recording_Line__FIELDCAPTION_Quantity_">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <FontWeight>700</FontWeight>
+                            <PaddingLeft>0.075cm</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <TextAlign>Right</TextAlign>
+                            <VerticalAlign>Bottom</VerticalAlign>
+                          </Style>
+                          <Value>=First(Fields!Phys__Invt__Recording_Line__FIELDCAPTION_Quantity_.Value)</Value>
+                          <ZIndex>11</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                    <TableCell>
+                      <ColSpan>3</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="TextBox1">
+                          <Style>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <VerticalAlign>Middle</VerticalAlign>
+                          </Style>
+                          <Value />
+                          <ZIndex>10</ZIndex>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                  </TableCells>
+                </TableRow>
+                <TableRow>
+                  <Height>0.423cm</Height>
+                  <TableCells>
+                    <TableCell>
+                      <ColSpan>13</ColSpan>
+                      <ReportItems>
+                        <Textbox Name="textbox2">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <FontWeight>700</FontWeight>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>0.075cm</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <VerticalAlign>Bottom</VerticalAlign>
+                          </Style>
+                          <Value />
+                          <rd:DefaultName>textbox2</rd:DefaultName>
+                        </Textbox>
+                      </ReportItems>
+                    </TableCell>
+                  </TableCells>
+                </TableRow>
+              </TableRows>
+            </Header>
+          </TableGroup>
+        </TableGroups>
+        <Width>14.55cm</Width>
+      </Table>
+    </ReportItems>
+  </Body>
+  <BottomMargin>2cm</BottomMargin>
+  <Code>Public Function BlankZero(ByVal Value As Decimal)
+    if Value = 0 then
+        Return ""
+    end if
+    Return Value
+End Function
+
+Public Function BlankPos(ByVal Value As Decimal)
+    if Value &gt; 0 then
+        Return ""
+    end if
+    Return Value
+End Function
+
+Public Function BlankZeroAndPos(ByVal Value As Decimal)
+    if Value &gt;= 0 then
+        Return ""
+    end if
+    Return Value
+End Function
+
+Public Function BlankNeg(ByVal Value As Decimal)
+    if Value &lt; 0 then
+        Return ""
+    end if
+    Return Value
+End Function
+
+Public Function BlankNegAndZero(ByVal Value As Decimal)
+    if Value &lt;= 0 then
+        Return ""
+    end if
+    Return Value
+End Function
+</Code>
+  <DataSets>
+    <DataSet Name="DataSet_Result">
+      <Query>
+        <CommandText />
+        <DataSourceName>DummyDataSource</DataSourceName>
+      </Query>
+      <Fields>
+        <Field Name="Phys__Invt__Recording_Header_Order_No_">
+          <DataField>Phys__Invt__Recording_Header_Order_No_</DataField>
+        </Field>
+        <Field Name="Phys__Invt__Recording_Header_Recording_No_">
+          <DataField>Phys__Invt__Recording_Header_Recording_No_</DataField>
+        </Field>
+        <Field Name="USERID">
+          <DataField>USERID</DataField>
+        </Field>
+        <Field Name="COMPANYNAME">
+          <DataField>COMPANYNAME</DataField>
+        </Field>
+        <Field Name="CurrReport_PAGENO">
+          <DataField>CurrReport_PAGENO</DataField>
+        </Field>
+        <Field Name="CurrReport_PAGENOCaption">
+          <DataField>CurrReport_PAGENOCaption</DataField>
+        </Field>
+        <Field Name="Phys__Inventory_RecordingCaption">
+          <DataField>Phys__Inventory_RecordingCaption</DataField>
+        </Field>
+        <Field Name="FORMAT_TODAY_0_4_">
+          <DataField>FORMAT_TODAY_0_4_</DataField>
+        </Field>
+        <Field Name="Phys__Invt__Recording_Header___Order_No__">
+          <DataField>Phys__Invt__Recording_Header___Order_No__</DataField>
+        </Field>
+        <Field Name="Phys__Invt__Recording_Header___Order_No__Caption">
+          <DataField>Phys__Invt__Recording_Header___Order_No__Caption</DataField>
+        </Field>
+        <Field Name="Phys__Invt__Recording_Header__Status">
+          <DataField>Phys__Invt__Recording_Header__Status</DataField>
+        </Field>
+        <Field Name="Phys__Invt__Recording_Header__StatusCaption">
+          <DataField>Phys__Invt__Recording_Header__StatusCaption</DataField>
+        </Field>
+        <Field Name="Phys__Invt__Recording_Header___Person_Responsible_">
+          <DataField>Phys__Invt__Recording_Header___Person_Responsible_</DataField>
+        </Field>
+        <Field Name="Phys__Invt__Recording_Header___Person_Responsible_Caption">
+          <DataField>Phys__Invt__Recording_Header___Person_Responsible_Caption</DataField>
+        </Field>
+        <Field Name="Phys__Invt__Recording_Header___Recording_No__">
+          <DataField>Phys__Invt__Recording_Header___Recording_No__</DataField>
+        </Field>
+        <Field Name="Phys__Invt__Recording_Header___Recording_No__Caption">
+          <DataField>Phys__Invt__Recording_Header___Recording_No__Caption</DataField>
+        </Field>
+        <Field Name="Phys__Invt__Recording_Header__DescriptionCaption">
+          <DataField>Phys__Invt__Recording_Header__DescriptionCaption</DataField>
+        </Field>
+        <Field Name="Phys__Invt__Recording_Header__Description">
+          <DataField>Phys__Invt__Recording_Header__Description</DataField>
+        </Field>
+        <Field Name="EmptyString">
+          <DataField>EmptyString</DataField>
+        </Field>
+        <Field Name="Phys__Invt__Recording_Header__FIELDCAPTION__Person_Recorded__">
+          <DataField>Phys__Invt__Recording_Header__FIELDCAPTION__Person_Recorded__</DataField>
+        </Field>
+        <Field Name="Phys__Invt__Recording_Header__FIELDCAPTION__Date_Recorded__">
+          <DataField>Phys__Invt__Recording_Header__FIELDCAPTION__Date_Recorded__</DataField>
+        </Field>
+        <Field Name="Phys__Invt__Recording_Header__FIELDCAPTION__Time_Recorded__">
+          <DataField>Phys__Invt__Recording_Header__FIELDCAPTION__Time_Recorded__</DataField>
+        </Field>
+        <Field Name="Phys__Invt__Recording_Line__Item_No__Caption">
+          <DataField>Phys__Invt__Recording_Line__Item_No__Caption</DataField>
+        </Field>
+        <Field Name="Phys__Invt__Recording_Line__Location_Code_Caption">
+          <DataField>Phys__Invt__Recording_Line__Location_Code_Caption</DataField>
+        </Field>
+        <Field Name="Phys__Invt__Recording_Line__Bin_Code_Caption">
+          <DataField>Phys__Invt__Recording_Line__Bin_Code_Caption</DataField>
+        </Field>
+        <Field Name="Phys__Invt__Recording_Line_DescriptionCaption">
+          <DataField>Phys__Invt__Recording_Line_DescriptionCaption</DataField>
+        </Field>
+        <Field Name="Phys__Invt__Recording_Line__Unit_of_Measure_Code_Caption">
+          <DataField>Phys__Invt__Recording_Line__Unit_of_Measure_Code_Caption</DataField>
+        </Field>
+        <Field Name="Phys__Invt__Recording_Line__Variant_Code_Caption">
+          <DataField>Phys__Invt__Recording_Line__Variant_Code_Caption</DataField>
+        </Field>
+        <Field Name="Phys__Invt__Recording_Line__FIELDCAPTION_Quantity_">
+          <DataField>Phys__Invt__Recording_Line__FIELDCAPTION_Quantity_</DataField>
+        </Field>
+        <Field Name="Phys__Invt__Recording_Line__Item_No__">
+          <DataField>Phys__Invt__Recording_Line__Item_No__</DataField>
+        </Field>
+        <Field Name="Phys__Invt__Recording_Line__Location_Code_">
+          <DataField>Phys__Invt__Recording_Line__Location_Code_</DataField>
+        </Field>
+        <Field Name="Phys__Invt__Recording_Line__Bin_Code_">
+          <DataField>Phys__Invt__Recording_Line__Bin_Code_</DataField>
+        </Field>
+        <Field Name="Phys__Invt__Recording_Line_Description">
+          <DataField>Phys__Invt__Recording_Line_Description</DataField>
+        </Field>
+        <Field Name="Phys__Invt__Recording_Line__Unit_of_Measure_Code_">
+          <DataField>Phys__Invt__Recording_Line__Unit_of_Measure_Code_</DataField>
+        </Field>
+        <Field Name="Phys__Invt__Recording_Line__Variant_Code_">
+          <DataField>Phys__Invt__Recording_Line__Variant_Code_</DataField>
+        </Field>
+        <Field Name="EmptyString_Control20">
+          <DataField>EmptyString_Control20</DataField>
+        </Field>
+        <Field Name="Phys__Invt__Recording_Line_Order_No_">
+          <DataField>Phys__Invt__Recording_Line_Order_No_</DataField>
+        </Field>
+        <Field Name="Phys__Invt__Recording_Line_Recording_No_">
+          <DataField>Phys__Invt__Recording_Line_Recording_No_</DataField>
+        </Field>
+        <Field Name="Phys__Invt__Recording_Line_Line_No_">
+          <DataField>Phys__Invt__Recording_Line_Line_No_</DataField>
+        </Field>
+      </Fields>
+      <rd:DataSetInfo>
+        <rd:DataSetName>DataSet</rd:DataSetName>
+        <rd:TableName>Result</rd:TableName>
+      </rd:DataSetInfo>
+    </DataSet>
+  </DataSets>
+  <DataSources>
+    <DataSource Name="DummyDataSource">
+      <ConnectionProperties>
+        <ConnectString />
+        <DataProvider>SQL</DataProvider>
+      </ConnectionProperties>
+      <rd:DataSourceID>14ba0856-40dd-475e-879b-2194e3314749</rd:DataSourceID>
+    </DataSource>
+  </DataSources>
+  <InteractiveHeight>11in</InteractiveHeight>
+  <InteractiveWidth>8.5in</InteractiveWidth>
+  <Language>=User!Language</Language>
+  <LeftMargin>1.5cm</LeftMargin>
+  <PageHeader>
+    <Height>1.26984cm</Height>
+    <PrintOnFirstPage>true</PrintOnFirstPage>
+    <PrintOnLastPage>true</PrintOnLastPage>
+    <ReportItems>
+      <Textbox Name="PageNumberTextBox">
+        <Height>0.423cm</Height>
+        <Left>17.7cm</Left>
+        <Style>
+          <FontSize>7pt</FontSize>
+          <TextAlign>Right</TextAlign>
+          <VerticalAlign>Middle</VerticalAlign>
+        </Style>
+        <Top>0.423cm</Top>
+        <Value>=Globals!PageNumber</Value>
+        <ZIndex>5</ZIndex>
+      </Textbox>
+      <Textbox Name="UserIdTextBox">
+        <Left>14.9cm</Left>
+        <Style>
+          <FontSize>7pt</FontSize>
+          <TextAlign>Right</TextAlign>
+          <VerticalAlign>Middle</VerticalAlign>
+        </Style>
+        <Top>0.846cm</Top>
+        <Value>=User!UserID</Value>
+        <ZIndex>4</ZIndex>
+      </Textbox>
+      <Textbox Name="ExecutionTimeTextBox">
+        <Height>0.423cm</Height>
+        <Left>15cm</Left>
+        <Style>
+          <FontSize>7pt</FontSize>
+          <Format>g</Format>
+          <TextAlign>Right</TextAlign>
+          <VerticalAlign>Middle</VerticalAlign>
+        </Style>
+        <Value>=Globals!ExecutionTime</Value>
+        <ZIndex>3</ZIndex>
+      </Textbox>
+      <Textbox Name="COMPANYNAME1">
+        <Height>0.423cm</Height>
+        <Style>
+          <FontSize>7pt</FontSize>
+          <VerticalAlign>Middle</VerticalAlign>
+        </Style>
+        <Top>0.423cm</Top>
+        <Value>=ReportItems!COMPANYNAME.Value</Value>
+        <Width>7.5cm</Width>
+        <ZIndex>2</ZIndex>
+      </Textbox>
+      <Textbox Name="CurrReport_PAGENOCaption1">
+        <Height>0.423cm</Height>
+        <Left>16.95cm</Left>
+        <Style>
+          <FontSize>7pt</FontSize>
+          <VerticalAlign>Middle</VerticalAlign>
+        </Style>
+        <Top>0.423cm</Top>
+        <Value>=ReportItems!CurrReport_PAGENOCaption.Value</Value>
+        <Width>0.75cm</Width>
+        <ZIndex>1</ZIndex>
+      </Textbox>
+      <Textbox Name="Phys__Inventory_RecordingCaption1">
+        <Height>0.423cm</Height>
+        <Style>
+          <FontSize>8pt</FontSize>
+          <FontWeight>700</FontWeight>
+          <VerticalAlign>Middle</VerticalAlign>
+        </Style>
+        <Value>=ReportItems!Phys__Inventory_RecordingCaption.Value</Value>
+        <Width>7.5cm</Width>
+      </Textbox>
+    </ReportItems>
+  </PageHeader>
+  <PageHeight>29.7cm</PageHeight>
+  <PageWidth>21cm</PageWidth>
+  <TopMargin>2cm</TopMargin>
+  <Width>18.15cm</Width>
+  <rd:DrawGrid>true</rd:DrawGrid>
+  <rd:ReportID>b7820c9b-879c-4e8e-84b2-a31ce3812db3</rd:ReportID>
+  <rd:SnapToGrid>true</rd:SnapToGrid>
+</Report>
+    END_OF_RDLDatA
+  }
+}
+

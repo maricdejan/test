@@ -1,0 +1,43 @@
+OBJECT Table 11100 IFB Setup
+{
+  OBJECT-PROPERTIES
+  {
+    Date=01.10.04;
+    Time=12:00:00;
+    Version List=NAVDACH4.00;
+  }
+  PROPERTIES
+  {
+    CaptionML=[DEU=IFB Einrichtung;
+               ENU=IFB Setup];
+    LookupFormID=Form11100;
+    DrillDownFormID=Form11100;
+  }
+  FIELDS
+  {
+    { 1   ;   ;Primary Key         ;Code10        ;CaptionML=[DEU=PrimÑrschlÅssel;
+                                                              ENU=Primary Key];
+                                                   Editable=No }
+    { 2   ;   ;Depreciation Book Code IFB;Code10  ;TableRelation="Depreciation Book";
+                                                   CaptionML=[DEU=AfA Buchcode IFB;
+                                                              ENU=Depreciation Book Code IFB];
+                                                   Editable=No }
+    { 3   ;   ;Limit for inferior assets;Decimal  ;CaptionML=[DEU=Limit fÅr minderwertige Anlagen;
+                                                              ENU=Limit for inferior assets];
+                                                   Editable=No }
+  }
+  KEYS
+  {
+    {    ;Primary Key                             ;Clustered=Yes }
+  }
+  FIELDGROUPS
+  {
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

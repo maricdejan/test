@@ -1,0 +1,58 @@
+OBJECT Table 294 Reminder Text
+{
+  OBJECT-PROPERTIES
+  {
+    Date=05.11.08;
+    Time=12:00:00;
+    Version List=NAVW16.00;
+  }
+  PROPERTIES
+  {
+    OnInsert=BEGIN
+               ReminderLevel.GET("Reminder Terms Code","Reminder Level");
+             END;
+
+    CaptionML=[DEU=Mahntext;
+               ENU=Reminder Text];
+    LookupFormID=Form433;
+    DrillDownFormID=Form433;
+  }
+  FIELDS
+  {
+    { 1   ;   ;Reminder Terms Code ;Code10        ;TableRelation="Reminder Terms";
+                                                   CaptionML=[DEU=Mahnmethodencode;
+                                                              ENU=Reminder Terms Code];
+                                                   NotBlank=Yes }
+    { 2   ;   ;Reminder Level      ;Integer       ;TableRelation="Reminder Level".No. WHERE (Reminder Terms Code=FIELD(Reminder Terms Code));
+                                                   CaptionML=[DEU=Mahnstufe;
+                                                              ENU=Reminder Level];
+                                                   MinValue=1;
+                                                   NotBlank=Yes }
+    { 3   ;   ;Position            ;Option        ;CaptionML=[DEU=Position;
+                                                              ENU=Position];
+                                                   OptionCaptionML=[DEU=Vor,Nach;
+                                                                    ENU=Beginning,Ending];
+                                                   OptionString=Beginning,Ending }
+    { 4   ;   ;Line No.            ;Integer       ;CaptionML=[DEU=Zeilennr.;
+                                                              ENU=Line No.] }
+    { 5   ;   ;Text                ;Text100       ;CaptionML=[DEU=Text;
+                                                              ENU=Text] }
+  }
+  KEYS
+  {
+    {    ;Reminder Terms Code,Reminder Level,Position,Line No.;
+                                                   Clustered=Yes }
+  }
+  FIELDGROUPS
+  {
+  }
+  CODE
+  {
+    VAR
+      ReminderLevel@1000 : Record 293;
+
+    BEGIN
+    END.
+  }
+}
+

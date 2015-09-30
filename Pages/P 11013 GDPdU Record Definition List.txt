@@ -1,0 +1,45 @@
+OBJECT Page 11013 GDPdU Record Definition List
+{
+  OBJECT-PROPERTIES
+  {
+    Date=01.10.04;
+    Time=12:00:00;
+    Version List=NAVDACH4.00;
+  }
+  PROPERTIES
+  {
+    Editable=No;
+    CaptionML=[DEU=GDPdU Datens.-Def.-šbers.;
+               ENU=GDPdU Record Definition List];
+    SourceTable=Table11003;
+    PageType=List;
+  }
+  CONTROLS
+  {
+    { 1900000001;0;Container;
+                ContainerType=ContentArea }
+
+    { 1140000;1;Group     ;
+                GroupType=Repeater }
+
+    { 1140001;2;Field     ;
+                SourceExpr="Definition Group Code" }
+
+    { 1140003;2;Field     ;
+                SourceExpr="Record Code" }
+
+    { 1140005;2;Field     ;
+                SourceExpr=Description }
+
+    { 1140007;2;Field     ;
+                SourceExpr="Export Path" }
+
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

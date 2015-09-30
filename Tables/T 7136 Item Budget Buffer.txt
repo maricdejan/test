@@ -1,0 +1,73 @@
+OBJECT Table 7136 Item Budget Buffer
+{
+  OBJECT-PROPERTIES
+  {
+    Date=05.11.08;
+    Time=12:00:00;
+    Version List=NAVW16.00;
+  }
+  PROPERTIES
+  {
+    CaptionML=[DEU=Artikelbudgetpuffer;
+               ENU=Item Budget Buffer];
+  }
+  FIELDS
+  {
+    { 1   ;   ;Item No.            ;Code20        ;TableRelation=Item;
+                                                   CaptionML=[DEU=Artikelnr.;
+                                                              ENU=Item No.] }
+    { 2   ;   ;Source Type         ;Option        ;CaptionML=[DEU=Herkunftsart;
+                                                              ENU=Source Type];
+                                                   OptionCaptionML=[DEU=" ,Debitor,Kreditor,Artikel";
+                                                                    ENU=" ,Customer,Vendor,Item"];
+                                                   OptionString=[ ,Customer,Vendor,Item] }
+    { 3   ;   ;Source No.          ;Code20        ;TableRelation=IF (Source Type=CONST(Customer)) Customer
+                                                                 ELSE IF (Source Type=CONST(Vendor)) Vendor
+                                                                 ELSE IF (Source Type=CONST(Item)) Item;
+                                                   CaptionML=[DEU=Herkunftsnr.;
+                                                              ENU=Source No.] }
+    { 4   ;   ;Location Code       ;Code10        ;TableRelation=Location;
+                                                   CaptionML=[DEU=Lagerortcode;
+                                                              ENU=Location Code] }
+    { 5   ;   ;Global Dimension 1 Code;Code20     ;TableRelation="Dimension Value".Code WHERE (Global Dimension No.=CONST(1));
+                                                   CaptionML=[DEU=Globaler Dimensionscode 1;
+                                                              ENU=Global Dimension 1 Code];
+                                                   CaptionClass='1,1,1' }
+    { 6   ;   ;Global Dimension 2 Code;Code20     ;TableRelation="Dimension Value".Code WHERE (Global Dimension No.=CONST(2));
+                                                   CaptionML=[DEU=Globaler Dimensionscode 2;
+                                                              ENU=Global Dimension 2 Code];
+                                                   CaptionClass='1,1,2' }
+    { 7   ;   ;Budget Dimension 1 Code;Code20     ;CaptionML=[DEU=Budgetdimensionscode 1;
+                                                              ENU=Budget Dimension 1 Code] }
+    { 8   ;   ;Budget Dimension 2 Code;Code20     ;CaptionML=[DEU=Budgetdimensionscode 2;
+                                                              ENU=Budget Dimension 2 Code] }
+    { 9   ;   ;Budget Dimension 3 Code;Code20     ;CaptionML=[DEU=Budgetdimensionscode 3;
+                                                              ENU=Budget Dimension 3 Code] }
+    { 10  ;   ;Date                ;Date          ;CaptionML=[DEU=Datum;
+                                                              ENU=Date] }
+    { 11  ;   ;Quantity            ;Decimal       ;CaptionML=[DEU=Menge;
+                                                              ENU=Quantity];
+                                                   DecimalPlaces=0:5 }
+    { 12  ;   ;Sales Amount        ;Decimal       ;CaptionML=[DEU=Verkaufsbetrag;
+                                                              ENU=Sales Amount];
+                                                   AutoFormatType=1 }
+    { 13  ;   ;Cost Amount         ;Decimal       ;CaptionML=[DEU=Einstandsbetrag;
+                                                              ENU=Cost Amount];
+                                                   AutoFormatType=1 }
+  }
+  KEYS
+  {
+    {    ;Item No.,Source Type,Source No.,Location Code,Global Dimension 1 Code,Global Dimension 2 Code,Budget Dimension 1 Code,Budget Dimension 2 Code,Budget Dimension 3 Code,Date;
+                                                   Clustered=Yes }
+  }
+  FIELDGROUPS
+  {
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

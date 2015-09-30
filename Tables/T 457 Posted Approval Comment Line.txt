@@ -1,0 +1,62 @@
+OBJECT Table 457 Posted Approval Comment Line
+{
+  OBJECT-PROPERTIES
+  {
+    Date=05.11.08;
+    Time=12:00:00;
+    Version List=NAVW16.00;
+  }
+  PROPERTIES
+  {
+    OnInsert=BEGIN
+               IF "Entry No." = 0 THEN
+                 "Entry No." := GetNextEntryNo;
+             END;
+
+    CaptionML=[DEU=Kommentarzeile gebuchte Genehmigung;
+               ENU=Posted Approval Comment Line];
+    LookupFormID=Form661;
+    DrillDownFormID=Form661;
+  }
+  FIELDS
+  {
+    { 1   ;   ;Entry No.           ;Integer       ;CaptionML=[DEU=Lfd. Nr.;
+                                                              ENU=Entry No.] }
+    { 2   ;   ;Table ID            ;Integer       ;CaptionML=[DEU=Tabellen-ID;
+                                                              ENU=Table ID] }
+    { 4   ;   ;Document No.        ;Code20        ;CaptionML=[DEU=Belegnr.;
+                                                              ENU=Document No.] }
+    { 5   ;   ;User ID             ;Code20        ;CaptionML=[DEU=Benutzer-ID;
+                                                              ENU=User ID] }
+    { 6   ;   ;Date and Time       ;DateTime      ;CaptionML=[DEU=Datum und Uhrzeit;
+                                                              ENU=Date and Time] }
+    { 7   ;   ;Comment             ;Text80        ;CaptionML=[DEU=Bemerkung;
+                                                              ENU=Comment] }
+  }
+  KEYS
+  {
+    {    ;Entry No.                               ;Clustered=Yes }
+    {    ;Table ID,Document No.,Date and Time      }
+  }
+  FIELDGROUPS
+  {
+  }
+  CODE
+  {
+
+    LOCAL PROCEDURE GetNextEntryNo@4() : Integer;
+    VAR
+      PostedApprovalCommentLine@1000 : Record 457;
+    BEGIN
+      PostedApprovalCommentLine.SETCURRENTKEY("Entry No.");
+      IF PostedApprovalCommentLine.FIND('+') THEN
+        EXIT(PostedApprovalCommentLine."Entry No." + 1)
+      ELSE
+        EXIT(1);
+    END;
+
+    BEGIN
+    END.
+  }
+}
+

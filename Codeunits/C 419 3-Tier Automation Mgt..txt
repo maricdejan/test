@@ -1,0 +1,217 @@
+OBJECT Codeunit 419 3-Tier Automation Mgt.
+{
+  OBJECT-PROPERTIES
+  {
+    Date=14.08.09;
+    Time=12:00:00;
+    Version List=NAVW16.00.01,NAVCH6.00.01;
+  }
+  PROPERTIES
+  {
+    OnRun=BEGIN
+          END;
+
+  }
+  CODE
+  {
+    VAR
+      Text001@1004 : TextConst 'DEU=Standard;ENU=Default';
+      Text006@1003 : TextConst 'DEU=Exportieren;ENU=Export';
+      Text007@1002 : TextConst 'DEU=Importieren;ENU=Import';
+      Text009@1000 : TextConst 'DEU=Alle Dateien (*.*)|*.*;ENU=All Files (*.*)|*.*';
+      CommonDialogMgnt@1005 : Codeunit 412;
+      ClientTempPath@1006 : Text[1024];
+      FileObject@1140000 : Automation "{F935DC20-1CF0-11D0-ADB9-00C04FD58A0B} 1.0:{0D43FE01-F093-11CF-8940-00A0C9054228}:'Windows Script Host Object Model'.FileSystemObject";
+
+    PROCEDURE BLOBImport@3(VAR BLOBRef@1000 : TEMPORARY Record 99008535;Name@1002 : Text[1024];CommonDialog@1003 : Boolean) : Text[1024];
+    VAR
+      NVInStream@1001 : InStream;
+      NVOutStream@1004 : OutStream;
+    BEGIN
+      IF NOT ISSERVICETIER THEN BEGIN
+        IF CommonDialog THEN BEGIN
+          Name := CommonDialogMgnt.OpenFileWithName(Name);
+          IF STRPOS(Name,'*') > 0 THEN
+            EXIT('');
+        END;
+        BLOBRef.Blob.IMPORT(Name,FALSE);
+        EXIT(Name);
+      END
+      ELSE BEGIN
+        IF UPLOADINTOSTREAM(Text007,'',Text009,Name,NVInStream) THEN BEGIN
+          BLOBRef.Blob.CREATEOUTSTREAM(NVOutStream);
+          COPYSTREAM(NVOutStream,NVInStream);
+          EXIT(Name);
+        END;
+        EXIT('');
+      END
+    END;
+
+    PROCEDURE BLOBExport@4(VAR BLOBRef@1002 : TEMPORARY Record 99008535;Name@1001 : Text[1024];CommonDialog@1000 : Boolean) : Text[1024];
+    VAR
+      NVInStream@1003 : InStream;
+      ToFile@1004 : Text[1024];
+      p@1005 : Integer;
+      Path@1006 : Text[1024];
+    BEGIN
+      IF NOT ISSERVICETIER THEN
+        EXIT(BLOBRef.Blob.EXPORT(Name,CommonDialog))
+      ELSE BEGIN
+        BLOBRef.Blob.CREATEINSTREAM(NVInStream);
+        IF STRPOS(Name,'*') = 0 THEN
+          ToFile := Name
+        ELSE BEGIN
+          ToFile := INSSTR(Name,Text001,1);
+          ToFile := DELCHR(ToFile,'=','*');
+        END;
+        WHILE STRPOS(ToFile,'\')<>0 DO BEGIN
+          p := STRPOS(ToFile,'\');
+          ToFile := COPYSTR(ToFile, p+1);
+        END;
+        Path := 'C:\TEMP';
+        IF NOT CommonDialog THEN
+          Path := Magicpath;
+        DOWNLOADFROMSTREAM(NVInStream,Text006,Path,Text009,ToFile);
+        EXIT(ToFile);
+      END
+    END;
+
+    PROCEDURE EnvironFileName@1(PassedString@1001 : Text[250];FileExtension@1002 : Text[250]) FileName : Text[1024];
+    BEGIN
+      IF NOT ISSERVICETIER THEN BEGIN
+        IF STRPOS(PassedString,'%1') = 0 THEN
+          FileName := ENVIRON('TEMP') + PassedString + FileExtension
+        ELSE
+          FileName := STRSUBSTNO(ENVIRON('TEMP') + PassedString,FileExtension)
+      END ELSE
+        EXIT(ServerTempFileName(PassedString,FileExtension));
+    END;
+
+    PROCEDURE ServerTempFileName@5(PassedString@1001 : Text[250];FileExtension@1002 : Text[250]) FileName : Text[1024];
+    VAR
+      TempFile@1000 : File;
+    BEGIN
+      TempFile.CREATETEMPFILE;
+      FileName := TempFile.NAME + '.' + FileExtension;
+      TempFile.CLOSE;
+    END;
+
+    PROCEDURE ClientTempFileName@6(PassedString@1001 : Text[250];FileExtension@1002 : Text[250]) ClientFileName : Text[1024];
+    VAR
+      TempFile@1004 : File;
+    BEGIN
+      IF ISSERVICETIER THEN BEGIN
+        IF ClientTempPath = '' THEN BEGIN
+          TempFile.CREATETEMPFILE;
+          ClientFileName := TempFile.NAME + '.' + FileExtension;
+          TempFile.CLOSE;
+          TempFile.CREATE(ClientFileName);
+          TempFile.CLOSE;
+          ClientTempPath := Path(DownloadTempFile(ClientFileName));
+        END;
+        ClientFileName := ClientTempPath + '\' + FORMAT(CREATEGUID) + '.' + FileExtension;
+      END ELSE
+        ClientFileName := ServerTempFileName(PassedString, FileExtension);
+    END;
+
+    PROCEDURE DownloadTempFile@7(ServerFileName@1001 : Text[1024]) : Text[1024];
+    VAR
+      FileName@1102601003 : Text[1024];
+      Path@1102601004 : Text[1024];
+    BEGIN
+      IF NOT ISSERVICETIER THEN
+        EXIT(ServerFileName);
+
+      FileName := ServerFileName;
+      Path := Magicpath;
+      DOWNLOAD(ServerFileName,'',Path,Text009,FileName);
+      EXIT(FileName);
+    END;
+
+    PROCEDURE Path@8(Filename@1102601000 : Text[1024]) Path : Text[1024];
+    BEGIN
+      Filename := DELCHR(Filename,'<');
+      Path := Filename;
+      WHILE STRPOS(Filename,'\')<>0 DO BEGIN
+        Filename := COPYSTR(Filename, STRPOS(Filename,'\')+1);
+      END;
+      IF STRLEN(Path) > STRLEN(Filename) THEN
+        EXIT(COPYSTR(Path,1,STRLEN(Path)-STRLEN(Filename)))
+      ELSE
+        EXIT('');
+    END;
+
+    PROCEDURE Magicpath@9() : Text[1024];
+    BEGIN
+      EXIT('<TEMP>');   // MAGIC PATH makes sure we don't get a prompt
+    END;
+
+    PROCEDURE SilentUpload@1140000(ClientFilePath@1140000 : Text[1024];VAR ServerFilePath@1140001 : Text[1024]) Status : Boolean;
+    VAR
+      ClientTempFilePath@1140002 : Text[1024];
+      ClientTempFile@1140003 : Text[1024];
+      Ext@1140004 : Text[1024];
+      TierMgt@1140005 : Codeunit 419;
+    BEGIN
+      IF ISCLEAR(FileObject) THEN
+        CREATE(FileObject, TRUE, TRUE);
+
+      Ext := FileObject.GetExtensionName(ClientFilePath);
+      ClientTempFilePath := ClientTempFileName('',Ext);
+      ClientTempFile := FileObject.GetFileName(ClientTempFilePath);
+      FileObject.CopyFile(ClientFilePath,ClientTempFilePath,TRUE);
+
+      ServerFilePath := ServerTempFileName('',Ext);
+
+      Status := UPLOAD('',Magicpath,'',ClientTempFile,ServerFilePath);
+
+      EXIT(Status);
+    END;
+
+    PROCEDURE DownloadToFile@1140001(TempFileName@1140000 : Text[1024];FileName@1140001 : Text[1024]);
+    BEGIN
+      TempFileName := DownloadTempFile(TempFileName);
+      IF ISCLEAR(FileObject) THEN
+        CREATE(FileObject, TRUE, TRUE);
+      IF FileObject.FileExists(FileName) THEN
+        FileObject.DeleteFile(FileName, TRUE);
+      FileObject.MoveFile(TempFileName,FileName);
+    END;
+
+    PROCEDURE IsValidUNC@1150000(Path@1150000 : Text[1024]) : Boolean;
+    VAR
+      Cursor@1150001 : Integer;
+    BEGIN
+      Path := CONVERTSTR(Path,'/', '\');
+
+      Cursor := STRPOS(Path,'\\');
+      IF Cursor <> 1 THEN
+        EXIT(FALSE);
+
+      Cursor := Cursor + 2;
+      Path := COPYSTR(Path, Cursor);
+
+      Cursor := STRPOS(Path, '\');
+      IF Cursor < 2 THEN
+        EXIT(FALSE);
+
+      Cursor := Cursor + 1;
+      Path := COPYSTR(Path,Cursor);
+
+      REPEAT
+        Cursor := STRPOS(Path, '\');
+        IF Cursor < 2 THEN
+          EXIT(FALSE);
+
+        Cursor := Cursor + 1;
+        Path := COPYSTR(Path,Cursor);
+      UNTIL STRLEN(Path) = 0;
+
+      EXIT(TRUE);
+    END;
+
+    BEGIN
+    END.
+  }
+}
+

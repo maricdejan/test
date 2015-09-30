@@ -1,0 +1,54 @@
+OBJECT Table 453 Approval Code
+{
+  OBJECT-PROPERTIES
+  {
+    Date=05.11.08;
+    Time=12:00:00;
+    Version List=NAVW16.00;
+  }
+  PROPERTIES
+  {
+    CaptionML=[DEU=Genehmigungscode;
+               ENU=Approval Code];
+    LookupFormID=Form657;
+    DrillDownFormID=Form657;
+  }
+  FIELDS
+  {
+    { 1   ;   ;Code                ;Code20        ;CaptionML=[DEU=Code;
+                                                              ENU=Code];
+                                                   NotBlank=Yes }
+    { 2   ;   ;Description         ;Text100       ;CaptionML=[DEU=Beschreibung;
+                                                              ENU=Description] }
+    { 3   ;   ;Linked To Table Name;Text50        ;CaptionML=[DEU=Tabellenname fÅr VerknÅpfung;
+                                                              ENU=Linked To Table Name] }
+    { 4   ;   ;Linked To Table No. ;Integer       ;TableRelation=Object.ID WHERE (Type=CONST(Table));
+                                                   OnValidate=BEGIN
+                                                                Objects.SETRANGE(Type,Objects.Type::Table);
+                                                                Objects.SETRANGE(ID,"Linked To Table No.");
+                                                                IF Objects.FINDFIRST THEN
+                                                                  "Linked To Table Name" := Objects.Name
+                                                                ELSE
+                                                                  "Linked To Table Name" := '';
+                                                              END;
+
+                                                   CaptionML=[DEU=Tabellennr. fÅr VerknÅpfung;
+                                                              ENU=Linked To Table No.] }
+  }
+  KEYS
+  {
+    {    ;Code                                    ;Clustered=Yes }
+  }
+  FIELDGROUPS
+  {
+  }
+  CODE
+  {
+    VAR
+      Objects@1000 : Record 2000000001;
+
+    BEGIN
+    END.
+  }
+}
+

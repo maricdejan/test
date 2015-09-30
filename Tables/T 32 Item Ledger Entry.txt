@@ -1,0 +1,434 @@
+OBJECT Table 32 Item Ledger Entry
+{
+  OBJECT-PROPERTIES
+  {
+    Date=14.08.09;
+    Time=12:00:00;
+    Version List=NAVW16.00.01;
+  }
+  PROPERTIES
+  {
+    CaptionML=[DEU=Artikelposten;
+               ENU=Item Ledger Entry];
+    LookupFormID=Form38;
+    DrillDownFormID=Form38;
+  }
+  FIELDS
+  {
+    { 1   ;   ;Entry No.           ;Integer       ;CaptionML=[DEU=Lfd. Nr.;
+                                                              ENU=Entry No.] }
+    { 2   ;   ;Item No.            ;Code20        ;TableRelation=Item;
+                                                   CaptionML=[DEU=Artikelnr.;
+                                                              ENU=Item No.] }
+    { 3   ;   ;Posting Date        ;Date          ;CaptionML=[DEU=Buchungsdatum;
+                                                              ENU=Posting Date] }
+    { 4   ;   ;Entry Type          ;Option        ;CaptionML=[DEU=Postenart;
+                                                              ENU=Entry Type];
+                                                   OptionCaptionML=[DEU=Einkauf,Verkauf,Zugang,Abgang,Umlagerung,Verbrauch,Istmeldung;
+                                                                    ENU=Purchase,Sale,Positive Adjmt.,Negative Adjmt.,Transfer,Consumption,Output];
+                                                   OptionString=Purchase,Sale,Positive Adjmt.,Negative Adjmt.,Transfer,Consumption,Output }
+    { 5   ;   ;Source No.          ;Code20        ;TableRelation=IF (Source Type=CONST(Customer)) Customer
+                                                                 ELSE IF (Source Type=CONST(Vendor)) Vendor
+                                                                 ELSE IF (Source Type=CONST(Item)) Item;
+                                                   CaptionML=[DEU=Herkunftsnr.;
+                                                              ENU=Source No.] }
+    { 6   ;   ;Document No.        ;Code20        ;CaptionML=[DEU=Belegnr.;
+                                                              ENU=Document No.] }
+    { 7   ;   ;Description         ;Text50        ;CaptionML=[DEU=Beschreibung;
+                                                              ENU=Description] }
+    { 8   ;   ;Location Code       ;Code10        ;TableRelation=Location;
+                                                   CaptionML=[DEU=Lagerortcode;
+                                                              ENU=Location Code] }
+    { 12  ;   ;Quantity            ;Decimal       ;CaptionML=[DEU=Menge;
+                                                              ENU=Quantity];
+                                                   DecimalPlaces=0:5 }
+    { 13  ;   ;Remaining Quantity  ;Decimal       ;CaptionML=[DEU=Restmenge;
+                                                              ENU=Remaining Quantity];
+                                                   DecimalPlaces=0:5 }
+    { 14  ;   ;Invoiced Quantity   ;Decimal       ;CaptionML=[DEU=Fakturierte Menge;
+                                                              ENU=Invoiced Quantity];
+                                                   DecimalPlaces=0:5 }
+    { 28  ;   ;Applies-to Entry    ;Integer       ;CaptionML=[DEU=Ausgleich mit Lfd. Nr.;
+                                                              ENU=Applies-to Entry] }
+    { 29  ;   ;Open                ;Boolean       ;CaptionML=[DEU=Offen;
+                                                              ENU=Open] }
+    { 33  ;   ;Global Dimension 1 Code;Code20     ;TableRelation="Dimension Value".Code WHERE (Global Dimension No.=CONST(1));
+                                                   CaptionML=[DEU=Globaler Dimensionscode 1;
+                                                              ENU=Global Dimension 1 Code];
+                                                   CaptionClass='1,1,1' }
+    { 34  ;   ;Global Dimension 2 Code;Code20     ;TableRelation="Dimension Value".Code WHERE (Global Dimension No.=CONST(2));
+                                                   CaptionML=[DEU=Globaler Dimensionscode 2;
+                                                              ENU=Global Dimension 2 Code];
+                                                   CaptionClass='1,1,2' }
+    { 36  ;   ;Positive            ;Boolean       ;CaptionML=[DEU=Positiv;
+                                                              ENU=Positive] }
+    { 41  ;   ;Source Type         ;Option        ;CaptionML=[DEU=Herkunftsart;
+                                                              ENU=Source Type];
+                                                   OptionCaptionML=[DEU=" ,Debitor,Kreditor,Artikel";
+                                                                    ENU=" ,Customer,Vendor,Item"];
+                                                   OptionString=[ ,Customer,Vendor,Item] }
+    { 47  ;   ;Drop Shipment       ;Boolean       ;CaptionML=[DEU=Direktlieferung;
+                                                              ENU=Drop Shipment] }
+    { 50  ;   ;Transaction Type    ;Code10        ;TableRelation="Transaction Type";
+                                                   CaptionML=[DEU=Art des GeschÑftes;
+                                                              ENU=Transaction Type] }
+    { 51  ;   ;Transport Method    ;Code10        ;TableRelation="Transport Method";
+                                                   CaptionML=[DEU=Verkehrszweig;
+                                                              ENU=Transport Method] }
+    { 52  ;   ;Country/Region Code ;Code10        ;TableRelation=Country/Region;
+                                                   CaptionML=[DEU=LÑnder-/Regionscode;
+                                                              ENU=Country/Region Code] }
+    { 59  ;   ;Entry/Exit Point    ;Code10        ;TableRelation="Entry/Exit Point";
+                                                   CaptionML=[DEU=Hafen;
+                                                              ENU=Entry/Exit Point] }
+    { 60  ;   ;Document Date       ;Date          ;CaptionML=[DEU=Belegdatum;
+                                                              ENU=Document Date] }
+    { 61  ;   ;External Document No.;Code20       ;CaptionML=[DEU=Externe Belegnummer;
+                                                              ENU=External Document No.] }
+    { 62  ;   ;Area                ;Code10        ;TableRelation=Area;
+                                                   CaptionML=[DEU=Bundesland;
+                                                              ENU=Area] }
+    { 63  ;   ;Transaction Specification;Code10   ;TableRelation="Transaction Specification";
+                                                   CaptionML=[DEU=Verfahren;
+                                                              ENU=Transaction Specification] }
+    { 64  ;   ;No. Series          ;Code10        ;TableRelation="No. Series";
+                                                   CaptionML=[DEU=Nummernserie;
+                                                              ENU=No. Series] }
+    { 70  ;   ;Reserved Quantity   ;Decimal       ;FieldClass=FlowField;
+                                                   CalcFormula=Sum("Reservation Entry"."Quantity (Base)" WHERE (Source ID=CONST(),
+                                                                                                                Source Ref. No.=FIELD(Entry No.),
+                                                                                                                Source Type=CONST(32),
+                                                                                                                Source Subtype=CONST(0),
+                                                                                                                Source Batch Name=CONST(),
+                                                                                                                Source Prod. Order Line=CONST(0),
+                                                                                                                Reservation Status=CONST(Reservation)));
+                                                   CaptionML=[DEU=Reservierte Menge;
+                                                              ENU=Reserved Quantity];
+                                                   DecimalPlaces=0:5;
+                                                   Editable=No }
+    { 79  ;   ;Document Type       ;Option        ;CaptionML=[DEU=Belegart;
+                                                              ENU=Document Type];
+                                                   OptionCaptionML=[DEU=" ,Verkaufslieferung,Verkaufsrechnung,VerkaufsrÅcksendung,Verkaufsgutschrift,Einkaufslieferung,Einkaufsrechnung,RÅcklieferung,Einkaufsgutschrift,Umlagerungsausgang,Umlagerungseingang,Servicelieferung,Servicerechnung,Servicegutschrift";
+                                                                    ENU=" ,Sales Shipment,Sales Invoice,Sales Return Receipt,Sales Credit Memo,Purchase Receipt,Purchase Invoice,Purchase Return Shipment,Purchase Credit Memo,Transfer Shipment,Transfer Receipt,Service Shipment,Service Invoice,Service Credit Memo"];
+                                                   OptionString=[ ,Sales Shipment,Sales Invoice,Sales Return Receipt,Sales Credit Memo,Purchase Receipt,Purchase Invoice,Purchase Return Shipment,Purchase Credit Memo,Transfer Shipment,Transfer Receipt,Service Shipment,Service Invoice,Service Credit Memo] }
+    { 80  ;   ;Document Line No.   ;Integer       ;CaptionML=[DEU=Belegzeilennr.;
+                                                              ENU=Document Line No.] }
+    { 1000;   ;Job No.             ;Code20        ;TableRelation=Job.No.;
+                                                   CaptionML=[DEU=Projektnr.;
+                                                              ENU=Job No.] }
+    { 1001;   ;Job Task No.        ;Code20        ;TableRelation="Job Task"."Job Task No." WHERE (Job No.=FIELD(Job No.));
+                                                   CaptionML=[DEU=Projektaufgabennr.;
+                                                              ENU=Job Task No.] }
+    { 1002;   ;Job Purchase        ;Boolean       ;CaptionML=[DEU=Projekteinkauf;
+                                                              ENU=Job Purchase] }
+    { 5401;   ;Prod. Order No.     ;Code20        ;CaptionML=[DEU=FA-Nr.;
+                                                              ENU=Prod. Order No.] }
+    { 5402;   ;Variant Code        ;Code10        ;TableRelation="Item Variant".Code WHERE (Item No.=FIELD(Item No.));
+                                                   CaptionML=[DEU=Variantencode;
+                                                              ENU=Variant Code] }
+    { 5404;   ;Qty. per Unit of Measure;Decimal   ;CaptionML=[DEU=Menge pro Einheit;
+                                                              ENU=Qty. per Unit of Measure];
+                                                   DecimalPlaces=0:5 }
+    { 5407;   ;Unit of Measure Code;Code10        ;TableRelation="Item Unit of Measure".Code WHERE (Item No.=FIELD(Item No.));
+                                                   CaptionML=[DEU=Einheitencode;
+                                                              ENU=Unit of Measure Code] }
+    { 5408;   ;Derived from Blanket Order;Boolean ;CaptionML=[DEU=öbern. von Rahmenauftr./-best.;
+                                                              ENU=Derived from Blanket Order] }
+    { 5700;   ;Cross-Reference No. ;Code20        ;CaptionML=[DEU=Referenznr.;
+                                                              ENU=Cross-Reference No.] }
+    { 5701;   ;Originally Ordered No.;Code20      ;TableRelation=Item;
+                                                   CaptionML=[DEU=Urspr. Nr. (Auftrag);
+                                                              ENU=Originally Ordered No.] }
+    { 5702;   ;Originally Ordered Var. Code;Code10;TableRelation="Item Variant".Code WHERE (Item No.=FIELD(Originally Ordered No.));
+                                                   CaptionML=[DEU=Urspr. Variantencode (Auftrag);
+                                                              ENU=Originally Ordered Var. Code] }
+    { 5703;   ;Out-of-Stock Substitution;Boolean  ;CaptionML=[DEU=Ersatz da nicht am Lager;
+                                                              ENU=Out-of-Stock Substitution] }
+    { 5704;   ;Item Category Code  ;Code10        ;TableRelation="Item Category";
+                                                   CaptionML=[DEU=Artikelkategoriencode;
+                                                              ENU=Item Category Code] }
+    { 5705;   ;Nonstock            ;Boolean       ;CaptionML=[DEU=Katalogartikel;
+                                                              ENU=Nonstock] }
+    { 5706;   ;Purchasing Code     ;Code10        ;TableRelation=Purchasing;
+                                                   CaptionML=[DEU=Einkaufscode;
+                                                              ENU=Purchasing Code] }
+    { 5707;   ;Product Group Code  ;Code10        ;TableRelation="Product Group".Code WHERE (Item Category Code=FIELD(Item Category Code));
+                                                   CaptionML=[DEU=Produktgruppencode;
+                                                              ENU=Product Group Code] }
+    { 5740;   ;Transfer Order No.  ;Code20        ;CaptionML=[DEU=Umlagerungsauftragsnr.;
+                                                              ENU=Transfer Order No.];
+                                                   Editable=No }
+    { 5800;   ;Completely Invoiced ;Boolean       ;CaptionML=[DEU=Komplett fakturiert;
+                                                              ENU=Completely Invoiced] }
+    { 5801;   ;Last Invoice Date   ;Date          ;CaptionML=[DEU=Letztes Rechnungsdatum;
+                                                              ENU=Last Invoice Date] }
+    { 5802;   ;Applied Entry to Adjust;Boolean    ;CaptionML=[DEU=Ausgegl. Posten regul.;
+                                                              ENU=Applied Entry to Adjust] }
+    { 5803;   ;Cost Amount (Expected);Decimal     ;FieldClass=FlowField;
+                                                   CalcFormula=Sum("Value Entry"."Cost Amount (Expected)" WHERE (Item Ledger Entry No.=FIELD(Entry No.)));
+                                                   CaptionML=[DEU=Einstandsbetrag (erwartet);
+                                                              ENU=Cost Amount (Expected)];
+                                                   Editable=No;
+                                                   AutoFormatType=1 }
+    { 5804;   ;Cost Amount (Actual);Decimal       ;FieldClass=FlowField;
+                                                   CalcFormula=Sum("Value Entry"."Cost Amount (Actual)" WHERE (Item Ledger Entry No.=FIELD(Entry No.)));
+                                                   CaptionML=[DEU=Einstandsbetrag (tatsÑchl.);
+                                                              ENU=Cost Amount (Actual)];
+                                                   Editable=No;
+                                                   AutoFormatType=1 }
+    { 5805;   ;Cost Amount (Non-Invtbl.);Decimal  ;FieldClass=FlowField;
+                                                   CalcFormula=Sum("Value Entry"."Cost Amount (Non-Invtbl.)" WHERE (Item Ledger Entry No.=FIELD(Entry No.)));
+                                                   CaptionML=[DEU=Einst.-Betr. (lagerwertunabh.);
+                                                              ENU=Cost Amount (Non-Invtbl.)];
+                                                   Editable=No;
+                                                   AutoFormatType=1 }
+    { 5806;   ;Cost Amount (Expected) (ACY);Decimal;
+                                                   FieldClass=FlowField;
+                                                   CalcFormula=Sum("Value Entry"."Cost Amount (Expected) (ACY)" WHERE (Item Ledger Entry No.=FIELD(Entry No.)));
+                                                   CaptionML=[DEU=Einstandsbetrag (erw.) (BW);
+                                                              ENU=Cost Amount (Expected) (ACY)];
+                                                   Editable=No;
+                                                   AutoFormatType=1;
+                                                   AutoFormatExpr=GetCurrencyCode }
+    { 5807;   ;Cost Amount (Actual) (ACY);Decimal ;FieldClass=FlowField;
+                                                   CalcFormula=Sum("Value Entry"."Cost Amount (Actual) (ACY)" WHERE (Item Ledger Entry No.=FIELD(Entry No.)));
+                                                   CaptionML=[DEU=Einst.-Betrag (tatsÑchl.) (BW);
+                                                              ENU=Cost Amount (Actual) (ACY)];
+                                                   Editable=No;
+                                                   AutoFormatType=1;
+                                                   AutoFormatExpr=GetCurrencyCode }
+    { 5808;   ;Cost Amount (Non-Invtbl.)(ACY);Decimal;
+                                                   FieldClass=FlowField;
+                                                   CalcFormula=Sum("Value Entry"."Cost Amount (Non-Invtbl.)(ACY)" WHERE (Item Ledger Entry No.=FIELD(Entry No.)));
+                                                   CaptionML=[DEU=Einst.-B. (lagerw.-unabh.)(BW);
+                                                              ENU=Cost Amount (Non-Invtbl.)(ACY)];
+                                                   Editable=No;
+                                                   AutoFormatType=1;
+                                                   AutoFormatExpr=GetCurrencyCode }
+    { 5813;   ;Purchase Amount (Expected);Decimal ;FieldClass=FlowField;
+                                                   CalcFormula=Sum("Value Entry"."Purchase Amount (Expected)" WHERE (Item Ledger Entry No.=FIELD(Entry No.)));
+                                                   CaptionML=[DEU=Einkaufsbetrag (erwartet);
+                                                              ENU=Purchase Amount (Expected)];
+                                                   Editable=No;
+                                                   AutoFormatType=1 }
+    { 5814;   ;Purchase Amount (Actual);Decimal   ;FieldClass=FlowField;
+                                                   CalcFormula=Sum("Value Entry"."Purchase Amount (Actual)" WHERE (Item Ledger Entry No.=FIELD(Entry No.)));
+                                                   CaptionML=[DEU=Einkaufsbetrag (tatsÑchl.);
+                                                              ENU=Purchase Amount (Actual)];
+                                                   Editable=No;
+                                                   AutoFormatType=1 }
+    { 5815;   ;Sales Amount (Expected);Decimal    ;FieldClass=FlowField;
+                                                   CalcFormula=Sum("Value Entry"."Sales Amount (Expected)" WHERE (Item Ledger Entry No.=FIELD(Entry No.)));
+                                                   CaptionML=[DEU=Verkaufsbetrag (erwartet);
+                                                              ENU=Sales Amount (Expected)];
+                                                   Editable=No;
+                                                   AutoFormatType=1 }
+    { 5816;   ;Sales Amount (Actual);Decimal      ;FieldClass=FlowField;
+                                                   CalcFormula=Sum("Value Entry"."Sales Amount (Actual)" WHERE (Item Ledger Entry No.=FIELD(Entry No.)));
+                                                   CaptionML=[DEU=Verkaufsbetrag (tatsÑchl.);
+                                                              ENU=Sales Amount (Actual)];
+                                                   Editable=No;
+                                                   AutoFormatType=1 }
+    { 5817;   ;Correction          ;Boolean       ;CaptionML=[DEU=Storno;
+                                                              ENU=Correction] }
+    { 5818;   ;Shipped Qty. Not Returned;Decimal  ;CaptionML=[DEU=Nicht rÅckgelieferte Liefermenge;
+                                                              ENU=Shipped Qty. Not Returned];
+                                                   DecimalPlaces=0:5 }
+    { 5832;   ;Prod. Order Line No.;Integer       ;CaptionML=[DEU=FA-Zeilennr.;
+                                                              ENU=Prod. Order Line No.] }
+    { 5833;   ;Prod. Order Comp. Line No.;Integer ;CaptionML=[DEU=FA-Komponentenzeilennr.;
+                                                              ENU=Prod. Order Comp. Line No.] }
+    { 5900;   ;Service Order No.   ;Code20        ;CaptionML=[DEU=Serviceauftragsnr.;
+                                                              ENU=Service Order No.] }
+    { 6500;   ;Serial No.          ;Code20        ;OnLookup=BEGIN
+                                                              ItemTrackingMgt.LookupLotSerialNoInfo("Item No.","Variant Code",0,"Serial No.");
+                                                            END;
+
+                                                   CaptionML=[DEU=Seriennr.;
+                                                              ENU=Serial No.] }
+    { 6501;   ;Lot No.             ;Code20        ;OnLookup=BEGIN
+                                                              ItemTrackingMgt.LookupLotSerialNoInfo("Item No.","Variant Code",1,"Lot No.");
+                                                            END;
+
+                                                   CaptionML=[DEU=Chargennr.;
+                                                              ENU=Lot No.] }
+    { 6502;   ;Warranty Date       ;Date          ;CaptionML=[DEU=Garantiedatum;
+                                                              ENU=Warranty Date] }
+    { 6503;   ;Expiration Date     ;Date          ;CaptionML=[DEU=Ablaufdatum;
+                                                              ENU=Expiration Date] }
+    { 6510;   ;Item Tracking       ;Option        ;CaptionML=[DEU=Artikelverfolgung;
+                                                              ENU=Item Tracking];
+                                                   OptionCaptionML=[DEU=Ohne,Chargennr.,Chargennr. und Seriennr.,Seriennr.;
+                                                                    ENU=None,Lot No.,Lot and Serial No.,Serial No.];
+                                                   OptionString=None,Lot No.,Lot and Serial No.,Serial No.;
+                                                   Editable=No }
+    { 6602;   ;Return Reason Code  ;Code10        ;TableRelation="Return Reason";
+                                                   CaptionML=[DEU=Reklamationsgrundcode;
+                                                              ENU=Return Reason Code] }
+  }
+  KEYS
+  {
+    {    ;Entry No.                               ;Clustered=Yes }
+    {    ;Item No.                                 }
+    {    ;Item No.,Posting Date                    }
+    {    ;Item No.,Entry Type,Variant Code,Drop Shipment,Location Code,Posting Date;
+                                                   SumIndexFields=Quantity,Invoiced Quantity }
+    {    ;Source Type,Source No.,Item No.,Variant Code,Posting Date;
+                                                   SumIndexFields=Quantity }
+    {    ;Item No.,Open,Variant Code,Positive,Location Code,Posting Date;
+                                                   SumIndexFields=Quantity,Remaining Quantity;
+                                                   SIFTLevelsToMaintain=[{Item No.,Open,Variant Code,Positive},
+                                                                         {Item No.,Open,Variant Code,Positive,Location Code},
+                                                                         {Item No.,Open,Variant Code,Positive,Location Code,Posting Date:Day}] }
+    {    ;Item No.,Open,Variant Code,Positive,Location Code,Posting Date,Expiration Date,Lot No.,Serial No.;
+                                                   SumIndexFields=Quantity,Remaining Quantity;
+                                                   KeyGroups=Item(Trkg) }
+    {    ;Country/Region Code,Entry Type,Posting Date;
+                                                   KeyGroups=Intrastat }
+    {    ;Document No.,Document Type,Document Line No. }
+    { No ;Item No.,Entry Type,Variant Code,Drop Shipment,Global Dimension 1 Code,Global Dimension 2 Code,Location Code,Posting Date;
+                                                   SumIndexFields=Quantity,Invoiced Quantity;
+                                                   KeyGroups=Item(Dim) }
+    { No ;Source Type,Source No.,Global Dimension 1 Code,Global Dimension 2 Code,Item No.,Variant Code,Posting Date;
+                                                   SumIndexFields=Quantity }
+    {    ;Prod. Order No.,Prod. Order Line No.,Entry Type,Prod. Order Comp. Line No.;
+                                                   SumIndexFields=Quantity;
+                                                   KeyGroups=Item(MFG);
+                                                   MaintainSIFTIndex=No }
+    {    ;Item No.,Applied Entry to Adjust        ;KeyGroups=Item(Adj) }
+    {    ;Item No.,Positive,Location Code,Variant Code }
+    { No ;Entry Type,Nonstock,Item No.,Posting Date }
+    { No ;Item No.,Location Code,Open,Variant Code,Unit of Measure Code,Lot No.,Serial No.;
+                                                   SumIndexFields=Remaining Quantity;
+                                                   KeyGroups=ConvLoc }
+    {    ;Item No.,Open,Variant Code,Positive,Expiration Date,Lot No.,Serial No.;
+                                                   KeyGroups=Item(Trkg);
+                                                   MaintainSQLIndex=No;
+                                                   MaintainSIFTIndex=No }
+    {    ;Item No.,Open,Variant Code,Location Code,Item Tracking,Lot No.,Serial No.;
+                                                   SumIndexFields=Remaining Quantity;
+                                                   KeyGroups=Item(Trkg);
+                                                   MaintainSQLIndex=No;
+                                                   MaintainSIFTIndex=No }
+    { No ;Lot No.                                  }
+    { No ;Serial No.                               }
+  }
+  FIELDGROUPS
+  {
+    { 1   ;DropDown            ;Entry No.,Description,Item No.,Posting Date,Entry Type,Document No. }
+  }
+  CODE
+  {
+    VAR
+      GLSetup@1000 : Record 98;
+      ReservEntry@1001 : Record 337;
+      ReservEngineMgt@1002 : Codeunit 99000831;
+      ReserveItemLedgEntry@1003 : Codeunit 99000841;
+      ItemTrackingMgt@1006 : Codeunit 6500;
+      GLSetupRead@1005 : Boolean;
+
+    PROCEDURE GetCurrencyCode@1() : Code[10];
+    BEGIN
+      IF NOT GLSetupRead THEN BEGIN
+        GLSetup.GET;
+        GLSetupRead := TRUE;
+      END;
+      EXIT(GLSetup."Additional Reporting Currency");
+    END;
+
+    PROCEDURE ShowReservationEntries@2(Modal@1000 : Boolean);
+    BEGIN
+      ReservEngineMgt.InitFilterAndSortingLookupFor(ReservEntry,TRUE);
+      ReserveItemLedgEntry.FilterReservFor(ReservEntry,Rec);
+      IF Modal THEN
+        FORM.RUNMODAL(FORM::"Reservation Entries",ReservEntry)
+      ELSE
+        FORM.RUN(FORM::"Reservation Entries",ReservEntry);
+    END;
+
+    PROCEDURE SetAppliedEntryToAdjust@66(AppliedEntryToAdjust@1001 : Boolean);
+    BEGIN
+      IF "Applied Entry to Adjust" <> AppliedEntryToAdjust THEN BEGIN
+        "Applied Entry to Adjust" := AppliedEntryToAdjust;
+        MODIFY;
+      END;
+    END;
+
+    PROCEDURE SetAvgTransCompletelyInvoiced@80() : Boolean;
+    VAR
+      ItemApplnEntry@1005 : Record 339;
+      InbndItemLedgEntry@1004 : Record 32;
+      CompletelyInvoiced@1002 : Boolean;
+    BEGIN
+      IF "Entry Type" <> "Entry Type"::Transfer THEN
+        EXIT(FALSE);
+
+      ItemApplnEntry.SETCURRENTKEY("Item Ledger Entry No.");
+      ItemApplnEntry.SETRANGE("Item Ledger Entry No.","Entry No.");
+      ItemApplnEntry.FIND('-');
+      IF NOT "Completely Invoiced" THEN BEGIN
+        CompletelyInvoiced := TRUE;
+        REPEAT
+          InbndItemLedgEntry.GET(ItemApplnEntry."Inbound Item Entry No.");
+          IF NOT InbndItemLedgEntry."Completely Invoiced" THEN
+            CompletelyInvoiced := FALSE;
+        UNTIL ItemApplnEntry.NEXT = 0;
+
+        IF CompletelyInvoiced THEN BEGIN
+          SetCompletelyInvoiced;
+          EXIT(TRUE);
+        END;
+      END;
+      EXIT(FALSE);
+    END;
+
+    PROCEDURE SetCompletelyInvoiced@3();
+    BEGIN
+      IF NOT "Completely Invoiced" THEN BEGIN
+        "Completely Invoiced" := TRUE;
+        MODIFY;
+      END;
+    END;
+
+    PROCEDURE AppliedEntryToAdjustExists@40(ItemNo@1001 : Code[20]) : Boolean;
+    BEGIN
+      RESET;
+      SETCURRENTKEY("Item No.","Applied Entry to Adjust");
+      SETRANGE("Item No.",ItemNo);
+      SETRANGE("Applied Entry to Adjust",TRUE);
+      EXIT(FIND('-'));
+    END;
+
+    PROCEDURE IsOutbndConsump@57() : Boolean;
+    BEGIN
+      EXIT(("Entry Type" = "Entry Type"::Consumption) AND NOT Positive);
+    END;
+
+    PROCEDURE IsExactCostReversingPurchase@59() : Boolean;
+    BEGIN
+      EXIT(
+        ("Applies-to Entry" <> 0) AND
+        ("Entry Type" = "Entry Type"::Purchase) AND
+        ("Invoiced Quantity" < 0));
+    END;
+
+    PROCEDURE UpdateItemTracking@5();
+    VAR
+      ItemTrackingMgt@1000 : Codeunit 6500;
+    BEGIN
+      "Item Tracking" := ItemTrackingMgt.ItemTrackingOption("Lot No.","Serial No.");
+    END;
+
+    PROCEDURE GetUnitCostLCY@4() : Decimal;
+    BEGIN
+      IF Quantity=0 THEN
+        EXIT("Cost Amount (Actual)");
+
+      EXIT(ROUND("Cost Amount (Actual)"/Quantity,0.00001));
+    END;
+
+    BEGIN
+    END.
+  }
+}
+

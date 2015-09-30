@@ -1,0 +1,48 @@
+OBJECT Table 5005361 Expect. Phys. Inv. Track. Line
+{
+  OBJECT-PROPERTIES
+  {
+    Date=01.10.04;
+    Time=12:00:00;
+    Version List=NAVDACH4.00;
+  }
+  PROPERTIES
+  {
+    CaptionML=[DEU=Erw. Inventurverfolgungszeile;
+               ENU=Expect. Phys. Inv. Track. Line];
+    LookupFormID=Form5005370;
+    DrillDownFormID=Form5005370;
+  }
+  FIELDS
+  {
+    { 1   ;   ;Order No            ;Code20        ;TableRelation="Phys. Inventory Order Header";
+                                                   CaptionML=[DEU=Auftragsnr.;
+                                                              ENU=Order No] }
+    { 2   ;   ;Order Line No.      ;Integer       ;TableRelation="Phys. Inventory Order Line"."Line No." WHERE (Document No.=FIELD(Order No));
+                                                   CaptionML=[DEU=Auftragszeilennr.;
+                                                              ENU=Order Line No.] }
+    { 3   ;   ;Serial No.          ;Code20        ;CaptionML=[DEU=Seriennr.;
+                                                              ENU=Serial No.] }
+    { 4   ;   ;Lot No.             ;Code20        ;CaptionML=[DEU=Chargennr.;
+                                                              ENU=Lot No.] }
+    { 30  ;   ;Quantity (Base)     ;Decimal       ;CaptionML=[DEU=Menge (Basis);
+                                                              ENU=Quantity (Base)];
+                                                   DecimalPlaces=0:5 }
+  }
+  KEYS
+  {
+    {    ;Order No,Order Line No.,Serial No.,Lot No.;
+                                                   SumIndexFields=Quantity (Base);
+                                                   Clustered=Yes }
+  }
+  FIELDGROUPS
+  {
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

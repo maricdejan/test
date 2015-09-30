@@ -1,0 +1,95 @@
+OBJECT Table 9050 Warehouse Basic Cue
+{
+  OBJECT-PROPERTIES
+  {
+    Date=05.11.08;
+    Time=12:00:00;
+    Version List=NAVW16.00,NAVDACH6.00;
+  }
+  PROPERTIES
+  {
+    CaptionML=[DEU=Lagerstandardstapel;
+               ENU=Warehouse Basic Cue];
+  }
+  FIELDS
+  {
+    { 1   ;   ;Primary Key         ;Code10        ;CaptionML=[DEU=PrimÑrschlÅssel;
+                                                              ENU=Primary Key] }
+    { 2   ;   ;Released Sales Orders - Today;Integer;
+                                                   FieldClass=FlowField;
+                                                   CalcFormula=Count("Sales Header" WHERE (Document Type=FILTER(Order),
+                                                                                           Status=FILTER(Released),
+                                                                                           Shipment Date=FIELD(Date Filter),
+                                                                                           Location Code=FIELD(Location Filter)));
+                                                   CaptionML=[DEU=Freigegebene VerkaufsauftrÑge - Heute;
+                                                              ENU=Released Sales Orders - Today];
+                                                   Editable=No }
+    { 3   ;   ;Posted Sales Shipments - Today;Integer;
+                                                   FieldClass=FlowField;
+                                                   CalcFormula=Count("Sales Shipment Header" WHERE (Posting Date=FIELD(Date Filter2),
+                                                                                                    Location Code=FIELD(Location Filter)));
+                                                   CaptionML=[DEU=Gebuchte Verkaufslieferungen - Heute;
+                                                              ENU=Posted Sales Shipments - Today];
+                                                   Editable=No }
+    { 4   ;   ;Expected Purch. Orders - Today;Integer;
+                                                   FieldClass=FlowField;
+                                                   CalcFormula=Count("Purchase Header" WHERE (Document Type=FILTER(Order),
+                                                                                              Status=FILTER(Released),
+                                                                                              Expected Receipt Date=FIELD(Date Filter),
+                                                                                              Location Code=FIELD(Location Filter)));
+                                                   CaptionML=[DEU=Erwartete Bestellungen - Heute;
+                                                              ENU=Expected Purchase Orders - Today];
+                                                   Editable=No }
+    { 5   ;   ;Posted Purch. Receipts - Today;Integer;
+                                                   FieldClass=FlowField;
+                                                   CalcFormula=Count("Purch. Rcpt. Header" WHERE (Posting Date=FIELD(Date Filter2),
+                                                                                                  Location Code=FIELD(Location Filter)));
+                                                   CaptionML=[DEU=Gebuchte Einkaufslieferungen - Heute;
+                                                              ENU=Posted Purchase Receipts - Today];
+                                                   Editable=No }
+    { 6   ;   ;Inventory Picks - Today;Integer    ;FieldClass=FlowField;
+                                                   CalcFormula=Count("Warehouse Activity Header" WHERE (Type=FILTER(Invt. Pick),
+                                                                                                        Shipment Date=FIELD(Date Filter),
+                                                                                                        Location Code=FIELD(Location Filter)));
+                                                   CaptionML=[DEU=Lagerkommissionierungen - Heute;
+                                                              ENU=Inventory Picks - Today];
+                                                   Editable=No }
+    { 7   ;   ;Inventory Put-aways - Today;Integer;FieldClass=FlowField;
+                                                   CalcFormula=Count("Warehouse Activity Header" WHERE (Type=FILTER(Invt. Put-away),
+                                                                                                        Shipment Date=FIELD(Date Filter),
+                                                                                                        Location Code=FIELD(Location Filter)));
+                                                   CaptionML=[DEU=Lagereinlagerungen - Heute;
+                                                              ENU=Inventory Put-aways - Today];
+                                                   Editable=No }
+    { 20  ;   ;Date Filter         ;Date          ;FieldClass=FlowFilter;
+                                                   CaptionML=[DEU=Datumsfilter;
+                                                              ENU=Date Filter];
+                                                   Editable=No }
+    { 21  ;   ;Date Filter2        ;Date          ;FieldClass=FlowFilter;
+                                                   CaptionML=[DEU=Datumsfilter2;
+                                                              ENU=Date Filter2];
+                                                   Editable=No }
+    { 22  ;   ;Location Filter     ;Code10        ;FieldClass=FlowFilter;
+                                                   CaptionML=[DEU=Lagerortfilter;
+                                                              ENU=Location Filter] }
+    { 11000;  ;Open Phys. Invt. Orders;Integer    ;FieldClass=FlowField;
+                                                   CalcFormula=Count("Phys. Inventory Order Header" WHERE (Status=CONST(Open)));
+                                                   CaptionML=[DEU=InventurauftrÑge îffnen;
+                                                              ENU=Open Phys. Invt. Orders];
+                                                   Editable=No }
+  }
+  KEYS
+  {
+    {    ;Primary Key                             ;Clustered=Yes }
+  }
+  FIELDGROUPS
+  {
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

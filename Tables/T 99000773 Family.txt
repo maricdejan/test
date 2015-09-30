@@ -1,0 +1,67 @@
+OBJECT Table 99000773 Family
+{
+  OBJECT-PROPERTIES
+  {
+    Date=05.11.08;
+    Time=12:00:00;
+    Version List=NAVW16.00;
+  }
+  PROPERTIES
+  {
+    DataCaptionFields=No.,Description;
+    OnModify=BEGIN
+               "Last Date Modified" := TODAY;
+             END;
+
+    OnDelete=VAR
+               FamilyLine@1000 : Record 99000774;
+             BEGIN
+               FamilyLine.SETRANGE("Family No.","No.");
+               FamilyLine.DELETEALL;
+             END;
+
+    CaptionML=[DEU=Fertigungsfamilie;
+               ENU=Family];
+    LookupFormID=Form99000791;
+    DrillDownFormID=Form99000791;
+  }
+  FIELDS
+  {
+    { 1   ;   ;No.                 ;Code20        ;CaptionML=[DEU=Nr.;
+                                                              ENU=No.];
+                                                   NotBlank=Yes }
+    { 10  ;   ;Description         ;Text30        ;OnValidate=BEGIN
+                                                                "Search Name" := Description;
+                                                              END;
+
+                                                   CaptionML=[DEU=Beschreibung;
+                                                              ENU=Description] }
+    { 11  ;   ;Description 2       ;Text30        ;CaptionML=[DEU=Beschreibung 2;
+                                                              ENU=Description 2] }
+    { 12  ;   ;Search Name         ;Code30        ;CaptionML=[DEU=Suchbegriff;
+                                                              ENU=Search Name] }
+    { 13  ;   ;Blocked             ;Boolean       ;CaptionML=[DEU=Gesperrt;
+                                                              ENU=Blocked] }
+    { 14  ;   ;Last Date Modified  ;Date          ;CaptionML=[DEU=Korrigiert am;
+                                                              ENU=Last Date Modified];
+                                                   Editable=No }
+    { 20  ;   ;Routing No.         ;Code20        ;TableRelation="Routing Header";
+                                                   CaptionML=[DEU=Arbeitsplannr.;
+                                                              ENU=Routing No.] }
+  }
+  KEYS
+  {
+    {    ;No.                                     ;Clustered=Yes }
+    {    ;Search Name                              }
+  }
+  FIELDGROUPS
+  {
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

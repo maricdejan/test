@@ -1,0 +1,52 @@
+OBJECT Table 8000 Notification Setup
+{
+  OBJECT-PROPERTIES
+  {
+    Date=05.11.08;
+    Time=12:00:00;
+    Version List=NAVW16.00;
+  }
+  PROPERTIES
+  {
+    CaptionML=[DEU=Benachrichtigungssystem Einrichtung;
+               ENU=Notification Setup];
+  }
+  FIELDS
+  {
+    { 1   ;   ;Primary Key         ;Code10        ;CaptionML=[DEU=PrimÑrschlÅssel;
+                                                              ENU=Primary Key] }
+    { 2   ;   ;Send Notifications  ;Boolean       ;OnValidate=VAR
+                                                                BNManagement@1000 : Codeunit 8000;
+                                                              BEGIN
+                                                                IF ("Send Notifications" AND ("Send Notifications" <> xRec."Send Notifications")) THEN
+                                                                  BNManagement.CheckPropertyStore();
+                                                              END;
+
+                                                   CaptionML=[DEU=Benachr. senden;
+                                                              ENU=Send Notifications] }
+    { 3   ;   ;Default Logging Period;DateFormula ;InitValue=1M;
+                                                   OnValidate=BEGIN
+                                                                IF (CALCDATE("Default Logging Period",TODAY) - TODAY) <= 0 THEN
+                                                                  ERROR(Text000,FIELDCAPTION("Default Logging Period"));
+                                                              END;
+
+                                                   CaptionML=[DEU=Std.-Protokoll.-Zeitraum;
+                                                              ENU=Default Logging Period] }
+  }
+  KEYS
+  {
+    {    ;Primary Key                             ;Clustered=Yes }
+  }
+  FIELDGROUPS
+  {
+  }
+  CODE
+  {
+    VAR
+      Text000@1000 : TextConst 'DEU=%1 muss positiv sein.;ENU=%1 must be positive.';
+
+    BEGIN
+    END.
+  }
+}
+

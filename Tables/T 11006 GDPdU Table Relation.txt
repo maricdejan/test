@@ -1,0 +1,147 @@
+OBJECT Table 11006 GDPdU Table Relation
+{
+  OBJECT-PROPERTIES
+  {
+    Date=05.11.08;
+    Time=12:00:00;
+    Version List=NAVDACH6.00;
+  }
+  PROPERTIES
+  {
+    DataCaptionFields=Definition Group Code,Record Code;
+    OnInsert=BEGIN
+               FromField.GET("From Table No.","From Field No.");
+               ToField.GET("To Table No.","To Field No.");
+               IF ToField.Type <> FromField.Type THEN
+                 ERROR(
+                   Text1140001,
+                   FromField.FIELDCAPTION(Type),
+                   FIELDCAPTION("From Field No."),
+                   FromField.Type,
+                   FIELDCAPTION("To Field No."),
+                   ToField.Type);
+             END;
+
+    CaptionML=[DEU=GDPdU Tabellenrelationen;
+               ENU=GDPdU Table Relation];
+  }
+  FIELDS
+  {
+    { 1   ;   ;Definition Group Code;Code10       ;TableRelation="GDPdU Definition Group";
+                                                   CaptionML=[DEU=Definitionsgruppencode;
+                                                              ENU=Definition Group Code];
+                                                   NotBlank=Yes }
+    { 2   ;   ;Record Code         ;Code10        ;TableRelation="GDPdU Record Code";
+                                                   CaptionML=[DEU=Datensatzcode;
+                                                              ENU=Record Code];
+                                                   NotBlank=Yes }
+    { 3   ;   ;From Table No.      ;Integer       ;TableRelation=Object.ID WHERE (Type=CONST(Table));
+                                                   CaptionML=[DEU=Von Tabellennr.;
+                                                              ENU=From Table No.];
+                                                   NotBlank=Yes;
+                                                   BlankZero=Yes }
+    { 4   ;   ;From Table Name     ;Text80        ;FieldClass=FlowField;
+                                                   CalcFormula=Lookup(AllObjWithCaption."Object Caption" WHERE (Object Type=CONST(Table),
+                                                                                                                Object ID=FIELD(From Table No.)));
+                                                   CaptionML=[DEU=Von Tabellenname;
+                                                              ENU=From Table Name];
+                                                   Editable=No }
+    { 5   ;   ;From Field No.      ;Integer       ;TableRelation=Field.No. WHERE (TableNo=FIELD(From Table No.),
+                                                                                  Type=FILTER(Option|Text|Code|Integer|Decimal|Date|Boolean),
+                                                                                  Class=CONST(Normal));
+                                                   OnValidate=BEGIN
+                                                                CALCFIELDS("From Field Name");
+                                                              END;
+
+                                                   OnLookup=BEGIN
+                                                              FromField.RESET;
+                                                              FromField.SETRANGE(TableNo,"From Table No.");
+                                                              FromField.SETFILTER(Type,'%1|%2|%3|%4|%5|%6|%7',
+                                                                FromField.Type::Option,
+                                                                FromField.Type::Text,
+                                                                FromField.Type::Code,
+                                                                FromField.Type::Integer,
+                                                                FromField.Type::Decimal,
+                                                                FromField.Type::Date,
+                                                                FromField.Type::Boolean);
+                                                              FromField.SETRANGE(Class,FromField.Class::Normal);
+                                                              IF FORM.RUNMODAL(FORM::"GDPdU Field List",FromField) = ACTION::LookupOK THEN
+                                                                VALIDATE("From Field No.",FromField."No.");
+                                                            END;
+
+                                                   CaptionML=[DEU=Von Feldnr.;
+                                                              ENU=From Field No.];
+                                                   NotBlank=Yes;
+                                                   BlankZero=Yes }
+    { 6   ;   ;From Field Name     ;Text80        ;FieldClass=FlowField;
+                                                   CalcFormula=Lookup(Field."Field Caption" WHERE (TableNo=FIELD(From Table No.),
+                                                                                                   No.=FIELD(From Field No.)));
+                                                   CaptionML=[DEU=Von Feldname;
+                                                              ENU=From Field Name];
+                                                   Editable=No }
+    { 7   ;   ;To Table No.        ;Integer       ;TableRelation=Object.ID WHERE (Type=CONST(Table));
+                                                   CaptionML=[DEU=Zu Tabellennr.;
+                                                              ENU=To Table No.];
+                                                   NotBlank=Yes;
+                                                   BlankZero=Yes }
+    { 8   ;   ;To Table Name       ;Text80        ;FieldClass=FlowField;
+                                                   CalcFormula=Lookup(AllObjWithCaption."Object Caption" WHERE (Object Type=CONST(Table),
+                                                                                                                Object ID=FIELD(To Table No.)));
+                                                   CaptionML=[DEU=Zu Tabellenname;
+                                                              ENU=To Table Name];
+                                                   Editable=No }
+    { 9   ;   ;To Field No.        ;Integer       ;TableRelation=Field.No. WHERE (TableNo=FIELD(To Table No.),
+                                                                                  Type=FILTER(Option|Text|Code|Integer|Decimal|Date|Boolean));
+                                                   OnValidate=BEGIN
+                                                                CALCFIELDS("To Field Name");
+                                                              END;
+
+                                                   OnLookup=BEGIN
+                                                              IF "From Table No." = 0 THEN
+                                                                ERROR(Text1140000,FIELDCAPTION("From Table No."));
+
+                                                              IF "From Field No." = 0 THEN
+                                                                ERROR(Text1140000,FIELDCAPTION("From Field No."));
+
+                                                              FromField.GET("From Table No.","From Field No.");
+                                                              TESTFIELD("To Table No.");
+                                                              ToField.RESET;
+                                                              ToField.SETRANGE(TableNo,"To Table No.");
+                                                              ToField.SETRANGE(Type,FromField.Type);
+                                                              ToField.SETRANGE(Class,FromField.Class);
+                                                              IF FORM.RUNMODAL(FORM::"GDPdU Field List",ToField) = ACTION::LookupOK THEN
+                                                                VALIDATE("To Field No.",ToField."No.");
+                                                            END;
+
+                                                   CaptionML=[DEU=Zu Feldnr.;
+                                                              ENU=To Field No.];
+                                                   NotBlank=Yes;
+                                                   BlankZero=Yes }
+    { 10  ;   ;To Field Name       ;Text80        ;FieldClass=FlowField;
+                                                   CalcFormula=Lookup(Field."Field Caption" WHERE (TableNo=FIELD(To Table No.),
+                                                                                                   No.=FIELD(To Field No.)));
+                                                   CaptionML=[DEU=Zu Feldname;
+                                                              ENU=To Field Name];
+                                                   Editable=No }
+  }
+  KEYS
+  {
+    {    ;Definition Group Code,Record Code,From Table No.,From Field No.,To Table No.,To Field No.;
+                                                   Clustered=Yes }
+  }
+  FIELDGROUPS
+  {
+  }
+  CODE
+  {
+    VAR
+      Text1140000@1140000 : TextConst 'DEU=Sie mÅssen %1 angeben.;ENU=You must specify %1.';
+      Text1140001@1140001 : TextConst 'DEU=%1 muss in %2 (%3) und %4 (%5) gleich sein.;ENU=%1 must be the same in %2 (%3) and %4 (%5).';
+      FromField@1140002 : Record 2000000041;
+      ToField@1140003 : Record 2000000041;
+
+    BEGIN
+    END.
+  }
+}
+

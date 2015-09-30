@@ -1,0 +1,59 @@
+OBJECT Table 409 SMTP Mail Setup
+{
+  OBJECT-PROPERTIES
+  {
+    Date=05.11.08;
+    Time=12:00:00;
+    Version List=NAVW16.00;
+  }
+  PROPERTIES
+  {
+    CaptionML=[DEU=SMTP-Mail-Einrichtung;
+               ENU=SMTP Mail Setup];
+  }
+  FIELDS
+  {
+    { 1   ;   ;Primary Key         ;Code10        ;CaptionML=[DEU=PrimÑrschlÅssel;
+                                                              ENU=Primary Key] }
+    { 2   ;   ;SMTP Server         ;Text250       ;CaptionML=[DEU=SMTP-Server;
+                                                              ENU=SMTP Server] }
+    { 3   ;   ;Authentication      ;Option        ;OnValidate=BEGIN
+                                                                IF Authentication <> Authentication::Basic THEN BEGIN
+                                                                  "User ID" := '';
+                                                                  Password := '';
+                                                                END;
+                                                              END;
+
+                                                   CaptionML=[DEU=Authentifizierung;
+                                                              ENU=Authentication];
+                                                   OptionCaptionML=[DEU=Anonym,NTLM,Standard;
+                                                                    ENU=Anonymous,NTLM,Basic];
+                                                   OptionString=Anonymous,NTLM,Basic }
+    { 4   ;   ;User ID             ;Text30        ;OnValidate=BEGIN
+                                                                TESTFIELD(Authentication,Authentication::Basic);
+                                                              END;
+
+                                                   CaptionML=[DEU=Benutzer-ID;
+                                                              ENU=User ID] }
+    { 5   ;   ;Password            ;Text30        ;OnValidate=BEGIN
+                                                                TESTFIELD(Authentication,Authentication::Basic);
+                                                              END;
+
+                                                   CaptionML=[DEU=Kennwort;
+                                                              ENU=Password] }
+  }
+  KEYS
+  {
+    {    ;Primary Key                             ;Clustered=Yes }
+  }
+  FIELDGROUPS
+  {
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

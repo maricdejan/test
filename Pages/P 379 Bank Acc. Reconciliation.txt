@@ -1,0 +1,149 @@
+OBJECT Page 379 Bank Acc. Reconciliation
+{
+  OBJECT-PROPERTIES
+  {
+    Date=14.08.09;
+    Time=12:00:00;
+    Version List=NAVW16.00.01;
+  }
+  PROPERTIES
+  {
+    CaptionML=[DEU=Bankkontoabstimmung;
+               ENU=Bank Acc. Reconciliation];
+    SaveValues=No;
+    SourceTable=Table273;
+    PageType=Document;
+    ActionList=ACTIONS
+    {
+      { 1900000003;0 ;ActionContainer;
+                      ActionContainerType=RelatedInformation }
+      { 23      ;1   ;ActionGroup;
+                      CaptionML=[DEU=Ab&stimmen;
+                                 ENU=&Recon.] }
+      { 26      ;2   ;Action    ;
+                      ShortCutKey=Shift+F7;
+                      CaptionML=[DEU=&Karte;
+                                 ENU=&Card];
+                      RunObject=Page 370;
+                      RunFormLink=No.=FIELD(Bank Account No.);
+                      Image=EditLines }
+      { 1900000004;0 ;ActionContainer;
+                      ActionContainerType=ActionItems }
+      { 14      ;1   ;ActionGroup;
+                      CaptionML=[DEU=F&unktion;
+                                 ENU=F&unctions] }
+      { 16      ;2   ;Action    ;
+                      Ellipsis=Yes;
+                      CaptionML=[DEU=Vorschlagszeilen;
+                                 ENU=Suggest Lines];
+                      Promoted=Yes;
+                      PromotedIsBig=Yes;
+                      Image=SuggestLines;
+                      PromotedCategory=Process;
+                      OnAction=BEGIN
+                                 SuggestBankAccStatement.SetStmt(Rec);
+                                 SuggestBankAccStatement.RUNMODAL;
+                                 CLEAR(SuggestBankAccStatement);
+                               END;
+                                }
+      { 24      ;2   ;Action    ;
+                      Ellipsis=Yes;
+                      CaptionML=[DEU=šbertragung an Fibu Buch.-Blatt;
+                                 ENU=Transfer to General Journal];
+                      Promoted=Yes;
+                      PromotedIsBig=Yes;
+                      Image=TransferToGeneralJournal;
+                      PromotedCategory=Process;
+                      OnAction=BEGIN
+                                 TransferToGLJnl.SetBankAccRecon(Rec);
+                                 TransferToGLJnl.RUN;
+                               END;
+                                }
+      { 1       ;1   ;ActionGroup;
+                      CaptionML=[DEU=Bu&chen;
+                                 ENU=P&osting] }
+      { 15      ;2   ;Action    ;
+                      Ellipsis=Yes;
+                      CaptionML=[DEU=&Testbericht;
+                                 ENU=&Test Report];
+                      Image=TestReport;
+                      OnAction=BEGIN
+                                 ReportPrint.PrintBankAccRecon(Rec);
+                               END;
+                                }
+      { 17      ;2   ;Action    ;
+                      ShortCutKey=F9;
+                      CaptionML=[DEU=Bu&chen;
+                                 ENU=P&ost];
+                      RunObject=Codeunit 371;
+                      Promoted=Yes;
+                      PromotedIsBig=Yes;
+                      Image=Post;
+                      PromotedCategory=Process }
+      { 9       ;2   ;Action    ;
+                      ShortCutKey=Shift+F9;
+                      CaptionML=[DEU=Buchen und d&rucken;
+                                 ENU=Post and &Print];
+                      RunObject=Codeunit 372;
+                      Promoted=Yes;
+                      PromotedIsBig=Yes;
+                      Image=PostPrint;
+                      PromotedCategory=Process }
+    }
+  }
+  CONTROLS
+  {
+    { 1900000001;0;Container;
+                ContainerType=ContentArea }
+
+    { 2   ;1   ;Group     ;
+                CaptionML=[DEU=Allgemein;
+                           ENU=General] }
+
+    { 5   ;2   ;Field     ;
+                SourceExpr="Bank Account No." }
+
+    { 20  ;2   ;Field     ;
+                SourceExpr="Statement No." }
+
+    { 22  ;2   ;Field     ;
+                SourceExpr="Statement Date" }
+
+    { 28  ;2   ;Field     ;
+                SourceExpr="Balance Last Statement" }
+
+    { 30  ;2   ;Field     ;
+                SourceExpr="Statement Ending Balance" }
+
+    { 11  ;1   ;Part      ;
+                Name=StmtLine;
+                SubFormLink=Bank Account No.=FIELD(Bank Account No.),
+                            Statement No.=FIELD(Statement No.);
+                PagePartID=Page380 }
+
+    { 1900000007;0;Container;
+                ContainerType=FactBoxArea }
+
+    { 1900383207;1;Part   ;
+                Visible=FALSE;
+                PartType=System;
+                SystemPartID=RecordLinks }
+
+    { 1905767507;1;Part   ;
+                Visible=FALSE;
+                PartType=System;
+                SystemPartID=Notes }
+
+  }
+  CODE
+  {
+    VAR
+      SuggestBankAccStatement@1000 : Report 1496;
+      TransferToGLJnl@1001 : Report 1497;
+      ReportPrint@1002 : Codeunit 228;
+
+    BEGIN
+    END.
+  }
+}
+

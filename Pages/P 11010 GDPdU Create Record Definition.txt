@@ -1,0 +1,398 @@
+OBJECT Page 11010 GDPdU Create Record Definition
+{
+  OBJECT-PROPERTIES
+  {
+    Date=14.08.09;
+    Time=12:00:00;
+    Version List=NAVDACH6.00.01;
+  }
+  PROPERTIES
+  {
+    CaptionML=[DEU=GDPdU Datensatzdef. erstellen;
+               ENU=GDPdU Create Record Definition];
+    InsertAllowed=No;
+    DeleteAllowed=No;
+    SourceTable=Table11002;
+    DataCaptionExpr=Caption;
+    PageType=NavigatePage;
+    OnInit=BEGIN
+             NextEnable := TRUE;
+             GDPdUTableRelationVisible := TRUE;
+             GDPdUFieldListVisible := TRUE;
+           END;
+
+    OnOpenPage=BEGIN
+                 FormWidth := CancelXPos + CancelWidth + 220;
+                 FrmXPos := ROUND((FrmWidth - FormWidth) / 2,1) + FrmXPos;
+                 FrmYPos := 3000;
+                 FrmHeight := CancelYPos + CancelHeight + 220;
+                 FrmWidth := FormWidth;
+                 ShowStep(TRUE);
+               END;
+
+    OnClosePage=BEGIN
+                  DeleteData
+                END;
+
+    ActionList=ACTIONS
+    {
+      { 1900000004;0 ;ActionContainer;
+                      ActionContainerType=ActionItems }
+      { 1140015 ;1   ;Action    ;
+                      Name=Back;
+                      CaptionML=[DEU=< &ZurÅck;
+                                 ENU=< &Back];
+                      Enabled=BackEnable;
+                      InFooterBar=Yes;
+                      OnAction=BEGIN
+                                 ShowStep(FALSE);
+                                 PerformPrevWizardStatus(AdditionalTableSelection);
+                                 CurrPage.UPDATE(TRUE);
+                                 ShowStep(TRUE);
+                               END;
+                                }
+      { 1140016 ;1   ;Action    ;
+                      Name=Next;
+                      CaptionML=[DEU=&Weiter >;
+                                 ENU=&Next >];
+                      Enabled=NextEnable;
+                      InFooterBar=Yes;
+                      OnAction=BEGIN
+                                 CASE "Wizard Step" OF
+                                   "Wizard Step"::"3":
+                                     BEGIN
+                                       CurrPage.GDPdUFieldList.FORM.GetField(FieldTemp);
+                                       SetField(FieldTemp);
+                                     END;
+                                   "Wizard Step"::"6":
+                                     BEGIN
+                                       CurrPage.GDPdUTableRelation.FORM.GetTableRel(TableRelTemp);
+                                       SetTableRel(TableRelTemp);
+                                     END;
+                                 END;
+
+                                 CheckStatus;
+                                 ShowStep(FALSE);
+                                 PerformNextWizardStatus;
+                                 CurrPage.UPDATE(TRUE);
+                                 ShowStep(TRUE);
+                               END;
+                                }
+      { 1140017 ;1   ;Action    ;
+                      Name=Finish;
+                      CaptionML=[DEU=B&eenden;
+                                 ENU=&Finish];
+                      Enabled=FinishEnable;
+                      InFooterBar=Yes;
+                      Image=ReleaseDoc;
+                      OnAction=BEGIN
+                                 CheckStatus;
+                                 FinishWizard;
+                                 CurrPage.CLOSE;
+                               END;
+                                }
+    }
+  }
+  CONTROLS
+  {
+    { 1900000001;0;Container;
+                ContainerType=ContentArea }
+
+    { 1140000;1;Group     ;
+                Name=Step3;
+                Visible=Step3Visible }
+
+    { 1140001;2;Field     ;
+                CaptionClass=Text19026456;
+                MultiLine=Yes }
+
+    { 1140002;2;Part      ;
+                Name=GDPdUFieldList;
+                SubFormView=SORTING(TableNo,No.);
+                SubFormLink=Type=FILTER(Option|Code|Text|Decimal|Integer|Date|Boolean),
+                            Class=FILTER(Normal|FlowField),
+                            TableNo=FIELD(Table No.);
+                PagePartID=Page11012;
+                Visible=GDPdUFieldListVisible }
+
+    { 1140052;1;Group     ;
+                Name=Step5;
+                Visible=Step5Visible }
+
+    { 1140053;2;Field     ;
+                CaptionClass=Text19048369;
+                MultiLine=Yes }
+
+    { 1140059;2;Field     ;
+                Name=TableNoStep5;
+                CaptionML=[DEU=WÑhlen Sie eine Tabelle fÅr den Export der GDPdU-Daten aus.;
+                           ENU=Choose a table for the export of GDPdU data.];
+                SourceExpr="Table No." }
+
+    { 1140054;2;Field     ;
+                BlankZero=Yes;
+                SourceExpr="Table Name" }
+
+    { 1140055;2;Field     ;
+                CaptionML=[DEU=Geben Sie einen Dateinamen fÅr den Export an.;
+                           ENU=Enter a file name for the export.];
+                SourceExpr="Export File Name" }
+
+    { 1140057;2;Field     ;
+                CaptionML=[DEU=WÑhlen Sie ein Feld als Datumsfilter aus.;
+                           ENU=Choose a field as Date Filter.];
+                BlankZero=Yes;
+                SourceExpr="GDPdU Period Field No." }
+
+    { 1140063;2;Field     ;
+                SourceExpr="GDPdU Period Field Name" }
+
+    { 1140003;1;Group     ;
+                Name=Step1;
+                Visible=Step1Visible }
+
+    { 1140004;2;Field     ;
+                CaptionClass=Text19035011;
+                MultiLine=Yes }
+
+    { 1140009;2;Field     ;
+                CaptionML=[DEU=GDPdU Definitionsgruppencode;
+                           ENU=GDPdU Definition Group Code];
+                SourceExpr=Code;
+                Editable=FALSE }
+
+    { 1140005;2;Field     ;
+                CaptionML=[DEU=Welcher GDPdU Datensatzcode soll verwendet werden?;
+                           ENU=Which GDPdU record definition shall be used?];
+                SourceExpr="Record Code";
+                TableRelation="GDPdU Record Code" }
+
+    { 1140007;2;Field     ;
+                CaptionML=[DEU=Beschreiben Sie die GDPdU Datensatzdefinition.;
+                           ENU=Describe your GDPdU record definition.];
+                SourceExpr=["Record Description" ] }
+
+    { 1140011;2;Field     ;
+                CaptionML=[DEU=Geben Sie einen Pfad fÅr den Export an.;
+                           ENU=Please enter a path for the export.];
+                SourceExpr="Export Path" }
+
+    { 1140045;1;Group     ;
+                Name=Step4;
+                Visible=Step4Visible }
+
+    { 1140046;2;Field     ;
+                CaptionClass=Text19049402;
+                MultiLine=Yes }
+
+    { 1140047;2;Field     ;
+                CaptionClass=Text19051341;
+                MultiLine=Yes }
+
+    { 1140048;2;Field     ;
+                CaptionClass=Text19039775;
+                MultiLine=Yes }
+
+    { 1140034;1;Group     ;
+                Name=Step6;
+                Visible=Step6Visible }
+
+    { 1140035;2;Field     ;
+                CaptionClass=Text19009488;
+                MultiLine=Yes }
+
+    { 1140037;2;Field     ;
+                Lookup=No;
+                CaptionML=[DEU=Von Tabellennr.;
+                           ENU=From Table No.];
+                SourceExpr="Relation To Table No.";
+                Editable=FALSE }
+
+    { 1140039;2;Field     ;
+                DrillDown=No;
+                CaptionML=[DEU=Von Tabellenname;
+                           ENU=From Table Name];
+                SourceExpr="Relation To Table Name";
+                Editable=FALSE }
+
+    { 1140041;2;Field     ;
+                Lookup=No;
+                CaptionML=[DEU=Zu Tabellennr.;
+                           ENU=To Table No.];
+                SourceExpr="Table No.";
+                TableRelation=Object.ID WHERE (Type=CONST(Table));
+                Editable=FALSE;
+                LookupFormID=Objects }
+
+    { 1140043;2;Field     ;
+                DrillDown=No;
+                CaptionML=[DEU=Zu Tabellenname;
+                           ENU=To Table Name];
+                SourceExpr="Table Name";
+                Editable=FALSE }
+
+    { 1140036;2;Part      ;
+                Name=GDPdUTableRelation;
+                SubFormView=SORTING(Definition Group Code,Record Code,From Table No.,From Field No.,To Table No.,To Field No.);
+                PagePartID=Page11015;
+                Visible=GDPdUTableRelationVisible }
+
+    { 1140026;1;Group     ;
+                Name=Step2;
+                Visible=Step2Visible }
+
+    { 1140027;2;Field     ;
+                CaptionClass=Text19022140;
+                MultiLine=Yes }
+
+    { 1140051;2;Field     ;
+                CaptionML=[DEU=WÑhlen Sie eine Tabelle fÅr den Export der GDPdU-Daten aus.;
+                           ENU=Choose a table for the export of GDPdU data.];
+                SourceExpr="Table No." }
+
+    { 1140028;2;Field     ;
+                BlankZero=Yes;
+                SourceExpr="Table Name" }
+
+    { 1140032;2;Field     ;
+                CaptionML=[DEU=Geben Sie einen Dateinamen fÅr den Export an.;
+                           ENU=Enter a file name for the export.];
+                SourceExpr="Export File Name" }
+
+    { 1140050;2;Field     ;
+                CaptionML=[DEU=WÑhlen Sie ein Feld als Datumsfilter aus.;
+                           ENU=Choose a field as Date Filter.];
+                BlankZero=Yes;
+                SourceExpr="GDPdU Period Field No." }
+
+    { 1140062;2;Field     ;
+                SourceExpr="GDPdU Period Field Name" }
+
+  }
+  CODE
+  {
+    VAR
+      FieldTemp@1140001 : TEMPORARY Record 2000000041;
+      TableRelTemp@1140000 : TEMPORARY Record 11006;
+      FormWidth@1140012 : Integer;
+      AdditionalTableSelection@1140014 : Boolean;
+      CancelXPos@19007686 : Integer;
+      CancelYPos@19003745 : Integer;
+      CancelHeight@19054177 : Integer;
+      CancelWidth@19035161 : Integer;
+      FrmXPos@19006598 : Integer;
+      FrmYPos@19016646 : Integer;
+      FrmHeight@19058551 : Integer;
+      FrmWidth@19057698 : Integer;
+      Step1Visible@19067551 : Boolean INDATASET;
+      Step2Visible@19067406 : Boolean INDATASET;
+      Step3Visible@19067629 : Boolean INDATASET;
+      GDPdUFieldListVisible@19070013 : Boolean INDATASET;
+      Step4Visible@19067716 : Boolean INDATASET;
+      Step5Visible@19067683 : Boolean INDATASET;
+      Step6Visible@19067522 : Boolean INDATASET;
+      GDPdUTableRelationVisible@19041072 : Boolean INDATASET;
+      FinishEnable@19079943 : Boolean INDATASET;
+      BackEnable@19029006 : Boolean INDATASET;
+      NextEnable@19007695 : Boolean INDATASET;
+      Text19026456@19055889 : TextConst 'DEU=Sie mÅssen nun die Felder der Tabelle auswÑhlen, die exportiert werden sollen.;ENU=You must choose the fields of the table which should be exported now.';
+      Text19048369@19052342 : TextConst 'DEU=Sie kînnen eine andere Tabelle fÅr den Export der GDPdU-Daten auswÑhlen\und einen Dateinamen fÅr den Export eingeben.\Au·erdem kînnen Sie ein Feld als Datumsfilter fÅr den Export auswÑhlen.;ENU=You can choose another table for the export of GDPdU data\and enter the file name for the export.\Additionally you can choose a field as a date filter for the export.';
+      Text19035011@19015546 : TextConst 'DEU=Dieser Assistent hilft Ihnen bei der Erstellung von GDPdU Datensatzdefinitionen.;ENU=This wizard helps you to create GDPdU record definitions.';
+      Text19049402@19059179 : TextConst 'DEU=Die Eingaben zur GDPdU Datensatzdefinition kînnen nun gespeichert werden.;ENU=The GDPdU record definition you have entered can now be saved.';
+      Text19051341@19051063 : TextConst 'DEU=Wenn Sie auf ''Weiter'' klicken, werden die Eingaben gespeichert und der Assistent zur Erfassung einer weiteren Datensatzdefinitionstabelle fortgesetzt.;ENU=If you click Next, your entries will be saved, and the wizard will be ready to set up another record definition.';
+      Text19039775@19050640 : TextConst 'DEU=Wenn Sie auf ''Beenden'' klicken, werden die Eingaben gespeichert und der Assistent beendet.;ENU=If you click Finish, your entries will be saved, and the wizard will close.';
+      Text19009488@19063891 : TextConst 'DEU=Sie mÅssen nun die Relation zur vorigen Tabelle definieren.;ENU=You must define the relation to the previous table now.';
+      Text19022140@19020218 : TextConst 'DEU=Sie mÅssen jetzt eine Tabelle fÅr den Export von GDPdU-Daten auswÑhlen und den Dateinamen fÅr den Export eingeben.\ZusÑtzlich kînnen Sie ein Feld als Datumsfilter fÅr den Export auswÑhlen.;ENU=You have to choose a table for the export of GDPdU data\and enter the file name for the export now.\Additionally you can choose a field as a date filter for the export.';
+
+    LOCAL PROCEDURE ShowStep@1140000(Visible@1140001 : Boolean);
+    BEGIN
+      CASE "Wizard Step" OF
+        "Wizard Step"::"1":
+          BEGIN
+            Step1Visible := Visible;
+            IF Visible THEN BEGIN
+              FinishEnable := FALSE;
+              BackEnable := FALSE;
+              NextEnable := TRUE;
+            END;
+          END;
+        "Wizard Step"::"2":
+          BEGIN
+            Step2Visible := Visible;
+            IF Visible THEN BEGIN
+              FinishEnable := FALSE;
+              BackEnable := TRUE;
+              NextEnable := TRUE;
+            END;
+          END;
+        "Wizard Step"::"3":
+          BEGIN
+            Step3Visible := Visible;
+            GDPdUFieldListVisible := Visible;
+
+            IF Visible THEN BEGIN
+              FilterField(FieldTemp,TRUE);
+              GetField(FieldTemp);
+              // CurrForm.GDPdUFieldList.FORM.SETTABLEVIEW(FieldTemp); // dach0003
+              CurrPage.GDPdUFieldList.FORM.SetField(FieldTemp);
+              CurrPage.GDPdUFieldList.FORM.UpdateForm;
+              FinishEnable := FALSE;
+              BackEnable := TRUE;
+              NextEnable := TRUE;
+            END ELSE BEGIN
+              CurrPage.GDPdUFieldList.FORM.GetField(FieldTemp);
+              SetField(FieldTemp);
+            END;
+          END;
+        "Wizard Step"::"4":
+          BEGIN
+            Step4Visible := Visible;
+            IF Visible THEN BEGIN
+              FinishEnable := TRUE;
+              BackEnable := TRUE;
+              NextEnable := TRUE;
+            END;
+          END;
+        "Wizard Step"::"5":
+          BEGIN
+            Step5Visible := Visible;
+            IF Visible THEN BEGIN
+              FinishEnable := FALSE;
+              BackEnable := FALSE;
+              NextEnable := TRUE;
+              AdditionalTableSelection := TRUE;
+            END;
+          END;
+        "Wizard Step"::"6":
+          BEGIN
+            Step6Visible := Visible;
+            GDPdUTableRelationVisible := Visible;
+
+            IF Visible THEN BEGIN
+              FilterTableRel(TableRelTemp,TRUE);
+              GetTableRel(TableRelTemp);
+              CurrPage.GDPdUTableRelation.FORM.SETTABLEVIEW(TableRelTemp);
+              CurrPage.GDPdUTableRelation.FORM.SetTableRel(TableRelTemp);
+              CurrPage.GDPdUTableRelation.FORM.UpdateForm;
+              FinishEnable := FALSE;
+              BackEnable := TRUE;
+              NextEnable := TRUE;
+            END ELSE BEGIN
+              CurrPage.GDPdUTableRelation.FORM.GetTableRel(TableRelTemp);
+              SetTableRel(TableRelTemp);
+            END;
+          END;
+      END;
+    END;
+
+    PROCEDURE Caption@1140001() : Text[260];
+    VAR
+      CaptionStr@1140000 : Text[260];
+    BEGIN
+    END;
+
+    BEGIN
+    END.
+  }
+}
+

@@ -1,0 +1,69 @@
+OBJECT Dataport 5005350 Export Phys. Invt. Rec. Lines
+{
+  OBJECT-PROPERTIES
+  {
+    Date=01.10.04;
+    Time=12:00:00;
+    Version List=NAVDACH4.00;
+  }
+  PROPERTIES
+  {
+    CaptionML=[DEU=Inventurerfassungszeilen exp.;
+               ENU=Export Phys. Invt. Rec. Lines];
+    Import=No;
+  }
+  DATAITEMS
+  {
+    { PROPERTIES
+      {
+        DataItemTable=Table5005353;
+        OnPreDataItem=BEGIN
+                        PhysInvtRecHeader.TESTFIELD("Order No.");
+                        PhysInvtRecHeader.TESTFIELD("Recording No.");
+                        SETRANGE("Order No.", PhysInvtRecHeader."Order No.");
+                        SETRANGE("Recording No.", PhysInvtRecHeader."Recording No.");
+                      END;
+
+      }
+      FIELDS
+      {
+        {      ;     ;"Order No."          }
+        {      ;     ;"Recording No."      }
+        {      ;     ;"Line No."           }
+        {      ;     ;"Item No."           }
+        {      ;     ;"Variant Code"       }
+        {      ;     ;"Location Code"      }
+        {      ;     ;"Bin Code"           }
+        {      ;     ;Description          }
+        {      ;     ;"Description 2"      }
+        {      ;     ;"Unit of Measure Code" }
+        {      ;     ;"Shelf/Bin No."      }
+      }
+       }
+  }
+  REQUESTFORM
+  {
+    PROPERTIES
+    {
+      Width=9020;
+      Height=3410;
+    }
+    CONTROLS
+    {
+    }
+  }
+  CODE
+  {
+    VAR
+      PhysInvtRecHeader@1140000 : Record 5005352;
+
+    PROCEDURE Def@1140000(NewPhysInvtRecHeader@1140000 : Record 5005352);
+    BEGIN
+      PhysInvtRecHeader := NewPhysInvtRecHeader;
+    END;
+
+    BEGIN
+    END.
+  }
+}
+

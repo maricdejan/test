@@ -1,0 +1,59 @@
+OBJECT Table 8617 Migration Data Error
+{
+  OBJECT-PROPERTIES
+  {
+    Date=05.11.08;
+    Time=12:00:00;
+    Version List=NAVW16.00;
+  }
+  PROPERTIES
+  {
+    CaptionML=[DEU=Migrationsdatenfehler;
+               ENU=Migration Data Error];
+    LookupFormID=Form8616;
+    DrillDownFormID=Form8616;
+  }
+  FIELDS
+  {
+    { 1   ;   ;TableID             ;Integer       ;TableRelation=Object.ID WHERE (Type=CONST(Table));
+                                                   CaptionML=[DEU=TableID;
+                                                              ENU=TableID];
+                                                   Editable=No }
+    { 2   ;   ;RecordNo.           ;Integer       ;TableRelation="Migration Record".No. WHERE (TableID=FIELD(TableID));
+                                                   CaptionML=[DEU=RecordNo.;
+                                                              ENU=RecordNo.];
+                                                   Editable=No }
+    { 3   ;   ;FieldID             ;Integer       ;CaptionML=[DEU=Feld-ID;
+                                                              ENU=FieldID];
+                                                   Editable=No }
+    { 4   ;   ;Field Name          ;Text30        ;FieldClass=FlowField;
+                                                   CalcFormula=Lookup(Field.FieldName WHERE (TableNo=FIELD(TableID),
+                                                                                             No.=FIELD(FieldID)));
+                                                   CaptionML=[DEU=Feldname;
+                                                              ENU=Field Name];
+                                                   Editable=No }
+    { 5   ;   ;Error Text          ;Text250       ;CaptionML=[DEU=Fehlertext;
+                                                              ENU=Error Text];
+                                                   Editable=No }
+    { 6   ;   ;Field Caption       ;Text250       ;FieldClass=FlowField;
+                                                   CalcFormula=Lookup(Field."Field Caption" WHERE (TableNo=FIELD(TableID),
+                                                                                                   No.=FIELD(FieldID)));
+                                                   CaptionML=[DEU=Feldbezeichnung;
+                                                              ENU=Field Caption];
+                                                   Editable=No }
+  }
+  KEYS
+  {
+    {    ;TableID,RecordNo.,FieldID               ;Clustered=Yes }
+  }
+  FIELDGROUPS
+  {
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

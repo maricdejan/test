@@ -1,0 +1,40 @@
+OBJECT Table 260 Tariff Number
+{
+  OBJECT-PROPERTIES
+  {
+    Date=05.11.08;
+    Time=12:00:00;
+    Version List=NAVW16.00,NAVDACH4.00;
+  }
+  PROPERTIES
+  {
+    CaptionML=[DEU=Zollposition;
+               ENU=Tariff Number];
+    LookupFormID=Form310;
+  }
+  FIELDS
+  {
+    { 1   ;   ;No.                 ;Code10        ;CaptionML=[DEU=Nr.;
+                                                              ENU=No.];
+                                                   NotBlank=Yes;
+                                                   Numeric=Yes }
+    { 2   ;   ;Description         ;Text200       ;CaptionML=[DEU=Beschreibung;
+                                                              ENU=Description] }
+    { 3   ;   ;Supplementary Units ;Boolean       ;CaptionML=[DEU=Besondere Maáeinheit;
+                                                              ENU=Supplementary Units] }
+  }
+  KEYS
+  {
+    {    ;No.                                     ;Clustered=Yes }
+  }
+  FIELDGROUPS
+  {
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

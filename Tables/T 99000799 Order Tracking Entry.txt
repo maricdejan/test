@@ -1,0 +1,81 @@
+OBJECT Table 99000799 Order Tracking Entry
+{
+  OBJECT-PROPERTIES
+  {
+    Date=05.11.08;
+    Time=12:00:00;
+    Version List=NAVW16.00;
+  }
+  PROPERTIES
+  {
+    CaptionML=[DEU=Bedarfsverursacherposten;
+               ENU=Order Tracking Entry];
+  }
+  FIELDS
+  {
+    { 1   ;   ;Entry No.           ;Integer       ;CaptionML=[DEU=Lfd. Nr.;
+                                                              ENU=Entry No.] }
+    { 2   ;   ;Supplied by         ;Text80        ;CaptionML=[DEU=Beliefert von;
+                                                              ENU=Supplied by] }
+    { 3   ;   ;Demanded by         ;Text80        ;CaptionML=[DEU=Angefordert von;
+                                                              ENU=Demanded by] }
+    { 8   ;   ;Shipment Date       ;Date          ;CaptionML=[DEU=Warenausg.-Datum;
+                                                              ENU=Shipment Date] }
+    { 9   ;   ;Expected Receipt Date;Date         ;CaptionML=[DEU=Erwartetes Wareneingangsdatum;
+                                                              ENU=Expected Receipt Date] }
+    { 11  ;   ;Item No.            ;Code20        ;TableRelation=Item;
+                                                   CaptionML=[DEU=Artikelnr.;
+                                                              ENU=Item No.] }
+    { 13  ;   ;Quantity            ;Decimal       ;CaptionML=[DEU=Menge;
+                                                              ENU=Quantity];
+                                                   DecimalPlaces=0:5 }
+    { 14  ;   ;Level               ;Integer       ;CaptionML=[DEU=Ebene;
+                                                              ENU=Level] }
+    { 20  ;   ;For Type            ;Integer       ;CaptionML=[DEU=FÅr Art;
+                                                              ENU=For Type] }
+    { 21  ;   ;For Subtype         ;Integer       ;CaptionML=[DEU=FÅr Unterart;
+                                                              ENU=For Subtype] }
+    { 22  ;   ;For ID              ;Code20        ;CaptionML=[DEU=FÅr ID;
+                                                              ENU=For ID] }
+    { 23  ;   ;For Batch Name      ;Code10        ;CaptionML=[DEU=FÅr Buch.-Blattname;
+                                                              ENU=For Batch Name] }
+    { 24  ;   ;For Prod. Order Line;Integer       ;CaptionML=[DEU=FÅr FA-Zeile;
+                                                              ENU=For Prod. Order Line] }
+    { 25  ;   ;For Ref. No.        ;Integer       ;CaptionML=[DEU=FÅr Ref.-Nr.;
+                                                              ENU=For Ref. No.] }
+    { 26  ;   ;From Type           ;Integer       ;CaptionML=[DEU=Von Art;
+                                                              ENU=From Type] }
+    { 27  ;   ;From Subtype        ;Integer       ;CaptionML=[DEU=Von Unterart;
+                                                              ENU=From Subtype] }
+    { 28  ;   ;From ID             ;Code20        ;CaptionML=[DEU=Von ID;
+                                                              ENU=From ID] }
+    { 29  ;   ;From Batch Name     ;Code10        ;CaptionML=[DEU=Von Buch.-Blattname;
+                                                              ENU=From Batch Name] }
+    { 30  ;   ;From Prod. Order Line;Integer      ;CaptionML=[DEU=Von FA-Zeile;
+                                                              ENU=From Prod. Order Line] }
+    { 31  ;   ;From Ref. No.       ;Integer       ;CaptionML=[DEU=Von Ref.-Nr.;
+                                                              ENU=From Ref. No.] }
+    { 40  ;   ;Starting Date       ;Date          ;CaptionML=[DEU=Startdatum;
+                                                              ENU=Starting Date] }
+    { 41  ;   ;Ending Date         ;Date          ;CaptionML=[DEU=Enddatum;
+                                                              ENU=Ending Date] }
+    { 42  ;   ;Name                ;Text80        ;CaptionML=[DEU=Name;
+                                                              ENU=Name] }
+    { 43  ;   ;Warning             ;Boolean       ;CaptionML=[DEU=Warnung;
+                                                              ENU=Warning] }
+  }
+  KEYS
+  {
+    {    ;Entry No.                               ;Clustered=Yes }
+  }
+  FIELDGROUPS
+  {
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

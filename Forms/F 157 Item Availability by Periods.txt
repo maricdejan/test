@@ -1,0 +1,249 @@
+OBJECT Form 157 Item Availability by Periods
+{
+  OBJECT-PROPERTIES
+  {
+    Date=05.11.08;
+    Time=12:00:00;
+    Version List=NAVW16.00;
+  }
+  PROPERTIES
+  {
+    Width=16170;
+    Height=7920;
+    CaptionML=[DEU=ArtikelverfÅgb. nach Perioden;
+               ENU=Item Availability by Periods];
+    SaveValues=Yes;
+    InsertAllowed=No;
+    DeleteAllowed=No;
+    ModifyAllowed=No;
+    LinksAllowed=No;
+    SourceTable=Table27;
+    OnAfterGetRecord=BEGIN
+                       SETRANGE("No.");
+                       SETRANGE("Drop Shipment Filter",FALSE);
+                       UpdateSubForm;
+                     END;
+
+  }
+  CONTROLS
+  {
+    { 5   ;SubForm      ;220  ;1870 ;15730;5060 ;Name=ItemAvailLines;
+                                                 HorzGlue=Both;
+                                                 VertGlue=Both;
+                                                 Border=No;
+                                                 SubFormID=Form353 }
+    { 6   ;OptionButton ;220  ;7150 ;550  ;550  ;VertGlue=Bottom;
+                                                 FocusOnClick=No;
+                                                 ShowCaption=No;
+                                                 Border=Yes;
+                                                 BitmapPos=Center;
+                                                 Bitmap=9;
+                                                 ToolTipML=[DEU=Tag;
+                                                            ENU=Day];
+                                                 SourceExpr=PeriodType;
+                                                 OptionValue=Day;
+                                                 OnPush=BEGIN
+                                                          UpdateSubForm;
+                                                        END;
+                                                         }
+    { 7   ;OptionButton ;770  ;7150 ;550  ;550  ;VertGlue=Bottom;
+                                                 FocusOnClick=No;
+                                                 ShowCaption=No;
+                                                 Border=Yes;
+                                                 BitmapPos=Center;
+                                                 Bitmap=10;
+                                                 ToolTipML=[DEU=Woche;
+                                                            ENU=Week];
+                                                 SourceExpr=PeriodType;
+                                                 OptionValue=Week;
+                                                 OnPush=BEGIN
+                                                          UpdateSubForm;
+                                                        END;
+                                                         }
+    { 8   ;OptionButton ;1320 ;7150 ;550  ;550  ;VertGlue=Bottom;
+                                                 FocusOnClick=No;
+                                                 ShowCaption=No;
+                                                 Border=Yes;
+                                                 BitmapPos=Center;
+                                                 Bitmap=11;
+                                                 ToolTipML=[DEU=Monat;
+                                                            ENU=Month];
+                                                 SourceExpr=PeriodType;
+                                                 OptionValue=Month;
+                                                 OnPush=BEGIN
+                                                          UpdateSubForm;
+                                                        END;
+                                                         }
+    { 9   ;OptionButton ;1870 ;7150 ;550  ;550  ;VertGlue=Bottom;
+                                                 FocusOnClick=No;
+                                                 ShowCaption=No;
+                                                 Border=Yes;
+                                                 BitmapPos=Center;
+                                                 Bitmap=12;
+                                                 ToolTipML=[DEU=Quartal;
+                                                            ENU=Quarter];
+                                                 SourceExpr=PeriodType;
+                                                 OptionValue=Quarter;
+                                                 OnPush=BEGIN
+                                                          UpdateSubForm;
+                                                        END;
+                                                         }
+    { 10  ;OptionButton ;2420 ;7150 ;550  ;550  ;VertGlue=Bottom;
+                                                 FocusOnClick=No;
+                                                 ShowCaption=No;
+                                                 Border=Yes;
+                                                 BitmapPos=Center;
+                                                 Bitmap=13;
+                                                 ToolTipML=[DEU=Jahr;
+                                                            ENU=Year];
+                                                 SourceExpr=PeriodType;
+                                                 OptionValue=Year;
+                                                 OnPush=BEGIN
+                                                          UpdateSubForm;
+                                                        END;
+                                                         }
+    { 11  ;OptionButton ;2970 ;7150 ;550  ;550  ;VertGlue=Bottom;
+                                                 FocusOnClick=No;
+                                                 ShowCaption=No;
+                                                 Border=Yes;
+                                                 BitmapPos=Center;
+                                                 Bitmap=14;
+                                                 ToolTipML=[DEU=Buchhaltungsperiode;
+                                                            ENU=Accounting Period];
+                                                 SourceExpr=PeriodType;
+                                                 OptionValue=Period;
+                                                 OnPush=BEGIN
+                                                          UpdateSubForm;
+                                                        END;
+                                                         }
+    { 12  ;CommandButton;13750;7150 ;2200 ;550  ;HorzGlue=Right;
+                                                 VertGlue=Bottom;
+                                                 PushAction=FormHelp }
+    { 13  ;OptionButton ;4290 ;7150 ;550  ;550  ;VertGlue=Bottom;
+                                                 FocusOnClick=No;
+                                                 ShowCaption=No;
+                                                 Border=Yes;
+                                                 BitmapPos=Center;
+                                                 Bitmap=19;
+                                                 ToolTipML=[DEU=Saldo bis Datum;
+                                                            ENU=Balance at Date];
+                                                 SourceExpr=AmountType;
+                                                 OptionValue=Balance at Date;
+                                                 OnPush=BEGIN
+                                                          UpdateSubForm;
+                                                        END;
+                                                         }
+    { 14  ;OptionButton ;3740 ;7150 ;550  ;550  ;VertGlue=Bottom;
+                                                 FocusOnClick=No;
+                                                 ShowCaption=No;
+                                                 Border=Yes;
+                                                 BitmapPos=Center;
+                                                 Bitmap=18;
+                                                 ToolTipML=[DEU=Bewegung;
+                                                            ENU=Net Change];
+                                                 SourceExpr=AmountType;
+                                                 OptionValue=Net Change;
+                                                 OnPush=BEGIN
+                                                          UpdateSubForm;
+                                                        END;
+                                                         }
+    { 1   ;TabControl   ;220  ;220  ;15730;1430 ;HorzGlue=Both;
+                                                 PageNamesML=[DEU=Optionen;
+                                                              ENU=Options] }
+    { 2   ;TextBox      ;12870;990  ;2750 ;440  ;ParentControl=1;
+                                                 InPage=0;
+                                                 SourceExpr="Variant Filter" }
+    { 3   ;Label        ;9460 ;990  ;3300 ;440  ;ParentControl=2 }
+    { 4   ;TextBox      ;3850 ;990  ;2750 ;440  ;ParentControl=1;
+                                                 InPage=0;
+                                                 SourceExpr="Location Filter" }
+    { 15  ;Label        ;440  ;990  ;3300 ;440  ;ParentControl=4 }
+    { 16  ;CommandButton;6490 ;7150 ;2200 ;550  ;HorzGlue=Right;
+                                                 VertGlue=Bottom;
+                                                 Default=Yes;
+                                                 PushAction=LookupOK;
+                                                 InvalidActionAppearance=Hide;
+                                                 OnPush=VAR
+                                                          Date@1001 : Record 2000000007;
+                                                        BEGIN
+                                                          CurrForm.ItemAvailLines.FORM.GETRECORD(Date);
+                                                          LastDate := Date."Period Start";
+                                                        END;
+                                                         }
+    { 17  ;CommandButton;8910 ;7150 ;2200 ;550  ;HorzGlue=Right;
+                                                 VertGlue=Bottom;
+                                                 PushAction=LookupCancel;
+                                                 InvalidActionAppearance=Hide }
+    { 20  ;MenuButton   ;11330;7150 ;2200 ;550  ;HorzGlue=Right;
+                                                 VertGlue=Bottom;
+                                                 CaptionML=[DEU=Arti&kel;
+                                                            ENU=&Item];
+                                                 Menu=MENUITEMS
+                                                 {
+                                                   { ID=21;
+                                                     CaptionML=[DEU=ArtikelverfÅ&gbarkeit nach;
+                                                                ENU=&Item Availability by] }
+                                                   { ID=22;
+                                                     PushAction=RunObject;
+                                                     MenuLevel=1;
+                                                     CaptionML=[DEU=Periode;
+                                                                ENU=Period];
+                                                     RunObject=Form 157;
+                                                     RunFormLinkType=OnUpdate;
+                                                     RunFormLink=No.=FIELD(No.),
+                                                                 Global Dimension 1 Filter=FIELD(Global Dimension 1 Filter),
+                                                                 Global Dimension 2 Filter=FIELD(Global Dimension 2 Filter),
+                                                                 Location Filter=FIELD(Location Filter),
+                                                                 Drop Shipment Filter=FIELD(Drop Shipment Filter),
+                                                                 Variant Filter=FIELD(Variant Filter) }
+                                                   { ID=23;
+                                                     PushAction=RunObject;
+                                                     MenuLevel=1;
+                                                     CaptionML=[DEU=Variante;
+                                                                ENU=Variant];
+                                                     RunObject=Form 5414;
+                                                     RunFormLinkType=OnUpdate;
+                                                     RunFormLink=No.=FIELD(No.),
+                                                                 Global Dimension 1 Filter=FIELD(Global Dimension 1 Filter),
+                                                                 Global Dimension 2 Filter=FIELD(Global Dimension 2 Filter),
+                                                                 Location Filter=FIELD(Location Filter),
+                                                                 Drop Shipment Filter=FIELD(Drop Shipment Filter),
+                                                                 Variant Filter=FIELD(Variant Filter) }
+                                                   { ID=24;
+                                                     PushAction=RunObject;
+                                                     MenuLevel=1;
+                                                     CaptionML=[DEU=Lagerort;
+                                                                ENU=Location];
+                                                     RunObject=Form 492;
+                                                     RunFormLinkType=OnUpdate;
+                                                     RunFormLink=No.=FIELD(No.),
+                                                                 Global Dimension 1 Filter=FIELD(Global Dimension 1 Filter),
+                                                                 Global Dimension 2 Filter=FIELD(Global Dimension 2 Filter),
+                                                                 Location Filter=FIELD(Location Filter),
+                                                                 Drop Shipment Filter=FIELD(Drop Shipment Filter),
+                                                                 Variant Filter=FIELD(Variant Filter) }
+                                                 }
+                                                  }
+  }
+  CODE
+  {
+    VAR
+      PeriodType@1000 : 'Day,Week,Month,Quarter,Year,Period';
+      AmountType@1001 : 'Net Change,Balance at Date';
+      LastDate@1002 : Date;
+
+    PROCEDURE UpdateSubForm@1();
+    BEGIN
+      CurrForm.ItemAvailLines.FORM.Set(Rec,PeriodType,AmountType);
+    END;
+
+    PROCEDURE GetLastDate@2() : Date;
+    BEGIN
+      EXIT(LastDate);
+    END;
+
+    BEGIN
+    END.
+  }
+}
+

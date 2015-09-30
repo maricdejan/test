@@ -1,0 +1,74 @@
+OBJECT Table 473 Job Queue Response
+{
+  OBJECT-PROPERTIES
+  {
+    Date=05.11.08;
+    Time=12:00:00;
+    Version List=NAVW16.00;
+  }
+  PROPERTIES
+  {
+    CaptionML=[DEU=Antwort von Projektwarteschlange;
+               ENU=Job Queue Response];
+  }
+  FIELDS
+  {
+    { 1   ;   ;ID                  ;GUID          ;CaptionML=[DEU=ID;
+                                                              ENU=ID] }
+    { 2   ;   ;User ID             ;Text65        ;CaptionML=[DEU=Benutzer-ID;
+                                                              ENU=User ID] }
+    { 3   ;   ;XML                 ;BLOB          ;CaptionML=[DEU=XML;
+                                                              ENU=XML] }
+    { 4   ;   ;Creation Date/Time  ;DateTime      ;CaptionML=[DEU=Erstellungsdatum/-zeit;
+                                                              ENU=Creation Date/Time] }
+    { 5   ;   ;Status              ;Option        ;CaptionML=[DEU=Status;
+                                                              ENU=Status];
+                                                   OptionCaptionML=[DEU=Erfolg,In Bearbeitung,Fehler;
+                                                                    ENU=Success,In Process,Error];
+                                                   OptionString=Success,In Process,Error }
+    { 6   ;   ;Error Message       ;Text250       ;CaptionML=[DEU=Fehlermeldung;
+                                                              ENU=Error Message] }
+    { 7   ;   ;Error Message 2     ;Text250       ;CaptionML=[DEU=Fehlermeldung 2;
+                                                              ENU=Error Message 2] }
+    { 8   ;   ;Error Message 3     ;Text250       ;CaptionML=[DEU=Fehlermeldung 3;
+                                                              ENU=Error Message 3] }
+    { 9   ;   ;Error Message 4     ;Text250       ;CaptionML=[DEU=Fehlermeldung 4;
+                                                              ENU=Error Message 4] }
+    { 10  ;   ;Expiration Date/Time;DateTime      ;CaptionML=[DEU=Ablaufdatum/-uhrzeit;
+                                                              ENU=Expiration Date/Time] }
+  }
+  KEYS
+  {
+    {    ;ID                                      ;Clustered=Yes }
+    {    ;Expiration Date/Time                     }
+  }
+  FIELDGROUPS
+  {
+  }
+  CODE
+  {
+
+    PROCEDURE GetErrorMessage@1() : Text[1000];
+    BEGIN
+      EXIT("Error Message" + "Error Message 2" + "Error Message 3" + "Error Message 4");
+    END;
+
+    PROCEDURE SetErrorMessage@2(ErrorText@1000 : Text[1024]);
+    BEGIN
+      "Error Message 2" := '';
+      "Error Message 3" := '';
+      "Error Message 4" := '';
+      "Error Message" := COPYSTR(ErrorText,1,250);
+      IF STRLEN(ErrorText) > 250 THEN
+        "Error Message 2" := COPYSTR(ErrorText,251,500);
+      IF STRLEN(ErrorText) > 500 THEN
+        "Error Message 3" := COPYSTR(ErrorText,501,750);
+      IF STRLEN(ErrorText) > 750 THEN
+        "Error Message 4" := COPYSTR(ErrorText,751,1000);
+    END;
+
+    BEGIN
+    END.
+  }
+}
+

@@ -1,0 +1,231 @@
+OBJECT Form 11016 Sales VAT Adv. Notif. Card
+{
+  OBJECT-PROPERTIES
+  {
+    Date=05.11.08;
+    Time=12:00:00;
+    Version List=NAVDACH6.00;
+  }
+  PROPERTIES
+  {
+    Width=16610;
+    Height=6710;
+    CaptionML=[DEU=USt.-Voranmeldungskarte;
+               ENU=Sales VAT Adv. Notif. Card];
+    SourceTable=Table11011;
+  }
+  CONTROLS
+  {
+    { 1140000;TabControl;220  ;220  ;16170;5500 ;HorzGlue=Both;
+                                                 VertGlue=Both;
+                                                 PageNamesML=[DEU=Allgemein,Kommunikation;
+                                                              ENU=General,Communication] }
+    { 1140001;TextBox   ;3850 ;990  ;2750 ;440  ;ParentControl=1140000;
+                                                 InPage=0;
+                                                 SourceExpr="No.";
+                                                 OnAssistEdit=BEGIN
+                                                                IF AssistEdit(xRec) THEN
+                                                                  CurrForm.UPDATE;
+                                                              END;
+                                                               }
+    { 1140002;Label     ;440  ;990  ;3300 ;440  ;ParentControl=1140001 }
+    { 1140003;TextBox   ;3850 ;1650 ;5500 ;440  ;ParentControl=1140000;
+                                                 InPage=0;
+                                                 SourceExpr=Description }
+    { 1140004;Label     ;440  ;1650 ;3300 ;440  ;ParentControl=1140003 }
+    { 1140005;TextBox   ;3850 ;2970 ;1700 ;440  ;ParentControl=1140000;
+                                                 InPage=0;
+                                                 SourceExpr="Starting Date" }
+    { 1140006;Label     ;440  ;2970 ;3300 ;440  ;ParentControl=1140005 }
+    { 1140007;TextBox   ;3850 ;3520 ;2750 ;440  ;ParentControl=1140000;
+                                                 InPage=0;
+                                                 SourceExpr=Period }
+    { 1140008;Label     ;440  ;3520 ;3300 ;440  ;ParentControl=1140007 }
+    { 1140009;TextBox   ;3850 ;2310 ;5500 ;440  ;ParentControl=1140000;
+                                                 InPage=0;
+                                                 SourceExpr="XSL-Filename";
+                                                 OnAssistEdit=BEGIN
+                                                                "XSL-Filename" := CommonDlgMgt.OpenFile(Text1140000,"XSL-Filename",4,Text1140001,0);
+                                                              END;
+                                                               }
+    { 1140010;Label     ;440  ;2310 ;3300 ;440  ;ParentControl=1140009 }
+    { 1140011;TextBox   ;13420;990  ;2750 ;440  ;ParentControl=1140000;
+                                                 InPage=0;
+                                                 SourceExpr="Incl. VAT Entries (Closing)" }
+    { 1140012;Label     ;10010;990  ;3300 ;440  ;ParentControl=1140011 }
+    { 1140013;TextBox   ;13420;1540 ;2750 ;440  ;ParentControl=1140000;
+                                                 InPage=0;
+                                                 ShowCaption=No;
+                                                 SourceExpr="Incl. VAT Entries (Period)" }
+    { 1140014;Label     ;10010;1540 ;3300 ;440  ;ParentControl=1140013 }
+    { 1140015;CheckBox  ;13420;2090 ;440  ;440  ;ParentControl=1140000;
+                                                 InPage=0;
+                                                 ShowCaption=No;
+                                                 SourceExpr="Corrected Notification" }
+    { 1140016;Label     ;10010;2090 ;3300 ;440  ;ParentControl=1140015 }
+    { 1140017;CheckBox  ;13420;2640 ;440  ;440  ;ParentControl=1140000;
+                                                 InPage=0;
+                                                 ShowCaption=No;
+                                                 SourceExpr="Offset Amount of Refund" }
+    { 1140018;Label     ;10010;2640 ;3300 ;440  ;ParentControl=1140017 }
+    { 1140019;CheckBox  ;13420;3190 ;440  ;440  ;ParentControl=1140000;
+                                                 InPage=0;
+                                                 ShowCaption=No;
+                                                 SourceExpr="Cancel Order for Direct Debit" }
+    { 1140020;Label     ;10010;3190 ;3300 ;440  ;ParentControl=1140019 }
+    { 1140023;CheckBox  ;13420;4950 ;440  ;440  ;ParentControl=1140000;
+                                                 InPage=0;
+                                                 ShowCaption=No;
+                                                 SourceExpr="Transmission successful" }
+    { 1140024;Label     ;10010;4950 ;3300 ;440  ;ParentControl=1140023 }
+    { 1140025;TextBox   ;3850 ;4180 ;5500 ;440  ;ParentControl=1140000;
+                                                 InPage=0;
+                                                 SourceExpr="Additional Information" }
+    { 1140026;Label     ;440  ;4180 ;3300 ;440  ;ParentControl=1140025 }
+    { 1140029;TextBox   ;13420;3850 ;1700 ;440  ;ParentControl=1140000;
+                                                 InPage=0;
+                                                 SourceExpr="XML-File Creation Date" }
+    { 1140030;Label     ;10010;3850 ;3300 ;440  ;ParentControl=1140029 }
+    { 1140031;TextBox   ;13420;4400 ;2750 ;440  ;ParentControl=1140000;
+                                                 InPage=0;
+                                                 SourceExpr="Statement Name" }
+    { 1140032;Label     ;10010;4400 ;3300 ;440  ;ParentControl=1140031 }
+    { 1140048;CheckBox  ;3850 ;4730 ;440  ;440  ;ParentControl=1140000;
+                                                 InPage=0;
+                                                 ShowCaption=No;
+                                                 SourceExpr="Documents Submitted Separately" }
+    { 1140049;Label     ;440  ;4730 ;3300 ;440  ;ParentControl=1140048 }
+    { 1140027;TextBox   ;3850 ;990  ;5500 ;440  ;ParentControl=1140000;
+                                                 InPage=1;
+                                                 SourceExpr="Contact for Tax Office" }
+    { 1140028;Label     ;440  ;990  ;3300 ;440  ;ParentControl=1140027 }
+    { 1140050;TextBox   ;3850 ;1540 ;5500 ;440  ;ParentControl=1140000;
+                                                 InPage=1;
+                                                 SourceExpr="Contact Phone No." }
+    { 1140051;Label     ;440  ;1540 ;3300 ;440  ;ParentControl=1140050 }
+    { 1140052;TextBox   ;3850 ;2090 ;5500 ;440  ;ParentControl=1140000;
+                                                 InPage=1;
+                                                 SourceExpr="Contact E-Mail" }
+    { 1140053;Label     ;440  ;2090 ;3300 ;440  ;ParentControl=1140052 }
+    { 1140033;CommandButton;14190;5940;2200;550 ;HorzGlue=Right;
+                                                 VertGlue=Bottom;
+                                                 PushAction=FormHelp }
+    { 1140034;MenuButton;9350 ;5940 ;2200 ;550  ;HorzGlue=Right;
+                                                 VertGlue=Bottom;
+                                                 CaptionML=[DEU=F&unktion;
+                                                            ENU=F&unctions];
+                                                 Menu=MENUITEMS
+                                                 {
+                                                   { ID=1140035;
+                                                     Ellipsis=Yes;
+                                                     CaptionML=[DEU=XML-Datei &erstellen;
+                                                                ENU=&Create XML-File];
+                                                     OnPush=VAR
+                                                              SalesVATAdvNotif@1140000 : Record 11011;
+                                                            BEGIN
+                                                              TESTFIELD("No.");
+                                                              SalesVATAdvNotif.SETRANGE("No.","No.");
+                                                              REPORT.RUNMODAL(REPORT::"Create XML-File VAT Adv.Notif.",TRUE,FALSE,SalesVATAdvNotif);
+                                                            END;
+                                                             }
+                                                   { ID=1140036;
+                                                     Ellipsis=Yes;
+                                                     CaptionML=[DEU=&XML-Datei Åbertragen;
+                                                                ENU=Transmit &XML-File];
+                                                     OnPush=BEGIN
+                                                              CODEUNIT.RUN(CODEUNIT::"Sales VAT Adv. Notif.-Transmit",Rec);
+                                                            END;
+                                                             }
+                                                   { ID=1140037;
+                                                     Ellipsis=Yes;
+                                                     CaptionML=[DEU=XML-Datei &lîschen;
+                                                                ENU=&Delete XML-File];
+                                                     OnPush=BEGIN
+                                                              DeleteXMLSubDoc;
+                                                            END;
+                                                             }
+                                                   { ID=1140038;
+                                                     MenuItemType=Separator }
+                                                   { ID=1140039;
+                                                     PushAction=RunObject;
+                                                     CaptionML=[DEU=&Vorschau;
+                                                                ENU=P&review];
+                                                     RunObject=Form 474;
+                                                     RunFormLinkType=OnUpdate;
+                                                     RunFormLink=Statement Template Name=FIELD(Statement Template Name),
+                                                                 Name=FIELD(Statement Name) }
+                                                   { ID=1140040;
+                                                     MenuItemType=Separator }
+                                                   { ID=1140041;
+                                                     Ellipsis=Yes;
+                                                     CaptionML=[DEU=Drucken;
+                                                                ENU=Print];
+                                                     OnPush=BEGIN
+                                                              VATStmtName.GET("Statement Template Name", "Statement Name");
+                                                              ReportPrint.PrintVATStmtName(VATStmtName);
+                                                            END;
+                                                             }
+                                                   { ID=1140042;
+                                                     PushAction=RunObject;
+                                                     Ellipsis=Yes;
+                                                     CaptionML=[DEU=&MwSt. abrechnen und buchen;
+                                                                ENU=Calc. and Post &VAT Settlement];
+                                                     RunObject=Report 20 }
+                                                   { ID=1140043;
+                                                     Ellipsis=Yes;
+                                                     CaptionML=[DEU=UVA &Kontennachweis;
+                                                                ENU=Sales VAT &Adv. Not. Acc. Proof];
+                                                     OnPush=BEGIN
+                                                              VATStmtName.SETFILTER(Name,"Statement Name");
+                                                              VATStmtName.FIND('-');
+                                                              VATStmtName.SETRECFILTER;
+                                                              REPORT.RUN(REPORT::"Sales VAT Adv. Not. Acc. Proof",TRUE,FALSE,VATStmtName);
+                                                            END;
+                                                             }
+                                                 }
+                                                  }
+    { 1140044;MenuButton;6930 ;5940 ;2200 ;550  ;HorzGlue=Right;
+                                                 VertGlue=Bottom;
+                                                 CaptionML=[DEU=U&msatzsteuervoranmeldung;
+                                                            ENU=S&ales VAT Adv. Notification];
+                                                 Menu=MENUITEMS
+                                                 {
+                                                   { ID=1140045;
+                                                     PushAction=LookupTable;
+                                                     ShortCutKey=F5;
+                                                     CaptionML=[DEU=öbersic&ht;
+                                                                ENU=&List] }
+                                                   { ID=1140046;
+                                                     PushAction=RunObject;
+                                                     ShortCutKey=Ctrl+F5;
+                                                     CaptionML=[DEU=öbertragungsprotokollposten;
+                                                                ENU=Transmission Log Entries];
+                                                     RunObject=Form 11018;
+                                                     RunFormLinkType=OnUpdate;
+                                                     RunFormView=SORTING(Sales VAT Adv. Notif. No.);
+                                                     RunFormLink=Sales VAT Adv. Notif. No.=FIELD(No.) }
+                                                 }
+                                                  }
+    { 1140047;CommandButton;11770;5940;2200;550 ;HorzGlue=Right;
+                                                 VertGlue=Bottom;
+                                                 CaptionML=[DEU=An&zeigen;
+                                                            ENU=&Show];
+                                                 OnPush=BEGIN
+                                                          Show;
+                                                        END;
+                                                         }
+  }
+  CODE
+  {
+    VAR
+      Text1140000@1140000 : TextConst 'DEU=Auswahl der XSL-Datei;ENU=Selection of the XSL-File';
+      Text1140001@1140001 : TextConst 'DEU=Extensible Stylesheet-Dateien|*.xsl|Alle Dateien|*.*;ENU=Extensible Stylesheet-Files|*.xsl|All Files|*.*';
+      VATStmtName@1140002 : Record 257;
+      ReportPrint@1140003 : Codeunit 228;
+      CommonDlgMgt@1140004 : Codeunit 412;
+
+    BEGIN
+    END.
+  }
+}
+

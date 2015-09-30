@@ -1,0 +1,82 @@
+OBJECT Page 9034 Acc. Receivable Activities
+{
+  OBJECT-PROPERTIES
+  {
+    Date=05.11.08;
+    Time=12:00:00;
+    Version List=NAVW16.00;
+  }
+  PROPERTIES
+  {
+    CaptionML=[DEU=Aktivit„ten;
+               ENU=Activities];
+    SourceTable=Table9054;
+    PageType=CardPart;
+    OnOpenPage=BEGIN
+                 RESET;
+                 IF NOT GET THEN BEGIN
+                   INIT;
+                   INSERT;
+                 END;
+
+                 SETFILTER("Overdue Date Filter",'<%1',WORKDATE);
+               END;
+
+  }
+  CONTROLS
+  {
+    { 1900000001;0;Container;
+                ContainerType=ContentArea }
+
+    { 10  ;1   ;Group     ;
+                CaptionML=[DEU=Zahlungen;
+                           ENU=Payments];
+                GroupType=CueGroup;
+                ActionList=ACTIONS
+                {
+                  { 8       ;0   ;Action    ;
+                                  CaptionML=[DEU=Zahlungseingangs Buch.-Blatt bearbeiten;
+                                             ENU=Edit Cash Receipt Journal];
+                                  RunObject=Page 255 }
+                  { 9       ;0   ;Action    ;
+                                  CaptionML=[DEU=Neue Verkaufsgutschrift;
+                                             ENU=New Sales Credit Memo];
+                                  RunObject=Page 44;
+                                  RunFormMode=Create }
+                }
+                 }
+
+    { 1   ;2   ;Field     ;
+                SourceExpr="Overdue Sales Invoices";
+                DrillDownFormID=Customer Ledger Entries }
+
+    { 4   ;2   ;Field     ;
+                SourceExpr="Sales Return Orders - All";
+                DrillDownFormID=Sales Return Order List }
+
+    { 6   ;2   ;Field     ;
+                SourceExpr="Customers - Blocked";
+                DrillDownFormID=Customer List }
+
+    { 11  ;1   ;Group     ;
+                CaptionML=[DEU=Beleggenehmigungen;
+                           ENU=Document Approvals];
+                GroupType=CueGroup }
+
+    { 14  ;2   ;Field     ;
+                SourceExpr="SOs Pending Approval";
+                DrillDownFormID=Sales Order List }
+
+    { 12  ;2   ;Field     ;
+                SourceExpr="Approved Sales Orders";
+                DrillDownFormID=Sales Order List }
+
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

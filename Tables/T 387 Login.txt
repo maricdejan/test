@@ -1,0 +1,41 @@
+OBJECT Table 387 Login
+{
+  OBJECT-PROPERTIES
+  {
+    Date=05.11.08;
+    Time=12:00:00;
+    Version List=NAVW16.00;
+  }
+  PROPERTIES
+  {
+    CaptionML=[DEU=Anmeldung;
+               ENU=Login];
+  }
+  FIELDS
+  {
+    { 1   ;   ;User ID             ;Code20        ;CaptionML=[DEU=Benutzer-ID;
+                                                              ENU=User ID] }
+    { 2   ;   ;Windows Login       ;Boolean       ;CaptionML=[DEU=Windows Anmeldung;
+                                                              ENU=Windows Login] }
+    { 3   ;   ;Windows Login ID    ;Text100       ;CaptionML=[DEU=Windows-Anmeldungs-ID;
+                                                              ENU=Windows Login ID] }
+    { 4   ;   ;Name                ;Text65        ;CaptionML=[DEU=Name;
+                                                              ENU=Name] }
+    { 5   ;   ;Windows Login SID   ;Text119       ;CaptionML=[DEU=Windows-Anmeldungs-SID;
+                                                              ENU=Windows Login SID] }
+  }
+  KEYS
+  {
+    {    ;User ID,Windows Login,Windows Login ID  ;Clustered=Yes }
+  }
+  FIELDGROUPS
+  {
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

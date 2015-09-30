@@ -1,0 +1,77 @@
+OBJECT Table 11003 GDPdU Record Definition
+{
+  OBJECT-PROPERTIES
+  {
+    Date=05.11.08;
+    Time=12:00:00;
+    Version List=NAVDACH6.00;
+  }
+  PROPERTIES
+  {
+    DataCaptionFields=Definition Group Code,Record Code;
+    OnDelete=VAR
+               GDPdURecDefTable@1140000 : Record 11004;
+             BEGIN
+               GDPdURecDefTable.SETRANGE("Definition Group Code","Definition Group Code");
+               GDPdURecDefTable.SETRANGE("Record Code","Record Code");
+               GDPdURecDefTable.DELETEALL(TRUE);
+             END;
+
+    OnRename=BEGIN
+               ERROR(Text1140000,TABLECAPTION);
+             END;
+
+    CaptionML=[DEU=GDPdU Datensatzdefinition;
+               ENU=GDPdU Record Definition];
+    LookupFormID=Form11013;
+  }
+  FIELDS
+  {
+    { 1   ;   ;Definition Group Code;Code10       ;TableRelation="GDPdU Definition Group";
+                                                   CaptionML=[DEU=Definitionsgruppencode;
+                                                              ENU=Definition Group Code];
+                                                   NotBlank=Yes }
+    { 2   ;   ;Record Code         ;Code10        ;TableRelation="GDPdU Record Code";
+                                                   OnValidate=VAR
+                                                                GDPdURecorfCode@1140000 : Record 11007;
+                                                              BEGIN
+                                                                IF GDPdURecorfCode.GET("Record Code") AND (Description = '') THEN
+                                                                  Description := GDPdURecorfCode.Description;
+                                                              END;
+
+                                                   CaptionML=[DEU=Datensatzcode;
+                                                              ENU=Record Code];
+                                                   NotBlank=Yes }
+    { 3   ;   ;Description         ;Text50        ;CaptionML=[DEU=Beschreibung;
+                                                              ENU=Description] }
+    { 4   ;   ;Export Path         ;Text100       ;OnValidate=BEGIN
+                                                                IF ISCLEAR(FileSysObject) THEN
+                                                                  CREATE(FileSysObject,FALSE,TRUE);
+
+                                                                IF ("Export Path" <> '') AND NOT FileSysObject.FolderExists("Export Path") THEN
+                                                                  IF CONFIRM(Text1140001,TRUE,"Export Path") THEN
+                                                                    FileSysObject.CreateFolder("Export Path")
+                                                              END;
+
+                                                   CaptionML=[DEU=Exportpfad;
+                                                              ENU=Export Path] }
+  }
+  KEYS
+  {
+    {    ;Definition Group Code,Record Code       ;Clustered=Yes }
+  }
+  FIELDGROUPS
+  {
+  }
+  CODE
+  {
+    VAR
+      Text1140000@1140000 : TextConst 'DEU=Sie dÅrfen eine %1 nicht umbenennen.;ENU=You must not rename a %1.';
+      Text1140001@1140001 : TextConst 'DEU=Mîchten Sie das Verzeichnis %1 anlegen?;ENU=Do you want to create the folder %1?';
+      FileSysObject@1140002 : Automation "{420B2830-E718-11CF-893D-00A0C9054228} 1.0:{0D43FE01-F093-11CF-8940-00A0C9054228}:'Microsoft Scripting Runtime'.FileSystemObject";
+
+    BEGIN
+    END.
+  }
+}
+

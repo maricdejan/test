@@ -1,0 +1,284 @@
+OBJECT Table 5079 Marketing Setup
+{
+  OBJECT-PROPERTIES
+  {
+    Date=11.12.10;
+    Time=12:00:00;
+    Version List=NAVW16.00.10;
+  }
+  PROPERTIES
+  {
+    CaptionML=[DEU=Marketing & Vertrieb Einr.;
+               ENU=Marketing Setup];
+  }
+  FIELDS
+  {
+    { 1   ;   ;Primary Key         ;Code10        ;CaptionML=[DEU=PrimÑrschlÅssel;
+                                                              ENU=Primary Key] }
+    { 2   ;   ;Contact Nos.        ;Code10        ;TableRelation="No. Series";
+                                                   CaptionML=[DEU=Kontaktnummern;
+                                                              ENU=Contact Nos.] }
+    { 3   ;   ;Campaign Nos.       ;Code10        ;TableRelation="No. Series";
+                                                   CaptionML=[DEU=Kampagnennummern;
+                                                              ENU=Campaign Nos.] }
+    { 4   ;   ;Segment Nos.        ;Code10        ;TableRelation="No. Series";
+                                                   CaptionML=[DEU=Segmentnummern;
+                                                              ENU=Segment Nos.] }
+    { 5   ;   ;To-do Nos.          ;Code10        ;TableRelation="No. Series";
+                                                   CaptionML=[DEU=Aufgabennummern;
+                                                              ENU=To-do Nos.] }
+    { 6   ;   ;Opportunity Nos.    ;Code10        ;TableRelation="No. Series";
+                                                   CaptionML=[DEU=Verkaufschancennummern;
+                                                              ENU=Opportunity Nos.] }
+    { 7   ;   ;Bus. Rel. Code for Customers;Code10;TableRelation="Business Relation";
+                                                   CaptionML=[DEU=GeschÑftsbez.-Code Debitoren;
+                                                              ENU=Bus. Rel. Code for Customers] }
+    { 8   ;   ;Bus. Rel. Code for Vendors;Code10  ;TableRelation="Business Relation";
+                                                   CaptionML=[DEU=GeschÑftsbez.-Code Kreditoren;
+                                                              ENU=Bus. Rel. Code for Vendors] }
+    { 9   ;   ;Bus. Rel. Code for Bank Accs.;Code10;
+                                                   TableRelation="Business Relation";
+                                                   CaptionML=[DEU=GeschÑftsbez.-Code Bankkonten;
+                                                              ENU=Bus. Rel. Code for Bank Accs.] }
+    { 22  ;   ;Inherit Salesperson Code;Boolean   ;InitValue=Yes;
+                                                   CaptionML=[DEU=VerkÑufercode Åbernehmen;
+                                                              ENU=Inherit Salesperson Code] }
+    { 23  ;   ;Inherit Territory Code;Boolean     ;InitValue=Yes;
+                                                   CaptionML=[DEU=Gebietscode Åbernehmen;
+                                                              ENU=Inherit Territory Code] }
+    { 24  ;   ;Inherit Country/Region Code;Boolean;InitValue=Yes;
+                                                   CaptionML=[DEU=LÑnder-/Regionscode Åbernehmen;
+                                                              ENU=Inherit Country/Region Code] }
+    { 25  ;   ;Inherit Language Code;Boolean      ;InitValue=Yes;
+                                                   CaptionML=[DEU=Sprachcode Åbernehmen;
+                                                              ENU=Inherit Language Code] }
+    { 26  ;   ;Inherit Address Details;Boolean    ;InitValue=Yes;
+                                                   CaptionML=[DEU=Adressdetails Åbernehmen;
+                                                              ENU=Inherit Address Details] }
+    { 27  ;   ;Inherit Communication Details;Boolean;
+                                                   InitValue=Yes;
+                                                   CaptionML=[DEU=Kommunikationsdetails Åbern.;
+                                                              ENU=Inherit Communication Details] }
+    { 28  ;   ;Default Salesperson Code;Code10    ;TableRelation=Salesperson/Purchaser;
+                                                   CaptionML=[DEU=StandardverkÑufercode;
+                                                              ENU=Default Salesperson Code] }
+    { 29  ;   ;Default Territory Code;Code10      ;TableRelation=Territory;
+                                                   CaptionML=[DEU=Standardgebietscode;
+                                                              ENU=Default Territory Code] }
+    { 30  ;   ;Default Country/Region Code;Code10 ;TableRelation=Country/Region;
+                                                   CaptionML=[DEU=StandardlÑnder-/-regionscode;
+                                                              ENU=Default Country/Region Code] }
+    { 31  ;   ;Default Language Code;Code10       ;TableRelation=Language;
+                                                   CaptionML=[DEU=Standardsprachcode;
+                                                              ENU=Default Language Code] }
+    { 33  ;   ;Default Sales Cycle Code;Code10    ;TableRelation="Sales Cycle";
+                                                   CaptionML=[DEU=Standardverkaufsprozesscode;
+                                                              ENU=Default Sales Cycle Code] }
+    { 35  ;   ;Attachment Storage Type;Option     ;CaptionML=[DEU=Dateianhang-Speicherungsart;
+                                                              ENU=Attachment Storage Type];
+                                                   OptionCaptionML=[DEU=Eingebettet,Extern;
+                                                                    ENU=Embedded,Disk File];
+                                                   OptionString=Embedded,Disk File }
+    { 36  ;   ;Attachment Storage Location;Text250;CaptionML=[DEU=Pfad fÅr externe Speicherung;
+                                                              ENU=Attachment Storage Location] }
+    { 37  ;   ;Autosearch for Duplicates;Boolean  ;InitValue=Yes;
+                                                   OnValidate=BEGIN
+                                                                IF "Autosearch for Duplicates" THEN
+                                                                  "Maintain Dupl. Search Strings" := TRUE;;
+                                                              END;
+
+                                                   CaptionML=[DEU=Automatische DublettenprÅfung;
+                                                              ENU=Autosearch for Duplicates] }
+    { 38  ;   ;Search Hit %        ;Integer       ;InitValue=60;
+                                                   CaptionML=[DEU=öbereinstimmung %;
+                                                              ENU=Search Hit %];
+                                                   MinValue=1;
+                                                   MaxValue=100;
+                                                   NotBlank=Yes }
+    { 39  ;   ;Maintain Dupl. Search Strings;Boolean;
+                                                   InitValue=Yes;
+                                                   OnValidate=BEGIN
+                                                                IF NOT "Maintain Dupl. Search Strings" THEN
+                                                                  "Autosearch for Duplicates" := FALSE;
+                                                              END;
+
+                                                   CaptionML=[DEU=Index aktualisieren;
+                                                              ENU=Maintain Dupl. Search Strings];
+                                                   NotBlank=Yes }
+    { 50  ;   ;Mergefield Language ID;Integer     ;TableRelation="Windows Language";
+                                                   CaptionML=[DEU=Seriendruckfeld Sprach-ID;
+                                                              ENU=Mergefield Language ID];
+                                                   BlankZero=Yes }
+    { 51  ;   ;Def. Company Salutation Code;Code10;TableRelation=Salutation;
+                                                   CaptionML=[DEU=Vorg.-Unternehmensanredecode;
+                                                              ENU=Def. Company Salutation Code] }
+    { 52  ;   ;Default Person Salutation Code;Code10;
+                                                   TableRelation=Salutation;
+                                                   CaptionML=[DEU=Vorg.-Personenanredecode;
+                                                              ENU=Default Person Salutation Code] }
+    { 53  ;   ;Default Correspondence Type;Option ;CaptionML=[DEU=Vorg.-Korrespondenzart;
+                                                              ENU=Default Correspondence Type];
+                                                   OptionCaptionML=[DEU=" ,Brief,E-Mail,Fax";
+                                                                    ENU=" ,Hard Copy,E-Mail,Fax"];
+                                                   OptionString=[ ,Hard Copy,E-Mail,Fax] }
+    { 54  ;   ;E-Mail Logging User ID;Code20      ;TableRelation=User;
+                                                   OnValidate=VAR
+                                                                LoginMgt@1000 : Codeunit 418;
+                                                              BEGIN
+                                                                LoginMgt.ValidateUserID("E-Mail Logging User ID");
+                                                              END;
+
+                                                   OnLookup=VAR
+                                                              LoginMgt@1000 : Codeunit 418;
+                                                            BEGIN
+                                                              LoginMgt.LookupUserID("E-Mail Logging User ID");
+                                                            END;
+
+                                                   ValidateTableRelation=No;
+                                                   TestTableRelation=No;
+                                                   CaptionML=[DEU=E-Mail-Protok. Benutzer-ID;
+                                                              ENU=E-Mail Logging User ID] }
+    { 55  ;   ;E-Mail Logging Profile Name;Text250;CaptionML=[DEU=E-Mail-Protok. Profilname;
+                                                              ENU=E-Mail Logging Profile Name];
+                                                   Editable=No }
+    { 56  ;   ;Queue Folder Name   ;Text250       ;CaptionML=[DEU=Ablageordnername;
+                                                              ENU=Queue Folder Name];
+                                                   Editable=No }
+    { 57  ;   ;Queue Folder Store ID;BLOB         ;CaptionML=[DEU=Ablageordner Speicher-ID;
+                                                              ENU=Queue Folder Store ID] }
+    { 58  ;   ;Queue Folder Entry ID;BLOB         ;CaptionML=[DEU=Ablageordner Eintrags-ID;
+                                                              ENU=Queue Folder Entry ID] }
+    { 59  ;   ;Storage Folder Name ;Text250       ;CaptionML=[DEU=Speicherordnername;
+                                                              ENU=Storage Folder Name];
+                                                   Editable=No }
+    { 60  ;   ;Storage Folder Store ID;BLOB       ;CaptionML=[DEU=Speicherordner Speicher-ID;
+                                                              ENU=Storage Folder Store ID] }
+    { 61  ;   ;Storage Folder Entry ID;BLOB       ;CaptionML=[DEU=Speicherordner Eintrags-ID;
+                                                              ENU=Storage Folder Entry ID] }
+    { 62  ;   ;Time Interval (Sec.);Integer       ;InitValue=30;
+                                                   OnValidate=VAR
+                                                                Semaphore@1000 : Record 5112;
+                                                                Session@1001 : Record 2000000009;
+                                                              BEGIN
+                                                                IF Semaphore.FIND('-') THEN BEGIN
+                                                                  Session.RESET;
+                                                                  Session.SETRANGE("User ID",Semaphore."User ID");
+                                                                  Session.SETRANGE("Login Time",Semaphore."Starting Time");
+                                                                  Session.SETRANGE("Login Date",Semaphore."Starting Date");
+                                                                  IF Session.FIND('-') THEN
+                                                                    MESSAGE(Text000);
+                                                                END;
+                                                              END;
+
+                                                   CaptionML=[DEU=Zeitintervall (Sek.);
+                                                              ENU=Time Interval (Sec.)];
+                                                   MinValue=5 }
+    { 63  ;   ;Index Mode          ;Option        ;InitValue=Manual;
+                                                   OnValidate=VAR
+                                                                GenerateSearchIndex@1005 : Report 5170;
+                                                                Contact@1004 : Record 5050;
+                                                                IntLogEntry@1003 : Record 5065;
+                                                                Todo@1002 : Record 5080;
+                                                                Opportunity@1001 : Record 5092;
+                                                                RlshpMgtCommentLine@1000 : Record 5061;
+                                                              BEGIN
+                                                                IF ("Index Mode" = "Index Mode"::Auto) AND
+                                                                   ("Index Mode" <> xRec."Index Mode")
+                                                                THEN BEGIN
+                                                                  IF CONFIRM(Text003,TRUE) THEN BEGIN
+                                                                    MODIFY;
+                                                                    GenerateSearchIndex.SETTABLEVIEW(Contact);
+                                                                    GenerateSearchIndex.SETTABLEVIEW(IntLogEntry);
+                                                                    GenerateSearchIndex.SETTABLEVIEW(Todo);
+                                                                    GenerateSearchIndex.SETTABLEVIEW(Opportunity);
+                                                                    GenerateSearchIndex.SETTABLEVIEW(RlshpMgtCommentLine);
+                                                                    GenerateSearchIndex.USEREQUESTFORM := FALSE;
+                                                                    GenerateSearchIndex.RUNMODAL;
+                                                                  END ELSE BEGIN
+                                                                    "Index Mode" := "Index Mode"::Manual;
+                                                                  END;
+                                                                END;
+                                                              END;
+
+                                                   CaptionML=[DEU=Indexierungsmodus;
+                                                              ENU=Index Mode];
+                                                   OptionCaptionML=[DEU=Automatisch,Manuell;
+                                                                    ENU=Auto,Manual];
+                                                   OptionString=Auto,Manual }
+    { 64  ;   ;Delimiters          ;Text250       ;InitValue=[!"#$%&'()+,-./:;<=>[\]]^_`{|}~];
+                                                   OnValidate=VAR
+                                                                GenerateSearchIndex@1005 : Report 5170;
+                                                                Contact@1004 : Record 5050;
+                                                                IntLogEntry@1003 : Record 5065;
+                                                                Todo@1002 : Record 5080;
+                                                                Opportunity@1001 : Record 5092;
+                                                                RlshpMgtCommentLine@1000 : Record 5061;
+                                                              BEGIN
+                                                                IF CONFIRM(Text004,TRUE) THEN BEGIN
+                                                                  MODIFY;
+                                                                  GenerateSearchIndex.SETTABLEVIEW(Contact);
+                                                                  GenerateSearchIndex.SETTABLEVIEW(IntLogEntry);
+                                                                  GenerateSearchIndex.SETTABLEVIEW(Todo);
+                                                                  GenerateSearchIndex.SETTABLEVIEW(Opportunity);
+                                                                  GenerateSearchIndex.SETTABLEVIEW(RlshpMgtCommentLine);
+                                                                  GenerateSearchIndex.USEREQUESTFORM := FALSE;
+                                                                  GenerateSearchIndex.RUNMODAL;
+                                                                END
+                                                                ELSE BEGIN
+                                                                  Delimiters := xRec.Delimiters;
+                                                                END;
+                                                              END;
+
+                                                   CaptionML=[DEU=Ausschlusszeichen;
+                                                              ENU=Delimiters] }
+    { 67  ;   ;Default To-do Date Calculation;DateFormula;
+                                                   CaptionML=[DEU=Vorg.-Aufg.-Datumsberechnung;
+                                                              ENU=Default To-do Date Calculation] }
+    { 68  ;   ;Enable Connector    ;Boolean       ;OnValidate=BEGIN
+                                                                CASE "Enable Connector" OF
+                                                                  TRUE:
+                                                                    IF CONFIRM(Text005,FALSE) THEN BEGIN
+                                                                      IntegrationManagement.EnableConnector;
+                                                                      MESSAGE(Text006);
+                                                                    END ELSE BEGIN
+                                                                      "Enable Connector" := FALSE;
+                                                                      MODIFY;
+                                                                    END;
+                                                                  FALSE:
+                                                                    IF CONFIRM(Text007,FALSE) THEN BEGIN
+                                                                      IntegrationManagement.DisableConnector;
+                                                                      MESSAGE(Text008);
+                                                                    END ELSE BEGIN
+                                                                      "Enable Connector" := TRUE;
+                                                                      MODIFY;
+                                                                    END;
+                                                                END;
+                                                              END;
+
+                                                   CaptionML=[DEU=Connector aktivieren;
+                                                              ENU=Enable Connector] }
+  }
+  KEYS
+  {
+    {    ;Primary Key                             ;Clustered=Yes }
+  }
+  FIELDGROUPS
+  {
+  }
+  CODE
+  {
+    VAR
+      Text000@1000 : TextConst 'DEU=Bitte starten Sie den E-Mail-Dispatcher erneut, damit die énderungen Åbernommen werden.;ENU=Please restart the e-mail dispatcher for changes to take effect.';
+      Text003@1001 : TextConst 'DEU=Der Indexierungsmodus fÅr die Suche wurde geÑndert.\Alle Suchbereiche mÅssen erneut indexiert werden.\Soll dies jetzt ausgefÅhrt werden?;ENU=The Search Index Mode has been modified.\All search areas must be reindexed.\Start reindexing now?';
+      Text004@1002 : TextConst 'DEU=Die Angabe der Ausschlusszeichen wurde geÑndert.\Alle Suchbereiche mÅssen erneut indexiert werden.\Soll dies jetzt ausgefÅhrt werden?;ENU=The set of delimiters has been modified.\All search areas must be reindexed.\Start reindexing now?';
+      Text005@1003 : TextConst 'DEU=Mîchten Sie die Integration in Connector for Microsoft Dynamics aktivieren?;ENU=Do you want to enable integration with the Connector for Microsoft Dynamics?';
+      Text006@1004 : TextConst 'DEU=Die Integration in Connector for Microsoft Dynamics ist aktiviert.\Beenden Sie Microsoft Dynamics NAV, und starten Sie die Anwendung neu, um die IntegrationsÑnderungen zu Åbernehmen.;ENU=Integration with the Connector for Microsoft Dynamics is enabled.\Exit and then start Microsoft Dynamics NAV again to apply the integration changes.';
+      IntegrationManagement@1005 : Codeunit 5150;
+      Text007@1006 : TextConst 'DEU=Mîchten Sie die Integration in Connector for Microsoft Dynamics deaktivieren?;ENU=Do you want to disable integration with the Connector for Microsoft Dynamics?';
+      Text008@1007 : TextConst 'DEU=Die Integration in Connector for Microsoft Dynamics ist deaktiviert.\Beenden Sie Microsoft Dynamics NAV, und starten Sie die Anwendung neu, um die IntegrationsÑnderungen zu Åbernehmen.;ENU=Integration with the Connector for Microsoft Dynamics is disabled.\Exit and then start Microsoft Dynamics NAV again to apply the integration changes.';
+
+    BEGIN
+    END.
+  }
+}
+

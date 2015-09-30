@@ -1,0 +1,907 @@
+OBJECT Form 255 Cash Receipt Journal
+{
+  OBJECT-PROPERTIES
+  {
+    Date=11.12.10;
+    Time=12:00:00;
+    Version List=NAVW16.00.10,NAVDACH6.00;
+  }
+  PROPERTIES
+  {
+    Width=17050;
+    Height=9130;
+    CaptionML=[DEU=Zahlungseingangs Buch.-Blatt;
+               ENU=Cash Receipt Journal];
+    SaveValues=Yes;
+    TableBoxID=1;
+    SourceTable=Table81;
+    AutoSplitKey=Yes;
+    DelayedInsert=Yes;
+    DataCaptionFields=Journal Batch Name;
+    OnOpenForm=VAR
+                 JnlSelected@1000 : Boolean;
+               BEGIN
+                 BalAccName := '';
+                 OpenedFromBatch := ("Journal Batch Name" <> '') AND ("Journal Template Name" = '');
+                 IF OpenedFromBatch THEN BEGIN
+                   CurrentJnlBatchName := "Journal Batch Name";
+                   GenJnlManagement.OpenJnl(CurrentJnlBatchName,Rec);
+                   EXIT;
+                 END;
+                 GenJnlManagement.TemplateSelection(FORM::"Cash Receipt Journal",3,FALSE,Rec,JnlSelected);
+                 IF NOT JnlSelected THEN
+                   ERROR('');
+                 GenJnlManagement.OpenJnl(CurrentJnlBatchName,Rec);
+               END;
+
+    OnAfterGetRecord=BEGIN
+                       ShowShortcutDimCode(ShortcutDimCode);
+                     END;
+
+    OnAfterGetCurrRecord=BEGIN
+                           GenJnlManagement.GetAccounts(Rec,AccName,BalAccName);
+                           UpdateBalance;
+
+                           UpdateInfoBox;
+                         END;
+
+    OnBeforePutRecord=BEGIN
+                        UpdateBalance;
+                      END;
+
+    OnNewRecord=BEGIN
+                  UpdateBalance;
+                  SetUpNewLine(xRec,Balance,BelowxRec);
+                  CLEAR(ShortcutDimCode);
+
+                  IF "Document Type" = "Document Type"::" " THEN BEGIN
+                    "Document Type" := "Document Type"::Payment;
+                    "Account Type" := "Account Type"::Customer;
+                  END;
+                END;
+
+  }
+  CONTROLS
+  {
+    { 1   ;TableBox     ;220  ;880  ;16610;5060 ;HorzGlue=Both;
+                                                 VertGlue=Both }
+    { 2   ;TextBox      ;0    ;0    ;1650 ;0    ;ParentControl=1;
+                                                 InColumn=Yes;
+                                                 SourceExpr="Posting Date" }
+    { 3   ;Label        ;0    ;0    ;0    ;0    ;ParentControl=2;
+                                                 InColumnHeading=Yes }
+    { 61  ;TextBox      ;1270 ;1320 ;1650 ;440  ;Visible=No;
+                                                 ParentControl=1;
+                                                 InColumn=Yes;
+                                                 SourceExpr="Document Date" }
+    { 62  ;Label        ;0    ;0    ;0    ;0    ;ParentControl=61;
+                                                 InColumnHeading=Yes }
+    { 4   ;TextBox      ;0    ;0    ;550  ;0    ;ParentControl=1;
+                                                 InColumn=Yes;
+                                                 SourceExpr="Document Type" }
+    { 5   ;Label        ;0    ;0    ;0    ;0    ;ParentControl=4;
+                                                 InColumnHeading=Yes }
+    { 6   ;TextBox      ;0    ;0    ;1650 ;0    ;ParentControl=1;
+                                                 InColumn=Yes;
+                                                 SourceExpr="Document No." }
+    { 7   ;Label        ;0    ;0    ;0    ;0    ;ParentControl=6;
+                                                 InColumnHeading=Yes }
+    { 35  ;TextBox      ;5583 ;990  ;1650 ;440  ;Visible=No;
+                                                 ParentControl=1;
+                                                 InColumn=Yes;
+                                                 SourceExpr="External Document No." }
+    { 36  ;Label        ;0    ;0    ;0    ;0    ;ParentControl=35;
+                                                 InColumnHeading=Yes }
+    { 8   ;TextBox      ;0    ;0    ;550  ;0    ;ParentControl=1;
+                                                 InColumn=Yes;
+                                                 SourceExpr="Account Type";
+                                                 OnValidate=BEGIN
+                                                              GenJnlManagement.GetAccounts(Rec,AccName,BalAccName);
+                                                            END;
+                                                             }
+    { 9   ;Label        ;0    ;0    ;0    ;0    ;ParentControl=8;
+                                                 InColumnHeading=Yes }
+    { 10  ;TextBox      ;0    ;0    ;1650 ;0    ;ParentControl=1;
+                                                 InColumn=Yes;
+                                                 SourceExpr="Account No.";
+                                                 OnValidate=BEGIN
+                                                              GenJnlManagement.GetAccounts(Rec,AccName,BalAccName);
+                                                              ShowShortcutDimCode(ShortcutDimCode);
+                                                            END;
+                                                             }
+    { 11  ;Label        ;0    ;0    ;0    ;0    ;ParentControl=10;
+                                                 InColumnHeading=Yes }
+    { 12  ;TextBox      ;0    ;0    ;4400 ;0    ;HorzGlue=Both;
+                                                 ParentControl=1;
+                                                 InColumn=Yes;
+                                                 SourceExpr=Description }
+    { 13  ;Label        ;0    ;0    ;0    ;0    ;ParentControl=12;
+                                                 InColumnHeading=Yes }
+    { 51  ;TextBox      ;13414;1320 ;1650 ;440  ;Visible=No;
+                                                 ParentControl=1;
+                                                 InColumn=Yes;
+                                                 SourceExpr="Salespers./Purch. Code" }
+    { 52  ;Label        ;0    ;0    ;0    ;0    ;ParentControl=51;
+                                                 InColumnHeading=Yes }
+    { 85  ;TextBox      ;14367;2200 ;1650 ;440  ;Visible=No;
+                                                 ParentControl=1;
+                                                 InColumn=Yes;
+                                                 SourceExpr="Campaign No." }
+    { 86  ;Label        ;0    ;0    ;0    ;0    ;ParentControl=85;
+                                                 InColumnHeading=Yes }
+    { 53  ;TextBox      ;14473;1320 ;1100 ;440  ;Visible=No;
+                                                 ParentControl=1;
+                                                 InColumn=Yes;
+                                                 AssistEdit=Yes;
+                                                 SourceExpr="Currency Code";
+                                                 OnAssistEdit=BEGIN
+                                                                ChangeExchangeRate.SetParameter("Currency Code","Currency Factor","Posting Date");
+                                                                IF ChangeExchangeRate.RUNMODAL = ACTION::OK THEN BEGIN
+                                                                  VALIDATE("Currency Factor",ChangeExchangeRate.GetParameter);
+                                                                END;
+                                                                CLEAR(ChangeExchangeRate);
+                                                              END;
+                                                               }
+    { 54  ;Label        ;0    ;0    ;0    ;0    ;ParentControl=53;
+                                                 InColumnHeading=Yes }
+    { 63  ;TextBox      ;19791;1210 ;550  ;440  ;Visible=No;
+                                                 ParentControl=1;
+                                                 InColumn=Yes;
+                                                 SourceExpr="Gen. Posting Type" }
+    { 64  ;Label        ;0    ;0    ;0    ;0    ;ParentControl=63;
+                                                 InColumnHeading=Yes }
+    { 65  ;TextBox      ;20341;1210 ;550  ;440  ;Visible=No;
+                                                 ParentControl=1;
+                                                 InColumn=Yes;
+                                                 SourceExpr="Gen. Bus. Posting Group" }
+    { 66  ;Label        ;0    ;0    ;0    ;0    ;ParentControl=65;
+                                                 InColumnHeading=Yes }
+    { 67  ;TextBox      ;21991;1210 ;550  ;440  ;Visible=No;
+                                                 ParentControl=1;
+                                                 InColumn=Yes;
+                                                 SourceExpr="Gen. Prod. Posting Group" }
+    { 68  ;Label        ;0    ;0    ;0    ;0    ;ParentControl=67;
+                                                 InColumnHeading=Yes }
+    { 75  ;TextBox      ;10610;1100 ;550  ;440  ;Visible=No;
+                                                 ParentControl=1;
+                                                 InColumn=Yes;
+                                                 SourceExpr="VAT Bus. Posting Group" }
+    { 76  ;Label        ;0    ;0    ;0    ;0    ;ParentControl=75;
+                                                 InColumnHeading=Yes }
+    { 77  ;TextBox      ;12260;1100 ;550  ;440  ;Visible=No;
+                                                 ParentControl=1;
+                                                 InColumn=Yes;
+                                                 SourceExpr="VAT Prod. Posting Group" }
+    { 78  ;Label        ;0    ;0    ;0    ;0    ;ParentControl=77;
+                                                 InColumnHeading=Yes }
+    { 14  ;TextBox      ;0    ;0    ;2200 ;0    ;ParentControl=1;
+                                                 InColumn=Yes;
+                                                 SourceExpr=Amount }
+    { 15  ;Label        ;0    ;0    ;0    ;0    ;ParentControl=14;
+                                                 InColumnHeading=Yes }
+    { 87  ;TextBox      ;22331;3410 ;2200 ;440  ;Visible=No;
+                                                 ParentControl=1;
+                                                 InColumn=Yes;
+                                                 SourceExpr="VAT Amount" }
+    { 88  ;Label        ;0    ;0    ;0    ;0    ;ParentControl=87;
+                                                 InColumnHeading=Yes }
+    { 89  ;TextBox      ;24553;3080 ;2200 ;440  ;Visible=No;
+                                                 ParentControl=1;
+                                                 InColumn=Yes;
+                                                 SourceExpr="VAT Difference" }
+    { 90  ;Label        ;0    ;0    ;0    ;0    ;ParentControl=89;
+                                                 InColumnHeading=Yes }
+    { 93  ;TextBox      ;26326;3300 ;2200 ;440  ;Visible=No;
+                                                 ParentControl=1;
+                                                 InColumn=Yes;
+                                                 SourceExpr="Bal. VAT Amount" }
+    { 94  ;Label        ;0    ;0    ;0    ;0    ;ParentControl=93;
+                                                 InColumnHeading=Yes }
+    { 91  ;TextBox      ;26753;3080 ;2200 ;440  ;Visible=No;
+                                                 ParentControl=1;
+                                                 InColumn=Yes;
+                                                 SourceExpr="Bal. VAT Difference" }
+    { 92  ;Label        ;0    ;0    ;0    ;0    ;ParentControl=91;
+                                                 InColumnHeading=Yes }
+    { 55  ;TextBox      ;9022 ;1210 ;550  ;440  ;ParentControl=1;
+                                                 InColumn=Yes;
+                                                 SourceExpr="Bal. Account Type" }
+    { 56  ;Label        ;0    ;0    ;0    ;0    ;ParentControl=55;
+                                                 InColumnHeading=Yes }
+    { 16  ;TextBox      ;0    ;0    ;1650 ;0    ;ParentControl=1;
+                                                 InColumn=Yes;
+                                                 SourceExpr="Bal. Account No.";
+                                                 OnValidate=BEGIN
+                                                              GenJnlManagement.GetAccounts(Rec,AccName,BalAccName);
+                                                              ShowShortcutDimCode(ShortcutDimCode);
+                                                            END;
+                                                             }
+    { 17  ;Label        ;0    ;0    ;0    ;0    ;ParentControl=16;
+                                                 InColumnHeading=Yes }
+    { 95  ;TextBox      ;33338;2200 ;1700 ;440  ;Visible=No;
+                                                 ParentControl=1;
+                                                 InColumn=Yes;
+                                                 SourceExpr="Credit Card No." }
+    { 96  ;Label        ;0    ;0    ;0    ;0    ;ParentControl=95;
+                                                 InColumnHeading=Yes }
+    { 69  ;TextBox      ;26088;1430 ;550  ;440  ;Visible=No;
+                                                 ParentControl=1;
+                                                 InColumn=Yes;
+                                                 SourceExpr="Bal. Gen. Posting Type" }
+    { 70  ;Label        ;0    ;0    ;0    ;0    ;ParentControl=69;
+                                                 InColumnHeading=Yes }
+    { 71  ;TextBox      ;26638;1430 ;550  ;440  ;Visible=No;
+                                                 ParentControl=1;
+                                                 InColumn=Yes;
+                                                 SourceExpr="Bal. Gen. Bus. Posting Group" }
+    { 72  ;Label        ;0    ;0    ;0    ;0    ;ParentControl=71;
+                                                 InColumnHeading=Yes }
+    { 73  ;TextBox      ;28288;1430 ;550  ;440  ;Visible=No;
+                                                 ParentControl=1;
+                                                 InColumn=Yes;
+                                                 SourceExpr="Bal. Gen. Prod. Posting Group" }
+    { 74  ;Label        ;0    ;0    ;0    ;0    ;ParentControl=73;
+                                                 InColumnHeading=Yes }
+    { 79  ;TextBox      ;11457;990  ;550  ;440  ;Visible=No;
+                                                 ParentControl=1;
+                                                 InColumn=Yes;
+                                                 SourceExpr="Bal. VAT Bus. Posting Group" }
+    { 80  ;Label        ;0    ;0    ;0    ;0    ;ParentControl=79;
+                                                 InColumnHeading=Yes }
+    { 81  ;TextBox      ;13107;990  ;550  ;440  ;Visible=No;
+                                                 ParentControl=1;
+                                                 InColumn=Yes;
+                                                 SourceExpr="Bal. VAT Prod. Posting Group" }
+    { 82  ;Label        ;0    ;0    ;0    ;0    ;ParentControl=81;
+                                                 InColumnHeading=Yes }
+    { 47  ;TextBox      ;9446 ;1430 ;1650 ;440  ;Visible=No;
+                                                 ParentControl=1;
+                                                 InColumn=Yes;
+                                                 SourceExpr="Shortcut Dimension 1 Code" }
+    { 48  ;Label        ;0    ;0    ;0    ;0    ;ParentControl=47;
+                                                 InColumnHeading=Yes }
+    { 49  ;TextBox      ;11615;1430 ;1650 ;440  ;Visible=No;
+                                                 ParentControl=1;
+                                                 InColumn=Yes;
+                                                 SourceExpr="Shortcut Dimension 2 Code" }
+    { 50  ;Label        ;0    ;0    ;0    ;0    ;ParentControl=49;
+                                                 InColumnHeading=Yes }
+    { 300 ;TextBox      ;41936;1100 ;1650 ;440  ;Visible=No;
+                                                 ParentControl=1;
+                                                 InColumn=Yes;
+                                                 SourceExpr=ShortcutDimCode[3];
+                                                 CaptionClass='1,2,3';
+                                                 OnValidate=BEGIN
+                                                              ValidateShortcutDimCode(3,ShortcutDimCode[3]);
+                                                            END;
+
+                                                 OnLookup=BEGIN
+                                                            LookupShortcutDimCode(3,ShortcutDimCode[3]);
+                                                          END;
+                                                           }
+    { 301 ;Label        ;0    ;0    ;0    ;0    ;ParentControl=300;
+                                                 InColumnHeading=Yes }
+    { 302 ;TextBox      ;43498;1100 ;1650 ;440  ;Visible=No;
+                                                 ParentControl=1;
+                                                 InColumn=Yes;
+                                                 SourceExpr=ShortcutDimCode[4];
+                                                 CaptionClass='1,2,4';
+                                                 OnValidate=BEGIN
+                                                              ValidateShortcutDimCode(4,ShortcutDimCode[4]);
+                                                            END;
+
+                                                 OnLookup=BEGIN
+                                                            LookupShortcutDimCode(4,ShortcutDimCode[4]);
+                                                          END;
+                                                           }
+    { 303 ;Label        ;0    ;0    ;0    ;0    ;ParentControl=302;
+                                                 InColumnHeading=Yes }
+    { 304 ;TextBox      ;45191;990  ;1650 ;440  ;Visible=No;
+                                                 ParentControl=1;
+                                                 InColumn=Yes;
+                                                 SourceExpr=ShortcutDimCode[5];
+                                                 CaptionClass='1,2,5';
+                                                 OnValidate=BEGIN
+                                                              ValidateShortcutDimCode(5,ShortcutDimCode[5]);
+                                                            END;
+
+                                                 OnLookup=BEGIN
+                                                            LookupShortcutDimCode(5,ShortcutDimCode[5]);
+                                                          END;
+                                                           }
+    { 305 ;Label        ;0    ;0    ;0    ;0    ;ParentControl=304;
+                                                 InColumnHeading=Yes }
+    { 306 ;TextBox      ;46779;1100 ;1650 ;440  ;Visible=No;
+                                                 ParentControl=1;
+                                                 InColumn=Yes;
+                                                 SourceExpr=ShortcutDimCode[6];
+                                                 CaptionClass='1,2,6';
+                                                 OnValidate=BEGIN
+                                                              ValidateShortcutDimCode(6,ShortcutDimCode[6]);
+                                                            END;
+
+                                                 OnLookup=BEGIN
+                                                            LookupShortcutDimCode(6,ShortcutDimCode[6]);
+                                                          END;
+                                                           }
+    { 307 ;Label        ;0    ;0    ;0    ;0    ;ParentControl=306;
+                                                 InColumnHeading=Yes }
+    { 308 ;TextBox      ;48578;1100 ;1650 ;440  ;Visible=No;
+                                                 ParentControl=1;
+                                                 InColumn=Yes;
+                                                 SourceExpr=ShortcutDimCode[7];
+                                                 CaptionClass='1,2,7';
+                                                 OnValidate=BEGIN
+                                                              ValidateShortcutDimCode(7,ShortcutDimCode[7]);
+                                                            END;
+
+                                                 OnLookup=BEGIN
+                                                            LookupShortcutDimCode(7,ShortcutDimCode[7]);
+                                                          END;
+                                                           }
+    { 309 ;Label        ;0    ;0    ;0    ;0    ;ParentControl=308;
+                                                 InColumnHeading=Yes }
+    { 310 ;TextBox      ;50165;1100 ;1650 ;440  ;Visible=No;
+                                                 ParentControl=1;
+                                                 InColumn=Yes;
+                                                 SourceExpr=ShortcutDimCode[8];
+                                                 CaptionClass='1,2,8';
+                                                 OnValidate=BEGIN
+                                                              ValidateShortcutDimCode(8,ShortcutDimCode[8]);
+                                                            END;
+
+                                                 OnLookup=BEGIN
+                                                            LookupShortcutDimCode(8,ShortcutDimCode[8]);
+                                                          END;
+                                                           }
+    { 311 ;Label        ;0    ;0    ;0    ;0    ;ParentControl=310;
+                                                 InColumnHeading=Yes }
+    { 1140002;CheckBox  ;51462;1100 ;1650 ;440  ;ParentControl=1;
+                                                 InColumn=Yes;
+                                                 ShowCaption=No;
+                                                 SourceExpr=Correction }
+    { 1140003;Label     ;0    ;0    ;0    ;0    ;ParentControl=1140002;
+                                                 InColumnHeading=Yes }
+    { 18  ;TextBox      ;0    ;0    ;550  ;0    ;ParentControl=1;
+                                                 InColumn=Yes;
+                                                 SourceExpr="Applies-to Doc. Type" }
+    { 19  ;Label        ;0    ;0    ;0    ;0    ;ParentControl=18;
+                                                 InColumnHeading=Yes }
+    { 20  ;TextBox      ;0    ;0    ;1650 ;0    ;ParentControl=1;
+                                                 InColumn=Yes;
+                                                 SourceExpr="Applies-to Doc. No." }
+    { 21  ;Label        ;0    ;0    ;0    ;0    ;ParentControl=20;
+                                                 InColumnHeading=Yes }
+    { 22  ;TextBox      ;0    ;0    ;1650 ;0    ;Visible=No;
+                                                 ParentControl=1;
+                                                 InColumn=Yes;
+                                                 SourceExpr="Applies-to ID" }
+    { 23  ;Label        ;0    ;0    ;0    ;0    ;ParentControl=22;
+                                                 InColumnHeading=Yes }
+    { 57  ;TextBox      ;23098;1430 ;1650 ;440  ;Visible=No;
+                                                 ParentControl=1;
+                                                 InColumn=Yes;
+                                                 SourceExpr="Reason Code" }
+    { 58  ;Label        ;0    ;0    ;0    ;0    ;ParentControl=57;
+                                                 InColumnHeading=Yes }
+    { 24  ;Frame        ;220  ;6160 ;16610;1980 ;HorzGlue=Both;
+                                                 VertGlue=Bottom;
+                                                 ShowCaption=No }
+    { 1150015;TextBox   ;12210;7480 ;770  ;440  ;VertGlue=Bottom;
+                                                 Editable=No;
+                                                 ParentControl=24;
+                                                 InFrame=Yes;
+                                                 CaptionML=[DEU=Skonto;
+                                                            ENU=Cash Discount];
+                                                 ToolTipML=[DEU=Tage bis Skontodatum;
+                                                            ENU=Days to payment disc. date];
+                                                 BlankZero=Yes;
+                                                 SourceExpr=PaymDiscDays }
+    { 1150016;Label     ;9240 ;7480 ;1320 ;440  ;VertGlue=Bottom;
+                                                 ParentControl=1150015;
+                                                 LeaderDots=No }
+    { 1150017;TextBox   ;14630;7480 ;1980 ;440  ;Name=TotalBalance;
+                                                 HorzGlue=Right;
+                                                 VertGlue=Bottom;
+                                                 Editable=No;
+                                                 ParentControl=24;
+                                                 InFrame=Yes;
+                                                 CaptionML=[DEU=Gesamtsaldo;
+                                                            ENU=Total Balance];
+                                                 ToolTipML=[DEU=Gesamtsaldo in MW;
+                                                            ENU=Total balance in LCY];
+                                                 SourceExpr=TotalBalance+"Balance (LCY)"-xRec."Balance (LCY)";
+                                                 AutoFormatType=1 }
+    { 1150018;Label     ;13200;7480 ;1320 ;440  ;HorzGlue=Right;
+                                                 VertGlue=Bottom;
+                                                 ParentControl=1150017;
+                                                 HorzAlign=Left;
+                                                 LeaderDots=No }
+    { 1150014;TextBox   ;10670;7480 ;1430 ;440  ;VertGlue=Bottom;
+                                                 Editable=No;
+                                                 ParentControl=24;
+                                                 InFrame=Yes;
+                                                 CaptionML=[DEU=Skonto;
+                                                            ENU=Cash Discount];
+                                                 ToolTipML=[DEU=Skontodatum des offenen Postens;
+                                                            ENU=Payment disc. date of open entry];
+                                                 BlankZero=Yes;
+                                                 SourceExpr=CustLedgEntry."Pmt. Discount Date" }
+    { 1150001;TextBox   ;14630;6930 ;1980 ;440  ;Name=Balance;
+                                                 HorzGlue=Right;
+                                                 VertGlue=Bottom;
+                                                 Editable=No;
+                                                 ParentControl=24;
+                                                 InFrame=Yes;
+                                                 CaptionML=[DEU=Saldo;
+                                                            ENU=Balance];
+                                                 ToolTipML=[DEU=Saldo in MW bis aktuelle Zeile;
+                                                            ENU=Balance in LCY to actual line];
+                                                 SourceExpr=Balance+"Balance (LCY)"-xRec."Balance (LCY)";
+                                                 AutoFormatType=1 }
+    { 1150002;Label     ;13200;6930 ;1320 ;440  ;HorzGlue=Right;
+                                                 VertGlue=Bottom;
+                                                 ParentControl=1150001;
+                                                 HorzAlign=Left;
+                                                 LeaderDots=No }
+    { 1150004;TextBox   ;12210;6930 ;770  ;440  ;VertGlue=Bottom;
+                                                 Editable=No;
+                                                 ParentControl=24;
+                                                 InFrame=Yes;
+                                                 CaptionML=[DEU=FÑllig;
+                                                            ENU=Due];
+                                                 ToolTipML=[DEU=Anz. Tage bis FÑlligkeit des offenen Postens;
+                                                            ENU=Number of days until due date of open entry];
+                                                 BlankZero=Yes;
+                                                 SourceExpr=DueDays }
+    { 1150008;Label     ;9240 ;6930 ;1320 ;440  ;VertGlue=Bottom;
+                                                 ParentControl=1150004;
+                                                 LeaderDots=No }
+    { 1150006;TextBox   ;10670;6930 ;1430 ;440  ;VertGlue=Bottom;
+                                                 Editable=No;
+                                                 ParentControl=24;
+                                                 InFrame=Yes;
+                                                 CaptionML=[DEU=FÑllig;
+                                                            ENU=Due];
+                                                 ToolTipML=[DEU=FÑlligkeitsdatum des offenen Postens;
+                                                            ENU=Due date of open entry];
+                                                 BlankZero=Yes;
+                                                 SourceExpr=CustLedgEntry."Due Date" }
+    { 1150011;TextBox   ;7700 ;6930 ;1320 ;440  ;VertGlue=Bottom;
+                                                 Editable=No;
+                                                 ParentControl=24;
+                                                 InFrame=Yes;
+                                                 CaptionML=[DEU=Abzug;
+                                                            ENU=Deduction];
+                                                 ToolTipML=[DEU=Akzeptierter Skonto;
+                                                            ENU=Accepted payment discount];
+                                                 SourceExpr=PaymDiscDeductAmount }
+    { 1150013;Label     ;6270 ;6930 ;1320 ;440  ;VertGlue=Bottom;
+                                                 ParentControl=1150011;
+                                                 LeaderDots=No }
+    { 1150019;TextBox   ;7700 ;7480 ;1320 ;440  ;VertGlue=Bottom;
+                                                 Editable=No;
+                                                 ParentControl=24;
+                                                 InFrame=Yes;
+                                                 CaptionML=[DEU=Zahlungstoleranz;
+                                                            ENU=Pmt. Tolerance];
+                                                 ToolTipML=[DEU=Akzeptierte Zahlungstoleranz;
+                                                            ENU=Accepted payment tolerance];
+                                                 SourceExpr=AcceptedPaymentTol }
+    { 1150020;Label     ;6270 ;7480 ;1320 ;440  ;VertGlue=Bottom;
+                                                 ParentControl=1150019;
+                                                 LeaderDots=No }
+    { 1150000;TextBox   ;14630;6380 ;1980 ;440  ;Name=TotalPayment;
+                                                 HorzGlue=Right;
+                                                 VertGlue=Bottom;
+                                                 Editable=No;
+                                                 ParentControl=24;
+                                                 InFrame=Yes;
+                                                 CaptionML=[DEU=Zahlungen;
+                                                            ENU=Payments];
+                                                 ToolTipML=[DEU=Zahlung gesamt in LandeswÑhrung;
+                                                            ENU=Total of payments in local currency];
+                                                 SourceExpr=TotalPayAmount;
+                                                 AutoFormatType=1 }
+    { 1150003;Label     ;13200;6380 ;1320 ;440  ;HorzGlue=Right;
+                                                 VertGlue=Bottom;
+                                                 ParentControl=1150000;
+                                                 HorzAlign=Left;
+                                                 LeaderDots=No }
+    { 1150005;TextBox   ;12210;6380 ;770  ;440  ;VertGlue=Bottom;
+                                                 Editable=No;
+                                                 ParentControl=24;
+                                                 InFrame=Yes;
+                                                 CaptionML=[DEU=Alter;
+                                                            ENU=Age];
+                                                 ToolTipML=[DEU=Anz. Tage seit Buchung des offenen Postens;
+                                                            ENU=Number of days since posting date of open entry];
+                                                 BlankZero=Yes;
+                                                 SourceExpr=AgeDays }
+    { 1150009;Label     ;9240 ;6380 ;1320 ;440  ;VertGlue=Bottom;
+                                                 ParentControl=1150005;
+                                                 LeaderDots=No }
+    { 1150007;TextBox   ;10670;6380 ;1430 ;440  ;VertGlue=Bottom;
+                                                 Editable=No;
+                                                 ParentControl=24;
+                                                 InFrame=Yes;
+                                                 CaptionML=[DEU=Alter;
+                                                            ENU=Age];
+                                                 ToolTipML=[DEU=Buchungsdatum des offenen Postens;
+                                                            ENU=Posting date of open entry];
+                                                 BlankZero=Yes;
+                                                 SourceExpr=CustLedgEntry."Posting Date" }
+    { 1150010;TextBox   ;7700 ;6380 ;1320 ;440  ;VertGlue=Bottom;
+                                                 Editable=No;
+                                                 ParentControl=24;
+                                                 InFrame=Yes;
+                                                 CaptionML=[DEU=Skonto;
+                                                            ENU=Pmt. Discount];
+                                                 ToolTipML=[DEU=Skonto mîglich;
+                                                            ENU=Payment discount possible];
+                                                 SourceExpr=PMTDiscount }
+    { 1150012;Label     ;6270 ;6380 ;1320 ;440  ;VertGlue=Bottom;
+                                                 ParentControl=1150010;
+                                                 LeaderDots=No }
+    { 1150021;TextBox   ;4290 ;6380 ;1760 ;440  ;VertGlue=Bottom;
+                                                 Editable=No;
+                                                 ParentControl=24;
+                                                 InFrame=Yes;
+                                                 CaptionML=[DEU=Offener Betr.;
+                                                            ENU=Open Amt.];
+                                                 ToolTipML=[DEU=Restbetrag des offenen Postens;
+                                                            ENU=Remaining amount of open entry];
+                                                 SourceExpr=OeRemainAmountFC }
+    { 1150024;Label     ;2860 ;6380 ;1320 ;440  ;VertGlue=Bottom;
+                                                 ParentControl=1150021;
+                                                 LeaderDots=No }
+    { 1150022;TextBox   ;4290 ;6930 ;1760 ;440  ;VertGlue=Bottom;
+                                                 Editable=No;
+                                                 ParentControl=24;
+                                                 InFrame=Yes;
+                                                 CaptionML=[DEU=Zahlung;
+                                                            ENU=Payment];
+                                                 ToolTipML=[DEU=Zahlungsbetrag der aktuellen Zeile;
+                                                            ENU=Payment amount of actual line];
+                                                 SourceExpr=-Amount }
+    { 1150025;Label     ;2860 ;6930 ;1320 ;440  ;VertGlue=Bottom;
+                                                 ParentControl=1150022;
+                                                 LeaderDots=No }
+    { 1150023;TextBox   ;4290 ;7480 ;1760 ;440  ;Name=RemainAfterPayment;
+                                                 VertGlue=Bottom;
+                                                 Editable=No;
+                                                 ParentControl=24;
+                                                 InFrame=Yes;
+                                                 CaptionML=[DEU=Rest nach Zahlung;
+                                                            ENU=Remaining after Payment];
+                                                 ToolTipML=[DEU=Restbetrag des offenen Postens nach Zahlung;
+                                                            ENU=Remaining amount of open entry after payment];
+                                                 SourceExpr=RemainAfterPayment }
+    { 1150026;Label     ;2860 ;7480 ;1320 ;440  ;VertGlue=Bottom;
+                                                 ParentControl=1150023;
+                                                 LeaderDots=No }
+    { 1150027;TextBox   ;440  ;6930 ;2200 ;440  ;VertGlue=Bottom;
+                                                 Editable=No;
+                                                 ParentControl=24;
+                                                 InFrame=Yes;
+                                                 CaptionML=[DEU=Name;
+                                                            ENU=Name];
+                                                 SourceExpr=AccName }
+    { 1150028;Label     ;440  ;6380 ;2200 ;440  ;VertGlue=Bottom;
+                                                 ParentControl=1150027;
+                                                 LeaderDots=No }
+    { 1150029;TextBox   ;440  ;7480 ;2200 ;440  ;VertGlue=Bottom;
+                                                 Editable=No;
+                                                 ParentControl=24;
+                                                 InFrame=Yes;
+                                                 CaptionML=[DEU=Zahlungsbedingungen;
+                                                            ENU=Payment Terms];
+                                                 ToolTipML=[DEU=Zahlungsbedingungen Debitor;
+                                                            ENU=Payment term of customer];
+                                                 SourceExpr=Cust."Payment Terms Code" }
+    { 33  ;TextBox      ;3630 ;220  ;2750 ;440  ;Lookup=Yes;
+                                                 CaptionML=[DEU=Buch.-Blattname;
+                                                            ENU=Batch Name];
+                                                 SourceExpr=CurrentJnlBatchName;
+                                                 OnValidate=BEGIN
+                                                              GenJnlManagement.CheckName(CurrentJnlBatchName,Rec);
+                                                            END;
+
+                                                 OnLookup=BEGIN
+                                                            CurrForm.SAVERECORD;
+                                                            GenJnlManagement.LookupName(CurrentJnlBatchName,Rec);
+                                                            CurrForm.UPDATE(FALSE);
+                                                          END;
+
+                                                 OnAfterValidate=BEGIN
+                                                                   CurrForm.SAVERECORD;
+                                                                   GenJnlManagement.SetName(CurrentJnlBatchName,Rec);
+                                                                   CurrForm.UPDATE(FALSE);
+                                                                 END;
+                                                                  }
+    { 34  ;Label        ;220  ;220  ;3300 ;440  ;ParentControl=33 }
+    { 37  ;MenuButton   ;7370 ;8360 ;2200 ;550  ;HorzGlue=Right;
+                                                 VertGlue=Bottom;
+                                                 CaptionML=[DEU=&Konto;
+                                                            ENU=A&ccount];
+                                                 Menu=MENUITEMS
+                                                 {
+                                                   { ID=38;
+                                                     PushAction=RunObject;
+                                                     ShortCutKey=Shift+F5;
+                                                     CaptionML=[DEU=Karte;
+                                                                ENU=Card];
+                                                     RunObject=Codeunit 15 }
+                                                   { ID=39;
+                                                     PushAction=RunObject;
+                                                     ShortCutKey=Ctrl+F5;
+                                                     CaptionML=[DEU=&Posten;
+                                                                ENU=Ledger E&ntries];
+                                                     RunObject=Codeunit 14 }
+                                                 }
+                                                  }
+    { 41  ;MenuButton   ;12210;8360 ;2200 ;550  ;HorzGlue=Right;
+                                                 VertGlue=Bottom;
+                                                 CaptionML=[DEU=Bu&chen;
+                                                            ENU=P&osting];
+                                                 Menu=MENUITEMS
+                                                 {
+                                                   { ID=42;
+                                                     ShortCutKey=Ctrl+F9;
+                                                     CaptionML=[DEU=Abst&immen;
+                                                                ENU=Reconcile];
+                                                     OnPush=BEGIN
+                                                              GLReconcile.SetGenJnlLine(Rec);
+                                                              GLReconcile.RUN;
+                                                            END;
+                                                             }
+                                                   { ID=43;
+                                                     Ellipsis=Yes;
+                                                     CaptionML=[DEU=Testbericht;
+                                                                ENU=Test Report];
+                                                     OnPush=BEGIN
+                                                              ReportPrint.PrintGenJnlLine(Rec);
+                                                            END;
+                                                             }
+                                                   { ID=44;
+                                                     ShortCutKey=F11;
+                                                     CaptionML=[DEU=Bu&chen;
+                                                                ENU=P&ost];
+                                                     OnPush=BEGIN
+                                                              CODEUNIT.RUN(CODEUNIT::"Gen. Jnl.-Post",Rec);
+                                                              CurrentJnlBatchName := GETRANGEMAX("Journal Batch Name");
+                                                              CurrForm.UPDATE(FALSE);
+                                                            END;
+                                                             }
+                                                   { ID=45;
+                                                     ShortCutKey=Shift+F11;
+                                                     CaptionML=[DEU=Buchen und d&rucken;
+                                                                ENU=Post and &Print];
+                                                     OnPush=BEGIN
+                                                              CODEUNIT.RUN(CODEUNIT::"Gen. Jnl.-Post+Print",Rec);
+                                                              CurrentJnlBatchName := GETRANGEMAX("Journal Batch Name");
+                                                              CurrForm.UPDATE(FALSE);
+                                                            END;
+                                                             }
+                                                 }
+                                                  }
+    { 46  ;CommandButton;14630;8360 ;2200 ;550  ;HorzGlue=Right;
+                                                 VertGlue=Bottom;
+                                                 PushAction=FormHelp }
+    { 59  ;MenuButton   ;4950 ;8360 ;2200 ;550  ;HorzGlue=Right;
+                                                 VertGlue=Bottom;
+                                                 CaptionML=[DEU=&Zeile;
+                                                            ENU=&Line];
+                                                 Menu=MENUITEMS
+                                                 {
+                                                   { ID=60;
+                                                     PushAction=RunObject;
+                                                     ShortCutKey=Shift+Ctrl+D;
+                                                     CaptionML=[DEU=Dimensionen;
+                                                                ENU=Dimensions];
+                                                     RunObject=Form 545;
+                                                     RunFormLinkType=OnUpdate;
+                                                     RunFormLink=Table ID=CONST(81),
+                                                                 Journal Template Name=FIELD(Journal Template Name),
+                                                                 Journal Batch Name=FIELD(Journal Batch Name),
+                                                                 Journal Line No.=FIELD(Line No.) }
+                                                 }
+                                                  }
+    { 40  ;MenuButton   ;9790 ;8360 ;2200 ;550  ;HorzGlue=Right;
+                                                 VertGlue=Bottom;
+                                                 CaptionML=[DEU=F&unktion;
+                                                            ENU=F&unctions];
+                                                 Menu=MENUITEMS
+                                                 {
+                                                   { ID=83;
+                                                     PushAction=RunObject;
+                                                     ShortCutKey=Shift+F9;
+                                                     Ellipsis=Yes;
+                                                     CaptionML=[DEU=Posten ausgleichen;
+                                                                ENU=Apply Entries];
+                                                     RunObject=Codeunit 225 }
+                                                   { ID=84;
+                                                     PushAction=RunObject;
+                                                     CaptionML=[DEU=Rundungszeilen f. MW-Konvertierung einfÅgen;
+                                                                ENU=Insert Conv. LCY Rndg. Lines];
+                                                     RunObject=Codeunit 407 }
+                                                 }
+                                                  }
+  }
+  CODE
+  {
+    VAR
+      ChangeExchangeRate@1000 : Form 511;
+      GLReconcile@1001 : Form 345;
+      GenJnlManagement@1002 : Codeunit 230;
+      ReportPrint@1003 : Codeunit 228;
+      CurrentJnlBatchName@1004 : Code[10];
+      AccName@1005 : Text[50];
+      BalAccName@1006 : Text[50];
+      Balance@1007 : Decimal;
+      TotalBalance@1008 : Decimal;
+      ShowBalance@1009 : Boolean;
+      ShowTotalBalance@1010 : Boolean;
+      ShortcutDimCode@1011 : ARRAY [8] OF Code[20];
+      OpenedFromBatch@1012 : Boolean;
+      CustLedgEntry@1150019 : Record 21;
+      Cust@1150020 : Record 18;
+      AgeDays@1150021 : Integer;
+      PaymDiscDays@1150022 : Integer;
+      DueDays@1150023 : Integer;
+      OeRemainAmountFC@1150024 : Decimal;
+      PaymDiscDeductAmount@1150026 : Decimal;
+      RemainAfterPayment@1150027 : Decimal;
+      TotalPayAmount@1150028 : Decimal;
+      PMTDiscount@1150002 : Decimal;
+      AcceptedPaymentTol@1150003 : Decimal;
+
+    LOCAL PROCEDURE UpdateBalance@1();
+    VAR
+      TempGenJourLine@1150001 : Record 81;
+      TmpLineNo@1150000 : Integer;
+    BEGIN
+      GenJnlManagement.CalcBalance(
+        Rec,xRec,Balance,TotalBalance,ShowBalance,ShowTotalBalance);
+      CurrForm.Balance.VISIBLE := ShowBalance;
+      CurrForm.TotalBalance.VISIBLE := ShowTotalBalance;
+
+      TotalPayAmount := 0;
+      TempGenJourLine.COPY(Rec);
+
+      IF "Line No." = 0 THEN
+        TmpLineNo := xRec."Line No."
+      ELSE
+        TmpLineNo := "Line No.";
+
+      TempGenJourLine.MARKEDONLY(TRUE);
+      IF TempGenJourLine.FIND('-') THEN
+      REPEAT
+        TotalBalance := TotalBalance - TempGenJourLine."Balance (LCY)";
+        IF TempGenJourLine."Line No." <= TmpLineNo THEN
+          Balance := Balance - TempGenJourLine."Balance (LCY)";
+        IF (TempGenJourLine."Document Type" = TempGenJourLine."Document Type"::Payment) AND
+           (TempGenJourLine."Account Type" = TempGenJourLine."Account Type"::Customer)
+        THEN
+          TotalPayAmount := TotalPayAmount - (-TempGenJourLine."Amount (LCY)");
+      UNTIL TempGenJourLine.NEXT = 0;
+      TempGenJourLine.MARKEDONLY(FALSE);
+
+      IF NOT TempGenJourLine.FIND('-') THEN BEGIN
+        Balance := 0;
+        TotalBalance := 0;
+      END;
+
+      TempGenJourLine.SETCURRENTKEY("Journal Template Name","Journal Batch Name","Account Type","Document Type");
+      TempGenJourLine.SETRANGE("Document Type",TempGenJourLine."Document Type"::Payment);
+      TempGenJourLine.SETRANGE("Account Type",TempGenJourLine."Account Type"::Customer);
+      IF TempGenJourLine.CALCSUMS("Amount (LCY)") THEN BEGIN
+        TotalPayAmount := TotalPayAmount + (-TempGenJourLine."Amount (LCY)");
+        CurrForm.TotalPayment.VISIBLE(TRUE);
+      END ELSE
+        CurrForm.TotalPayment.VISIBLE(FALSE);
+    END;
+
+    PROCEDURE UpdateInfoBox@2();
+    VAR
+      ExchRate@1150000 : Record 330;
+      Currency@1150001 : Record 4;
+    BEGIN
+      AgeDays := 0;
+      PaymDiscDays := 0;
+      DueDays := 0;
+      OeRemainAmountFC := 0;
+      PaymDiscDeductAmount := 0;
+      RemainAfterPayment := 0;
+      PMTDiscount := 0;
+      AcceptedPaymentTol := 0;
+
+      CustLedgEntry.INIT;
+      Cust.INIT;
+
+      IF "Applies-to Doc. No." = '' THEN
+        EXIT;
+      CustLedgEntry.SETCURRENTKEY("Document No.");
+      CustLedgEntry.SETRANGE("Document Type","Applies-to Doc. Type");
+      CustLedgEntry.SETRANGE("Document No.","Applies-to Doc. No.");
+      IF NOT CustLedgEntry.FIND('-') THEN
+        EXIT;
+
+      IF Currency.READPERMISSION THEN
+        IF Currency.GET("Currency Code") THEN
+          Currency.InitRoundingPrecision;
+      // Std. Zahlungsbedinungen holen
+      IF NOT Cust.GET(CustLedgEntry."Customer No.") THEN;
+
+      // Calculate Days for Age, Payment Discount
+      IF "Posting Date" > 0D THEN BEGIN
+        IF CustLedgEntry."Posting Date" > 0D THEN
+          AgeDays := "Posting Date" - CustLedgEntry."Posting Date";
+        IF CustLedgEntry."Pmt. Discount Date" > 0D THEN
+          PaymDiscDays := CustLedgEntry."Pmt. Discount Date" - "Posting Date";
+        IF CustLedgEntry."Due Date" > 0D THEN
+          DueDays := CustLedgEntry."Due Date" - "Posting Date";
+      END;
+
+      CustLedgEntry.CALCFIELDS("Remaining Amount","Remaining Amt. (LCY)");
+      OeRemainAmountFC := CustLedgEntry."Remaining Amount";
+      PMTDiscount :=
+        ExchRate.ExchangeAmtFCYToFCY("Posting Date",CustLedgEntry."Currency Code",
+          "Currency Code",CustLedgEntry."Remaining Pmt. Disc. Possible");
+      PMTDiscount := ROUND(PMTDiscount,Currency."Amount Rounding Precision");
+
+      // calculate FC-amount of open entries and remaining amount
+      IF CustLedgEntry."Currency Code" <> "Currency Code" THEN BEGIN
+        OeRemainAmountFC :=
+          ExchRate.ExchangeAmtLCYToFCY("Posting Date","Currency Code",CustLedgEntry."Remaining Amt. (LCY)","Currency Factor");
+        OeRemainAmountFC := ROUND(OeRemainAmountFC,Currency."Amount Rounding Precision");
+      END;
+
+      IF (CustLedgEntry."Pmt. Discount Date" >= "Posting Date") OR
+         ((CustLedgEntry."Pmt. Disc. Tolerance Date" >= "Posting Date") AND
+         (CustLedgEntry."Accepted Pmt. Disc. Tolerance"))
+      THEN BEGIN
+        PaymDiscDeductAmount := CustLedgEntry."Remaining Pmt. Disc. Possible";
+        IF CustLedgEntry."Currency Code" <> "Currency Code" THEN
+          PaymDiscDeductAmount :=
+            ExchRate.ExchangeAmtFCYToFCY(
+              "Posting Date",CustLedgEntry."Currency Code","Currency Code",PaymDiscDeductAmount);
+      END;
+      PaymDiscDeductAmount := ROUND(PaymDiscDeductAmount,Currency."Amount Rounding Precision");
+
+      AcceptedPaymentTol := CustLedgEntry."Accepted Payment Tolerance";
+        IF CustLedgEntry."Currency Code" <> "Currency Code" THEN
+          AcceptedPaymentTol :=
+            ExchRate.ExchangeAmtFCYToFCY(
+              "Posting Date",CustLedgEntry."Currency Code","Currency Code",AcceptedPaymentTol);
+      AcceptedPaymentTol := ROUND(AcceptedPaymentTol,Currency."Amount Rounding Precision");
+
+      CASE TRUE OF
+        "Account Type" = "Account Type"::Customer:
+           RemainAfterPayment :=
+             OeRemainAmountFC + Amount - PaymDiscDeductAmount - AcceptedPaymentTol;
+        "Bal. Account Type" = "Bal. Account Type"::Customer:
+           RemainAfterPayment :=
+             OeRemainAmountFC - Amount - PaymDiscDeductAmount - AcceptedPaymentTol;
+      END;
+
+      CurrForm.RemainAfterPayment.VISIBLE(TRUE);
+      IF ("Currency Code" <> CustLedgEntry."Currency Code") AND
+        (("Currency Code" <> '') AND (CustLedgEntry."Currency Code" <> ''))
+      THEN BEGIN
+         CurrForm.RemainAfterPayment.VISIBLE(FALSE);
+         EXIT;
+      END;
+
+      // Pmt. Disc is not applied if entry is not closed
+      IF RemainAfterPayment > 0 THEN BEGIN
+        RemainAfterPayment := RemainAfterPayment + PaymDiscDeductAmount;
+        PaymDiscDeductAmount := 0;
+      END;
+    END;
+
+    BEGIN
+    END.
+  }
+}
+

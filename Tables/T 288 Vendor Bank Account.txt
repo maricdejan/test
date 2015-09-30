@@ -1,0 +1,118 @@
+OBJECT Table 288 Vendor Bank Account
+{
+  OBJECT-PROPERTIES
+  {
+    Date=05.11.08;
+    Time=12:00:00;
+    Version List=NAVW16.00;
+  }
+  PROPERTIES
+  {
+    DataCaptionFields=Vendor No.,Code,Name;
+    CaptionML=[DEU=Kreditor Bankkonto;
+               ENU=Vendor Bank Account];
+    LookupFormID=Form426;
+    DrillDownFormID=Form426;
+  }
+  FIELDS
+  {
+    { 1   ;   ;Vendor No.          ;Code20        ;TableRelation=Vendor;
+                                                   CaptionML=[DEU=Kreditorennr.;
+                                                              ENU=Vendor No.];
+                                                   NotBlank=Yes }
+    { 2   ;   ;Code                ;Code10        ;CaptionML=[DEU=Code;
+                                                              ENU=Code];
+                                                   NotBlank=Yes }
+    { 3   ;   ;Name                ;Text50        ;CaptionML=[DEU=Name;
+                                                              ENU=Name] }
+    { 5   ;   ;Name 2              ;Text50        ;CaptionML=[DEU=Name 2;
+                                                              ENU=Name 2] }
+    { 6   ;   ;Address             ;Text50        ;CaptionML=[DEU=Adresse;
+                                                              ENU=Address] }
+    { 7   ;   ;Address 2           ;Text50        ;CaptionML=[DEU=Adresse 2;
+                                                              ENU=Address 2] }
+    { 8   ;   ;City                ;Text30        ;OnValidate=BEGIN
+                                                                PostCode.ValidateCity(City,"Post Code");
+                                                              END;
+
+                                                   OnLookup=BEGIN
+                                                              PostCode.LookUpCity(City,"Post Code",TRUE);
+                                                            END;
+
+                                                   CaptionML=[DEU=Ort;
+                                                              ENU=City] }
+    { 9   ;   ;Post Code           ;Code20        ;TableRelation="Post Code";
+                                                   OnValidate=BEGIN
+                                                                PostCode.ValidatePostCode(City,"Post Code");
+                                                              END;
+
+                                                   OnLookup=BEGIN
+                                                              PostCode.LookUpPostCode(City,"Post Code",TRUE);
+                                                            END;
+
+                                                   ValidateTableRelation=No;
+                                                   TestTableRelation=No;
+                                                   CaptionML=[DEU=PLZ-Code;
+                                                              ENU=Post Code] }
+    { 10  ;   ;Contact             ;Text50        ;CaptionML=[DEU=Kontakt;
+                                                              ENU=Contact] }
+    { 11  ;   ;Phone No.           ;Text30        ;ExtendedDatatype=Phone No.;
+                                                   CaptionML=[DEU=Telefonnr.;
+                                                              ENU=Phone No.] }
+    { 12  ;   ;Telex No.           ;Text20        ;CaptionML=[DEU=Telexnr.;
+                                                              ENU=Telex No.] }
+    { 13  ;   ;Bank Branch No.     ;Text20        ;CaptionML=[DEU=BLZ;
+                                                              ENU=Bank Branch No.] }
+    { 14  ;   ;Bank Account No.    ;Text30        ;CaptionML=[DEU=Bankkontonummer;
+                                                              ENU=Bank Account No.] }
+    { 15  ;   ;Transit No.         ;Text20        ;CaptionML=[DEU=Transitnr.;
+                                                              ENU=Transit No.] }
+    { 16  ;   ;Currency Code       ;Code10        ;TableRelation=Currency;
+                                                   CaptionML=[DEU=W„hrungscode;
+                                                              ENU=Currency Code] }
+    { 17  ;   ;Country/Region Code ;Code10        ;TableRelation=Country/Region;
+                                                   CaptionML=[DEU=L„nder-/Regionscode;
+                                                              ENU=Country/Region Code] }
+    { 18  ;   ;County              ;Text30        ;CaptionML=[DEU=Bundesregion;
+                                                              ENU=County] }
+    { 19  ;   ;Fax No.             ;Text30        ;CaptionML=[DEU=Faxnr.;
+                                                              ENU=Fax No.] }
+    { 20  ;   ;Telex Answer Back   ;Text20        ;CaptionML=[DEU=Telex Namengeber;
+                                                              ENU=Telex Answer Back] }
+    { 21  ;   ;Language Code       ;Code10        ;TableRelation=Language;
+                                                   CaptionML=[DEU=Sprachcode;
+                                                              ENU=Language Code] }
+    { 22  ;   ;E-Mail              ;Text80        ;ExtendedDatatype=E-Mail;
+                                                   CaptionML=[DEU=E-Mail;
+                                                              ENU=E-Mail] }
+    { 23  ;   ;Home Page           ;Text80        ;ExtendedDatatype=URL;
+                                                   CaptionML=[DEU=Homepage;
+                                                              ENU=Home Page] }
+    { 24  ;   ;IBAN                ;Code50        ;OnValidate=VAR
+                                                                CompanyInfo@1000 : Record 79;
+                                                              BEGIN
+                                                                CompanyInfo.CheckIBAN(IBAN);
+                                                              END;
+
+                                                   CaptionML=[DEU=IBAN;
+                                                              ENU=IBAN] }
+    { 25  ;   ;SWIFT Code          ;Code20        ;CaptionML=[DEU=SWIFT-Code;
+                                                              ENU=SWIFT Code] }
+  }
+  KEYS
+  {
+    {    ;Vendor No.,Code                         ;Clustered=Yes }
+  }
+  FIELDGROUPS
+  {
+  }
+  CODE
+  {
+    VAR
+      PostCode@1000 : Record 225;
+
+    BEGIN
+    END.
+  }
+}
+

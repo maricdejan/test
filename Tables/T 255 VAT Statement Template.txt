@@ -1,0 +1,80 @@
+OBJECT Table 255 VAT Statement Template
+{
+  OBJECT-PROPERTIES
+  {
+    Date=05.11.08;
+    Time=12:00:00;
+    Version List=NAVW16.00,NAVDACH6.00;
+  }
+  PROPERTIES
+  {
+    OnInsert=BEGIN
+               VALIDATE("Form ID");
+             END;
+
+    OnDelete=BEGIN
+               VATStmtLine.SETRANGE("Statement Template Name",Name);
+               VATStmtLine.DELETEALL;
+               VATStmtName.SETRANGE("Statement Template Name",Name);
+               VATStmtName.DELETEALL;
+             END;
+
+    CaptionML=[DEU=MwSt.-Abrechnung Vorlage;
+               ENU=VAT Statement Template];
+    LookupFormID=Form319;
+  }
+  FIELDS
+  {
+    { 1   ;   ;Name                ;Code10        ;CaptionML=[DEU=Name;
+                                                              ENU=Name];
+                                                   NotBlank=Yes }
+    { 2   ;   ;Description         ;Text80        ;CaptionML=[DEU=Beschreibung;
+                                                              ENU=Description] }
+    { 6   ;   ;Form ID             ;Integer       ;TableRelation=Object.ID WHERE (Type=CONST(Form));
+                                                   OnValidate=BEGIN
+                                                                IF "Form ID" = 0 THEN
+                                                                  "Form ID" := FORM::"VAT Statement";
+                                                                "VAT Statement Report ID" := REPORT::"VAT Statement";
+                                                                DACHReportSelection.SETRANGE(Usage, DACHReportSelection.Usage::"VAT Statement");
+                                                                DACHReportSelection.SETFILTER("Report ID", '<>0');
+                                                                IF DACHReportSelection.FIND('-') THEN
+                                                                  "VAT Statement Report ID" := DACHReportSelection."Report ID";
+                                                              END;
+
+                                                   CaptionML=[DEU=Formular-ID;
+                                                              ENU=Form ID] }
+    { 7   ;   ;VAT Statement Report ID;Integer    ;TableRelation=Object.ID WHERE (Type=CONST(Report));
+                                                   CaptionML=[DEU=MwSt.-Abrechnung Berichts-ID;
+                                                              ENU=VAT Statement Report ID] }
+    { 16  ;   ;Form Name           ;Text80        ;FieldClass=FlowField;
+                                                   CalcFormula=Lookup(AllObjWithCaption."Object Caption" WHERE (Object Type=CONST(Form),
+                                                                                                                Object ID=FIELD(Form ID)));
+                                                   CaptionML=[DEU=Formularname;
+                                                              ENU=Form Name];
+                                                   Editable=No }
+    { 17  ;   ;VAT Statement Report Name;Text80   ;FieldClass=FlowField;
+                                                   CalcFormula=Lookup(AllObjWithCaption."Object Caption" WHERE (Object Type=CONST(Report),
+                                                                                                                Object ID=FIELD(VAT Statement Report ID)));
+                                                   CaptionML=[DEU=MwSt.-Abrechnungsbericht;
+                                                              ENU=VAT Statement Report Name];
+                                                   Editable=No }
+  }
+  KEYS
+  {
+    {    ;Name                                    ;Clustered=Yes }
+  }
+  FIELDGROUPS
+  {
+  }
+  CODE
+  {
+    VAR
+      VATStmtName@1000 : Record 257;
+      VATStmtLine@1001 : Record 256;
+      DACHReportSelection@1140000 : Record 26100;
+
+    BEGIN
+    END.
+  }
+}
+

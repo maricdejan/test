@@ -1,0 +1,140 @@
+OBJECT Form 5005250 Purchase Line Archive List
+{
+  OBJECT-PROPERTIES
+  {
+    Date=05.11.08;
+    Time=12:00:00;
+    Version List=NAVDACH6.00;
+  }
+  PROPERTIES
+  {
+    Width=16500;
+    Height=6710;
+    Editable=No;
+    CaptionML=[DEU=Archiv. EinkaufszeilenÅbersicht;
+               ENU=Purchase Line Archive List];
+    TableBoxID=1140000;
+    SourceTable=Table5110;
+  }
+  CONTROLS
+  {
+    { 1140000;TableBox  ;220  ;220  ;16060;5500 ;HorzGlue=Both;
+                                                 VertGlue=Both }
+    { 1140001;TextBox   ;0    ;0    ;550  ;0    ;ParentControl=1140000;
+                                                 InColumn=Yes;
+                                                 SourceExpr="Document Type" }
+    { 1140002;Label     ;0    ;0    ;0    ;0    ;ParentControl=1140001;
+                                                 InColumnHeading=Yes }
+    { 1140003;TextBox   ;0    ;0    ;1650 ;0    ;ParentControl=1140000;
+                                                 InColumn=Yes;
+                                                 SourceExpr="Document No." }
+    { 1140004;Label     ;0    ;0    ;0    ;0    ;ParentControl=1140003;
+                                                 InColumnHeading=Yes }
+    { 1140005;TextBox   ;0    ;0    ;1650 ;0    ;ParentControl=1140000;
+                                                 InColumn=Yes;
+                                                 SourceExpr="Buy-from Vendor No." }
+    { 1140006;Label     ;0    ;0    ;0    ;0    ;ParentControl=1140005;
+                                                 InColumnHeading=Yes }
+    { 1140007;TextBox   ;0    ;0    ;1650 ;0    ;Visible=No;
+                                                 ParentControl=1140000;
+                                                 InColumn=Yes;
+                                                 SourceExpr="Line No." }
+    { 1140008;Label     ;0    ;0    ;0    ;0    ;ParentControl=1140007;
+                                                 InColumnHeading=Yes }
+    { 1140009;TextBox   ;0    ;0    ;550  ;0    ;ParentControl=1140000;
+                                                 InColumn=Yes;
+                                                 SourceExpr=Type }
+    { 1140010;Label     ;0    ;0    ;0    ;0    ;ParentControl=1140009;
+                                                 InColumnHeading=Yes }
+    { 1140011;TextBox   ;0    ;0    ;1650 ;0    ;ParentControl=1140000;
+                                                 InColumn=Yes;
+                                                 SourceExpr="No." }
+    { 1140012;Label     ;0    ;0    ;0    ;0    ;ParentControl=1140011;
+                                                 InColumnHeading=Yes }
+    { 1140013;TextBox   ;7012 ;3300 ;1650 ;440  ;Visible=No;
+                                                 ParentControl=1140000;
+                                                 InColumn=Yes;
+                                                 SourceExpr="Variant Code" }
+    { 1140014;Label     ;0    ;0    ;0    ;0    ;ParentControl=1140013;
+                                                 InColumnHeading=Yes }
+    { 1140015;TextBox   ;0    ;0    ;4400 ;0    ;HorzGlue=Both;
+                                                 ParentControl=1140000;
+                                                 InColumn=Yes;
+                                                 SourceExpr=Description }
+    { 1140016;Label     ;0    ;0    ;0    ;0    ;ParentControl=1140015;
+                                                 InColumnHeading=Yes }
+    { 1140017;TextBox   ;12594;1980 ;1650 ;440  ;Visible=No;
+                                                 ParentControl=1140000;
+                                                 InColumn=Yes;
+                                                 SourceExpr="Location Code" }
+    { 1140018;Label     ;0    ;0    ;0    ;0    ;ParentControl=1140017;
+                                                 InColumnHeading=Yes }
+    { 1140019;TextBox   ;0    ;0    ;2200 ;0    ;ParentControl=1140000;
+                                                 InColumn=Yes;
+                                                 SourceExpr="Unit of Measure" }
+    { 1140020;Label     ;0    ;0    ;0    ;0    ;ParentControl=1140019;
+                                                 InColumnHeading=Yes }
+    { 1140021;TextBox   ;0    ;0    ;2200 ;0    ;ParentControl=1140000;
+                                                 InColumn=Yes;
+                                                 SourceExpr=Quantity }
+    { 1140022;Label     ;0    ;0    ;0    ;0    ;ParentControl=1140021;
+                                                 InColumnHeading=Yes }
+    { 1140023;TextBox   ;0    ;0    ;2200 ;0    ;ParentControl=1140000;
+                                                 InColumn=Yes;
+                                                 SourceExpr=Amount }
+    { 1140024;Label     ;0    ;0    ;0    ;0    ;ParentControl=1140023;
+                                                 InColumnHeading=Yes }
+    { 1140025;TextBox   ;0    ;0    ;2200 ;0    ;ParentControl=1140000;
+                                                 InColumn=Yes;
+                                                 SourceExpr="Amount Including VAT" }
+    { 1140026;Label     ;0    ;0    ;0    ;0    ;ParentControl=1140025;
+                                                 InColumnHeading=Yes }
+    { 1140027;CommandButton;6820;5940;2200;550  ;HorzGlue=Right;
+                                                 VertGlue=Bottom;
+                                                 Default=Yes;
+                                                 PushAction=LookupOK;
+                                                 InvalidActionAppearance=Hide }
+    { 1140028;CommandButton;9240;5940;2200;550  ;HorzGlue=Right;
+                                                 VertGlue=Bottom;
+                                                 Cancel=Yes;
+                                                 PushAction=LookupCancel;
+                                                 InvalidActionAppearance=Hide }
+    { 1140029;CommandButton;14080;5940;2200;550 ;HorzGlue=Right;
+                                                 VertGlue=Bottom;
+                                                 PushAction=FormHelp }
+    { 1140030;MenuButton;11660;5940 ;2200 ;550  ;HorzGlue=Right;
+                                                 VertGlue=Bottom;
+                                                 CaptionML=[DEU=&Zeile;
+                                                            ENU=&Line];
+                                                 Menu=MENUITEMS
+                                                 {
+                                                   { ID=1140301;
+                                                     CaptionML=[DEU=Beleg anzeigen;
+                                                                ENU=Show Document];
+                                                     OnPush=BEGIN
+                                                              PurchaseHeaderArchive.GET("Document Type","Document No.","Doc. No. Occurrence","Version No.");
+                                                              CASE "Document Type" OF
+                                                                "Document Type"::Order:
+                                                                  FORM.RUN(FORM::"Purchase Order Archive",PurchaseHeaderArchive);
+                                                                "Document Type"::Quote:
+                                                                  FORM.RUN(FORM::"Purchase Quote Archive",PurchaseHeaderArchive);
+                                                                "Document Type"::"Blanket Order":
+                                                                  FORM.RUN(FORM::"Blanket Purchase Order Archive",PurchaseHeaderArchive);
+                                                                "Document Type"::"Return Order":
+                                                                  FORM.RUN(FORM::"Purchase Return Order Archive",PurchaseHeaderArchive);
+                                                              END;
+                                                            END;
+                                                             }
+                                                 }
+                                                  }
+  }
+  CODE
+  {
+    VAR
+      PurchaseHeaderArchive@1140000 : Record 5109;
+
+    BEGIN
+    END.
+  }
+}
+

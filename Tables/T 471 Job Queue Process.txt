@@ -1,0 +1,82 @@
+OBJECT Table 471 Job Queue Process
+{
+  OBJECT-PROPERTIES
+  {
+    Date=05.11.08;
+    Time=12:00:00;
+    Version List=NAVW16.00;
+  }
+  PROPERTIES
+  {
+    OnInsert=BEGIN
+               "Last Job Processed On" := CURRENTDATETIME;
+             END;
+
+    CaptionML=[DEU=Projektwarteschlange in Verarbeitung;
+               ENU=Job Queue Process];
+  }
+  FIELDS
+  {
+    { 1   ;   ;Session ID          ;Integer       ;CaptionML=[DEU=Sitzungs-ID;
+                                                              ENU=Session ID] }
+    { 2   ;   ;User ID             ;Text65        ;CaptionML=[DEU=Benutzer-ID;
+                                                              ENU=User ID] }
+    { 3   ;   ;Last Job Processed On;DateTime     ;CaptionML=[DEU=Zuletzt verarbeitetes Projekt;
+                                                              ENU=Last Job Processed On] }
+    { 4   ;   ;Object Type Running ;Option        ;CaptionML=[DEU=Art des ausgefÅhrten Objekts;
+                                                              ENU=Object Type Running];
+                                                   OptionCaptionML=[DEU=,,,Bericht,,CodeUnit;
+                                                                    ENU=,,,Report,,Codeunit];
+                                                   OptionString=,,,Report,,Codeunit }
+    { 5   ;   ;Object ID Running   ;Integer       ;CaptionML=[DEU=ID des ausgefÅhrten Objekts;
+                                                              ENU=Object ID Running] }
+    { 6   ;   ;Object Name Running ;Text80        ;FieldClass=FlowField;
+                                                   CalcFormula=Lookup(AllObjWithCaption."Object Caption" WHERE (Object Type=FIELD(Object Type Running),
+                                                                                                                Object ID=FIELD(Object ID Running)));
+                                                   CaptionML=[DEU=Name des ausgefÅhrten Objekts;
+                                                              ENU=Object Name Running] }
+    { 7   ;   ;Minimum Job Queue Priority;Integer ;CaptionML=[DEU=Minimale ProjektwarteschlangenprioritÑt;
+                                                              ENU=Minimum Job Queue Priority] }
+    { 8   ;   ;Maximum Job Queue Priority;Integer ;CaptionML=[DEU=Maximale ProjektwarteschlangenprioritÑt;
+                                                              ENU=Maximum Job Queue Priority] }
+    { 9   ;   ;Active              ;Boolean       ;CaptionML=[DEU=Aktiv;
+                                                              ENU=Active] }
+  }
+  KEYS
+  {
+    {    ;Session ID                              ;Clustered=Yes }
+  }
+  FIELDGROUPS
+  {
+  }
+  CODE
+  {
+
+    PROCEDURE ProcessIsActive@1() : Boolean;
+    BEGIN
+      IF ISEMPTY THEN
+        EXIT(FALSE)
+      ELSE
+        EXIT(("Object ID Running" <> 0) OR ("Last Job Processed On" + 30000 > CURRENTDATETIME));
+    END;
+
+    PROCEDURE SetPriorities@2(SessionID@1001 : Integer);
+    VAR
+      JobQueueProcess@1000 : Record 471;
+      JobQueueProcessPrio@1002 : Form 675;
+    BEGIN
+      JobQueueProcess.GET(SessionID);
+      JobQueueProcessPrio.SetPriorities(JobQueueProcess."Minimum Job Queue Priority",JobQueueProcess."Maximum Job Queue Priority");
+      IF JobQueueProcessPrio.RUNMODAL = ACTION::OK THEN BEGIN
+        JobQueueProcess.LOCKTABLE;
+        JobQueueProcess.GET(SessionID);
+        JobQueueProcessPrio.GetPriorities(JobQueueProcess."Minimum Job Queue Priority",JobQueueProcess."Maximum Job Queue Priority");
+        JobQueueProcess.MODIFY;
+      END;
+    END;
+
+    BEGIN
+    END.
+  }
+}
+

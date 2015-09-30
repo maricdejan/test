@@ -1,0 +1,53 @@
+OBJECT Table 238 BOM Ledger Entry
+{
+  OBJECT-PROPERTIES
+  {
+    Date=05.11.08;
+    Time=12:00:00;
+    Version List=NAVW16.00;
+  }
+  PROPERTIES
+  {
+    CaptionML=[DEU=StÅcklistenposten;
+               ENU=BOM Ledger Entry];
+  }
+  FIELDS
+  {
+    { 1   ;   ;Entry No.           ;Integer       ;CaptionML=[DEU=Lfd. Nr.;
+                                                              ENU=Entry No.] }
+    { 2   ;   ;Reference Type      ;Option        ;CaptionML=[DEU=Referenz;
+                                                              ENU=Reference Type];
+                                                   OptionCaptionML=[DEU=Artikel,Ressource;
+                                                                    ENU=Item,Resource];
+                                                   OptionString=Item,Resource }
+    { 3   ;   ;Reference Entry No. ;Integer       ;TableRelation=IF (Reference Type=CONST(Item)) "Item Ledger Entry"
+                                                                 ELSE IF (Reference Type=CONST(Resource)) "Res. Ledger Entry";
+                                                   CaptionML=[DEU=Referenz Lfd. Nr.;
+                                                              ENU=Reference Entry No.] }
+    { 4   ;   ;Posting Date        ;Date          ;CaptionML=[DEU=Buchungsdatum;
+                                                              ENU=Posting Date] }
+    { 5   ;   ;Entry Type          ;Option        ;CaptionML=[DEU=Postenart;
+                                                              ENU=Entry Type];
+                                                   OptionCaptionML=[DEU=Komponente,StÅckliste;
+                                                                    ENU=Component,BOM];
+                                                   OptionString=Component,BOM }
+    { 6   ;   ;Document Date       ;Date          ;CaptionML=[DEU=Belegdatum;
+                                                              ENU=Document Date] }
+  }
+  KEYS
+  {
+    {    ;Entry No.                               ;Clustered=Yes }
+    {    ;Posting Date                             }
+  }
+  FIELDGROUPS
+  {
+    { 1   ;DropDown            ;Entry No.,Reference Type,Reference Entry No.,Entry Type,Posting Date }
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

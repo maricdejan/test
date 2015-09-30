@@ -1,0 +1,136 @@
+OBJECT Table 374 G/L Acc. Budget Buffer
+{
+  OBJECT-PROPERTIES
+  {
+    Date=05.11.08;
+    Time=12:00:00;
+    Version List=NAVW16.00;
+  }
+  PROPERTIES
+  {
+    DataCaptionFields=Code;
+    CaptionML=[DEU=Sachkontobudgetpuffer;
+               ENU=G/L Acc. Budget Buffer];
+    LookupFormID=Form18;
+    DrillDownFormID=Form16;
+  }
+  FIELDS
+  {
+    { 1   ;   ;Code                ;Code20        ;CaptionML=[DEU=Code;
+                                                              ENU=Code];
+                                                   NotBlank=Yes }
+    { 3   ;   ;Budget Filter       ;Code10        ;FieldClass=FlowFilter;
+                                                   TableRelation="G/L Budget Name";
+                                                   CaptionML=[DEU=Budgetfilter;
+                                                              ENU=Budget Filter] }
+    { 4   ;   ;G/L Account Filter  ;Code20        ;FieldClass=FlowFilter;
+                                                   TableRelation="G/L Account";
+                                                   ValidateTableRelation=No;
+                                                   CaptionML=[DEU=Sachkontofilter;
+                                                              ENU=G/L Account Filter] }
+    { 5   ;   ;Business Unit Filter;Code10        ;FieldClass=FlowFilter;
+                                                   TableRelation="Business Unit";
+                                                   CaptionML=[DEU=Konzernmandantenfilter;
+                                                              ENU=Business Unit Filter] }
+    { 6   ;   ;Global Dimension 1 Filter;Code20   ;FieldClass=FlowFilter;
+                                                   TableRelation="Dimension Value".Code WHERE (Global Dimension No.=CONST(1));
+                                                   CaptionML=[DEU=Globaler Dimensionsfilter 1;
+                                                              ENU=Global Dimension 1 Filter];
+                                                   CaptionClass='1,3,1' }
+    { 7   ;   ;Global Dimension 2 Filter;Code20   ;FieldClass=FlowFilter;
+                                                   TableRelation="Dimension Value".Code WHERE (Global Dimension No.=CONST(2));
+                                                   CaptionML=[DEU=Globaler Dimensionsfilter 2;
+                                                              ENU=Global Dimension 2 Filter];
+                                                   CaptionClass='1,3,2' }
+    { 8   ;   ;Budget Dimension 1 Filter;Code20   ;FieldClass=FlowFilter;
+                                                   CaptionML=[DEU=Budgetdimensionsfilter 1;
+                                                              ENU=Budget Dimension 1 Filter];
+                                                   CaptionClass=GetCaptionClass(1) }
+    { 9   ;   ;Budget Dimension 2 Filter;Code20   ;FieldClass=FlowFilter;
+                                                   CaptionML=[DEU=Budgetdimensionsfilter 2;
+                                                              ENU=Budget Dimension 2 Filter];
+                                                   CaptionClass=GetCaptionClass(2) }
+    { 10  ;   ;Budget Dimension 3 Filter;Code20   ;FieldClass=FlowFilter;
+                                                   CaptionML=[DEU=Budgetdimensionsfilter 3;
+                                                              ENU=Budget Dimension 3 Filter];
+                                                   CaptionClass=GetCaptionClass(3) }
+    { 11  ;   ;Budget Dimension 4 Filter;Code20   ;FieldClass=FlowFilter;
+                                                   CaptionML=[DEU=Budgetdimensionsfilter 4;
+                                                              ENU=Budget Dimension 4 Filter];
+                                                   CaptionClass=GetCaptionClass(4) }
+    { 12  ;   ;Date Filter         ;Date          ;FieldClass=FlowFilter;
+                                                   CaptionML=[DEU=Datumsfilter;
+                                                              ENU=Date Filter];
+                                                   ClosingDates=Yes }
+    { 13  ;   ;Budgeted Amount     ;Decimal       ;FieldClass=FlowField;
+                                                   CalcFormula=Sum("G/L Budget Entry".Amount WHERE (Budget Name=FIELD(Budget Filter),
+                                                                                                    G/L Account No.=FIELD(G/L Account Filter),
+                                                                                                    Business Unit Code=FIELD(Business Unit Filter),
+                                                                                                    Global Dimension 1 Code=FIELD(Global Dimension 1 Filter),
+                                                                                                    Global Dimension 2 Code=FIELD(Global Dimension 2 Filter),
+                                                                                                    Budget Dimension 1 Code=FIELD(Budget Dimension 1 Filter),
+                                                                                                    Budget Dimension 2 Code=FIELD(Budget Dimension 2 Filter),
+                                                                                                    Budget Dimension 3 Code=FIELD(Budget Dimension 3 Filter),
+                                                                                                    Budget Dimension 4 Code=FIELD(Budget Dimension 4 Filter),
+                                                                                                    Date=FIELD(Date Filter)));
+                                                   CaptionML=[DEU=Budgetierter Betrag;
+                                                              ENU=Budgeted Amount];
+                                                   AutoFormatType=1 }
+  }
+  KEYS
+  {
+    {    ;Code                                    ;Clustered=Yes }
+  }
+  FIELDGROUPS
+  {
+  }
+  CODE
+  {
+    VAR
+      Text000@1000 : TextConst 'DEU=1,6,,Budgetdimensionsfilter 1;ENU=1,6,,Budget Dimension 1 Filter';
+      Text001@1001 : TextConst 'DEU=1,6,,Budgetdimensionsfilter 2;ENU=1,6,,Budget Dimension 2 Filter';
+      Text002@1002 : TextConst 'DEU=1,6,,Budgetdimensionsfilter 3;ENU=1,6,,Budget Dimension 3 Filter';
+      Text003@1003 : TextConst 'DEU=1,6,,Budgetdimensionsfilter 4;ENU=1,6,,Budget Dimension 4 Filter';
+      GLBudgetName@1004 : Record 95;
+
+    PROCEDURE GetCaptionClass@7(BudgetDimType@1000 : Integer) : Text[250];
+    BEGIN
+      IF GLBudgetName.Name <> GETFILTER("Budget Filter") THEN
+        GLBudgetName.GET(GETFILTER("Budget Filter"));
+      CASE BudgetDimType OF
+        1:
+          BEGIN
+            IF GLBudgetName."Budget Dimension 1 Code" <> '' THEN
+              EXIT('1,6,' + GLBudgetName."Budget Dimension 1 Code")
+            ELSE
+              EXIT(Text000);
+          END;
+        2:
+          BEGIN
+            IF GLBudgetName."Budget Dimension 2 Code" <> '' THEN
+              EXIT('1,6,' + GLBudgetName."Budget Dimension 2 Code")
+            ELSE
+              EXIT(Text001);
+          END;
+        3:
+          BEGIN
+            IF GLBudgetName."Budget Dimension 3 Code" <> '' THEN
+              EXIT('1,6,' + GLBudgetName."Budget Dimension 3 Code")
+            ELSE
+              EXIT(Text002);
+          END;
+        4:
+          BEGIN
+            IF GLBudgetName."Budget Dimension 4 Code" <> '' THEN
+              EXIT('1,6,' + GLBudgetName."Budget Dimension 4 Code")
+            ELSE
+              EXIT(Text003);
+          END;
+      END;
+    END;
+
+    BEGIN
+    END.
+  }
+}
+

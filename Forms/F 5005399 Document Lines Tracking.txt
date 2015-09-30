@@ -1,0 +1,1119 @@
+OBJECT Form 5005399 Document Lines Tracking
+{
+  OBJECT-PROPERTIES
+  {
+    Date=05.11.08;
+    Time=12:00:00;
+    Version List=NAVDACH6.00;
+  }
+  PROPERTIES
+  {
+    Width=15730;
+    Height=6490;
+    CaptionML=[DEU=Belegzeilenverfolgung;
+               ENU=Document Lines Tracking];
+    TableBoxID=1140000;
+    SourceTable=Table265;
+    DataCaptionExpr=DocumentCaption;
+    OnOpenForm=BEGIN
+                 IF (DocumentNo = '') OR (DocumentLineNo = 0) THEN
+                   EXIT;
+
+                 FindRecords;
+               END;
+
+    OnFindRecord=BEGIN
+                   DocumentEntry := Rec;
+                   IF NOT DocumentEntry.FIND(Which) THEN
+                     EXIT(FALSE);
+                   Rec := DocumentEntry;
+                   EXIT(TRUE);
+                 END;
+
+    OnNextRecord=VAR
+                   CurrentSteps@1140000 : Integer;
+                 BEGIN
+                   DocumentEntry := Rec;
+                   CurrentSteps := DocumentEntry.NEXT(Steps);
+                   IF CurrentSteps <> 0 THEN
+                     Rec := DocumentEntry;
+                   EXIT(CurrentSteps);
+                 END;
+
+  }
+  CONTROLS
+  {
+    { 1140000;TableBox  ;220  ;3520 ;15180;1980 ;HorzGlue=Both;
+                                                 VertGlue=Both;
+                                                 Editable=No }
+    { 1140001;TextBox   ;212  ;4840 ;1650 ;440  ;Visible=No;
+                                                 ParentControl=1140000;
+                                                 InColumn=Yes;
+                                                 SourceExpr="Entry No." }
+    { 1140002;Label     ;0    ;0    ;0    ;0    ;ParentControl=1140001;
+                                                 InColumnHeading=Yes }
+    { 1140003;TextBox   ;370  ;5500 ;1640 ;440  ;Visible=No;
+                                                 ParentControl=1140000;
+                                                 InColumn=Yes;
+                                                 SourceExpr="Table ID" }
+    { 1140004;Label     ;0    ;0    ;0    ;0    ;ParentControl=1140003;
+                                                 InColumnHeading=Yes }
+    { 1140005;TextBox   ;0    ;0    ;4400 ;0    ;Name=Table Name;
+                                                 HorzGlue=Both;
+                                                 ParentControl=1140000;
+                                                 InColumn=Yes;
+                                                 SourceExpr="Table Name" }
+    { 1140006;Label     ;0    ;0    ;0    ;0    ;ParentControl=1140005;
+                                                 InColumnHeading=Yes;
+                                                 BorderStyle=Normal }
+    { 1140007;TextBox   ;0    ;0    ;1650 ;0    ;ParentControl=1140000;
+                                                 InColumn=Yes;
+                                                 DrillDown=Yes;
+                                                 SourceExpr="No. of Records";
+                                                 OnDrillDown=BEGIN
+                                                               ShowRecords;
+                                                             END;
+                                                              }
+    { 1140008;Label     ;0    ;0    ;0    ;0    ;ParentControl=1140007;
+                                                 InColumnHeading=Yes;
+                                                 BorderStyle=Normal }
+    { 1140009;CommandButton;10780;5720;2200;550 ;Name=Show;
+                                                 HorzGlue=Right;
+                                                 VertGlue=Bottom;
+                                                 CaptionML=[DEU=An&zeigen;
+                                                            ENU=&Show];
+                                                 OnPush=BEGIN
+                                                          ShowRecords;
+                                                        END;
+                                                         }
+    { 1140010;CommandButton;13200;5720;2200;550 ;HorzGlue=Right;
+                                                 VertGlue=Bottom;
+                                                 PushAction=FormHelp }
+    { 1140011;TabControl;220  ;220  ;15180;3080 ;HorzGlue=Both;
+                                                 PageNamesML=[DEU=Allgemein;
+                                                              ENU=General] }
+    { 1140012;TextBox   ;3850 ;990  ;1650 ;440  ;Editable=No;
+                                                 ParentControl=1140011;
+                                                 InPage=0;
+                                                 CaptionML=[DEU=Zeilennr.;
+                                                            ENU=Line No.];
+                                                 SourceExpr=DocumentLineNo }
+    { 1140013;Label     ;440  ;990  ;3300 ;440  ;ParentControl=1140012 }
+    { 1140014;TextBox   ;3850 ;1540 ;5500 ;440  ;Editable=No;
+                                                 ParentControl=1140011;
+                                                 InPage=0;
+                                                 CaptionML=[DEU=Typ;
+                                                            ENU=Type];
+                                                 SourceExpr=DocumentLineType }
+    { 1140016;Label     ;440  ;1540 ;3300 ;440  ;ParentControl=1140014 }
+    { 1140017;TextBox   ;3850 ;2640 ;5500 ;440  ;Editable=No;
+                                                 ParentControl=1140011;
+                                                 InPage=0;
+                                                 CaptionML=[DEU=Beschreibung;
+                                                            ENU=Description];
+                                                 SourceExpr=DocLineDescription }
+    { 1140018;Label     ;440  ;2640 ;3300 ;440  ;ParentControl=1140017 }
+    { 1140019;TextBox   ;12980;990  ;2200 ;440  ;Editable=No;
+                                                 ParentControl=1140011;
+                                                 InPage=0;
+                                                 CaptionML=[DEU=Menge;
+                                                            ENU=Quantity];
+                                                 DecimalPlaces=0:5;
+                                                 SourceExpr=DocumentLineQuantity }
+    { 1140020;Label     ;9570 ;990  ;3300 ;440  ;ParentControl=1140019 }
+    { 1140021;TextBox   ;3850 ;2090 ;2750 ;440  ;Editable=No;
+                                                 ParentControl=1140011;
+                                                 InPage=0;
+                                                 CaptionML=[DEU=Nr.;
+                                                            ENU=No.];
+                                                 SourceExpr=DocLineNo }
+    { 1140022;TextBox   ;12980;1540 ;2200 ;440  ;Editable=No;
+                                                 ParentControl=1140011;
+                                                 InPage=0;
+                                                 CaptionML=[DEU=Einheitencode;
+                                                            ENU=Unit of Measure Code];
+                                                 SourceExpr=DocumentLineUnit }
+    { 1140023;Label     ;440  ;2090 ;3300 ;440  ;ParentControl=1140021;
+                                                 InPage=0 }
+    { 1140024;Label     ;9570 ;1540 ;3300 ;440  ;ParentControl=1140022;
+                                                 InPage=0 }
+  }
+  CODE
+  {
+    VAR
+      Text1140000@1140000 : TextConst 'DEU=DatensÑtze werden gezÑhlt...;ENU=Counting records...';
+      Text1140001@1140001 : TextConst 'DEU=Auftragszeilen;ENU=Sales Order Lines';
+      Text1140002@1140002 : TextConst 'DEU=Archiv. Auftragszeilen;ENU=Archived Sales Order Lines';
+      Text1140003@1140003 : TextConst 'DEU=Geb. Verkaufslieferzeilen;ENU=Posted Sales Shipment Lines';
+      Text1140004@1140004 : TextConst 'DEU=Geb. Verkaufsrechnungszeilen;ENU=Posted Sales Invoice Lines';
+      Text1140005@1140005 : TextConst 'DEU=Bestellzeilen;ENU=Purchase Order Lines';
+      Text1140006@1140006 : TextConst 'DEU=Archiv. Bestellzeilen;ENU=Archived Purchase Order Lines';
+      Text1140007@1140007 : TextConst 'DEU=Geb. Einkaufslieferzeilen;ENU=Posted Purchase Receipt Lines';
+      Text1140008@1140008 : TextConst 'DEU=Geb. Einkaufsrechnungszeilen;ENU=Posted Purchase Invoice Line';
+      Text1140009@1140009 : TextConst 'DEU="Es gibt keinen Auftrag oder archivierten Auftrag ";ENU="There is no Sales Order / Archived Sales Order "';
+      Text1140010@1140010 : TextConst 'DEU=mit dieser Belegnummer und Belegzeilennr.;ENU=with this Document Number and Document Line No.';
+      Text1140011@1140011 : TextConst 'DEU="Es gibt keine Bestellung oder archivierte Bestellung ";ENU="There is no Purchase Order / Archived Purchase Order "';
+      Text1140012@1140012 : TextConst 'DEU=Archiviert;ENU=Archived';
+      Text1140013@1140013 : TextConst 'DEU=Rahmenauftragszeilen;ENU=Blanket Sales Order Lines';
+      Text1140014@1140014 : TextConst 'DEU=Archiv. Rahmenauftragszeilen;ENU=Archived Blanket Sales Order Lines';
+      Text1140015@1140015 : TextConst 'DEU=Rahmenbestellzeilen;ENU=Blanket Purchase Order Lines';
+      Text1140016@1140016 : TextConst 'DEU=Archiv. Rahmenbestellzeilen;ENU=Archived Blanket Purchase Order Lines';
+      SalesLine@1140017 : Record 37;
+      SalesShipmentLine@1140018 : Record 111;
+      SalesInvLine@1140019 : Record 113;
+      SalesCrMemoLine@1140020 : Record 115;
+      ArchSalesLine@1140021 : Record 5108;
+      PurchLine@1140022 : Record 39;
+      PurchReceiptLine@1140023 : Record 121;
+      PurchInvLine@1140024 : Record 123;
+      PurchCrMemoLine@1140025 : Record 125;
+      ArchPurchLine@1140026 : Record 5110;
+      DocumentEntry@1140027 : TEMPORARY Record 265;
+      BlanketSalesOrderLine@1140028 : Record 37;
+      ArchBlanketSalesOrderLine@1140029 : Record 5108;
+      BlanketPurchOrderLine@1140030 : Record 39;
+      ArchBlanketPurchOrderLine@1140031 : Record 5110;
+      ReturnReceiptLine@1140050 : Record 6661;
+      ReturnShipmentLine@1140051 : Record 6651;
+      Window@1140032 : Dialog;
+      DocumentType@1140033 : 'SalesOrder,PurchaseOrder,BlanketSalesOrder,BlanketPurchaseOrder,SalesShipment,PurchaseReceipt,SalesInvoice,PurchaseInvoice,SalesReturnOrder,PurchaseReturnOrder,SalesCreditMemo,PurchaseCreditMemo,ReturnReceipt,ReturnShipment';
+      DocumentNo@1140034 : Code[20];
+      DocumentBlanketOrderNo@1140035 : Code[20];
+      DocumentOrderNo@1140036 : Code[20];
+      DocNo@1140037 : Code[20];
+      DocLineNo@1140038 : Code[20];
+      DocumentLineNo@1140039 : Integer;
+      DocumentBlanketOrderLineNo@1140040 : Integer;
+      DocumentOrderLineNo@1140041 : Integer;
+      DocumentCaption@1140042 : Text[60];
+      DocType@1140043 : Text[30];
+      DocumentArch@1140044 : Text[30];
+      DocumentLineType@1140045 : Text[30];
+      DocLineDescription@1140046 : Text[50];
+      DocumentLineUnit@1140047 : Text[10];
+      DocumentLineQuantity@1140048 : Decimal;
+      DocExists@1140049 : Boolean;
+      Text1140052@1140052 : TextConst 'DEU=Verkaufsreklamationszeilen;ENU=Sales Return Order Lines';
+      Text1140053@1140053 : TextConst 'DEU=Archivierte Verkaufsreklamationszeilen;ENU=Archived Sales Return Order Lines';
+      Text1140054@1140054 : TextConst 'DEU=Gebuchte RÅcksendungszeilen;ENU=Posted Return Receipt Lines';
+      Text1140055@1140055 : TextConst 'DEU=Geb. Verkaufsgutschriftzeilen;ENU=Posted Sales Credit Memo Lines';
+      Text1140056@1140056 : TextConst 'DEU=Einkaufsreklamationszeilen;ENU=Purchase Return Order Lines';
+      Text1140057@1140057 : TextConst 'DEU=Archivierte Einkaufsreklamationszeilen;ENU=Archived Purchase Return Order Lines';
+      Text1140058@1140058 : TextConst 'DEU=Gebuchte RÅcklieferzeilen;ENU=Posted Return Shipment Lines';
+      Text1140059@1140059 : TextConst 'DEU=Gebuchte Einkaufsgutschriftzeilen;ENU=Posted Purchase Credit Memo Lines';
+
+    PROCEDURE SetDoc@1140000(NewDocumentType@1140000 : 'SalesOrder,PurchaseOrder,BlanketSalesOrder,BlanketPurchaseOrder,SalesShipment,PurchaseReceipt,SalesInvoice,PurchaseInvoice,SalesReturnOrder,PurchaseReturnOrder,SalesCreditMemo,PurchaseCreditMemo,ReturnReceipt,ReturnShipment';NewDocNo@1140001 : Code[20];NewDocumentLineNo@1140002 : Integer;NewDocBlanketOrderNo@1140003 : Code[20];NewDocBlanketOrderLineNo@1140004 : Integer;NewDocOrderNo@1140005 : Code[20];NewDocOrderLineNo@1140006 : Integer);
+    BEGIN
+
+      DocumentType := NewDocumentType;
+      DocumentNo := NewDocNo;
+      DocumentLineNo := NewDocumentLineNo;
+      DocumentBlanketOrderNo := NewDocBlanketOrderNo;
+      DocumentBlanketOrderLineNo := NewDocBlanketOrderLineNo;
+      DocumentOrderNo := NewDocOrderNo;
+      DocumentOrderLineNo := NewDocOrderLineNo;
+
+      Rec:= Rec;
+    END;
+
+    LOCAL PROCEDURE FindRecords@1140001();
+    BEGIN
+      WITH DocumentEntry DO BEGIN
+        Window.OPEN(Text1140000);
+        DELETEALL;
+        "Entry No." := 0;
+
+        CASE DocumentType OF
+          DocumentType::SalesOrder:
+            BEGIN
+              IF BlanketSalesOrderLine.READPERMISSION THEN BEGIN
+                BlanketSalesOrderLine.RESET;
+                BlanketSalesOrderLine.SETRANGE("Document Type",BlanketSalesOrderLine."Document Type"::"Blanket Order");
+                BlanketSalesOrderLine.SETRANGE("Document No.",DocumentBlanketOrderNo);
+                BlanketSalesOrderLine.SETRANGE("Line No.",DocumentBlanketOrderLineNo);
+                InsertIntoDocEntry(
+                  DATABASE::"Sales Line",4,Text1140013,BlanketSalesOrderLine.COUNT);
+              END;
+              IF ArchBlanketSalesOrderLine.READPERMISSION THEN BEGIN
+                ArchBlanketSalesOrderLine.RESET;
+                ArchBlanketSalesOrderLine.SETRANGE("Document Type",ArchBlanketSalesOrderLine."Document Type"::"Blanket Order");
+                ArchBlanketSalesOrderLine.SETRANGE("Document No.",DocumentBlanketOrderNo);
+                ArchBlanketSalesOrderLine.SETRANGE("Line No.",DocumentBlanketOrderLineNo);
+                InsertIntoDocEntry(
+                  DATABASE::"Sales Line Archive",4,Text1140014,ArchBlanketSalesOrderLine.COUNT);
+              END;
+              IF SalesLine.READPERMISSION THEN BEGIN
+                SalesLine.RESET;
+                SalesLine.SETRANGE("Document Type", SalesLine."Document Type"::Order);
+                SalesLine.SETRANGE("Document No.", DocumentNo);
+                SalesLine.SETRANGE("Line No.",DocumentLineNo);
+                InsertIntoDocEntry(
+                  DATABASE::"Sales Line",1,Text1140001,SalesLine.COUNT);
+              END;
+              IF ArchSalesLine.READPERMISSION THEN BEGIN
+                ArchSalesLine.RESET;
+                ArchSalesLine.SETRANGE("Document Type", ArchSalesLine."Document Type"::Order);
+                ArchSalesLine.SETRANGE("Document No.", DocumentNo);
+                ArchSalesLine.SETRANGE("Line No.",DocumentLineNo);
+                InsertIntoDocEntry(
+                  DATABASE::"Sales Line Archive",1,Text1140002,ArchSalesLine.COUNT);
+              END;
+              IF SalesShipmentLine.READPERMISSION THEN BEGIN
+                SalesShipmentLine.RESET;
+                SalesShipmentLine.SETCURRENTKEY("Order No.","Order Line No.");
+                SalesShipmentLine.SETRANGE("Order No.", DocumentNo);
+                SalesShipmentLine.SETRANGE("Order Line No.",DocumentLineNo);
+                InsertIntoDocEntry(
+                  DATABASE::"Sales Shipment Line",0,Text1140003,SalesShipmentLine.COUNT);
+              END;
+              IF SalesInvLine.READPERMISSION THEN BEGIN
+                SalesInvLine.RESET;
+                SalesInvLine.SETCURRENTKEY("Order No.","Order Line No.","Posting Date");
+                SalesInvLine.SETRANGE("Order No.", DocumentNo);
+                SalesInvLine.SETRANGE("Order Line No.",DocumentLineNo);
+                InsertIntoDocEntry(
+                  DATABASE::"Sales Invoice Line",0,Text1140004,SalesInvLine.COUNT);
+              END;
+            END;
+          DocumentType::PurchaseOrder:
+            BEGIN
+              IF BlanketPurchOrderLine.READPERMISSION THEN BEGIN
+                BlanketPurchOrderLine.RESET;
+                BlanketPurchOrderLine.SETRANGE("Document Type",BlanketPurchOrderLine."Document Type"::"Blanket Order");
+                BlanketPurchOrderLine.SETRANGE("Document No.",DocumentBlanketOrderNo);
+                BlanketPurchOrderLine.SETRANGE("Line No.",DocumentBlanketOrderLineNo);
+                InsertIntoDocEntry(
+                  DATABASE::"Purchase Line",4,Text1140015,BlanketPurchOrderLine.COUNT);
+              END;
+              IF ArchBlanketPurchOrderLine.READPERMISSION THEN BEGIN
+                ArchBlanketPurchOrderLine.RESET;
+                ArchBlanketPurchOrderLine.SETRANGE("Document Type",ArchBlanketPurchOrderLine."Document Type"::"Blanket Order");
+                ArchBlanketPurchOrderLine.SETRANGE("Document No.",DocumentBlanketOrderNo);
+                ArchBlanketPurchOrderLine.SETRANGE("Line No.",DocumentBlanketOrderLineNo);
+                InsertIntoDocEntry(
+                  DATABASE::"Purchase Line Archive",4,Text1140016,ArchBlanketPurchOrderLine.COUNT);
+              END;
+              IF PurchLine.READPERMISSION THEN BEGIN
+                PurchLine.RESET;
+                PurchLine.SETRANGE("Document Type", PurchLine."Document Type"::Order);
+                PurchLine.SETRANGE("Document No.", DocumentNo);
+                PurchLine.SETRANGE("Line No.",DocumentLineNo);
+                InsertIntoDocEntry(
+                  DATABASE::"Purchase Line",1,Text1140005,PurchLine.COUNT);
+              END;
+              IF ArchPurchLine.READPERMISSION THEN BEGIN
+                ArchPurchLine.RESET;
+                ArchPurchLine.SETRANGE("Document Type", ArchPurchLine."Document Type"::Order);
+                ArchPurchLine.SETRANGE("Document No.", DocumentNo);
+                ArchPurchLine.SETRANGE("Line No.",DocumentLineNo);
+                InsertIntoDocEntry(
+                  DATABASE::"Purchase Line Archive",1,Text1140006,ArchPurchLine.COUNT);
+              END;
+              IF PurchReceiptLine.READPERMISSION THEN BEGIN
+                PurchReceiptLine.RESET;
+                PurchReceiptLine.SETCURRENTKEY("Order No.","Order Line No.");
+                PurchReceiptLine.SETRANGE("Order No.", DocumentNo);
+                PurchReceiptLine.SETRANGE("Order Line No.",DocumentLineNo);
+                InsertIntoDocEntry(
+                  DATABASE::"Purch. Rcpt. Line",0,Text1140007,PurchReceiptLine.COUNT);
+              END;
+              IF PurchInvLine.READPERMISSION THEN BEGIN
+                PurchInvLine.RESET;
+                PurchInvLine.SETCURRENTKEY("Order No.","Order Line No.","Posting Date");
+                PurchInvLine.SETRANGE("Order No.", DocumentNo);
+                PurchInvLine.SETRANGE("Order Line No.",DocumentLineNo);
+                InsertIntoDocEntry(
+                  DATABASE::"Purch. Inv. Line",0,Text1140008,PurchInvLine.COUNT);
+              END;
+            END;
+          DocumentType::BlanketSalesOrder:
+            BEGIN
+              IF BlanketSalesOrderLine.READPERMISSION THEN BEGIN
+                BlanketSalesOrderLine.RESET;
+                BlanketSalesOrderLine.SETRANGE("Document Type", BlanketSalesOrderLine."Document Type"::"Blanket Order");
+                BlanketSalesOrderLine.SETRANGE("Document No.", DocumentNo);
+                BlanketSalesOrderLine.SETRANGE("Line No.",DocumentLineNo);
+                InsertIntoDocEntry(
+                  DATABASE::"Sales Line",4,Text1140013,BlanketSalesOrderLine.COUNT);
+              END;
+              IF ArchBlanketSalesOrderLine.READPERMISSION THEN BEGIN
+                ArchBlanketSalesOrderLine.RESET;
+                ArchBlanketSalesOrderLine.SETRANGE("Document Type", ArchBlanketSalesOrderLine."Document Type"::"Blanket Order");
+                ArchBlanketSalesOrderLine.SETRANGE("Document No.", DocumentNo);
+                ArchBlanketSalesOrderLine.SETRANGE("Line No.",DocumentLineNo);
+                InsertIntoDocEntry(
+                  DATABASE::"Sales Line Archive",4,Text1140014,ArchBlanketSalesOrderLine.COUNT);
+              END;
+              IF SalesLine.READPERMISSION THEN BEGIN
+                SalesLine.RESET;
+                SalesLine.SETCURRENTKEY("Document Type", "Blanket Order No.", "Blanket Order Line No.");
+                SalesLine.SETRANGE("Document Type", SalesLine."Document Type"::Order);
+                SalesLine.SETRANGE("Blanket Order No.", DocumentNo);
+                SalesLine.SETRANGE("Blanket Order Line No.",DocumentLineNo);
+                InsertIntoDocEntry(
+                  DATABASE::"Sales Line",1,Text1140001,SalesLine.COUNT);
+              END;
+              IF ArchSalesLine.READPERMISSION THEN BEGIN
+                ArchSalesLine.RESET;
+                ArchSalesLine.SETCURRENTKEY("Document Type", "Blanket Order No.", "Blanket Order Line No.");
+                ArchSalesLine.SETRANGE("Document Type", ArchSalesLine."Document Type"::Order);
+                ArchSalesLine.SETRANGE("Blanket Order No.", DocumentNo);
+                ArchSalesLine.SETRANGE("Blanket Order Line No.",DocumentLineNo);
+                InsertIntoDocEntry(
+                  DATABASE::"Sales Line Archive",1,Text1140002,ArchSalesLine.COUNT);
+              END;
+              IF SalesShipmentLine.READPERMISSION THEN BEGIN
+                SalesShipmentLine.RESET;
+                SalesShipmentLine.SETCURRENTKEY("Blanket Order No.","Blanket Order Line No.");
+                SalesShipmentLine.SETRANGE("Blanket Order No.", DocumentNo);
+                SalesShipmentLine.SETRANGE("Blanket Order Line No.",DocumentLineNo);
+                InsertIntoDocEntry(
+                  DATABASE::"Sales Shipment Line",0,Text1140003,SalesShipmentLine.COUNT);
+              END;
+              IF SalesInvLine.READPERMISSION THEN BEGIN
+                SalesInvLine.RESET;
+                SalesInvLine.SETCURRENTKEY("Blanket Order No.","Blanket Order Line No.");
+                SalesInvLine.SETRANGE("Blanket Order No.", DocumentNo);
+                SalesInvLine.SETRANGE("Blanket Order Line No.",DocumentLineNo);
+                InsertIntoDocEntry(
+                  DATABASE::"Sales Invoice Line",0,Text1140004,SalesInvLine.COUNT);
+              END;
+            END;
+          DocumentType::BlanketPurchaseOrder:
+            BEGIN
+              IF BlanketPurchOrderLine.READPERMISSION THEN BEGIN
+                BlanketPurchOrderLine.RESET;
+                BlanketPurchOrderLine.SETRANGE("Document Type", BlanketPurchOrderLine."Document Type"::"Blanket Order");
+                BlanketPurchOrderLine.SETRANGE("Document No.", DocumentNo);
+                BlanketPurchOrderLine.SETRANGE("Line No.",DocumentLineNo);
+                InsertIntoDocEntry(
+                  DATABASE::"Purchase Line",4,Text1140015,BlanketPurchOrderLine.COUNT);
+              END;
+              IF ArchBlanketPurchOrderLine.READPERMISSION THEN BEGIN
+                ArchBlanketPurchOrderLine.RESET;
+                ArchBlanketPurchOrderLine.SETRANGE("Document Type", ArchBlanketPurchOrderLine."Document Type"::"Blanket Order");
+                ArchBlanketPurchOrderLine.SETRANGE("Document No.", DocumentNo);
+                ArchBlanketPurchOrderLine.SETRANGE("Line No.",DocumentLineNo);
+                InsertIntoDocEntry(
+                  DATABASE::"Purchase Line Archive",4,Text1140016,ArchBlanketPurchOrderLine.COUNT);
+              END;
+              IF PurchLine.READPERMISSION THEN BEGIN
+                PurchLine.RESET;
+                PurchLine.SETCURRENTKEY("Document Type", "Blanket Order No.", "Blanket Order Line No.");
+                PurchLine.SETRANGE("Document Type", PurchLine."Document Type"::Order);
+                PurchLine.SETRANGE("Blanket Order No.", DocumentNo);
+                PurchLine.SETRANGE("Blanket Order Line No.",DocumentLineNo);
+                InsertIntoDocEntry(
+                  DATABASE::"Purchase Line",1,Text1140005,PurchLine.COUNT);
+              END;
+              IF ArchPurchLine.READPERMISSION THEN BEGIN
+                ArchPurchLine.RESET;
+                ArchPurchLine.SETCURRENTKEY("Document Type", "Blanket Order No.", "Blanket Order Line No.");
+                ArchPurchLine.SETRANGE("Document Type", ArchPurchLine."Document Type"::Order);
+                ArchPurchLine.SETRANGE("Blanket Order No.", DocumentNo);
+                ArchPurchLine.SETRANGE("Blanket Order Line No.",DocumentLineNo);
+                InsertIntoDocEntry(
+                  DATABASE::"Purchase Line Archive",1,Text1140006,ArchPurchLine.COUNT);
+              END;
+              IF PurchReceiptLine.READPERMISSION THEN BEGIN
+                PurchReceiptLine.RESET;
+                PurchReceiptLine.SETCURRENTKEY("Blanket Order No.","Blanket Order Line No.");
+                PurchReceiptLine.SETRANGE("Blanket Order No.", DocumentNo);
+                PurchReceiptLine.SETRANGE("Blanket Order Line No.",DocumentLineNo);
+                InsertIntoDocEntry(
+                  DATABASE::"Purch. Rcpt. Line",0,Text1140007,PurchReceiptLine.COUNT);
+              END;
+              IF PurchInvLine.READPERMISSION THEN BEGIN
+                PurchInvLine.RESET;
+                PurchInvLine.SETCURRENTKEY("Blanket Order No.","Blanket Order Line No.");
+                PurchInvLine.SETRANGE("Blanket Order No.", DocumentNo);
+                PurchInvLine.SETRANGE("Blanket Order Line No.",DocumentLineNo);
+                InsertIntoDocEntry(
+                  DATABASE::"Purch. Inv. Line",0,Text1140008,PurchInvLine.COUNT);
+              END;
+            END;
+          DocumentType::SalesShipment:
+            BEGIN
+              IF BlanketSalesOrderLine.READPERMISSION THEN BEGIN
+                BlanketSalesOrderLine.RESET;
+                BlanketSalesOrderLine.SETRANGE("Document Type",BlanketSalesOrderLine."Document Type"::"Blanket Order");
+                BlanketSalesOrderLine.SETRANGE("Document No.",DocumentBlanketOrderNo);
+                BlanketSalesOrderLine.SETRANGE("Line No.",DocumentBlanketOrderLineNo);
+                InsertIntoDocEntry(
+                  DATABASE::"Sales Line",4,Text1140013,BlanketSalesOrderLine.COUNT);
+              END;
+              IF ArchBlanketSalesOrderLine.READPERMISSION THEN BEGIN
+                ArchBlanketSalesOrderLine.RESET;
+                ArchBlanketSalesOrderLine.SETRANGE("Document Type",ArchBlanketSalesOrderLine."Document Type"::"Blanket Order");
+                ArchBlanketSalesOrderLine.SETRANGE("Document No.",DocumentBlanketOrderNo);
+                ArchBlanketSalesOrderLine.SETRANGE("Line No.",DocumentBlanketOrderLineNo);
+                InsertIntoDocEntry(
+                  DATABASE::"Sales Line Archive",4,Text1140014,ArchBlanketSalesOrderLine.COUNT);
+              END;
+              IF SalesLine.READPERMISSION THEN BEGIN
+                SalesLine.RESET;
+                SalesLine.SETRANGE("Document Type", SalesLine."Document Type"::Order);
+                SalesLine.SETRANGE("Document No.", DocumentOrderNo);
+                SalesLine.SETRANGE("Line No.",DocumentOrderLineNo);
+                InsertIntoDocEntry(
+                  DATABASE::"Sales Line",1,Text1140001,SalesLine.COUNT);
+              END;
+              IF ArchSalesLine.READPERMISSION THEN BEGIN
+                ArchSalesLine.RESET;
+                ArchSalesLine.SETRANGE("Document Type", ArchSalesLine."Document Type"::Order);
+                ArchSalesLine.SETRANGE("Document No.", DocumentOrderNo);
+                ArchSalesLine.SETRANGE("Line No.",DocumentOrderLineNo);
+                InsertIntoDocEntry(
+                  DATABASE::"Sales Line Archive",1,Text1140002,ArchSalesLine.COUNT);
+              END;
+              IF SalesShipmentLine.READPERMISSION THEN BEGIN
+                SalesShipmentLine.RESET;
+                SalesShipmentLine.SETCURRENTKEY("Order No.","Order Line No.");
+                SalesShipmentLine.SETRANGE("Order No.", DocumentOrderNo);
+                SalesShipmentLine.SETRANGE("Order Line No.",DocumentOrderLineNo);
+                InsertIntoDocEntry(
+                  DATABASE::"Sales Shipment Line",0,Text1140003,SalesShipmentLine.COUNT);
+              END;
+              IF SalesInvLine.READPERMISSION THEN BEGIN
+                SalesInvLine.RESET;
+                SalesInvLine.SETCURRENTKEY("Order No.","Order Line No.","Posting Date");
+                SalesInvLine.SETRANGE("Order No.", DocumentOrderNo);
+                SalesInvLine.SETRANGE("Order Line No.",DocumentOrderLineNo);
+                InsertIntoDocEntry(
+                  DATABASE::"Sales Invoice Line",0,Text1140004,SalesInvLine.COUNT);
+              END;
+            END;
+          DocumentType::PurchaseReceipt:
+            BEGIN
+              IF BlanketPurchOrderLine.READPERMISSION THEN BEGIN
+                BlanketPurchOrderLine.RESET;
+                BlanketPurchOrderLine.SETRANGE("Document Type",BlanketPurchOrderLine."Document Type"::"Blanket Order");
+                BlanketPurchOrderLine.SETRANGE("Document No.",DocumentBlanketOrderNo);
+                BlanketPurchOrderLine.SETRANGE("Line No.",DocumentBlanketOrderLineNo);
+                InsertIntoDocEntry(
+                  DATABASE::"Purchase Line",4,Text1140015,BlanketPurchOrderLine.COUNT);
+              END;
+              IF ArchBlanketPurchOrderLine.READPERMISSION THEN BEGIN
+                ArchBlanketPurchOrderLine.RESET;
+                ArchBlanketPurchOrderLine.SETRANGE("Document Type",ArchBlanketPurchOrderLine."Document Type"::"Blanket Order");
+                ArchBlanketPurchOrderLine.SETRANGE("Document No.",DocumentBlanketOrderNo);
+                ArchBlanketPurchOrderLine.SETRANGE("Line No.",DocumentBlanketOrderLineNo);
+                InsertIntoDocEntry(
+                  DATABASE::"Purchase Line Archive",4,Text1140016,ArchBlanketPurchOrderLine.COUNT);
+              END;
+              IF PurchLine.READPERMISSION THEN BEGIN
+                PurchLine.RESET;
+                PurchLine.SETRANGE("Document Type", PurchLine."Document Type"::Order);
+                PurchLine.SETRANGE("Document No.", DocumentOrderNo);
+                PurchLine.SETRANGE("Line No.",DocumentOrderLineNo);
+                InsertIntoDocEntry(
+                  DATABASE::"Purchase Line",1,Text1140005,PurchLine.COUNT);
+              END;
+              IF ArchPurchLine.READPERMISSION THEN BEGIN
+                ArchPurchLine.RESET;
+                ArchPurchLine.SETRANGE("Document Type", ArchPurchLine."Document Type"::Order);
+                ArchPurchLine.SETRANGE("Document No.", DocumentOrderNo);
+                ArchPurchLine.SETRANGE("Line No.",DocumentOrderLineNo);
+                InsertIntoDocEntry(
+                  DATABASE::"Purchase Line Archive",1,Text1140006,ArchPurchLine.COUNT);
+              END;
+              IF PurchReceiptLine.READPERMISSION THEN BEGIN
+                PurchReceiptLine.RESET;
+                PurchReceiptLine.SETCURRENTKEY("Order No.","Order Line No.");
+                PurchReceiptLine.SETRANGE("Order No.", DocumentOrderNo);
+                PurchReceiptLine.SETRANGE("Order Line No.",DocumentOrderLineNo);
+                InsertIntoDocEntry(
+                  DATABASE::"Purch. Rcpt. Line",0,Text1140007,PurchReceiptLine.COUNT);
+              END;
+              IF PurchInvLine.READPERMISSION THEN BEGIN
+                PurchInvLine.RESET;
+                PurchInvLine.SETCURRENTKEY("Order No.","Order Line No.","Posting Date");
+                PurchInvLine.SETRANGE("Order No.", DocumentOrderNo);
+                PurchInvLine.SETRANGE("Order Line No.",DocumentOrderLineNo);
+                InsertIntoDocEntry(
+                  DATABASE::"Purch. Inv. Line",0,Text1140008,PurchInvLine.COUNT);
+              END;
+            END;
+          DocumentType::SalesInvoice:
+            BEGIN
+              IF BlanketSalesOrderLine.READPERMISSION THEN BEGIN
+                BlanketSalesOrderLine.RESET;
+                BlanketSalesOrderLine.SETRANGE("Document Type",BlanketSalesOrderLine."Document Type"::"Blanket Order");
+                BlanketSalesOrderLine.SETRANGE("Document No.",DocumentBlanketOrderNo);
+                BlanketSalesOrderLine.SETRANGE("Line No.",DocumentBlanketOrderLineNo);
+                InsertIntoDocEntry(
+                  DATABASE::"Sales Line",4,Text1140013,BlanketSalesOrderLine.COUNT);
+              END;
+              IF ArchBlanketSalesOrderLine.READPERMISSION THEN BEGIN
+                ArchBlanketSalesOrderLine.RESET;
+                ArchBlanketSalesOrderLine.SETRANGE("Document Type",ArchBlanketSalesOrderLine."Document Type"::"Blanket Order");
+                ArchBlanketSalesOrderLine.SETRANGE("Document No.",DocumentBlanketOrderNo);
+                ArchBlanketSalesOrderLine.SETRANGE("Line No.",DocumentBlanketOrderLineNo);
+                InsertIntoDocEntry(
+                  DATABASE::"Sales Line Archive",4,Text1140014,ArchBlanketSalesOrderLine.COUNT);
+              END;
+              IF SalesLine.READPERMISSION THEN BEGIN
+                SalesLine.RESET;
+                SalesLine.SETRANGE("Document Type", SalesLine."Document Type"::Order);
+                SalesLine.SETRANGE("Document No.", DocumentOrderNo);
+                SalesLine.SETRANGE("Line No.",DocumentOrderLineNo);
+                InsertIntoDocEntry(
+                  DATABASE::"Sales Line",1,Text1140001,SalesLine.COUNT);
+              END;
+              IF ArchSalesLine.READPERMISSION THEN BEGIN
+                ArchSalesLine.RESET;
+                ArchSalesLine.SETRANGE("Document Type", ArchSalesLine."Document Type"::Order);
+                ArchSalesLine.SETRANGE("Document No.", DocumentOrderNo);
+                ArchSalesLine.SETRANGE("Line No.",DocumentOrderLineNo);
+                InsertIntoDocEntry(
+                  DATABASE::"Sales Line Archive",1,Text1140002,ArchSalesLine.COUNT);
+              END;
+              IF SalesShipmentLine.READPERMISSION THEN BEGIN
+                SalesShipmentLine.RESET;
+                SalesShipmentLine.SETCURRENTKEY("Order No.","Order Line No.");
+                SalesShipmentLine.SETRANGE("Order No.", DocumentOrderNo);
+                SalesShipmentLine.SETRANGE("Order Line No.",DocumentOrderLineNo);
+                InsertIntoDocEntry(
+                  DATABASE::"Sales Shipment Line",0,Text1140003,SalesShipmentLine.COUNT);
+              END;
+              IF SalesInvLine.READPERMISSION THEN BEGIN
+                SalesInvLine.RESET;
+                SalesInvLine.SETCURRENTKEY("Order No.","Order Line No.","Posting Date");
+                SalesInvLine.SETRANGE("Order No.", DocumentOrderNo);
+                SalesInvLine.SETRANGE("Order Line No.",DocumentOrderLineNo);
+                InsertIntoDocEntry(
+                  DATABASE::"Sales Invoice Line",0,Text1140004,SalesInvLine.COUNT);
+              END;
+            END;
+          DocumentType::PurchaseInvoice:
+            BEGIN
+              IF BlanketPurchOrderLine.READPERMISSION THEN BEGIN
+                BlanketPurchOrderLine.RESET;
+                BlanketPurchOrderLine.SETRANGE("Document Type",BlanketPurchOrderLine."Document Type"::"Blanket Order");
+                BlanketPurchOrderLine.SETRANGE("Document No.",DocumentBlanketOrderNo);
+                BlanketPurchOrderLine.SETRANGE("Line No.",DocumentBlanketOrderLineNo);
+                InsertIntoDocEntry(
+                  DATABASE::"Purchase Line",4,Text1140015,BlanketPurchOrderLine.COUNT);
+              END;
+              IF ArchBlanketPurchOrderLine.READPERMISSION THEN BEGIN
+                ArchBlanketPurchOrderLine.RESET;
+                ArchBlanketPurchOrderLine.SETRANGE("Document Type",ArchBlanketPurchOrderLine."Document Type"::"Blanket Order");
+                ArchBlanketPurchOrderLine.SETRANGE("Document No.",DocumentBlanketOrderNo);
+                ArchBlanketPurchOrderLine.SETRANGE("Line No.",DocumentBlanketOrderLineNo);
+                InsertIntoDocEntry(
+                  DATABASE::"Purchase Line Archive",4,Text1140016,ArchBlanketPurchOrderLine.COUNT);
+              END;
+              IF PurchLine.READPERMISSION THEN BEGIN
+                PurchLine.RESET;
+                PurchLine.SETRANGE("Document Type", PurchLine."Document Type"::Order);
+                PurchLine.SETRANGE("Document No.", DocumentOrderNo);
+                PurchLine.SETRANGE("Line No.",DocumentOrderLineNo);
+                InsertIntoDocEntry(
+                  DATABASE::"Purchase Line",1,Text1140005,PurchLine.COUNT);
+              END;
+              IF ArchPurchLine.READPERMISSION THEN BEGIN
+                ArchPurchLine.RESET;
+                ArchPurchLine.SETRANGE("Document Type", ArchPurchLine."Document Type"::Order);
+                ArchPurchLine.SETRANGE("Document No.", DocumentOrderNo);
+                ArchPurchLine.SETRANGE("Line No.",DocumentOrderLineNo);
+                InsertIntoDocEntry(
+                  DATABASE::"Purchase Line Archive",1,Text1140006,ArchPurchLine.COUNT);
+              END;
+              IF PurchReceiptLine.READPERMISSION THEN BEGIN
+                PurchReceiptLine.RESET;
+                PurchReceiptLine.SETCURRENTKEY("Order No.","Order Line No.");
+                PurchReceiptLine.SETRANGE("Order No.", DocumentOrderNo);
+                PurchReceiptLine.SETRANGE("Order Line No.",DocumentOrderLineNo);
+                InsertIntoDocEntry(
+                  DATABASE::"Purch. Rcpt. Line",0,Text1140007,PurchReceiptLine.COUNT);
+              END;
+              IF PurchInvLine.READPERMISSION THEN BEGIN
+                PurchInvLine.RESET;
+                PurchInvLine.SETCURRENTKEY("Order No.","Order Line No.","Posting Date");
+                PurchInvLine.SETRANGE("Order No.", DocumentOrderNo);
+                PurchInvLine.SETRANGE("Order Line No.",DocumentOrderLineNo);
+                InsertIntoDocEntry(
+                  DATABASE::"Purch. Inv. Line",0,Text1140008,PurchInvLine.COUNT);
+              END;
+           END;
+          DocumentType::SalesReturnOrder:
+            BEGIN
+              IF SalesLine.READPERMISSION THEN BEGIN
+                SalesLine.RESET;
+                SalesLine.SETRANGE("Document Type", SalesLine."Document Type"::"Return Order");
+                SalesLine.SETRANGE("Document No.", DocumentNo);
+                SalesLine.SETRANGE("Line No.",DocumentLineNo);
+                InsertIntoDocEntry(
+                  DATABASE::"Sales Line",5,Text1140052,SalesLine.COUNT);
+              END;
+              IF ArchSalesLine.READPERMISSION THEN BEGIN
+                ArchSalesLine.RESET;
+                ArchSalesLine.SETRANGE("Document Type", ArchSalesLine."Document Type"::"Return Order");
+                ArchSalesLine.SETRANGE("Document No.", DocumentNo);
+                ArchSalesLine.SETRANGE("Line No.",DocumentLineNo);
+                InsertIntoDocEntry(
+                  DATABASE::"Sales Line Archive",5,Text1140053,ArchSalesLine.COUNT);
+              END;
+              IF ReturnReceiptLine.READPERMISSION THEN BEGIN
+                ReturnReceiptLine.RESET;
+                ReturnReceiptLine.SETCURRENTKEY("Return Order No.", "Return Order Line No.");
+                ReturnReceiptLine.SETRANGE("Return Order No.", DocumentNo);
+                ReturnReceiptLine.SETRANGE("Return Order Line No.", DocumentLineNo);
+                InsertIntoDocEntry(
+                  DATABASE::"Return Receipt Line",5,Text1140054,ReturnReceiptLine.COUNT);
+              END;
+              IF SalesCrMemoLine.READPERMISSION THEN BEGIN
+                SalesCrMemoLine.RESET;
+                SalesCrMemoLine.SETCURRENTKEY("Order No.", "Order Line No.");
+                SalesCrMemoLine.SETRANGE("Order No.", DocumentNo);
+                SalesCrMemoLine.SETRANGE("Order Line No.", DocumentLineNo);
+                InsertIntoDocEntry(
+                  DATABASE::"Sales Cr.Memo Line",3,Text1140055,SalesCrMemoLine.COUNT);
+              END;
+            END;
+          DocumentType::PurchaseReturnOrder:
+            BEGIN
+              IF PurchLine.READPERMISSION THEN BEGIN
+                PurchLine.RESET;
+                PurchLine.SETRANGE("Document Type", PurchLine."Document Type"::"Return Order");
+                PurchLine.SETRANGE("Document No.", DocumentNo);
+                PurchLine.SETRANGE("Line No.",DocumentLineNo);
+                InsertIntoDocEntry(
+                  DATABASE::"Purchase Line",5,Text1140056,PurchLine.COUNT);
+              END;
+              IF ArchPurchLine.READPERMISSION THEN BEGIN
+                ArchPurchLine.RESET;
+                ArchPurchLine.SETRANGE("Document Type", ArchPurchLine."Document Type"::"Return Order");
+                ArchPurchLine.SETRANGE("Document No.", DocumentNo);
+                ArchPurchLine.SETRANGE("Line No.",DocumentLineNo);
+                InsertIntoDocEntry(
+                  DATABASE::"Purchase Line Archive",5,Text1140057,ArchPurchLine.COUNT);
+              END;
+              IF ReturnShipmentLine.READPERMISSION THEN BEGIN
+                ReturnShipmentLine.RESET;
+                ReturnShipmentLine.SETCURRENTKEY("Return Order No.","Return Order Line No.");
+                ReturnShipmentLine.SETRANGE("Return Order No.", DocumentNo);
+                ReturnShipmentLine.SETRANGE("Return Order Line No.",DocumentLineNo);
+                InsertIntoDocEntry(
+                  DATABASE::"Return Shipment Line",5,Text1140058,ReturnShipmentLine.COUNT);
+              END;
+              IF PurchCrMemoLine.READPERMISSION THEN BEGIN
+                PurchCrMemoLine.RESET;
+                PurchCrMemoLine.SETCURRENTKEY("Order No.", "Order Line No.");
+                PurchCrMemoLine.SETRANGE("Order No.", DocumentNo);
+                PurchCrMemoLine.SETRANGE("Order Line No.", DocumentLineNo);
+                InsertIntoDocEntry(
+                  DATABASE::"Purch. Cr. Memo Line",3,Text1140059,PurchCrMemoLine.COUNT);
+              END;
+            END;
+          DocumentType::SalesCreditMemo:
+            BEGIN
+              IF SalesLine.READPERMISSION THEN BEGIN
+                SalesLine.RESET;
+                SalesLine.SETRANGE("Document Type", SalesLine."Document Type"::"Return Order");
+                SalesLine.SETRANGE("Document No.", DocumentOrderNo);
+                SalesLine.SETRANGE("Line No.",DocumentOrderLineNo);
+                InsertIntoDocEntry(
+                  DATABASE::"Sales Line",5,Text1140052,SalesLine.COUNT);
+              END;
+              IF ArchSalesLine.READPERMISSION THEN BEGIN
+                ArchSalesLine.RESET;
+                ArchSalesLine.SETRANGE("Document Type", ArchSalesLine."Document Type"::"Return Order");
+                ArchSalesLine.SETRANGE("Document No.", DocumentOrderNo);
+                ArchSalesLine.SETRANGE("Line No.",DocumentOrderLineNo);
+                InsertIntoDocEntry(
+                  DATABASE::"Sales Line Archive",5,Text1140053,ArchSalesLine.COUNT);
+              END;
+              IF ReturnReceiptLine.READPERMISSION THEN BEGIN
+                ReturnReceiptLine.RESET;
+                ReturnReceiptLine.SETCURRENTKEY("Return Order No.", "Return Order Line No.");
+                ReturnReceiptLine.SETRANGE("Return Order No.", DocumentOrderNo);
+                ReturnReceiptLine.SETRANGE("Return Order Line No.", DocumentOrderLineNo);
+                InsertIntoDocEntry(
+                  DATABASE::"Return Receipt Line",5,Text1140054,ReturnReceiptLine.COUNT);
+              END;
+              IF SalesCrMemoLine.READPERMISSION THEN BEGIN
+                SalesCrMemoLine.RESET;
+                SalesCrMemoLine.SETCURRENTKEY("Order No.", "Order Line No.");
+                SalesCrMemoLine.SETRANGE("Order No.", DocumentOrderNo);
+                SalesCrMemoLine.SETRANGE("Line No.", DocumentOrderLineNo);
+                InsertIntoDocEntry(
+                  DATABASE::"Sales Cr.Memo Line",3,Text1140055,SalesCrMemoLine.COUNT);
+              END;
+            END;
+          DocumentType::PurchaseCreditMemo:
+            BEGIN
+              IF PurchLine.READPERMISSION THEN BEGIN
+                PurchLine.RESET;
+                PurchLine.SETRANGE("Document Type", PurchLine."Document Type"::"Return Order");
+                PurchLine.SETRANGE("Document No.", DocumentOrderNo);
+                PurchLine.SETRANGE("Line No.",DocumentOrderLineNo);
+                InsertIntoDocEntry(
+                  DATABASE::"Purchase Line",5,Text1140056,PurchLine.COUNT);
+              END;
+              IF ArchPurchLine.READPERMISSION THEN BEGIN
+                ArchPurchLine.RESET;
+                ArchPurchLine.SETRANGE("Document Type", ArchPurchLine."Document Type"::"Return Order");
+                ArchPurchLine.SETRANGE("Document No.", DocumentOrderNo);
+                ArchPurchLine.SETRANGE("Line No.",DocumentOrderLineNo);
+                InsertIntoDocEntry(
+                  DATABASE::"Purchase Line Archive",5,Text1140057,ArchPurchLine.COUNT);
+              END;
+              IF ReturnShipmentLine.READPERMISSION THEN BEGIN
+                ReturnShipmentLine.RESET;
+                ReturnShipmentLine.SETCURRENTKEY("Return Order No.","Return Order Line No.");
+                ReturnShipmentLine.SETRANGE("Return Order No.", DocumentOrderNo);
+                ReturnShipmentLine.SETRANGE("Return Order Line No.",DocumentOrderLineNo);
+                InsertIntoDocEntry(
+                  DATABASE::"Return Shipment Line",5,Text1140058,ReturnShipmentLine.COUNT);
+              END;
+              IF PurchCrMemoLine.READPERMISSION THEN BEGIN
+                PurchCrMemoLine.RESET;
+                PurchCrMemoLine.SETCURRENTKEY("Order No.", "Order Line No.");
+                PurchCrMemoLine.SETRANGE("Order No.", DocumentOrderNo);
+                PurchCrMemoLine.SETRANGE("Order Line No.", DocumentOrderLineNo);
+                InsertIntoDocEntry(
+                  DATABASE::"Purch. Cr. Memo Line",3,Text1140059,PurchCrMemoLine.COUNT);
+              END;
+            END;
+          DocumentType::ReturnReceipt:
+            BEGIN
+              IF SalesLine.READPERMISSION THEN BEGIN
+                SalesLine.RESET;
+                SalesLine.SETRANGE("Document Type", SalesLine."Document Type"::"Return Order");
+                SalesLine.SETRANGE("Document No.", DocumentBlanketOrderNo);
+                SalesLine.SETRANGE("Line No.",DocumentBlanketOrderLineNo);
+                InsertIntoDocEntry(
+                  DATABASE::"Sales Line",5,Text1140052,SalesLine.COUNT);
+              END;
+              IF ArchSalesLine.READPERMISSION THEN BEGIN
+                ArchSalesLine.RESET;
+                ArchSalesLine.SETRANGE("Document Type", ArchSalesLine."Document Type"::"Return Order");
+                ArchSalesLine.SETRANGE("Document No.", DocumentBlanketOrderNo);
+                ArchSalesLine.SETRANGE("Line No.",DocumentBlanketOrderLineNo);
+                InsertIntoDocEntry(
+                  DATABASE::"Sales Line Archive",5,Text1140053,ArchSalesLine.COUNT);
+              END;
+              IF ReturnReceiptLine.READPERMISSION THEN BEGIN
+                ReturnReceiptLine.RESET;
+                ReturnReceiptLine.SETCURRENTKEY("Return Order No.", "Return Order Line No.");
+                ReturnReceiptLine.SETRANGE("Return Order No.", DocumentBlanketOrderNo);
+                ReturnReceiptLine.SETRANGE("Return Order Line No.", DocumentBlanketOrderLineNo);
+                InsertIntoDocEntry(
+                  DATABASE::"Return Receipt Line",5,Text1140054,ReturnReceiptLine.COUNT);
+              END;
+              IF SalesCrMemoLine.READPERMISSION THEN BEGIN
+                SalesCrMemoLine.RESET;
+                SalesCrMemoLine.SETCURRENTKEY("Order No.", "Order Line No.");
+                SalesCrMemoLine.SETRANGE("Order No.", DocumentBlanketOrderNo);
+                SalesCrMemoLine.SETRANGE("Order Line No.", DocumentBlanketOrderLineNo);
+                InsertIntoDocEntry(
+                  DATABASE::"Sales Cr.Memo Line",3,Text1140055,SalesCrMemoLine.COUNT);
+              END;
+            END;
+          DocumentType::ReturnShipment:
+            BEGIN
+              IF PurchLine.READPERMISSION THEN BEGIN
+                PurchLine.RESET;
+                PurchLine.SETRANGE("Document Type", PurchLine."Document Type"::"Return Order");
+                PurchLine.SETRANGE("Document No.", DocumentBlanketOrderNo);
+                PurchLine.SETRANGE("Line No.",DocumentBlanketOrderLineNo);
+                InsertIntoDocEntry(
+                  DATABASE::"Purchase Line",5,Text1140056,PurchLine.COUNT);
+              END;
+              IF ArchPurchLine.READPERMISSION THEN BEGIN
+                ArchPurchLine.RESET;
+                ArchPurchLine.SETRANGE("Document Type", ArchPurchLine."Document Type"::"Return Order");
+                ArchPurchLine.SETRANGE("Document No.", DocumentBlanketOrderNo);
+                ArchPurchLine.SETRANGE("Line No.",DocumentBlanketOrderLineNo);
+                InsertIntoDocEntry(
+                  DATABASE::"Purchase Line Archive",5,Text1140057,ArchPurchLine.COUNT);
+              END;
+              IF ReturnShipmentLine.READPERMISSION THEN BEGIN
+                ReturnShipmentLine.RESET;
+                ReturnShipmentLine.SETCURRENTKEY("Return Order No.","Return Order Line No.");
+                ReturnShipmentLine.SETRANGE("Return Order No.", DocumentBlanketOrderNo);
+                ReturnShipmentLine.SETRANGE("Return Order Line No.",DocumentBlanketOrderLineNo);
+                InsertIntoDocEntry(
+                  DATABASE::"Return Shipment Line",5,Text1140058,ReturnShipmentLine.COUNT);
+              END;
+              IF PurchCrMemoLine.READPERMISSION THEN BEGIN
+                PurchCrMemoLine.RESET;
+                PurchCrMemoLine.SETCURRENTKEY("Order No.", "Order Line No.");
+                PurchCrMemoLine.SETRANGE("Order No.", DocumentBlanketOrderNo);
+                PurchCrMemoLine.SETRANGE("Order Line No.", DocumentBlanketOrderLineNo);
+                InsertIntoDocEntry(
+                  DATABASE::"Purch. Cr. Memo Line",3,Text1140059,PurchCrMemoLine.COUNT);
+              END;
+            END;
+        END;
+
+        GetDocumentData;
+        IF DocNo = '' THEN
+          CASE DocumentType OF
+            DocumentType::SalesOrder:
+              MESSAGE(
+                Text1140009 +
+                Text1140010);
+            DocumentType::PurchaseOrder:
+              MESSAGE(
+                Text1140011 +
+                Text1140010);
+          END;
+
+        DocExists := FIND('-');
+        CurrForm.Show.ENABLED := DocExists;
+        CurrForm.UPDATE(FALSE);
+        DocExists := FIND('-');
+        IF DocExists THEN
+          CurrForm."Table Name".ACTIVATE;
+        Window.CLOSE;
+      END;
+    END;
+
+    LOCAL PROCEDURE InsertIntoDocEntry@1140002(DocTableID@1140000 : Integer;DocType@1140001 : Option;DocTableName@1140002 : Text[50];DocNoOfRecords@1140003 : Integer);
+    BEGIN
+      IF DocNoOfRecords = 0 THEN
+        EXIT;
+      DocumentEntry.INIT;
+      DocumentEntry."Entry No." := DocumentEntry."Entry No." + 1;
+      DocumentEntry."Table ID" := DocTableID;
+      DocumentEntry."Document Type" := DocType;
+      DocumentEntry."Table Name" := COPYSTR(DocTableName,1,MAXSTRLEN(DocumentEntry."Table Name"));
+      DocumentEntry."No. of Records" := DocNoOfRecords;
+      DocumentEntry.INSERT;
+    END;
+
+    LOCAL PROCEDURE NoOfRecords@1140003(TableID@1140000 : Integer) : Integer;
+    BEGIN
+      DocumentEntry.SETRANGE("Table ID",TableID);
+      IF NOT DocumentEntry.FIND('-') THEN
+        DocumentEntry.INIT;
+      DocumentEntry.SETRANGE("Table ID");
+      EXIT(DocumentEntry."No. of Records");
+    END;
+
+    LOCAL PROCEDURE GetDocumentData@1140004();
+    BEGIN
+      DocType := '';
+      DocNo := '';
+      DocumentArch := '';
+      DocumentLineType := '';
+      DocLineNo := '';
+      DocLineDescription := '';
+      DocumentLineQuantity := 0;
+      DocumentLineUnit := '';
+
+      CASE DocumentType OF
+        DocumentType::SalesOrder:
+          BEGIN
+            IF SalesLine.FIND('-') THEN BEGIN
+              DocType := FORMAT(SalesLine."Document Type");
+              DocNo := SalesLine."Document No.";
+              DocumentArch := '';
+              DocumentLineType := FORMAT(SalesLine.Type);
+              DocLineNo := SalesLine."No.";
+              DocLineDescription := SalesLine.Description;
+              DocumentLineQuantity := SalesLine.Quantity;
+              DocumentLineUnit := SalesLine."Unit of Measure Code";
+            END ELSE BEGIN
+              IF ArchSalesLine.FIND('-') THEN BEGIN
+                DocType := FORMAT(ArchSalesLine."Document Type");
+                DocNo := ArchSalesLine."Document No.";
+                DocumentArch := Text1140012;
+                DocumentLineType := FORMAT(ArchSalesLine.Type);
+                DocLineNo := ArchSalesLine."No.";
+                DocLineDescription := ArchSalesLine.Description;
+                DocumentLineQuantity := ArchSalesLine.Quantity;
+                DocumentLineUnit := ArchSalesLine."Unit of Measure Code";
+              END;
+            END;
+          END;
+        DocumentType::BlanketSalesOrder:
+          BEGIN
+            IF BlanketSalesOrderLine.FIND('-') THEN BEGIN
+              DocType := FORMAT(BlanketSalesOrderLine."Document Type");
+              DocNo := BlanketSalesOrderLine."Document No.";
+              DocumentArch := '';
+              DocumentLineType := FORMAT(BlanketSalesOrderLine.Type);
+              DocLineNo := BlanketSalesOrderLine."No.";
+              DocLineDescription := BlanketSalesOrderLine.Description;
+              DocumentLineQuantity := BlanketSalesOrderLine.Quantity;
+              DocumentLineUnit := BlanketSalesOrderLine."Unit of Measure Code";
+            END ELSE BEGIN
+              IF ArchBlanketSalesOrderLine.FIND('-') THEN BEGIN
+                DocType := FORMAT(ArchBlanketSalesOrderLine."Document Type");
+                DocNo := ArchBlanketSalesOrderLine."Document No.";
+                DocumentArch := Text1140012;
+                DocumentLineType := FORMAT(ArchBlanketSalesOrderLine.Type);
+                DocLineNo := ArchBlanketSalesOrderLine."No.";
+                DocLineDescription := ArchBlanketSalesOrderLine.Description;
+                DocumentLineQuantity := ArchBlanketSalesOrderLine.Quantity;
+                DocumentLineUnit := ArchBlanketSalesOrderLine."Unit of Measure Code";
+              END;
+            END;
+          END;
+        DocumentType::PurchaseOrder:
+          BEGIN
+            IF PurchLine.FIND('-') THEN BEGIN
+              DocType := FORMAT(PurchLine."Document Type");
+              DocNo := PurchLine."Document No.";
+              DocumentArch := '';
+              DocumentLineType := FORMAT(PurchLine.Type);
+              DocLineNo := PurchLine."No.";
+              DocLineDescription := PurchLine.Description;
+              DocumentLineQuantity := PurchLine.Quantity;
+              DocumentLineUnit := PurchLine."Unit of Measure Code";
+            END ELSE BEGIN
+              IF ArchPurchLine.FIND('-') THEN BEGIN
+                DocType := FORMAT(ArchPurchLine."Document Type");
+                DocNo := ArchPurchLine."Document No.";
+                DocumentArch := Text1140012;
+                DocumentLineType := FORMAT(ArchPurchLine.Type);
+                DocLineNo := ArchPurchLine."No.";
+                DocLineDescription := ArchPurchLine.Description;
+                DocumentLineQuantity := ArchPurchLine.Quantity;
+                DocumentLineUnit := ArchPurchLine."Unit of Measure Code";
+              END;
+            END;
+          END;
+        DocumentType::BlanketPurchaseOrder:
+          BEGIN
+            IF BlanketPurchOrderLine.FIND('-') THEN BEGIN
+              DocType := FORMAT(BlanketPurchOrderLine."Document Type");
+              DocNo := BlanketPurchOrderLine."Document No.";
+              DocumentArch := '';
+              DocumentLineType := FORMAT(BlanketPurchOrderLine.Type);
+              DocLineNo := BlanketPurchOrderLine."No.";
+              DocLineDescription := BlanketPurchOrderLine.Description;
+              DocumentLineQuantity := BlanketPurchOrderLine.Quantity;
+              DocumentLineUnit := BlanketPurchOrderLine."Unit of Measure Code";
+            END ELSE BEGIN
+              IF ArchBlanketPurchOrderLine.FIND('-') THEN BEGIN
+                DocType := FORMAT(ArchBlanketPurchOrderLine."Document Type");
+                DocNo := ArchBlanketPurchOrderLine."Document No.";
+                DocumentArch := Text1140012;
+                DocumentLineType := FORMAT(ArchBlanketPurchOrderLine.Type);
+                DocLineNo := ArchBlanketPurchOrderLine."No.";
+                DocLineDescription := ArchBlanketPurchOrderLine.Description;
+                DocumentLineQuantity := ArchBlanketPurchOrderLine.Quantity;
+                DocumentLineUnit := ArchBlanketPurchOrderLine."Unit of Measure Code";
+              END;
+            END;
+          END;
+        DocumentType::SalesShipment:
+          BEGIN
+            IF SalesShipmentLine.FIND('-') THEN BEGIN
+              DocType := SalesShipmentLine.TABLECAPTION;
+              DocNo := SalesShipmentLine."Document No.";
+              DocumentArch := '';
+              DocumentLineType := FORMAT(SalesShipmentLine.Type);
+              DocLineNo := SalesShipmentLine."No.";
+              DocLineDescription := SalesShipmentLine.Description;
+              DocumentLineQuantity := SalesShipmentLine.Quantity;
+              DocumentLineUnit := SalesShipmentLine."Unit of Measure Code";
+           END;
+          END;
+        DocumentType::PurchaseReceipt:
+          BEGIN
+            IF PurchReceiptLine.FIND('-') THEN BEGIN
+              DocType := PurchReceiptLine.TABLECAPTION;
+              DocNo := PurchReceiptLine."Document No.";
+              DocumentArch := '';
+              DocumentLineType := FORMAT(PurchReceiptLine.Type);
+              DocLineNo := PurchReceiptLine."No.";
+              DocLineDescription := PurchReceiptLine.Description;
+              DocumentLineQuantity := PurchReceiptLine.Quantity;
+              DocumentLineUnit := PurchReceiptLine."Unit of Measure Code";
+           END;
+          END;
+        DocumentType::SalesInvoice:
+          BEGIN
+            IF SalesInvLine.FIND('-') THEN BEGIN
+              DocType := SalesInvLine.TABLECAPTION;
+              DocNo := SalesInvLine."Document No.";
+              DocumentArch := '';
+              DocumentLineType := FORMAT(SalesInvLine.Type);
+              DocLineNo := SalesInvLine."No.";
+              DocLineDescription := SalesInvLine.Description;
+              DocumentLineQuantity := SalesInvLine.Quantity;
+              DocumentLineUnit := SalesInvLine."Unit of Measure Code";
+           END;
+          END;
+        DocumentType::PurchaseInvoice:
+          BEGIN
+            IF PurchInvLine.FIND('-') THEN BEGIN
+              DocType := PurchInvLine.TABLECAPTION;
+              DocNo := PurchInvLine."Document No.";
+              DocumentArch := '';
+              DocumentLineType := FORMAT(PurchInvLine.Type);
+              DocLineNo := PurchInvLine."No.";
+              DocLineDescription := PurchInvLine.Description;
+              DocumentLineQuantity := PurchInvLine.Quantity;
+              DocumentLineUnit := PurchInvLine."Unit of Measure Code";
+           END;
+          END;
+       END;
+
+      DocumentCaption :=
+        DELCHR(
+          DocumentArch + ' ' + DocType + ' '+ DocumentNo,
+          '<', ' ');
+    END;
+
+    LOCAL PROCEDURE ShowRecords@1140005();
+    BEGIN
+      DocumentEntry := Rec;
+      IF DocumentEntry.FIND THEN
+        Rec := DocumentEntry;
+
+      WITH DocumentEntry DO
+        CASE "Table ID" OF
+          DATABASE::"Sales Line": BEGIN
+            IF DocumentEntry."Document Type" = DocumentEntry."Document Type"::"Blanket Order" THEN
+              FORM.RUNMODAL(FORM::"Sales Lines",BlanketSalesOrderLine)
+            ELSE
+              FORM.RUNMODAL(FORM::"Sales Lines",SalesLine);
+            END;
+          DATABASE::"Sales Shipment Line":
+            FORM.RUNMODAL(0,SalesShipmentLine);
+          DATABASE::"Sales Invoice Line":
+            FORM.RUNMODAL(0,SalesInvLine);
+          DATABASE::"Sales Cr.Memo Line":
+            FORM.RUNMODAL(0,SalesCrMemoLine);
+          DATABASE::"Sales Line Archive": BEGIN
+            IF DocumentEntry."Document Type" = DocumentEntry."Document Type"::"Blanket Order" THEN
+              FORM.RUNMODAL(FORM::"Sales Line Archive List",ArchBlanketSalesOrderLine)
+            ELSE
+              FORM.RUNMODAL(FORM::"Sales Line Archive List",ArchSalesLine);
+            END;
+          DATABASE::"Return Receipt Line":
+            FORM.RUNMODAL(0,ReturnReceiptLine);
+          DATABASE::"Purchase Line": BEGIN
+            IF DocumentEntry."Document Type" = DocumentEntry."Document Type"::"Blanket Order" THEN
+              FORM.RUNMODAL(FORM::"Purchase Lines", BlanketPurchOrderLine)
+            ELSE
+              FORM.RUNMODAL(FORM::"Purchase Lines",PurchLine);
+            END;
+          DATABASE::"Purch. Rcpt. Line":
+            FORM.RUNMODAL(0,PurchReceiptLine);
+          DATABASE::"Purch. Inv. Line":
+            FORM.RUNMODAL(0,PurchInvLine);
+          DATABASE::"Purch. Cr. Memo Line":
+            FORM.RUNMODAL(0,PurchCrMemoLine);
+          DATABASE::"Purchase Line Archive": BEGIN
+            IF DocumentEntry."Document Type" = DocumentEntry."Document Type"::"Blanket Order" THEN
+              FORM.RUNMODAL(FORM::"Purchase Line Archive List",ArchBlanketPurchOrderLine)
+            ELSE
+              FORM.RUNMODAL(FORM::"Purchase Line Archive List",ArchPurchLine);
+            END;
+          DATABASE::"Return Shipment Line":
+            FORM.RUNMODAL(0,ReturnShipmentLine);
+        END;
+    END;
+
+    BEGIN
+    END.
+  }
+}
+

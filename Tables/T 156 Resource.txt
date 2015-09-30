@@ -1,0 +1,526 @@
+OBJECT Table 156 Resource
+{
+  OBJECT-PROPERTIES
+  {
+    Date=14.08.09;
+    Time=12:00:00;
+    Version List=NAVW16.00.01;
+  }
+  PROPERTIES
+  {
+    DataCaptionFields=No.,Name;
+    OnInsert=BEGIN
+               IF "No." = '' THEN BEGIN
+                 ResSetup.GET;
+                 ResSetup.TESTFIELD("Resource Nos.");
+                 NoSeriesMgt.InitSeries(ResSetup."Resource Nos.",xRec."No. Series",0D,"No.","No. Series");
+               END;
+
+               IF GETFILTER("Resource Group No.") <> '' THEN
+                 IF GETRANGEMIN("Resource Group No.") = GETRANGEMAX("Resource Group No.") THEN
+                   VALIDATE("Resource Group No.",GETRANGEMIN("Resource Group No."));
+
+               DimMgt.UpdateDefaultDim(
+                 DATABASE::Resource,"No.",
+                 "Global Dimension 1 Code","Global Dimension 2 Code");
+             END;
+
+    OnModify=BEGIN
+               "Last Date Modified" := TODAY;
+             END;
+
+    OnDelete=BEGIN
+               MoveEntries.MoveResEntries(Rec);
+
+               ResCapacityEntry.SETCURRENTKEY("Resource No.");
+               ResCapacityEntry.SETRANGE("Resource No.","No.");
+               ResCapacityEntry.DELETEALL;
+
+               ResCost.SETRANGE(Type,ResCost.Type::Resource);
+               ResCost.SETRANGE(Code,"No.");
+               ResCost.DELETEALL;
+
+               ResPrice.SETRANGE(Type,ResPrice.Type::Resource);
+               ResPrice.SETRANGE(Code,"No.");
+               ResPrice.DELETEALL;
+
+               CommentLine.SETRANGE("Table Name",CommentLine."Table Name"::Resource);
+               CommentLine.SETRANGE("No.","No.");
+               CommentLine.DELETEALL;
+
+               ExtTextHeader.SETRANGE("Table Name",ExtTextHeader."Table Name"::Resource);
+               ExtTextHeader.SETRANGE("No.","No.");
+               ExtTextHeader.DELETEALL(TRUE);
+
+               ResSkill.RESET;
+               ResSkill.SETRANGE(Type,ResSkill.Type::Resource);
+               ResSkill.SETRANGE("No.","No.");
+               ResSkill.DELETEALL;
+
+               ResLoc.RESET;
+               ResLoc.SETCURRENTKEY("Resource No.","Starting Date");
+               ResLoc.SETRANGE("Resource No.","No.");
+               ResLoc.DELETEALL;
+
+               ResServZone.RESET;
+               ResServZone.SETRANGE("Resource No.","No.");
+               ResServZone.DELETEALL;
+
+               ResUnitMeasure.RESET;
+               ResUnitMeasure.SETRANGE("Resource No.","No.");
+               ResUnitMeasure.DELETEALL;
+
+               SalesOrderLine.SETCURRENTKEY(Type,"No.");
+               SalesOrderLine.SETFILTER("Document Type",'%1|%2',
+                 SalesOrderLine."Document Type"::Order,
+                 SalesOrderLine."Document Type"::"Return Order");
+               SalesOrderLine.SETRANGE(Type,SalesOrderLine.Type::Resource);
+               SalesOrderLine.SETRANGE("No.","No.");
+               IF SalesOrderLine.FIND('-') THEN BEGIN
+                 IF SalesOrderLine."Document Type" = SalesOrderLine."Document Type"::Order THEN
+                   ERROR(Text000,TABLECAPTION,"No.");
+                 IF SalesOrderLine."Document Type" = SalesOrderLine."Document Type"::"Return Order" THEN
+                   ERROR(Text003,TABLECAPTION,"No.");
+               END;
+
+               DimMgt.DeleteDefaultDim(DATABASE::Resource,"No.");
+             END;
+
+    OnRename=BEGIN
+               "Last Date Modified" := TODAY;
+             END;
+
+    CaptionML=[DEU=Ressource;
+               ENU=Resource];
+    LookupFormID=Form77;
+    DrillDownFormID=Form77;
+  }
+  FIELDS
+  {
+    { 1   ;   ;No.                 ;Code20        ;AltSearchField=Search Name;
+                                                   OnValidate=BEGIN
+                                                                IF "No." <> xRec."No." THEN BEGIN
+                                                                  ResSetup.GET;
+                                                                  NoSeriesMgt.TestManual(ResSetup."Resource Nos.");
+                                                                  "No. Series" := '';
+                                                                END;
+                                                              END;
+
+                                                   CaptionML=[DEU=Nr.;
+                                                              ENU=No.] }
+    { 2   ;   ;Type                ;Option        ;CaptionML=[DEU=Art;
+                                                              ENU=Type];
+                                                   OptionCaptionML=[DEU=Person,Maschine;
+                                                                    ENU=Person,Machine];
+                                                   OptionString=Person,Machine }
+    { 3   ;   ;Name                ;Text50        ;OnValidate=BEGIN
+                                                                IF ("Search Name" = UPPERCASE(xRec.Name)) OR ("Search Name" = '') THEN
+                                                                  "Search Name" := Name;
+                                                              END;
+
+                                                   CaptionML=[DEU=Name;
+                                                              ENU=Name] }
+    { 4   ;   ;Search Name         ;Code50        ;CaptionML=[DEU=Suchbegriff;
+                                                              ENU=Search Name] }
+    { 5   ;   ;Name 2              ;Text50        ;CaptionML=[DEU=Name 2;
+                                                              ENU=Name 2] }
+    { 6   ;   ;Address             ;Text50        ;CaptionML=[DEU=Adresse;
+                                                              ENU=Address] }
+    { 7   ;   ;Address 2           ;Text50        ;CaptionML=[DEU=Adresse 2;
+                                                              ENU=Address 2] }
+    { 8   ;   ;City                ;Text30        ;OnValidate=BEGIN
+                                                                PostCode.ValidateCity(City,"Post Code");
+                                                              END;
+
+                                                   OnLookup=BEGIN
+                                                              PostCode.LookUpCity(City,"Post Code",TRUE);
+                                                            END;
+
+                                                   CaptionML=[DEU=Ort;
+                                                              ENU=City] }
+    { 9   ;   ;Social Security No. ;Text30        ;CaptionML=[DEU=Soz.-Versicherungsnr.;
+                                                              ENU=Social Security No.] }
+    { 10  ;   ;Job Title           ;Text30        ;CaptionML=[DEU=Funktion;
+                                                              ENU=Job Title] }
+    { 11  ;   ;Education           ;Text30        ;CaptionML=[DEU=Ausbildung;
+                                                              ENU=Education] }
+    { 12  ;   ;Contract Class      ;Text30        ;CaptionML=[DEU=öbereinkommen;
+                                                              ENU=Contract Class] }
+    { 13  ;   ;Employment Date     ;Date          ;CaptionML=[DEU=Anstellungsdatum;
+                                                              ENU=Employment Date] }
+    { 14  ;   ;Resource Group No.  ;Code20        ;TableRelation="Resource Group";
+                                                   OnValidate=BEGIN
+                                                                IF "Resource Group No." = xRec."Resource Group No." THEN
+                                                                  EXIT;
+
+                                                                IF xRec."Resource Group No." <> '' THEN BEGIN
+                                                                  IF NOT
+                                                                     CONFIRM(
+                                                                       Text001,FALSE,
+                                                                       FIELDCAPTION("Resource Group No."))
+                                                                  THEN BEGIN
+                                                                    "Resource Group No." := xRec."Resource Group No.";
+                                                                    EXIT;
+                                                                  END;
+                                                                END;
+
+                                                                IF xRec.GETFILTER("Resource Group No.") <> '' THEN
+                                                                  SETFILTER("Resource Group No.","Resource Group No.");
+
+
+                                                                // Resource Capacity Entries
+                                                                ResCapacityEntry.SETCURRENTKEY("Resource No.");
+                                                                ResCapacityEntry.SETRANGE("Resource No.","No.");
+                                                                ResCapacityEntry.MODIFYALL("Resource Group No.","Resource Group No.");
+
+                                                                PlanningLine.SETCURRENTKEY(Type,"No.");
+                                                                PlanningLine.SETRANGE(Type,PlanningLine.Type::Resource);
+                                                                PlanningLine.SETRANGE("No.","No.");
+                                                                PlanningLine.SETRANGE("Schedule Line",TRUE);
+                                                                PlanningLine.MODIFYALL("Resource Group No.","Resource Group No.");
+                                                              END;
+
+                                                   CaptionML=[DEU=Res.-Gruppennr.;
+                                                              ENU=Resource Group No.] }
+    { 16  ;   ;Global Dimension 1 Code;Code20     ;TableRelation="Dimension Value".Code WHERE (Global Dimension No.=CONST(1));
+                                                   OnValidate=BEGIN
+                                                                ValidateShortcutDimCode(1,"Global Dimension 1 Code");
+                                                              END;
+
+                                                   CaptionML=[DEU=Globaler Dimensionscode 1;
+                                                              ENU=Global Dimension 1 Code];
+                                                   CaptionClass='1,1,1' }
+    { 17  ;   ;Global Dimension 2 Code;Code20     ;TableRelation="Dimension Value".Code WHERE (Global Dimension No.=CONST(2));
+                                                   OnValidate=BEGIN
+                                                                ValidateShortcutDimCode(2,"Global Dimension 2 Code");
+                                                              END;
+
+                                                   CaptionML=[DEU=Globaler Dimensionscode 2;
+                                                              ENU=Global Dimension 2 Code];
+                                                   CaptionClass='1,1,2' }
+    { 18  ;   ;Base Unit of Measure;Code10        ;TableRelation="Resource Unit of Measure".Code WHERE (Resource No.=FIELD(No.));
+                                                   OnValidate=VAR
+                                                                ResUnitOfMeasure@1000 : Record 205;
+                                                                ResLedgEnty@1001 : Record 203;
+                                                              BEGIN
+                                                                IF "Base Unit of Measure" <> xRec."Base Unit of Measure" THEN BEGIN
+                                                                  ResLedgEnty.SETCURRENTKEY("Resource No.");
+                                                                  ResLedgEnty.SETRANGE("Resource No.","No.");
+                                                                  IF ResLedgEnty.FIND('-') THEN
+                                                                    ERROR(Text002,FIELDCAPTION("Base Unit of Measure"));
+                                                                END;
+
+                                                                ResUnitOfMeasure.GET("No.","Base Unit of Measure");
+                                                                ResUnitOfMeasure.TESTFIELD("Qty. per Unit of Measure",1);
+                                                                ResUnitOfMeasure.TESTFIELD("Related to Base Unit of Meas.");
+                                                              END;
+
+                                                   CaptionML=[DEU=Basiseinheitencode;
+                                                              ENU=Base Unit of Measure] }
+    { 19  ;   ;Direct Unit Cost    ;Decimal       ;OnValidate=BEGIN
+                                                                VALIDATE("Indirect Cost %");
+                                                              END;
+
+                                                   CaptionML=[DEU=EK-Preis;
+                                                              ENU=Direct Unit Cost];
+                                                   MinValue=0;
+                                                   AutoFormatType=2 }
+    { 20  ;   ;Indirect Cost %     ;Decimal       ;OnValidate=BEGIN
+                                                                VALIDATE("Unit Cost",ROUND("Direct Unit Cost" * (1 + "Indirect Cost %" / 100)));
+                                                              END;
+
+                                                   CaptionML=[DEU=Kosten %;
+                                                              ENU=Indirect Cost %];
+                                                   DecimalPlaces=2:2 }
+    { 21  ;   ;Unit Cost           ;Decimal       ;OnValidate=BEGIN
+                                                                VALIDATE("Price/Profit Calculation");
+                                                              END;
+
+                                                   CaptionML=[DEU=Einstandspreis;
+                                                              ENU=Unit Cost];
+                                                   MinValue=0;
+                                                   AutoFormatType=2 }
+    { 22  ;   ;Profit %            ;Decimal       ;OnValidate=BEGIN
+                                                                VALIDATE("Price/Profit Calculation");
+                                                              END;
+
+                                                   CaptionML=[DEU=DB %;
+                                                              ENU=Profit %];
+                                                   DecimalPlaces=0:5 }
+    { 23  ;   ;Price/Profit Calculation;Option    ;OnValidate=BEGIN
+                                                                CASE "Price/Profit Calculation" OF
+                                                                  "Price/Profit Calculation"::"Profit=Price-Cost":
+                                                                    IF "Unit Price" <> 0 THEN
+                                                                      "Profit %" := ROUND(100 * (1 - "Unit Cost" / "Unit Price"),0.00001)
+                                                                    ELSE
+                                                                      "Profit %" := 0;
+                                                                  "Price/Profit Calculation"::"Price=Cost+Profit":
+                                                                    IF "Profit %" < 100 THEN
+                                                                      "Unit Price" := ROUND("Unit Cost" / (1 - "Profit %" / 100),0.00001);
+                                                                END;
+                                                              END;
+
+                                                   CaptionML=[DEU=VK-Preis/DB - Berechnung;
+                                                              ENU=Price/Profit Calculation];
+                                                   OptionCaptionML=[DEU="DB = VK - EP,VK = EP + DB,kein Bezug";
+                                                                    ENU="Profit=Price-Cost,Price=Cost+Profit,No Relationship"];
+                                                   OptionString=Profit=Price-Cost,Price=Cost+Profit,No Relationship }
+    { 24  ;   ;Unit Price          ;Decimal       ;OnValidate=BEGIN
+                                                                VALIDATE("Price/Profit Calculation");
+                                                              END;
+
+                                                   CaptionML=[DEU=VK-Preis;
+                                                              ENU=Unit Price];
+                                                   MinValue=0;
+                                                   AutoFormatType=2 }
+    { 25  ;   ;Vendor No.          ;Code20        ;TableRelation=Vendor;
+                                                   CaptionML=[DEU=Kreditorennr.;
+                                                              ENU=Vendor No.] }
+    { 26  ;   ;Last Date Modified  ;Date          ;CaptionML=[DEU=Korrigiert am;
+                                                              ENU=Last Date Modified];
+                                                   Editable=No }
+    { 27  ;   ;Comment             ;Boolean       ;FieldClass=FlowField;
+                                                   CalcFormula=Exist("Comment Line" WHERE (Table Name=CONST(Resource),
+                                                                                           No.=FIELD(No.)));
+                                                   CaptionML=[DEU=Bemerkung;
+                                                              ENU=Comment];
+                                                   Editable=No }
+    { 38  ;   ;Blocked             ;Boolean       ;CaptionML=[DEU=Gesperrt;
+                                                              ENU=Blocked] }
+    { 39  ;   ;Date Filter         ;Date          ;FieldClass=FlowFilter;
+                                                   CaptionML=[DEU=Datumsfilter;
+                                                              ENU=Date Filter] }
+    { 40  ;   ;Unit of Measure Filter;Code10      ;FieldClass=FlowFilter;
+                                                   TableRelation="Unit of Measure";
+                                                   CaptionML=[DEU=Einheitenfilter;
+                                                              ENU=Unit of Measure Filter] }
+    { 41  ;   ;Capacity            ;Decimal       ;FieldClass=FlowField;
+                                                   CalcFormula=Sum("Res. Capacity Entry".Capacity WHERE (Resource No.=FIELD(No.),
+                                                                                                         Date=FIELD(Date Filter)));
+                                                   CaptionML=[DEU=KapazitÑt;
+                                                              ENU=Capacity];
+                                                   DecimalPlaces=0:5 }
+    { 42  ;   ;Qty. on Order (Job) ;Decimal       ;FieldClass=FlowField;
+                                                   CalcFormula=Sum("Job Planning Line"."Quantity (Base)" WHERE (Status=CONST(Order),
+                                                                                                                Schedule Line=CONST(Yes),
+                                                                                                                Type=CONST(Resource),
+                                                                                                                No.=FIELD(No.),
+                                                                                                                Planning Date=FIELD(Date Filter)));
+                                                   CaptionML=[DEU=Menge in Auftrag (Proj.);
+                                                              ENU=Qty. on Order (Job)];
+                                                   DecimalPlaces=0:5;
+                                                   Editable=No }
+    { 43  ;   ;Qty. Quoted (Job)   ;Decimal       ;FieldClass=FlowField;
+                                                   CalcFormula=Sum("Job Planning Line"."Quantity (Base)" WHERE (Status=CONST(Quote),
+                                                                                                                Schedule Line=CONST(Yes),
+                                                                                                                Type=CONST(Resource),
+                                                                                                                No.=FIELD(No.),
+                                                                                                                Planning Date=FIELD(Date Filter)));
+                                                   CaptionML=[DEU=Menge in Angebot (Proj.);
+                                                              ENU=Qty. Quoted (Job)];
+                                                   DecimalPlaces=0:5;
+                                                   Editable=No }
+    { 44  ;   ;Usage (Qty.)        ;Decimal       ;FieldClass=FlowField;
+                                                   CalcFormula=Sum("Res. Ledger Entry"."Quantity (Base)" WHERE (Entry Type=CONST(Usage),
+                                                                                                                Chargeable=FIELD(Chargeable Filter),
+                                                                                                                Unit of Measure Code=FIELD(Unit of Measure Filter),
+                                                                                                                Resource No.=FIELD(No.),
+                                                                                                                Posting Date=FIELD(Date Filter)));
+                                                   CaptionML=[DEU=Verbrauch (Menge);
+                                                              ENU=Usage (Qty.)];
+                                                   DecimalPlaces=0:5;
+                                                   Editable=No }
+    { 45  ;   ;Usage (Cost)        ;Decimal       ;FieldClass=FlowField;
+                                                   CalcFormula=Sum("Res. Ledger Entry"."Total Cost" WHERE (Entry Type=CONST(Usage),
+                                                                                                           Chargeable=FIELD(Chargeable Filter),
+                                                                                                           Unit of Measure Code=FIELD(Unit of Measure Filter),
+                                                                                                           Resource No.=FIELD(No.),
+                                                                                                           Posting Date=FIELD(Date Filter)));
+                                                   CaptionML=[DEU=Verbrauch (Einst.-Betrag);
+                                                              ENU=Usage (Cost)];
+                                                   Editable=No;
+                                                   AutoFormatType=2 }
+    { 46  ;   ;Usage (Price)       ;Decimal       ;FieldClass=FlowField;
+                                                   CalcFormula=Sum("Res. Ledger Entry"."Total Price" WHERE (Entry Type=CONST(Usage),
+                                                                                                            Chargeable=FIELD(Chargeable Filter),
+                                                                                                            Unit of Measure Code=FIELD(Unit of Measure Filter),
+                                                                                                            Resource No.=FIELD(No.),
+                                                                                                            Posting Date=FIELD(Date Filter)));
+                                                   CaptionML=[DEU=Verbrauch (VK-Preis);
+                                                              ENU=Usage (Price)];
+                                                   Editable=No;
+                                                   AutoFormatType=2 }
+    { 47  ;   ;Sales (Qty.)        ;Decimal       ;FieldClass=FlowField;
+                                                   CalcFormula=-Sum("Res. Ledger Entry"."Quantity (Base)" WHERE (Entry Type=CONST(Sale),
+                                                                                                                 Unit of Measure Code=FIELD(Unit of Measure Filter),
+                                                                                                                 Resource No.=FIELD(No.),
+                                                                                                                 Posting Date=FIELD(Date Filter)));
+                                                   CaptionML=[DEU=Verkauf (Menge);
+                                                              ENU=Sales (Qty.)];
+                                                   DecimalPlaces=0:5;
+                                                   Editable=No }
+    { 48  ;   ;Sales (Cost)        ;Decimal       ;FieldClass=FlowField;
+                                                   CalcFormula=-Sum("Res. Ledger Entry"."Total Cost" WHERE (Entry Type=CONST(Sale),
+                                                                                                            Unit of Measure Code=FIELD(Unit of Measure Filter),
+                                                                                                            Resource No.=FIELD(No.),
+                                                                                                            Posting Date=FIELD(Date Filter)));
+                                                   CaptionML=[DEU=Verkauf (Einst.-Preis);
+                                                              ENU=Sales (Cost)];
+                                                   Editable=No;
+                                                   AutoFormatType=2 }
+    { 49  ;   ;Sales (Price)       ;Decimal       ;FieldClass=FlowField;
+                                                   CalcFormula=-Sum("Res. Ledger Entry"."Total Price" WHERE (Entry Type=CONST(Sale),
+                                                                                                             Unit of Measure Code=FIELD(Unit of Measure Filter),
+                                                                                                             Resource No.=FIELD(No.),
+                                                                                                             Posting Date=FIELD(Date Filter)));
+                                                   CaptionML=[DEU=Verkauf (VK-Preis);
+                                                              ENU=Sales (Price)];
+                                                   Editable=No;
+                                                   AutoFormatType=2 }
+    { 50  ;   ;Chargeable Filter   ;Boolean       ;FieldClass=FlowFilter;
+                                                   CaptionML=[DEU=Fakturierbarfilter;
+                                                              ENU=Chargeable Filter] }
+    { 51  ;   ;Gen. Prod. Posting Group;Code10    ;TableRelation="Gen. Product Posting Group";
+                                                   OnValidate=BEGIN
+                                                                IF xRec."Gen. Prod. Posting Group" <> "Gen. Prod. Posting Group" THEN
+                                                                  IF GenProdPostingGrp.ValidateVatProdPostingGroup(GenProdPostingGrp,"Gen. Prod. Posting Group") THEN
+                                                                    VALIDATE("VAT Prod. Posting Group",GenProdPostingGrp."Def. VAT Prod. Posting Group");
+                                                              END;
+
+                                                   CaptionML=[DEU=Produktbuchungsgruppe;
+                                                              ENU=Gen. Prod. Posting Group] }
+    { 52  ;   ;Picture             ;BLOB          ;CaptionML=[DEU=Bild;
+                                                              ENU=Picture];
+                                                   SubType=Bitmap }
+    { 53  ;   ;Post Code           ;Code20        ;TableRelation="Post Code";
+                                                   OnValidate=BEGIN
+                                                                PostCode.ValidatePostCode(City,"Post Code");
+                                                              END;
+
+                                                   OnLookup=BEGIN
+                                                              PostCode.LookUpPostCode(City,"Post Code",TRUE);
+                                                            END;
+
+                                                   ValidateTableRelation=No;
+                                                   TestTableRelation=No;
+                                                   CaptionML=[DEU=PLZ-Code;
+                                                              ENU=Post Code] }
+    { 54  ;   ;County              ;Text30        ;CaptionML=[DEU=Bundesregion;
+                                                              ENU=County] }
+    { 55  ;   ;Automatic Ext. Texts;Boolean       ;CaptionML=[DEU=Automat. Textbaustein;
+                                                              ENU=Automatic Ext. Texts] }
+    { 56  ;   ;No. Series          ;Code10        ;TableRelation="No. Series";
+                                                   CaptionML=[DEU=Nummernserie;
+                                                              ENU=No. Series];
+                                                   Editable=No }
+    { 57  ;   ;Tax Group Code      ;Code10        ;TableRelation="Tax Group";
+                                                   CaptionML=[DEU=Steuergruppencode;
+                                                              ENU=Tax Group Code] }
+    { 58  ;   ;VAT Prod. Posting Group;Code10     ;TableRelation="VAT Product Posting Group";
+                                                   CaptionML=[DEU=MwSt.-Produktbuchungsgruppe;
+                                                              ENU=VAT Prod. Posting Group] }
+    { 59  ;   ;Country/Region Code ;Code10        ;TableRelation=Country/Region;
+                                                   CaptionML=[DEU=LÑnder-/Regionscode;
+                                                              ENU=Country/Region Code] }
+    { 60  ;   ;IC Partner Purch. G/L Acc. No.;Code20;
+                                                   TableRelation="IC G/L Account";
+                                                   CaptionML=[DEU=IC-Partner Eink.-Sachkontonr.;
+                                                              ENU=IC Partner Purch. G/L Acc. No.] }
+    { 5900;   ;Qty. on Service Order;Decimal      ;FieldClass=FlowField;
+                                                   CalcFormula=Sum("Service Order Allocation"."Allocated Hours" WHERE (Posted=CONST(No),
+                                                                                                                       Resource No.=FIELD(No.),
+                                                                                                                       Allocation Date=FIELD(Date Filter),
+                                                                                                                       Status=CONST(Active)));
+                                                   CaptionML=[DEU=Menge in Serviceauftrag;
+                                                              ENU=Qty. on Service Order];
+                                                   DecimalPlaces=0:5;
+                                                   Editable=No }
+    { 5901;   ;Service Zone Filter ;Code10        ;TableRelation="Service Zone";
+                                                   CaptionML=[DEU=Servicegebietsfilter;
+                                                              ENU=Service Zone Filter] }
+    { 5902;   ;In Customer Zone    ;Boolean       ;FieldClass=FlowField;
+                                                   CalcFormula=Exist("Resource Service Zone" WHERE (Resource No.=FIELD(No.),
+                                                                                                    Service Zone Code=FIELD(Service Zone Filter)));
+                                                   CaptionML=[DEU=Im Gebiet des Debitors;
+                                                              ENU=In Customer Zone];
+                                                   Editable=No }
+  }
+  KEYS
+  {
+    {    ;No.                                     ;Clustered=Yes }
+    {    ;Search Name                              }
+    {    ;Gen. Prod. Posting Group                 }
+    {    ;Name                                    ;KeyGroups=SearchCol }
+    {    ;Type                                    ;KeyGroups=SearchCol }
+    {    ;Base Unit of Measure                    ;KeyGroups=SearchCol }
+  }
+  FIELDGROUPS
+  {
+    { 1   ;DropDown            ;No.,Name,Type,Base Unit of Measure       }
+  }
+  CODE
+  {
+    VAR
+      Text000@1000 : TextConst 'DEU=Sie kînnen %1 %2 nicht lîschen, da noch mindestens ein ausstehender Verkaufsauftrag fÅr diese Ressource vorhanden ist.;ENU=You cannot delete %1 %2 because there are one or more outstanding Sales Orders that include this resource.';
+      Text001@1001 : TextConst 'DEU=Mîchten Sie %1 Ñndern?;ENU=Do you want to change %1?';
+      ResSetup@1002 : Record 314;
+      Res@1003 : Record 156;
+      ResCapacityEntry@1004 : Record 160;
+      CommentLine@1006 : Record 97;
+      ResCost@1007 : Record 202;
+      ResPrice@1008 : Record 201;
+      SalesOrderLine@1009 : Record 37;
+      ExtTextHeader@1010 : Record 279;
+      PostCode@1011 : Record 225;
+      GenProdPostingGrp@1012 : Record 251;
+      ResSkill@1016 : Record 5956;
+      ResLoc@1017 : Record 5952;
+      ResServZone@1018 : Record 5958;
+      ResUnitMeasure@1020 : Record 205;
+      PlanningLine@1005 : Record 1003;
+      NoSeriesMgt@1013 : Codeunit 396;
+      MoveEntries@1014 : Codeunit 361;
+      DimMgt@1015 : Codeunit 408;
+      Text002@1019 : TextConst 'DEU=Sie kînnen %1 nicht Ñndern, da fÅr diese Ressource Posten vorhanden sind.;ENU=You cannot change %1 because there are ledger entries for this resource.';
+      Text003@1021 : TextConst 'DEU=Sie kînnen %1 %2 nicht lîschen, da noch mindestens eine ausstehende Verkaufsreklamation fÅr diese Ressource vorhanden ist.;ENU=You cannot delete %1 %2 because there are one or more outstanding Sales Return Orders that include this resource.';
+      Text004@1022 : TextConst 'DEU=Bevor Sie Online Map verwenden kînnen, mÅssen Sie die Felder des Fensters ''Online Map-Einrichtung'' ausfÅllen.\Informationen hierzu finden Sie in der Hilfe zum Einrichten von Online Map.;ENU=Before you can use Online Map, you must fill in the Online Map Setup window.\See Setting Up Online Map in Help.';
+
+    PROCEDURE AssistEdit@2(OldRes@1000 : Record 156) : Boolean;
+    BEGIN
+      WITH Res DO BEGIN
+        Res := Rec;
+        ResSetup.GET;
+        ResSetup.TESTFIELD("Resource Nos.");
+        IF NoSeriesMgt.SelectSeries(ResSetup."Resource Nos.",OldRes."No. Series","No. Series") THEN BEGIN
+          ResSetup.GET;
+          ResSetup.TESTFIELD("Resource Nos.");
+          NoSeriesMgt.SetSeries("No.");
+          Rec := Res;
+          EXIT(TRUE);
+        END;
+      END;
+    END;
+
+    PROCEDURE ValidateShortcutDimCode@29(FieldNumber@1000 : Integer;VAR ShortcutDimCode@1001 : Code[20]);
+    BEGIN
+      DimMgt.ValidateDimValueCode(FieldNumber,ShortcutDimCode);
+      DimMgt.SaveDefaultDim(DATABASE::Resource,"No.",FieldNumber,ShortcutDimCode);
+      MODIFY;
+    END;
+
+    PROCEDURE DisplayMap@7();
+    VAR
+      MapPoint@1001 : Record 800;
+      MapMgt@1000 : Codeunit 802;
+    BEGIN
+      IF MapPoint.FIND('-') THEN
+        MapMgt.MakeSelection(DATABASE::Resource,GETPOSITION)
+      ELSE
+        MESSAGE(Text004);
+    END;
+
+    BEGIN
+    END.
+  }
+}
+

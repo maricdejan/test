@@ -1,0 +1,120 @@
+OBJECT Page 5005356 Phys. Invt. Recording Subform
+{
+  OBJECT-PROPERTIES
+  {
+    Date=01.10.04;
+    Time=12:00:00;
+    Version List=NAVDACH4.00;
+  }
+  PROPERTIES
+  {
+    CaptionML=[DEU=Zeilen;
+               ENU=Lines];
+    MultipleNewLines=Yes;
+    SourceTable=Table5005353;
+    DelayedInsert=Yes;
+    PageType=ListPart;
+    AutoSplitKey=Yes;
+    ActionList=ACTIONS
+    {
+      { 1900000004;0 ;ActionContainer;
+                      ActionContainerType=ActionItems }
+      { 1906587504;1 ;ActionGroup;
+                      CaptionML=[DEU=F&unktion;
+                                 ENU=F&unctions] }
+      { 1904489904;2 ;Action    ;
+                      CaptionML=[DEU=Zeile &kopieren;
+                                 ENU=&Copy Line];
+                      OnAction=BEGIN
+                                 //This functionality was copied from page #5005354. Unsupported part was commented. Please check it.
+                                 {CurrPage.Lines.FORM.}
+                                 CopyLine;
+                               END;
+                                }
+    }
+  }
+  CONTROLS
+  {
+    { 1900000001;0;Container;
+                ContainerType=ContentArea }
+
+    { 1140000;1;Group     ;
+                GroupType=Repeater }
+
+    { 1140001;2;Field     ;
+                SourceExpr="Item No." }
+
+    { 1140003;2;Field     ;
+                SourceExpr="Variant Code";
+                Visible=FALSE }
+
+    { 1140005;2;Field     ;
+                SourceExpr=Description }
+
+    { 1140007;2;Field     ;
+                SourceExpr="Description 2";
+                Visible=FALSE }
+
+    { 1140009;2;Field     ;
+                SourceExpr="Location Code" }
+
+    { 1140011;2;Field     ;
+                SourceExpr="Bin Code";
+                Visible=FALSE }
+
+    { 1140013;2;Field     ;
+                SourceExpr="Use Tracking Lines" }
+
+    { 1140015;2;Field     ;
+                SourceExpr="Serial No." }
+
+    { 1140017;2;Field     ;
+                SourceExpr="Lot No." }
+
+    { 1140019;2;Field     ;
+                SourceExpr="Unit of Measure";
+                Visible=FALSE }
+
+    { 1140021;2;Field     ;
+                SourceExpr="Unit of Measure Code" }
+
+    { 1140023;2;Field     ;
+                SourceExpr=Quantity }
+
+    { 1140025;2;Field     ;
+                SourceExpr="Quantity (Base)";
+                Visible=FALSE }
+
+    { 1140027;2;Field     ;
+                SourceExpr=Recorded }
+
+    { 1140029;2;Field     ;
+                SourceExpr="Date Recorded";
+                Visible=FALSE }
+
+    { 1140031;2;Field     ;
+                SourceExpr="Time Recorded";
+                Visible=FALSE }
+
+    { 1140033;2;Field     ;
+                SourceExpr="Person Recorded";
+                Visible=FALSE }
+
+  }
+  CODE
+  {
+    VAR
+      CopyPhysInvtRecLine@1140000 : Report 5005363;
+
+    PROCEDURE CopyLine@1140000();
+    BEGIN
+      CopyPhysInvtRecLine.SetPhysInvtRecordingLine(Rec);
+      CopyPhysInvtRecLine.RUNMODAL;
+      CLEAR(CopyPhysInvtRecLine);
+    END;
+
+    BEGIN
+    END.
+  }
+}
+

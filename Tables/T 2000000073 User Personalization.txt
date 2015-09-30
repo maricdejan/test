@@ -1,0 +1,50 @@
+OBJECT Table 2000000073 User Personalization
+{
+  OBJECT-PROPERTIES
+  {
+    Date=11.12.10;
+    Time=12:00:00;
+    Version List=;
+  }
+  PROPERTIES
+  {
+    DataPerCompany=No;
+    CaptionML=[DEU=Benutzeranpassung;
+               ENU=User Personalization];
+  }
+  FIELDS
+  {
+    { 3   ;   ;User SID            ;Text119       ;TableRelation="Windows Login".SID;
+                                                   TestTableRelation=No;
+                                                   CaptionML=[DEU=Benutzer-SID;
+                                                              ENU=User SID] }
+    { 6   ;   ;User ID             ;Text132       ;FieldClass=FlowField;
+                                                   CalcFormula=Lookup("SID - Account ID".ID WHERE (SID=FIELD(User SID)));
+                                                   CaptionML=[DEU=Benutzer-ID;
+                                                              ENU=User ID] }
+    { 9   ;   ;Profile ID          ;Code30        ;TableRelation=Profile."Profile ID";
+                                                   CaptionML=[DEU=Profil-ID;
+                                                              ENU=Profile ID] }
+    { 12  ;   ;Language ID         ;Integer       ;CaptionML=[DEU=Sprach-ID;
+                                                              ENU=Language ID] }
+    { 15  ;   ;Company             ;Text30        ;TableRelation=Company.Name;
+                                                   CaptionML=[DEU=Mandant;
+                                                              ENU=Company] }
+  }
+  KEYS
+  {
+    {    ;User SID                                ;Clustered=Yes }
+    {    ;Profile ID                               }
+    {    ;Company                                  }
+  }
+  FIELDGROUPS
+  {
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

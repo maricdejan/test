@@ -1,0 +1,81 @@
+OBJECT Table 99000776 Production BOM Comment Line
+{
+  OBJECT-PROPERTIES
+  {
+    Date=05.11.08;
+    Time=12:00:00;
+    Version List=NAVW16.00;
+  }
+  PROPERTIES
+  {
+    CaptionML=[DEU=Fert.-StÅcklistenbemerk.-Zeile;
+               ENU=Production BOM Comment Line];
+    LookupFormID=Form99000797;
+    DrillDownFormID=Form99000797;
+  }
+  FIELDS
+  {
+    { 1   ;   ;Production BOM No.  ;Code20        ;TableRelation="Production BOM Header";
+                                                   CaptionML=[DEU=Fert.-StÅcklistennr.;
+                                                              ENU=Production BOM No.];
+                                                   NotBlank=Yes }
+    { 2   ;   ;BOM Line No.        ;Integer       ;TableRelation="Production BOM Line"."Line No." WHERE (Production BOM No.=FIELD(Production BOM No.));
+                                                   CaptionML=[DEU=StÅcklistenzeilennr.;
+                                                              ENU=BOM Line No.];
+                                                   NotBlank=Yes }
+    { 3   ;   ;Line No.            ;Integer       ;CaptionML=[DEU=Zeilennr.;
+                                                              ENU=Line No.] }
+    { 4   ;   ;Version Code        ;Code10        ;TableRelation="Production BOM Version"."Version Code" WHERE (Production BOM No.=FIELD(Production BOM No.),
+                                                                                                                Version Code=FIELD(Version Code));
+                                                   CaptionML=[DEU=Versionscode;
+                                                              ENU=Version Code] }
+    { 10  ;   ;Date                ;Date          ;CaptionML=[DEU=Datum;
+                                                              ENU=Date] }
+    { 12  ;   ;Comment             ;Text80        ;CaptionML=[DEU=Bemerkung;
+                                                              ENU=Comment] }
+    { 13  ;   ;Code                ;Code10        ;CaptionML=[DEU=Code;
+                                                              ENU=Code] }
+  }
+  KEYS
+  {
+    {    ;Production BOM No.,BOM Line No.,Version Code,Line No.;
+                                                   Clustered=Yes }
+  }
+  FIELDGROUPS
+  {
+  }
+  CODE
+  {
+
+    PROCEDURE SetUpNewLine@1();
+    VAR
+      ProdBOMComment@1000 : Record 99000776;
+    BEGIN
+      ProdBOMComment.SETRANGE("Production BOM No.","Production BOM No.");
+      ProdBOMComment.SETRANGE("Version Code","Version Code");
+      ProdBOMComment.SETRANGE("BOM Line No.","BOM Line No.");
+      ProdBOMComment.SETRANGE(Date,WORKDATE);
+      IF NOT ProdBOMComment.FIND('-') THEN
+        Date := WORKDATE;
+    END;
+
+    PROCEDURE Caption@2() : Text[100];
+    VAR
+      ProdBOMHeader@1000 : Record 99000771;
+    BEGIN
+      IF GETFILTERS = '' THEN
+        EXIT('');
+
+      IF NOT ProdBOMHeader.GET("Production BOM No.") THEN
+        EXIT('');
+
+      EXIT(
+        STRSUBSTNO('%1 %2 %3',
+          "Production BOM No.",ProdBOMHeader.Description,"BOM Line No."));
+    END;
+
+    BEGIN
+    END.
+  }
+}
+

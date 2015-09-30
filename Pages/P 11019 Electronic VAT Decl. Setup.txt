@@ -1,0 +1,71 @@
+OBJECT Page 11019 Electronic VAT Decl. Setup
+{
+  OBJECT-PROPERTIES
+  {
+    Date=12.01.06;
+    Time=12:00:00;
+    Version List=NAVDACH4.00.02;
+  }
+  PROPERTIES
+  {
+    CaptionML=[DEU=Elektronische Umsatzsteuererkl„rung - Einrichtung;
+               ENU=Electronic VAT Decl. Setup];
+    InsertAllowed=No;
+    DeleteAllowed=No;
+    SourceTable=Table11013;
+    PageType=Card;
+    OnOpenPage=BEGIN
+                 RESET;
+                 IF NOT GET THEN BEGIN
+                   INIT;
+                   INSERT;
+                 END;
+               END;
+
+    ActionList=ACTIONS
+    {
+      { 1900000003;0 ;ActionContainer;
+                      ActionContainerType=RelatedInformation }
+      { 1140010 ;1   ;ActionGroup;
+                      CaptionML=[DEU=&Zertifikate;
+                                 ENU=&Certificates] }
+      { 1140011 ;2   ;Action    ;
+                      CaptionML=[DEU=&Zertifikate;
+                                 ENU=&Certificates];
+                      RunObject=Page 11020 }
+    }
+  }
+  CONTROLS
+  {
+    { 1900000001;0;Container;
+                ContainerType=ContentArea }
+
+    { 1140000;1;Group     ;
+                CaptionML=[DEU=Allgemein;
+                           ENU=General] }
+
+    { 1140001;2;Field     ;
+                SourceExpr="Use Authentication" }
+
+    { 1902768601;1;Group  ;
+                CaptionML=[DEU=Kommunikation;
+                           ENU=Communication] }
+
+    { 1140003;2;Field     ;
+                SourceExpr="Use Proxy Server" }
+
+    { 1140005;2;Field     ;
+                SourceExpr="Proxy Server Authent. Required" }
+
+    { 1140007;2;Field     ;
+                SourceExpr="Proxy Server IP-Address/Port" }
+
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

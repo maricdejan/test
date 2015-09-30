@@ -1,0 +1,54 @@
+OBJECT Table 8610 Setup Questionnaire
+{
+  OBJECT-PROPERTIES
+  {
+    Date=05.11.08;
+    Time=12:00:00;
+    Version List=NAVW16.00;
+  }
+  PROPERTIES
+  {
+    OnDelete=VAR
+               QuestionArea@1001 : Record 8611;
+               Question@1000 : Record 8612;
+             BEGIN
+               QuestionArea.RESET;
+               QuestionArea.SETRANGE("Questionnaire Code",Code);
+               QuestionArea.DELETEALL;
+               Question.RESET;
+               Question.SETRANGE("Questionnaire Code",Code);
+               Question.DELETEALL;
+             END;
+
+    OnRename=BEGIN
+               ERROR(Text001);
+             END;
+
+    CaptionML=[DEU=Fragebogen einrichten;
+               ENU=Setup Questionnaire];
+  }
+  FIELDS
+  {
+    { 1   ;   ;Code                ;Code10        ;CaptionML=[DEU=Code;
+                                                              ENU=Code];
+                                                   NotBlank=Yes }
+    { 2   ;   ;Description         ;Text30        ;CaptionML=[DEU=Beschreibung;
+                                                              ENU=Description] }
+  }
+  KEYS
+  {
+    {    ;Code                                    ;Clustered=Yes }
+  }
+  FIELDGROUPS
+  {
+  }
+  CODE
+  {
+    VAR
+      Text001@1000 : TextConst 'DEU=Sie k”nnen einen Einrichtungsfragebogen nicht umbenennen.;ENU=You cannot rename a Setup Questionnaire.';
+
+    BEGIN
+    END.
+  }
+}
+

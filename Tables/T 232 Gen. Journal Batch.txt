@@ -1,0 +1,186 @@
+OBJECT Table 232 Gen. Journal Batch
+{
+  OBJECT-PROPERTIES
+  {
+    Date=05.11.08;
+    Time=12:00:00;
+    Version List=NAVW16.00;
+  }
+  PROPERTIES
+  {
+    DataCaptionFields=Name,Description;
+    OnInsert=BEGIN
+               LOCKTABLE;
+               GenJnlTemplate.GET("Journal Template Name");
+               IF GenJnlTemplate."Copy VAT Setup to Jnl. Lines" = FALSE THEN
+                 "Copy VAT Setup to Jnl. Lines" := FALSE;
+             END;
+
+    OnDelete=BEGIN
+               GenJnlAlloc.SETRANGE("Journal Template Name","Journal Template Name");
+               GenJnlAlloc.SETRANGE("Journal Batch Name",Name);
+               GenJnlAlloc.DELETEALL;
+               GenJnlLine.SETRANGE("Journal Template Name","Journal Template Name");
+               GenJnlLine.SETRANGE("Journal Batch Name",Name);
+               GenJnlLine.DELETEALL(TRUE);
+             END;
+
+    CaptionML=[DEU=Fibu Buch.-Blattname;
+               ENU=Gen. Journal Batch];
+    LookupFormID=Form251;
+  }
+  FIELDS
+  {
+    { 1   ;   ;Journal Template Name;Code10       ;TableRelation="Gen. Journal Template";
+                                                   CaptionML=[DEU=Buch.-Blattvorlagenname;
+                                                              ENU=Journal Template Name];
+                                                   NotBlank=Yes }
+    { 2   ;   ;Name                ;Code10        ;CaptionML=[DEU=Name;
+                                                              ENU=Name];
+                                                   NotBlank=Yes }
+    { 3   ;   ;Description         ;Text50        ;CaptionML=[DEU=Beschreibung;
+                                                              ENU=Description] }
+    { 4   ;   ;Reason Code         ;Code10        ;TableRelation="Reason Code";
+                                                   OnValidate=BEGIN
+                                                                IF "Reason Code" <> xRec."Reason Code" THEN BEGIN
+                                                                  ModifyLines(FIELDNO("Reason Code"));
+                                                                  MODIFY;
+                                                                END;
+                                                              END;
+
+                                                   CaptionML=[DEU=Ursachencode;
+                                                              ENU=Reason Code] }
+    { 5   ;   ;Bal. Account Type   ;Option        ;OnValidate=BEGIN
+                                                                "Bal. Account No." := '';
+                                                              END;
+
+                                                   CaptionML=[DEU=Gegenkontoart;
+                                                              ENU=Bal. Account Type];
+                                                   OptionCaptionML=[DEU=Sachkonto,Debitor,Kreditor,Bankkonto,Anlage;
+                                                                    ENU=G/L Account,Customer,Vendor,Bank Account,Fixed Asset];
+                                                   OptionString=G/L Account,Customer,Vendor,Bank Account,Fixed Asset }
+    { 6   ;   ;Bal. Account No.    ;Code20        ;TableRelation=IF (Bal. Account Type=CONST(G/L Account)) "G/L Account"
+                                                                 ELSE IF (Bal. Account Type=CONST(Customer)) Customer
+                                                                 ELSE IF (Bal. Account Type=CONST(Vendor)) Vendor
+                                                                 ELSE IF (Bal. Account Type=CONST(Bank Account)) "Bank Account"
+                                                                 ELSE IF (Bal. Account Type=CONST(Fixed Asset)) "Fixed Asset";
+                                                   OnValidate=BEGIN
+                                                                IF "Bal. Account Type" = "Bal. Account Type"::"G/L Account" THEN
+                                                                  CheckGLAcc("Bal. Account No.");
+                                                              END;
+
+                                                   CaptionML=[DEU=Gegenkontonr.;
+                                                              ENU=Bal. Account No.] }
+    { 7   ;   ;No. Series          ;Code10        ;TableRelation="No. Series";
+                                                   OnValidate=BEGIN
+                                                                IF "No. Series" <> '' THEN BEGIN
+                                                                  GenJnlTemplate.GET("Journal Template Name");
+                                                                  IF GenJnlTemplate.Recurring THEN
+                                                                    ERROR(
+                                                                      Text000,
+                                                                      FIELDCAPTION("Posting No. Series"));
+                                                                  IF "No. Series" = "Posting No. Series" THEN
+                                                                    VALIDATE("Posting No. Series",'');
+                                                                END;
+                                                              END;
+
+                                                   CaptionML=[DEU=Nummernserie;
+                                                              ENU=No. Series] }
+    { 8   ;   ;Posting No. Series  ;Code10        ;TableRelation="No. Series";
+                                                   OnValidate=BEGIN
+                                                                IF ("Posting No. Series" = "No. Series") AND ("Posting No. Series" <> '') THEN
+                                                                  FIELDERROR("Posting No. Series",STRSUBSTNO(Text001,"Posting No. Series"));
+                                                                ModifyLines(FIELDNO("Posting No. Series"));
+                                                                MODIFY;
+                                                              END;
+
+                                                   CaptionML=[DEU=Buchungsnr.-Serie;
+                                                              ENU=Posting No. Series] }
+    { 9   ;   ;Copy VAT Setup to Jnl. Lines;Boolean;
+                                                   InitValue=Yes;
+                                                   CaptionML=[DEU=MwSt.Einr. in Bu.Bl.Zeile kop.;
+                                                              ENU=Copy VAT Setup to Jnl. Lines] }
+    { 10  ;   ;Allow VAT Difference;Boolean       ;OnValidate=BEGIN
+                                                                IF "Allow VAT Difference" THEN BEGIN
+                                                                  GenJnlTemplate.GET("Journal Template Name");
+                                                                  GenJnlTemplate.TESTFIELD("Allow VAT Difference",TRUE);
+                                                                END;
+                                                              END;
+
+                                                   CaptionML=[DEU=MwSt.-Differenz zulassen;
+                                                              ENU=Allow VAT Difference] }
+    { 21  ;   ;Template Type       ;Option        ;FieldClass=FlowField;
+                                                   CalcFormula=Lookup("Gen. Journal Template".Type WHERE (Name=FIELD(Journal Template Name)));
+                                                   CaptionML=[DEU=Vorlagenart;
+                                                              ENU=Template Type];
+                                                   OptionCaptionML=[DEU=Allgemein,VerkÑufe,EinkÑufe,ZahlungseingÑnge,ZahlungsausgÑnge,Anlagen,Intercompany,Projekte;
+                                                                    ENU=General,Sales,Purchases,Cash Receipts,Payments,Assets,Intercompany,Jobs];
+                                                   OptionString=General,Sales,Purchases,Cash Receipts,Payments,Assets,Intercompany,Jobs;
+                                                   Editable=No }
+    { 22  ;   ;Recurring           ;Boolean       ;FieldClass=FlowField;
+                                                   CalcFormula=Lookup("Gen. Journal Template".Recurring WHERE (Name=FIELD(Journal Template Name)));
+                                                   CaptionML=[DEU=Wiederkehrend;
+                                                              ENU=Recurring];
+                                                   Editable=No }
+  }
+  KEYS
+  {
+    {    ;Journal Template Name,Name              ;Clustered=Yes }
+  }
+  FIELDGROUPS
+  {
+  }
+  CODE
+  {
+    VAR
+      Text000@1000 : TextConst 'DEU=Nur das %1 Feld kann in wiederk. Buch.-Bl. ausgefÅllt werden.;ENU=Only the %1 field can be filled in on recurring journals.';
+      Text001@1001 : TextConst 'DEU=darf nicht %1 sein;ENU=must not be %1';
+      GenJnlTemplate@1002 : Record 80;
+      GenJnlLine@1003 : Record 81;
+      GenJnlAlloc@1004 : Record 221;
+
+    PROCEDURE SetupNewBatch@1();
+    BEGIN
+      GenJnlTemplate.GET("Journal Template Name");
+      "Bal. Account Type" := GenJnlTemplate."Bal. Account Type";
+      "Bal. Account No." := GenJnlTemplate."Bal. Account No.";
+      "No. Series" := GenJnlTemplate."No. Series";
+      "Posting No. Series" := GenJnlTemplate."Posting No. Series";
+      "Reason Code" := GenJnlTemplate."Reason Code";
+      "Copy VAT Setup to Jnl. Lines" := GenJnlTemplate."Copy VAT Setup to Jnl. Lines";
+      "Allow VAT Difference" := GenJnlTemplate."Allow VAT Difference";
+    END;
+
+    LOCAL PROCEDURE CheckGLAcc@2(AccNo@1000 : Code[20]);
+    VAR
+      GLAcc@1001 : Record 15;
+    BEGIN
+      IF AccNo <> '' THEN BEGIN
+        GLAcc.GET(AccNo);
+        GLAcc.CheckGLAcc;
+        GLAcc.TESTFIELD("Direct Posting",TRUE);
+      END;
+    END;
+
+    PROCEDURE ModifyLines@3(i@1000 : Integer);
+    BEGIN
+      GenJnlLine.LOCKTABLE;
+      GenJnlLine.SETRANGE("Journal Template Name","Journal Template Name");
+      GenJnlLine.SETRANGE("Journal Batch Name",Name);
+      IF GenJnlLine.FIND('-') THEN
+        REPEAT
+          CASE i OF
+            FIELDNO("Reason Code"):
+              GenJnlLine.VALIDATE("Reason Code","Reason Code");
+            FIELDNO("Posting No. Series"):
+              GenJnlLine.VALIDATE("Posting No. Series","Posting No. Series");
+          END;
+          GenJnlLine.MODIFY(TRUE);
+        UNTIL GenJnlLine.NEXT = 0;
+    END;
+
+    BEGIN
+    END.
+  }
+}
+

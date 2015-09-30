@@ -1,0 +1,113 @@
+OBJECT Page 5309 Outlook Synch. Table Fields
+{
+  OBJECT-PROPERTIES
+  {
+    Date=14.08.09;
+    Time=12:00:00;
+    Version List=NAVW16.00.01;
+  }
+  PROPERTIES
+  {
+    Editable=No;
+    CaptionML=[DEU=Outlook-Synch.-Tabellenfelder;
+               ENU=Outlook Synch. Table Fields];
+    InsertAllowed=No;
+    DeleteAllowed=No;
+    SourceTable=Table2000000041;
+    DataCaptionExpr=GetFormCaption;
+    SourceTableView=SORTING(TableNo,No.)
+                    WHERE(Enabled=CONST(Yes),
+                          Class=FILTER(<>FlowFilter));
+    PageType=List;
+  }
+  CONTROLS
+  {
+    { 1900000001;0;Container;
+                ContainerType=ContentArea }
+
+    { 1   ;1   ;Group     ;
+                GroupType=Repeater }
+
+    { 2   ;2   ;Field     ;
+                CaptionML=[DEU=Tabellennr.;
+                           ENU=Table No.];
+                SourceExpr=TableNo;
+                Visible=FALSE }
+
+    { 6   ;2   ;Field     ;
+                CaptionML=[DEU=Tabellenname;
+                           ENU=Table Name];
+                SourceExpr=TableName;
+                Visible=FALSE }
+
+    { 4   ;2   ;Field     ;
+                CaptionML=[DEU=Nr.;
+                           ENU=No.];
+                SourceExpr="No." }
+
+    { 20  ;2   ;Field     ;
+                CaptionML=[DEU=Feldbezeichnung;
+                           ENU=Field Caption];
+                SourceExpr="Field Caption" }
+
+    { 8   ;2   ;Field     ;
+                CaptionML=[DEU=Feldname;
+                           ENU=Field Name];
+                SourceExpr=FieldName;
+                Visible=FALSE }
+
+    { 14  ;2   ;Field     ;
+                CaptionML=[DEU=Klasse;
+                           ENU=Class];
+                SourceExpr=Class }
+
+    { 18  ;2   ;Field     ;
+                CaptionML=[DEU=Datentyp;
+                           ENU=Type Name];
+                SourceExpr="Type Name" }
+
+    { 22  ;2   ;Field     ;
+                CaptionML=[DEU=Relationstabellennr.;
+                           ENU=Relation Table No.];
+                SourceExpr=RelationTableNo;
+                Visible=FALSE }
+
+    { 24  ;2   ;Field     ;
+                CaptionML=[DEU=Relationsfeldnr.;
+                           ENU=Relation Field No.];
+                SourceExpr=RelationFieldNo;
+                Visible=FALSE }
+
+    { 26  ;2   ;Field     ;
+                CaptionML=[DEU=SQL-Datentyp;
+                           ENU=SQL Data Type];
+                SourceExpr=SQLDataType;
+                Visible=FALSE }
+
+    { 1900000007;0;Container;
+                ContainerType=FactBoxArea }
+
+    { 1900383207;1;Part   ;
+                Visible=FALSE;
+                PartType=System;
+                SystemPartID=RecordLinks }
+
+    { 1905767507;1;Part   ;
+                Visible=FALSE;
+                PartType=System;
+                SystemPartID=Notes }
+
+  }
+  CODE
+  {
+
+    PROCEDURE GetFormCaption@2() : Text[80];
+    BEGIN
+      EXIT(STRSUBSTNO('%1 %2',TableNo,TableName));
+    END;
+
+    BEGIN
+    END.
+  }
+}
+

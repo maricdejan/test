@@ -1,0 +1,65 @@
+OBJECT Page 11002 GDPdU Definition Groups
+{
+  OBJECT-PROPERTIES
+  {
+    Date=13.02.07;
+    Time=12:00:00;
+    Version List=NAVDACH5.00;
+  }
+  PROPERTIES
+  {
+    CaptionML=[DEU=GDPdU Definitionsgruppen;
+               ENU=GDPdU Definition Groups];
+    SourceTable=Table11002;
+    PageType=List;
+    ActionList=ACTIONS
+    {
+      { 1900000003;0 ;ActionContainer;
+                      ActionContainerType=RelatedInformation }
+      { 1140008 ;1   ;ActionGroup;
+                      CaptionML=[DEU=Defini&tionsgruppe;
+                                 ENU=&Definition Group] }
+      { 1140009 ;2   ;Action    ;
+                      CaptionML=[DEU=Da&tensatzdefinitionen;
+                                 ENU=Re&cord Definitions];
+                      RunObject=Page 11003;
+                      RunFormView=SORTING(Definition Group Code,Record Code);
+                      RunFormLink=Definition Group Code=FIELD(Code) }
+      { 1900000004;0 ;ActionContainer;
+                      ActionContainerType=ActionItems }
+      { 1140010 ;1   ;Action    ;
+                      CaptionML=[DEU=Daten&satzdefinition erstellen;
+                                 ENU=&Create Record Definition];
+                      Promoted=Yes;
+                      PromotedCategory=Process;
+                      OnAction=VAR
+                                 TempDefGroup@1140000 : TEMPORARY Record 11002;
+                               BEGIN
+                                 TempDefGroup.CreateDefGroupFromDefGroup(Rec)
+                               END;
+                                }
+    }
+  }
+  CONTROLS
+  {
+    { 1900000001;0;Container;
+                ContainerType=ContentArea }
+
+    { 1140000;1;Group     ;
+                GroupType=Repeater }
+
+    { 1140001;2;Field     ;
+                SourceExpr=Code }
+
+    { 1140003;2;Field     ;
+                SourceExpr=Description }
+
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

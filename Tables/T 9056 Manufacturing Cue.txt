@@ -1,0 +1,95 @@
+OBJECT Table 9056 Manufacturing Cue
+{
+  OBJECT-PROPERTIES
+  {
+    Date=05.11.08;
+    Time=12:00:00;
+    Version List=NAVW16.00;
+  }
+  PROPERTIES
+  {
+    CaptionML=[DEU=Produktionsstapel;
+               ENU=Manufacturing Cue];
+  }
+  FIELDS
+  {
+    { 1   ;   ;Primary Key         ;Code10        ;CaptionML=[DEU=PrimÑrschlÅssel;
+                                                              ENU=Primary Key] }
+    { 2   ;   ;Planned Prod. Orders - All;Integer ;FieldClass=FlowField;
+                                                   CalcFormula=Count("Production Order" WHERE (Status=CONST(Planned)));
+                                                   CaptionML=[DEU=Geplante FertigungsauftrÑge - Alle;
+                                                              ENU=Planned Production Orders - All] }
+    { 3   ;   ;Firm Plan. Prod. Orders - All;Integer;
+                                                   FieldClass=FlowField;
+                                                   CalcFormula=Count("Production Order" WHERE (Status=CONST(Firm Planned)));
+                                                   CaptionML=[DEU=Fest geplante FertigungsauftrÑge - Alle;
+                                                              ENU=Firm Planned Production Orders - All] }
+    { 4   ;   ;Released Prod. Orders - All;Integer;FieldClass=FlowField;
+                                                   CalcFormula=Count("Production Order" WHERE (Status=CONST(Released)));
+                                                   CaptionML=[DEU=Freigegebene FertigungsauftrÑge - Alle;
+                                                              ENU=Released Production Orders - All] }
+    { 5   ;   ;Prod. BOMs under Development;Integer;
+                                                   FieldClass=FlowField;
+                                                   CalcFormula=Count("Production BOM Header" WHERE (Status=CONST(Under Development)));
+                                                   CaptionML=[DEU=Fert.-StÅcklisten in Entwicklung;
+                                                              ENU=Prod. BOMs under Development] }
+    { 6   ;   ;Routings under Development;Integer ;FieldClass=FlowField;
+                                                   CalcFormula=Count("Routing Header" WHERE (Status=CONST(Under Development)));
+                                                   CaptionML=[DEU=ArbeitsplÑne in Entwicklung;
+                                                              ENU=Routings under Development] }
+    { 7   ;   ;Purchase Orders     ;Integer       ;FieldClass=FlowField;
+                                                   CalcFormula=Count("Purchase Header" WHERE (Document Type=CONST(Order),
+                                                                                              Assigned User ID=FIELD(User ID Filter)));
+                                                   CaptionML=[DEU=Bestellungen;
+                                                              ENU=Purchase Orders] }
+    { 8   ;   ;Prod. Orders Routings-in Queue;Integer;
+                                                   FieldClass=FlowField;
+                                                   CalcFormula=Count("Prod. Order Routing Line" WHERE (Starting Date=FIELD(Date Filter),
+                                                                                                       Routing Status=FILTER(' '|Planned)));
+                                                   CaptionML=[DEU=FA-ArbeitsplÑne - in Warteschlange;
+                                                              ENU=Prod. Orders Routings - in Queue] }
+    { 9   ;   ;Prod. Orders Routings-in Prog.;Integer;
+                                                   FieldClass=FlowField;
+                                                   CalcFormula=Count("Prod. Order Routing Line" WHERE (Ending Date=FIELD(Date Filter),
+                                                                                                       Routing Status=FILTER(In Progress)));
+                                                   CaptionML=[DEU=FA-ArbeitsplÑne - in Bearbeitung;
+                                                              ENU=Prod. Orders Routings - in Progress] }
+    { 10  ;   ;Invt. Picks to Production;Integer  ;FieldClass=FlowField;
+                                                   CalcFormula=Count("Warehouse Activity Header" WHERE (Type=CONST(Pick),
+                                                                                                        Source Document=CONST(Prod. Consumption)));
+                                                   CaptionML=[DEU=Lagerkommissionierungen an Fertigung;
+                                                              ENU=Invt. Picks to Production] }
+    { 11  ;   ;Invt. Put-aways from Prod.;Integer ;FieldClass=FlowField;
+                                                   CalcFormula=Count("Warehouse Activity Header" WHERE (Type=CONST(Pick),
+                                                                                                        Source Document=CONST(Prod. Output)));
+                                                   CaptionML=[DEU=Lagereinlagerungen aus Fertigung;
+                                                              ENU=Invt. Put-aways from Prod.] }
+    { 12  ;   ;Released Prod. Orders - Today;Integer;
+                                                   FieldClass=FlowField;
+                                                   CalcFormula=Count("Production Order" WHERE (Status=CONST(Released),
+                                                                                               Starting Date=FIELD(Date Filter)));
+                                                   CaptionML=[DEU=Freigegebene FA - Heute;
+                                                              ENU=Released Prod. Orders - Today] }
+    { 20  ;   ;Date Filter         ;Date          ;FieldClass=FlowFilter;
+                                                   CaptionML=[DEU=Datumsfilter;
+                                                              ENU=Date Filter];
+                                                   Editable=No }
+    { 21  ;   ;User ID Filter      ;Code20        ;FieldClass=FlowFilter;
+                                                   CaptionML=[DEU=Benutzer-ID-Filter;
+                                                              ENU=User ID Filter] }
+  }
+  KEYS
+  {
+    {    ;Primary Key                             ;Clustered=Yes }
+  }
+  FIELDGROUPS
+  {
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

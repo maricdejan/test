@@ -1,0 +1,44 @@
+OBJECT Table 2000000079 Object Tracking
+{
+  OBJECT-PROPERTIES
+  {
+    Date=11.12.10;
+    Time=12:00:00;
+    Version List=;
+  }
+  PROPERTIES
+  {
+    DataPerCompany=No;
+    CaptionML=[DEU=Objektverfolgung;
+               ENU=Object Tracking];
+  }
+  FIELDS
+  {
+    { 3   ;   ;Object Type         ;Option        ;CaptionML=[DEU=Objektart;
+                                                              ENU=Object Type];
+                                                   OptionCaptionML=[DEU=TableData,Tabelle,Formular,Bericht,Dataport,Codeunit,XMLport,MenuSuite,Seite,,System,FieldNumber;
+                                                                    ENU=TableData,Table,Form,Report,Dataport,Codeunit,XMLport,MenuSuite,Page,,System,FieldNumber];
+                                                   OptionString=TableData,Table,Form,Report,Dataport,Codeunit,XMLport,MenuSuite,Page,,System,FieldNumber }
+    { 6   ;   ;Object ID           ;Integer       ;CaptionML=[DEU=Objekt-ID;
+                                                              ENU=Object ID] }
+    { 9   ;   ;Object Key          ;GUID          ;CaptionML=[DEU=ObjektschlÅssel;
+                                                              ENU=Object Key] }
+    { 12  ;   ;Object Timestamp    ;BigInteger    ;CaptionML=[DEU=Objektzeitstempel;
+                                                              ENU=Object Timestamp] }
+  }
+  KEYS
+  {
+    {    ;Object Type,Object ID                   ;Clustered=Yes }
+    {    ;Object Timestamp                         }
+  }
+  FIELDGROUPS
+  {
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

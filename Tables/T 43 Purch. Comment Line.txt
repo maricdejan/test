@@ -1,0 +1,63 @@
+OBJECT Table 43 Purch. Comment Line
+{
+  OBJECT-PROPERTIES
+  {
+    Date=05.11.08;
+    Time=12:00:00;
+    Version List=NAVW16.00;
+  }
+  PROPERTIES
+  {
+    CaptionML=[DEU=Einkaufsbemerkungszeile;
+               ENU=Purch. Comment Line];
+    LookupFormID=Form68;
+    DrillDownFormID=Form68;
+  }
+  FIELDS
+  {
+    { 1   ;   ;Document Type       ;Option        ;CaptionML=[DEU=Belegart;
+                                                              ENU=Document Type];
+                                                   OptionCaptionML=[DEU=Anfrage,Bestellung,Rechnung,Gutschrift,Rahmenbestellung,Reklamation,Lieferung,Geb. Rechnung,Geb. Gutschrift,Geb. RÅcklieferung;
+                                                                    ENU=Quote,Order,Invoice,Credit Memo,Blanket Order,Return Order,Receipt,Posted Invoice,Posted Credit Memo,Posted Return Shipment];
+                                                   OptionString=Quote,Order,Invoice,Credit Memo,Blanket Order,Return Order,Receipt,Posted Invoice,Posted Credit Memo,Posted Return Shipment }
+    { 2   ;   ;No.                 ;Code20        ;CaptionML=[DEU=Nr.;
+                                                              ENU=No.] }
+    { 3   ;   ;Line No.            ;Integer       ;CaptionML=[DEU=Zeilennr.;
+                                                              ENU=Line No.] }
+    { 4   ;   ;Date                ;Date          ;CaptionML=[DEU=Datum;
+                                                              ENU=Date] }
+    { 5   ;   ;Code                ;Code10        ;CaptionML=[DEU=Code;
+                                                              ENU=Code] }
+    { 6   ;   ;Comment             ;Text80        ;CaptionML=[DEU=Bemerkung;
+                                                              ENU=Comment] }
+    { 7   ;   ;Document Line No.   ;Integer       ;CaptionML=[DEU=Belegzeilennr.;
+                                                              ENU=Document Line No.] }
+  }
+  KEYS
+  {
+    {    ;Document Type,No.,Document Line No.,Line No.;
+                                                   Clustered=Yes }
+  }
+  FIELDGROUPS
+  {
+  }
+  CODE
+  {
+
+    PROCEDURE SetUpNewLine@1();
+    VAR
+      PurchCommentLine@1000 : Record 43;
+    BEGIN
+      PurchCommentLine.SETRANGE("Document Type","Document Type");
+      PurchCommentLine.SETRANGE("No.","No.");
+      PurchCommentLine.SETRANGE("Document Line No.","Document Line No.");
+      PurchCommentLine.SETRANGE(Date,WORKDATE);
+      IF NOT PurchCommentLine.FIND('-') THEN
+        Date := WORKDATE;
+    END;
+
+    BEGIN
+    END.
+  }
+}
+

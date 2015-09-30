@@ -1,0 +1,83 @@
+OBJECT Codeunit 5005353 Phys. Invt. Rec. Reopen
+{
+  OBJECT-PROPERTIES
+  {
+    Date=05.11.08;
+    Time=12:00:00;
+    Version List=NAVDACH6.00;
+  }
+  PROPERTIES
+  {
+    TableNo=5005352;
+    OnRun=BEGIN
+            PhysInvtRecordingHeader.COPY(Rec);
+            Code;
+            Rec := PhysInvtRecordingHeader;
+          END;
+
+  }
+  CODE
+  {
+    VAR
+      Text1140000@1140000 : TextConst 'DEU=Zeilen zur Bearb. ”ffnen     #2######;ENU=Reopening lines              #2######';
+      PhysInvtRecordingHeader@1140001 : Record 5005352;
+      PhysInvtRecordingLine@1140002 : Record 5005353;
+      PhysInvtOrderHeader@1140003 : Record 5005350;
+      PhysInvtOrderLine@1140004 : Record 5005351;
+      Window@1140005 : Dialog;
+      LineCount@1140006 : Integer;
+      NextOrderLineNo@1140007 : Integer;
+      RecordedWithoutOrder@1140008 : Boolean;
+
+    PROCEDURE Code@1140000();
+    BEGIN
+      WITH PhysInvtRecordingHeader DO BEGIN
+        TESTFIELD("Order No.");
+        TESTFIELD("Recording No.");
+        TESTFIELD(Status, Status::Finished);
+
+        Window.OPEN(
+          '#1#################################\\' +
+          Text1140000);
+        Window.UPDATE(1,STRSUBSTNO('%1 %2',TABLECAPTION, "Order No."));
+
+        PhysInvtOrderHeader.GET("Order No.");
+        PhysInvtOrderHeader.TESTFIELD(Status, PhysInvtOrderHeader.Status::Open);
+
+        LineCount := 0;
+        PhysInvtRecordingLine.RESET;
+        PhysInvtRecordingLine.SETRANGE("Order No.", "Order No.");
+        PhysInvtRecordingLine.SETRANGE("Recording No.", "Recording No.");
+        IF PhysInvtRecordingLine.FIND('-') THEN
+          REPEAT
+            LineCount := LineCount + 1;
+            Window.UPDATE(2, LineCount);
+
+            IF PhysInvtRecordingLine."Item No." <> '' THEN BEGIN
+              PhysInvtOrderLine.GET(
+                PhysInvtRecordingLine."Order No.", PhysInvtRecordingLine."Order Line No.");
+
+              PhysInvtOrderLine."Qty. Recorded (Base)" :=
+                PhysInvtOrderLine."Qty. Recorded (Base)" - PhysInvtRecordingLine."Quantity (Base)";
+              PhysInvtOrderLine."No. Finished Rec.-Lines" :=
+                PhysInvtOrderLine."No. Finished Rec.-Lines" - 1;
+              PhysInvtOrderLine."In Recording Lines" := PhysInvtOrderLine."No. Finished Rec.-Lines" <> 0;
+              PhysInvtOrderLine.MODIFY;
+
+              PhysInvtRecordingLine."Order Line No." := 0;
+              PhysInvtRecordingLine."Recorded without Order" := FALSE;
+              PhysInvtRecordingLine.MODIFY;
+            END;
+          UNTIL PhysInvtRecordingLine.NEXT = 0;
+
+
+        Status := Status::Open;
+        MODIFY;
+      END;
+    END;
+
+    BEGIN
+    END.
+  }
+}
+

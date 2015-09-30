@@ -1,0 +1,53 @@
+OBJECT Page 11103 IFB Periodaccounts
+{
+  OBJECT-PROPERTIES
+  {
+    Date=05.11.08;
+    Time=12:00:00;
+    Version List=NAVDACH6.00;
+  }
+  PROPERTIES
+  {
+    CaptionML=[DEU=IFB-Periodenkonten;
+               ENU=IFB Periodaccounts];
+    SourceTable=Table11102;
+    PageType=List;
+  }
+  CONTROLS
+  {
+    { 1900000001;0;Container;
+                ContainerType=ContentArea }
+
+    { 1   ;1   ;Group     ;
+                GroupType=Repeater }
+
+    { 2   ;2   ;Field     ;
+                SourceExpr="FA Posting Group" }
+
+    { 4   ;2   ;Field     ;
+                SourceExpr="IFB Ratecode" }
+
+    { 6   ;2   ;Field     ;
+                SourceExpr="Starting Date" }
+
+    { 8   ;2   ;Field     ;
+                SourceExpr="IFB Account" }
+
+    { 13  ;2   ;Field     ;
+                SourceExpr="Dotation IFB Account" }
+
+    { 15  ;2   ;Field     ;
+                SourceExpr="Diss. against capital Account" }
+
+    { 17  ;2   ;Field     ;
+                SourceExpr="Diss. against Gain Account" }
+
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

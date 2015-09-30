@@ -1,0 +1,181 @@
+OBJECT Page 5774 Warehouse Activity List
+{
+  OBJECT-PROPERTIES
+  {
+    Date=14.08.09;
+    Time=12:00:00;
+    Version List=NAVW16.00.01;
+  }
+  PROPERTIES
+  {
+    Editable=No;
+    CaptionML=[DEU=LageraktivitÑtenÅbersicht;
+               ENU=Warehouse Activity List];
+    SourceTable=Table5766;
+    PageType=List;
+    OnOpenPage=BEGIN
+                 ErrorIfUserIsNotWhseEmployee;
+               END;
+
+    OnFindRecord=BEGIN
+                   EXIT(FindFirstAllowedRec(Which));
+                 END;
+
+    OnNextRecord=BEGIN
+                   EXIT(FindNextAllowedRec(Steps));
+                 END;
+
+    OnAfterGetRecord=BEGIN
+                       OnAfterGetCurrRecord;
+                     END;
+
+    OnNewRecord=BEGIN
+                  OnAfterGetCurrRecord;
+                END;
+
+    ActionList=ACTIONS
+    {
+      { 1900000003;0 ;ActionContainer;
+                      ActionContainerType=RelatedInformation }
+      { 17      ;1   ;ActionGroup;
+                      CaptionML=[DEU=&Zeile;
+                                 ENU=&Line] }
+      { 18      ;2   ;Action    ;
+                      ShortCutKey=Shift+F7;
+                      CaptionML=[DEU=Karte;
+                                 ENU=Card];
+                      Image=EditLines;
+                      OnAction=BEGIN
+                                 CASE Type OF
+                                   Type::"Put-away":
+                                     FORM.RUN(FORM::"Warehouse Put-away",Rec);
+                                   Type::Pick:
+                                     FORM.RUN(FORM::"Warehouse Pick",Rec);
+                                   Type::Movement:
+                                     FORM.RUN(FORM::"Warehouse Movement",Rec);
+                                   Type::"Invt. Put-away":
+                                     FORM.RUN(FORM::"Inventory Put-away",Rec);
+                                   Type::"Invt. Pick":
+                                     FORM.RUN(FORM::"Inventory Pick",Rec);
+                                 END;
+                               END;
+                                }
+      { 1900000006;0 ;ActionContainer;
+                      ActionContainerType=Reports }
+      { 1903358206;1 ;Action    ;
+                      CaptionML=[DEU=Einlagerungsliste;
+                                 ENU=Put-away List];
+                      RunObject=Report 5751;
+                      Promoted=No;
+                      PromotedCategory=Report }
+      { 1905733806;1 ;Action    ;
+                      CaptionML=[DEU=Kommissionierliste;
+                                 ENU=Picking List];
+                      RunObject=Report 5752;
+                      Promoted=No;
+                      PromotedCategory=Report }
+      { 1906867906;1 ;Action    ;
+                      CaptionML=[DEU=LagerplatzumlagerungsÅbersicht;
+                                 ENU=Warehouse Movement List];
+                      RunObject=Report 7301;
+                      Promoted=No;
+                      PromotedCategory=Report }
+    }
+  }
+  CONTROLS
+  {
+    { 1900000001;0;Container;
+                ContainerType=ContentArea }
+
+    { 1   ;1   ;Group     ;
+                GroupType=Repeater }
+
+    { 2   ;2   ;Field     ;
+                SourceExpr="No." }
+
+    { 25  ;2   ;Field     ;
+                SourceExpr="Source Document" }
+
+    { 27  ;2   ;Field     ;
+                SourceExpr="Source No." }
+
+    { 15  ;2   ;Field     ;
+                SourceExpr=Type;
+                Visible=FALSE }
+
+    { 4   ;2   ;Field     ;
+                SourceExpr="Location Code" }
+
+    { 8   ;2   ;Field     ;
+                SourceExpr="Destination Type" }
+
+    { 10  ;2   ;Field     ;
+                SourceExpr="Destination No." }
+
+    { 23  ;2   ;Field     ;
+                SourceExpr="External Document No." }
+
+    { 19  ;2   ;Field     ;
+                SourceExpr="Assigned User ID";
+                Visible=FALSE }
+
+    { 21  ;2   ;Field     ;
+                SourceExpr="No. of Lines" }
+
+    { 6   ;2   ;Field     ;
+                SourceExpr="Sorting Method";
+                Visible=FALSE }
+
+    { 1900000007;0;Container;
+                ContainerType=FactBoxArea }
+
+    { 1900383207;1;Part   ;
+                Visible=FALSE;
+                PartType=System;
+                SystemPartID=RecordLinks }
+
+    { 1905767507;1;Part   ;
+                Visible=FALSE;
+                PartType=System;
+                SystemPartID=Notes }
+
+  }
+  CODE
+  {
+    VAR
+      Text000@1002 : TextConst 'DEU=EinlagerungsÅbersicht;ENU=Warehouse Put-away List';
+      Text001@1003 : TextConst 'DEU=KommissionierungsÅbersicht;ENU=Warehouse Pick List';
+      Text002@1004 : TextConst 'DEU=LagerplatzumlagerungsÅbersicht;ENU=Warehouse Movement List';
+      Text003@1005 : TextConst 'DEU=LageraktivitÑtenÅbersicht;ENU=Warehouse Activity List';
+      Text004@1006 : TextConst 'DEU=LagereinlagerungsÅbersicht;ENU=Inventory Put-away List';
+      Text005@1007 : TextConst 'DEU=LagerkommissionierÅbersicht;ENU=Inventory Pick List';
+
+    LOCAL PROCEDURE FormCaption@1() : Text[250];
+    BEGIN
+      CASE Type OF
+        Type::"Put-away":
+          EXIT(Text000);
+        Type::Pick:
+          EXIT(Text001);
+        Type::Movement:
+          EXIT(Text002);
+        Type::"Invt. Put-away":
+          EXIT(Text004);
+        Type::"Invt. Pick":
+          EXIT(Text005);
+        ELSE
+          EXIT(Text003);
+      END;
+    END;
+
+    LOCAL PROCEDURE OnAfterGetCurrRecord@19077479();
+    BEGIN
+      xRec := Rec;
+      CurrPage.CAPTION := FormCaption;
+    END;
+
+    BEGIN
+    END.
+  }
+}
+

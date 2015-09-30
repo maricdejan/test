@@ -1,0 +1,185 @@
+OBJECT Table 11004 GDPdU Record Def. Table
+{
+  OBJECT-PROPERTIES
+  {
+    Date=13.02.07;
+    Time=12:00:00;
+    Version List=NAVDACH5.00;
+  }
+  PROPERTIES
+  {
+    DataCaptionFields=Definition Group Code,Record Code;
+    OnInsert=BEGIN
+               TESTFIELD("Table No.");
+               CheckTableID;
+
+               GDPdURecDefTable.RESET;
+               GDPdURecDefTable.COPY(Rec);
+               IF GDPdURecDefTable.FIND('<') THEN BEGIN
+                 Indentation := GDPdURecDefTable.Indentation + 1;
+                 "Relation To Table No." := GDPdURecDefTable."Table No.";
+               END ELSE
+                 Indentation := 0;
+             END;
+
+    OnModify=BEGIN
+               CheckTableID;
+             END;
+
+    OnDelete=BEGIN
+               GDPdURecDefField.RESET;
+               GDPdURecDefField.SETRANGE("Definition Group Code","Definition Group Code");
+               GDPdURecDefField.SETRANGE("Record Code","Record Code");
+               GDPdURecDefField.SETRANGE("Table No.","Table No.");
+               GDPdURecDefField.DELETEALL;
+
+               GDPdUTableRelation.RESET;
+               GDPdUTableRelation.SETRANGE("Definition Group Code","Definition Group Code");
+               GDPdUTableRelation.SETRANGE("Record Code","Record Code");
+               GDPdUTableRelation.SETRANGE("To Table No.","Table No.");
+               GDPdUTableRelation.DELETEALL;
+
+               GDPdURecDefTable.RESET;
+               GDPdURecDefTable.SETRANGE("Definition Group Code","Definition Group Code");
+               GDPdURecDefTable.SETRANGE("Record Code","Record Code");
+               GDPdURecDefTable.SETRANGE("Relation To Table No.","Table No.");
+               IF GDPdURecDefTable.FIND('-') THEN
+                 REPEAT
+                   GDPdURecDefTable.DELETE(TRUE);
+                 UNTIL GDPdURecDefTable.NEXT = 0;
+             END;
+
+    OnRename=BEGIN
+               ERROR(Text1140000,TABLECAPTION);
+             END;
+
+    CaptionML=[DEU=GDPdU Datens.-Def. Tabelle;
+               ENU=GDPdU Record Def. Table];
+  }
+  FIELDS
+  {
+    { 1   ;   ;Definition Group Code;Code10       ;TableRelation="GDPdU Definition Group";
+                                                   CaptionML=[DEU=Definitionsgruppencode;
+                                                              ENU=Definition Group Code];
+                                                   NotBlank=Yes }
+    { 2   ;   ;Record Code         ;Code10        ;TableRelation="GDPdU Record Code";
+                                                   CaptionML=[DEU=Datensatzcode;
+                                                              ENU=Record Code];
+                                                   NotBlank=Yes }
+    { 3   ;   ;Table No.           ;Integer       ;TableRelation=Object.ID WHERE (Type=CONST(Table));
+                                                   OnValidate=BEGIN
+                                                                CheckTableID;
+                                                                CALCFIELDS("Table Name");
+                                                              END;
+
+                                                   CaptionML=[DEU=Tabellennr.;
+                                                              ENU=Table No.];
+                                                   NotBlank=Yes;
+                                                   BlankZero=Yes }
+    { 4   ;   ;Table Name          ;Text80        ;FieldClass=FlowField;
+                                                   CalcFormula=Lookup(AllObjWithCaption."Object Caption" WHERE (Object Type=CONST(Table),
+                                                                                                                Object ID=FIELD(Table No.)));
+                                                   CaptionML=[DEU=Tabellenname;
+                                                              ENU=Table Name];
+                                                   Editable=No }
+    { 5   ;   ;Indentation         ;Integer       ;OnValidate=VAR
+                                                                GDPdUMgt@1140000 : Codeunit 11000;
+                                                              BEGIN
+                                                                IF Indentation <> xRec.Indentation THEN
+                                                                  GDPdUMgt.UpdateDefTableIndentation(Rec,xRec.Indentation);
+                                                              END;
+
+                                                   CaptionML=[DEU=EinrÅckung;
+                                                              ENU=Indentation];
+                                                   MinValue=0 }
+    { 6   ;   ;Fields Selected     ;Boolean       ;FieldClass=FlowField;
+                                                   CalcFormula=Exist("GDPdU Record Def. Field" WHERE (Definition Group Code=FIELD(Definition Group Code),
+                                                                                                      Record Code=FIELD(Record Code),
+                                                                                                      Table No.=FIELD(Table No.)));
+                                                   CaptionML=[DEU=Felder ausgewÑhlt;
+                                                              ENU=Fields Selected];
+                                                   Editable=No }
+    { 7   ;   ;Relation To Table No.;Integer      ;TableRelation=Object.ID WHERE (Type=CONST(Table));
+                                                   CaptionML=[DEU=Relation zu Tabellennr.;
+                                                              ENU=Relation To Table No.];
+                                                   BlankZero=Yes }
+    { 8   ;   ;Relation To Table Name;Text80      ;FieldClass=FlowField;
+                                                   CalcFormula=Lookup(AllObjWithCaption."Object Caption" WHERE (Object Type=CONST(Table),
+                                                                                                                Object ID=FIELD(Relation To Table No.)));
+                                                   CaptionML=[DEU=Relation zu Tabellenname;
+                                                              ENU=Relation To Table Name];
+                                                   Editable=No }
+    { 9   ;   ;GDPdU Period Field No.;Integer     ;TableRelation=Field.No. WHERE (TableNo=FIELD(Table No.),
+                                                                                  Type=FILTER(Date),
+                                                                                  Class=CONST(Normal));
+                                                   OnValidate=BEGIN
+                                                                CALCFIELDS("GDPdU Period Field Name");
+                                                              END;
+
+                                                   OnLookup=VAR
+                                                              Field@1140000 : Record 2000000041;
+                                                            BEGIN
+                                                              TESTFIELD("Table No.");
+                                                              Field.SETRANGE(TableNo,"Table No.");
+                                                              Field.SETRANGE(Type,Field.Type::Date);
+                                                              Field.SETRANGE(Class,Field.Class::Normal);
+                                                              IF FORM.RUNMODAL(FORM::"GDPdU Field List",Field) = ACTION::LookupOK THEN
+                                                                VALIDATE("GDPdU Period Field No.",Field."No.");
+                                                            END;
+
+                                                   CaptionML=[DEU=GDPdU Periodenfeldnr.;
+                                                              ENU=GDPdU Period Field No.];
+                                                   BlankZero=Yes }
+    { 10  ;   ;GDPdU Period Field Name;Text80     ;FieldClass=FlowField;
+                                                   CalcFormula=Lookup(Field."Field Caption" WHERE (TableNo=FIELD(Table No.),
+                                                                                                   No.=FIELD(GDPdU Period Field No.)));
+                                                   CaptionML=[DEU=GDPdU Periodenfeldname;
+                                                              ENU=GDPdU Period Field Name];
+                                                   Editable=No }
+    { 11  ;   ;Table Relation Defined;Boolean     ;FieldClass=FlowField;
+                                                   CalcFormula=Exist("GDPdU Table Relation" WHERE (Definition Group Code=FIELD(Definition Group Code),
+                                                                                                   Record Code=FIELD(Record Code),
+                                                                                                   To Table No.=FIELD(Table No.),
+                                                                                                   From Table No.=FIELD(Relation To Table No.)));
+                                                   CaptionML=[DEU=Tabellenrelation definiert;
+                                                              ENU=Table Relation Defined];
+                                                   Editable=No }
+    { 12  ;   ;Line No.            ;Integer       ;CaptionML=[DEU=Zeilennr.;
+                                                              ENU=Line No.] }
+    { 13  ;   ;Export File Name    ;Text250       ;CaptionML=[DEU=Exportdateiname;
+                                                              ENU=Export File Name] }
+  }
+  KEYS
+  {
+    {    ;Definition Group Code,Record Code,Line No.;
+                                                   Clustered=Yes }
+    {    ;Definition Group Code,Record Code,Relation To Table No.,Table No. }
+  }
+  FIELDGROUPS
+  {
+  }
+  CODE
+  {
+    VAR
+      Text1140000@1140000 : TextConst 'DEU=Sie dÅrfen eine %1 nicht umbenennen.;ENU=You must not rename a %1.';
+      Text1140001@1140001 : TextConst 'DEU=Der Datensatz existiert bereits.;ENU=The record already exists.';
+      GDPdURecDefTable@1140002 : Record 11004;
+      GDPdURecDefField@1140003 : Record 11005;
+      GDPdUTableRelation@1140004 : Record 11006;
+
+    LOCAL PROCEDURE CheckTableID@1140000();
+    BEGIN
+      GDPdURecDefTable.RESET;
+      GDPdURecDefTable.SETRANGE("Definition Group Code","Definition Group Code");
+      GDPdURecDefTable.SETRANGE("Record Code","Record Code");
+      GDPdURecDefTable.SETRANGE("Table No.","Table No.");
+      GDPdURecDefTable.SETFILTER("Line No.",'<>%1',"Line No.");
+      IF GDPdURecDefTable.FIND('-') THEN
+        ERROR(Text1140001);
+    END;
+
+    BEGIN
+    END.
+  }
+}
+

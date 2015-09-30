@@ -1,0 +1,43 @@
+OBJECT Table 291 Shipping Agent
+{
+  OBJECT-PROPERTIES
+  {
+    Date=05.11.08;
+    Time=12:00:00;
+    Version List=NAVW16.00;
+  }
+  PROPERTIES
+  {
+    DataCaptionFields=Code,Name;
+    CaptionML=[DEU=Zusteller;
+               ENU=Shipping Agent];
+    LookupFormID=Form428;
+    DrillDownFormID=Form428;
+  }
+  FIELDS
+  {
+    { 1   ;   ;Code                ;Code10        ;CaptionML=[DEU=Code;
+                                                              ENU=Code];
+                                                   NotBlank=Yes }
+    { 2   ;   ;Name                ;Text50        ;CaptionML=[DEU=Name;
+                                                              ENU=Name] }
+    { 3   ;   ;Internet Address    ;Text250       ;CaptionML=[DEU=Internet Adresse;
+                                                              ENU=Internet Address] }
+    { 4   ;   ;Account No.         ;Text30        ;CaptionML=[DEU=Kontonr.;
+                                                              ENU=Account No.] }
+  }
+  KEYS
+  {
+    {    ;Code                                    ;Clustered=Yes }
+  }
+  FIELDGROUPS
+  {
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

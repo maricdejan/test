@@ -1,0 +1,38 @@
+OBJECT Table 5181 Unsynchronized Category
+{
+  OBJECT-PROPERTIES
+  {
+    Date=05.11.08;
+    Time=12:00:00;
+    Version List=NAVW16.00;
+  }
+  PROPERTIES
+  {
+    CaptionML=[DEU=Nicht synchronisierte Kategorie;
+               ENU=Unsynchronized Category];
+    DrillDownFormID=Form5181;
+  }
+  FIELDS
+  {
+    { 1   ;   ;Salesperson Code    ;Code10        ;TableRelation=Salesperson/Purchaser;
+                                                   CaptionML=[DEU=Verk„ufercode;
+                                                              ENU=Salesperson Code] }
+    { 2   ;   ;Category            ;Text50        ;CaptionML=[DEU=Kategorie;
+                                                              ENU=Category];
+                                                   NotBlank=Yes }
+  }
+  KEYS
+  {
+    {    ;Salesperson Code,Category               ;Clustered=Yes }
+  }
+  FIELDGROUPS
+  {
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

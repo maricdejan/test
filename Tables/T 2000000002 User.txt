@@ -1,0 +1,41 @@
+OBJECT Table 2000000002 User
+{
+  OBJECT-PROPERTIES
+  {
+    Date=25.05.05;
+    Time=12:00:00;
+    Version List=;
+  }
+  PROPERTIES
+  {
+    DataPerCompany=No;
+    DataCaptionFields=User ID,Name;
+    CaptionML=[DEU=Benutzer;
+               ENU=User];
+  }
+  FIELDS
+  {
+    { 1   ;   ;User ID             ;Code20        ;CaptionML=[DEU=Benutzer-ID;
+                                                              ENU=User ID] }
+    { 2   ;   ;Password            ;Text30        ;CaptionML=[DEU=Kennwort;
+                                                              ENU=Password] }
+    { 3   ;   ;Name                ;Text30        ;CaptionML=[DEU=Name;
+                                                              ENU=Name] }
+    { 4   ;   ;Expiration Date     ;Date          ;CaptionML=[DEU=Ablaufdatum;
+                                                              ENU=Expiration Date] }
+  }
+  KEYS
+  {
+    {    ;User ID                                 ;Clustered=Yes }
+  }
+  FIELDGROUPS
+  {
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

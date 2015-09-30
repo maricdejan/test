@@ -1,0 +1,125 @@
+OBJECT Table 5765 Warehouse Request
+{
+  OBJECT-PROPERTIES
+  {
+    Date=05.11.08;
+    Time=12:00:00;
+    Version List=NAVW16.00;
+  }
+  PROPERTIES
+  {
+    CaptionML=[DEU=Erwartete Lagerbewegung;
+               ENU=Warehouse Request];
+    LookupFormID=Form5793;
+  }
+  FIELDS
+  {
+    { 1   ;   ;Source Type         ;Integer       ;CaptionML=[DEU=Herkunftsart;
+                                                              ENU=Source Type];
+                                                   Editable=No }
+    { 2   ;   ;Source Subtype      ;Option        ;CaptionML=[DEU=Herkunftsunterart;
+                                                              ENU=Source Subtype];
+                                                   OptionCaptionML=[DEU=0,1,2,3,4,5,6,7,8,9,10;
+                                                                    ENU=0,1,2,3,4,5,6,7,8,9,10];
+                                                   OptionString=0,1,2,3,4,5,6,7,8,9,10;
+                                                   Editable=No }
+    { 3   ;   ;Source No.          ;Code20        ;TableRelation=IF (Source Document=CONST(Sales Order)) "Sales Header".No. WHERE (Document Type=CONST(Order),
+                                                                                                                                   No.=FIELD(Source No.))
+                                                                                                                                   ELSE IF (Source Document=CONST(Sales Return Order)) "Sales Header".No. WHERE (Document Type=CONST(Return Order),
+                                                                                                                                                                                                                 No.=FIELD(Source No.))
+                                                                                                                                                                                                                 ELSE IF (Source Document=CONST(Purchase Order)) "Purchase Header".No. WHERE (Document Type=CONST(Order),
+                                                                                                                                                                                                                                                                                              No.=FIELD(Source No.))
+                                                                                                                                                                                                                                                                                              ELSE IF (Source Document=CONST(Purchase Return Order)) "Purchase Header".No. WHERE (Document Type=CONST(Return Order),
+                                                                                                                                                                                                                                                                                                                                                                                  No.=FIELD(Source No.))
+                                                                                                                                                                                                                                                                                                                                                                                  ELSE IF (Source Type=CONST(5741)) "Transfer Header".No. WHERE (No.=FIELD(Source No.))
+                                                                                                                                                                                                                                                                                                                                                                                  ELSE IF (Source Type=FILTER(5406|5407)) "Production Order".No. WHERE (Status=CONST(Released),
+                                                                                                                                                                                                                                                                                                                                                                                                                                                        No.=FIELD(Source No.));
+                                                   CaptionML=[DEU=Herkunftsnr.;
+                                                              ENU=Source No.];
+                                                   Editable=No }
+    { 4   ;   ;Source Document     ;Option        ;CaptionML=[DEU=Herkunftsbeleg;
+                                                              ENU=Source Document];
+                                                   OptionCaptionML=[DEU=,Auftrag,,,Verkaufsreklamation,Bestellung,,,Einkaufsreklamation,Eingeh. Umlagerung,Ausgeh. Umlagerung,FA-Verbrauch,FA-Istmeldung;
+                                                                    ENU=,Sales Order,,,Sales Return Order,Purchase Order,,,Purchase Return Order,Inbound Transfer,Outbound Transfer,Prod. Consumption,Prod. Output];
+                                                   OptionString=,Sales Order,,,Sales Return Order,Purchase Order,,,Purchase Return Order,Inbound Transfer,Outbound Transfer,Prod. Consumption,Prod. Output;
+                                                   Editable=No }
+    { 5   ;   ;Document Status     ;Option        ;CaptionML=[DEU=Belegstatus;
+                                                              ENU=Document Status];
+                                                   OptionCaptionML=[DEU=Offen,Freigegeben;
+                                                                    ENU=Open,Released];
+                                                   OptionString=Open,Released;
+                                                   Editable=No }
+    { 6   ;   ;Location Code       ;Code10        ;TableRelation=Location;
+                                                   CaptionML=[DEU=Lagerortcode;
+                                                              ENU=Location Code];
+                                                   Editable=No }
+    { 7   ;   ;Shipment Method Code;Code10        ;TableRelation="Shipment Method";
+                                                   CaptionML=[DEU=Lieferbedingungscode;
+                                                              ENU=Shipment Method Code];
+                                                   Editable=No }
+    { 8   ;   ;Shipping Agent Code ;Code10        ;TableRelation="Shipping Agent";
+                                                   CaptionML=[DEU=Zustellercode;
+                                                              ENU=Shipping Agent Code];
+                                                   Editable=No }
+    { 10  ;   ;Shipping Advice     ;Option        ;CaptionML=[DEU=Versandanweisung;
+                                                              ENU=Shipping Advice];
+                                                   OptionCaptionML=[DEU=Teillieferung,Komplettlieferung;
+                                                                    ENU=Partial,Complete];
+                                                   OptionString=Partial,Complete;
+                                                   Editable=No }
+    { 11  ;   ;Destination Type    ;Option        ;CaptionML=[DEU=FÅr Art;
+                                                              ENU=Destination Type];
+                                                   OptionCaptionML=[DEU=" ,Debitor,Kreditor,Lagerort,Artikel,Fert.-Familie,Auftrag";
+                                                                    ENU=" ,Customer,Vendor,Location,Item,Family,Sales Order"];
+                                                   OptionString=[ ,Customer,Vendor,Location,Item,Family,Sales Order] }
+    { 12  ;   ;Destination No.     ;Code20        ;TableRelation=IF (Destination Type=CONST(Vendor)) Vendor
+                                                                 ELSE IF (Destination Type=CONST(Customer)) Customer
+                                                                 ELSE IF (Destination Type=CONST(Location)) Location
+                                                                 ELSE IF (Destination Type=CONST(Item)) Item
+                                                                 ELSE IF (Destination Type=CONST(Family)) Family
+                                                                 ELSE IF (Destination Type=CONST(Sales Order)) "Sales Header".No. WHERE (Document Type=CONST(Order));
+                                                   CaptionML=[DEU=FÅr Nr.;
+                                                              ENU=Destination No.] }
+    { 13  ;   ;External Document No.;Code20       ;CaptionML=[DEU=Externe Belegnummer;
+                                                              ENU=External Document No.] }
+    { 14  ;   ;Expected Receipt Date;Date         ;CaptionML=[DEU=Erwartetes Wareneingangsdatum;
+                                                              ENU=Expected Receipt Date] }
+    { 15  ;   ;Shipment Date       ;Date          ;CaptionML=[DEU=Warenausg.-Datum;
+                                                              ENU=Shipment Date] }
+    { 19  ;   ;Type                ;Option        ;CaptionML=[DEU=Art;
+                                                              ENU=Type];
+                                                   OptionCaptionML=[DEU=Eingehend,Ausgehend;
+                                                                    ENU=Inbound,Outbound];
+                                                   OptionString=Inbound,Outbound;
+                                                   Editable=No }
+    { 20  ;   ;Put-away / Pick No. ;Code20        ;FieldClass=FlowField;
+                                                   CalcFormula=Lookup("Warehouse Activity Line".No. WHERE (Source Type=FIELD(Source Type),
+                                                                                                           Source Subtype=FIELD(Source Subtype),
+                                                                                                           Source No.=FIELD(Source No.),
+                                                                                                           Location Code=FIELD(Location Code)));
+                                                   CaptionML=[DEU=Lag.-Einlag.-/-Komm.-Nr.;
+                                                              ENU=Put-away / Pick No.];
+                                                   Editable=No }
+    { 41  ;   ;Completely Handled  ;Boolean       ;CaptionML=[DEU=VollstÑndig durchgefÅhrt;
+                                                              ENU=Completely Handled] }
+  }
+  KEYS
+  {
+    {    ;Type,Location Code,Source Type,Source Subtype,Source No.;
+                                                   Clustered=Yes }
+    {    ;Source Type,Source Subtype,Source No.   ;MaintainSQLIndex=No }
+    {    ;Source Type,Source No.                  ;MaintainSQLIndex=No }
+    {    ;Source Document,Source No.              ;MaintainSQLIndex=No }
+    {    ;Type,Location Code,Completely Handled,Document Status,Expected Receipt Date,Shipment Date,Source Document,Source No. }
+  }
+  FIELDGROUPS
+  {
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

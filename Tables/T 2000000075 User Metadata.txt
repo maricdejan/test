@@ -1,0 +1,57 @@
+OBJECT Table 2000000075 User Metadata
+{
+  OBJECT-PROPERTIES
+  {
+    Date=11.12.10;
+    Time=12:00:00;
+    Version List=;
+  }
+  PROPERTIES
+  {
+    DataPerCompany=No;
+    CaptionML=[DEU=Benutzermetadaten;
+               ENU=User Metadata];
+  }
+  FIELDS
+  {
+    { 3   ;   ;User SID            ;Text119       ;TableRelation="Windows Login".SID;
+                                                   TestTableRelation=No;
+                                                   CaptionML=[DEU=Benutzer-SID;
+                                                              ENU=User SID] }
+    { 6   ;   ;User ID             ;Text132       ;FieldClass=FlowField;
+                                                   CalcFormula=Lookup("SID - Account ID".ID WHERE (SID=FIELD(User SID)));
+                                                   CaptionML=[DEU=Benutzer-ID;
+                                                              ENU=User ID] }
+    { 9   ;   ;Page ID             ;Integer       ;TableRelation=AllObj."Object ID" WHERE (Object Type=CONST(Page));
+                                                   CaptionML=[DEU=Seiten-ID;
+                                                              ENU=Page ID] }
+    { 12  ;   ;Description         ;Text250       ;FieldClass=FlowField;
+                                                   CalcFormula=Lookup(AllObjWithCaption."Object Caption" WHERE (Object Type=CONST(Page),
+                                                                                                                Object ID=FIELD(Page ID)));
+                                                   CaptionML=[DEU=Beschreibung;
+                                                              ENU=Description] }
+    { 15  ;   ;Date                ;Date          ;CaptionML=[DEU=Datum;
+                                                              ENU=Date] }
+    { 18  ;   ;Time                ;Time          ;CaptionML=[DEU=Zeit;
+                                                              ENU=Time] }
+    { 21  ;   ;Personalization ID  ;Code40        ;CaptionML=[DEU=Anpassungs-ID;
+                                                              ENU=Personalization ID] }
+    { 24  ;   ;Page Metadata Delta ;BLOB          ;CaptionML=[DEU=Seitenmetadaten - Delta;
+                                                              ENU=Page Metadata Delta] }
+  }
+  KEYS
+  {
+    {    ;User SID,Page ID,Personalization ID     ;Clustered=Yes }
+    {    ;Date                                     }
+  }
+  FIELDGROUPS
+  {
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

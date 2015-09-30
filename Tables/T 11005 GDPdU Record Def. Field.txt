@@ -1,0 +1,88 @@
+OBJECT Table 11005 GDPdU Record Def. Field
+{
+  OBJECT-PROPERTIES
+  {
+    Date=13.02.07;
+    Time=12:00:00;
+    Version List=NAVDACH5.00;
+  }
+  PROPERTIES
+  {
+    DataCaptionFields=Definition Group Code,Record Code;
+    CaptionML=[DEU=GDPdU Datens.-Def. Feld;
+               ENU=GDPdU Record Def. Field];
+  }
+  FIELDS
+  {
+    { 1   ;   ;Definition Group Code;Code10       ;TableRelation="GDPdU Definition Group";
+                                                   CaptionML=[DEU=Definitionsgruppencode;
+                                                              ENU=Definition Group Code];
+                                                   NotBlank=Yes }
+    { 2   ;   ;Record Code         ;Code10        ;TableRelation="GDPdU Record Code";
+                                                   CaptionML=[DEU=Datensatzcode;
+                                                              ENU=Record Code];
+                                                   NotBlank=Yes }
+    { 3   ;   ;Table No.           ;Integer       ;TableRelation=Object.ID WHERE (Type=CONST(Table));
+                                                   CaptionML=[DEU=Tabellennr.;
+                                                              ENU=Table No.];
+                                                   NotBlank=Yes;
+                                                   BlankZero=Yes }
+    { 4   ;   ;Table Name          ;Text80        ;FieldClass=FlowField;
+                                                   CalcFormula=Lookup(AllObjWithCaption."Object Caption" WHERE (Object Type=CONST(Table),
+                                                                                                                Object ID=FIELD(Table No.)));
+                                                   CaptionML=[DEU=Tabellenname;
+                                                              ENU=Table Name];
+                                                   Editable=No }
+    { 5   ;   ;Field No.           ;Integer       ;TableRelation=Field.No. WHERE (TableNo=FIELD(Table No.),
+                                                                                  Type=FILTER(Option|Text|Code|Integer|Decimal|Date|Boolean));
+                                                   CaptionML=[DEU=Feldnr.;
+                                                              ENU=Field No.];
+                                                   NotBlank=Yes;
+                                                   BlankZero=Yes }
+    { 6   ;   ;Field Name          ;Text80        ;FieldClass=FlowField;
+                                                   CalcFormula=Lookup(Field."Field Caption" WHERE (TableNo=FIELD(Table No.),
+                                                                                                   No.=FIELD(Field No.)));
+                                                   CaptionML=[DEU=Feldname;
+                                                              ENU=Field Name];
+                                                   Editable=No }
+    { 7   ;   ;Line No.            ;Integer       ;CaptionML=[DEU=Zeilennr.;
+                                                              ENU=Line No.] }
+    { 8   ;   ;Field Class         ;Option        ;FieldClass=FlowField;
+                                                   CalcFormula=Lookup(Field.Class WHERE (TableNo=FIELD(Table No.),
+                                                                                         No.=FIELD(Field No.)));
+                                                   CaptionML=[DEU=Feldeigenschaft;
+                                                              ENU=Field Class];
+                                                   OptionCaptionML=[DEU=Normal,FlowField,FlowFilter;
+                                                                    ENU=Normal,FlowField,FlowFilter];
+                                                   OptionString=Normal,FlowField,FlowFilter;
+                                                   Editable=No }
+    { 9   ;   ;Datefilter Handling ;Option        ;OnValidate=BEGIN
+                                                                CALCFIELDS("Field Class");
+                                                                IF "Field Class" <> "Field Class"::FlowField THEN
+                                                                  ERROR(Text1140000,FIELDCAPTION("Datefilter Handling"));
+                                                              END;
+
+                                                   CaptionML=[DEU=Behandlung von Datumsfiltern;
+                                                              ENU=Datefilter Handling];
+                                                   OptionCaptionML=[DEU=" ,Startdatum..Enddatum,..Enddatum,..Startdatum";
+                                                                    ENU=" ,Startdate..Enddate,..Enddate,..Startdate"];
+                                                   OptionString=[ ,Startdate..Enddate,..Enddate,..Startdate] }
+  }
+  KEYS
+  {
+    {    ;Definition Group Code,Record Code,Table No.,Line No.;
+                                                   Clustered=Yes }
+  }
+  FIELDGROUPS
+  {
+  }
+  CODE
+  {
+    VAR
+      Text1140000@1140000 : TextConst 'DEU=%1 kann nur fÅr Felder mit der Eigenschaft "FlowField" geÑndert werden.;ENU=The %1 can only be modified for fields of Field Class "FlowField".';
+
+    BEGIN
+    END.
+  }
+}
+

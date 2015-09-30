@@ -1,0 +1,107 @@
+OBJECT Form 26100 Report Selection - Intrastat
+{
+  OBJECT-PROPERTIES
+  {
+    Date=05.11.08;
+    Time=12:00:00;
+    Version List=NAVDACH6.00;
+  }
+  PROPERTIES
+  {
+    Width=9900;
+    Height=8250;
+    CaptionML=[DEU=Berichtsauswahl - Intrastat;
+               ENU=Report Selection - Intrastat];
+    SaveValues=Yes;
+    TableBoxID=1;
+    SourceTable=Table26100;
+    OnOpenForm=BEGIN
+                 SetUsageFilter;
+               END;
+
+    OnNewRecord=BEGIN
+                  NewRecord;
+                END;
+
+  }
+  CONTROLS
+  {
+    { 13  ;TabControl   ;220  ;220  ;9460 ;1430 ;HorzGlue=Both }
+    { 11  ;TextBox      ;3850 ;990  ;2750 ;440  ;ParentControl=13;
+                                                 InPage=0;
+                                                 CaptionML=[DEU=Verwendung;
+                                                            ENU=Usage];
+                                                 OptionCaptionML=[DEU=Ckecklistenbericht,Formular,Diskette erstellen,Diskettenetikett;
+                                                                  ENU=Checklist Report,Form,Make Disk Tax Auth.,Disklabel];
+                                                 OptionString=Checklist Report,Form,Make Disk Tax Auth.,Disklabel;
+                                                 SourceExpr=ReportUsage2;
+                                                 OnValidate=BEGIN
+                                                              SetUsageFilter;
+                                                            END;
+
+                                                 OnAfterValidate=BEGIN
+                                                                   CurrForm.UPDATE;
+                                                                 END;
+                                                                  }
+    { 12  ;Label        ;440  ;990  ;3300 ;440  ;ParentControl=11 }
+    { 1   ;TableBox     ;220  ;1760 ;9460 ;5500 ;HorzGlue=Both;
+                                                 VertGlue=Both }
+    { 2   ;TextBox      ;0    ;0    ;1650 ;0    ;ParentControl=1;
+                                                 InColumn=Yes;
+                                                 SourceExpr=Sequence }
+    { 3   ;Label        ;0    ;0    ;0    ;0    ;ParentControl=2;
+                                                 InColumnHeading=Yes }
+    { 9   ;TextBox      ;0    ;0    ;2200 ;0    ;ParentControl=1;
+                                                 InColumn=Yes;
+                                                 SourceExpr="Report ID";
+                                                 LookupFormID=Objects }
+    { 10  ;Label        ;0    ;0    ;0    ;0    ;ParentControl=9;
+                                                 InColumnHeading=Yes }
+    { 4   ;TextBox      ;0    ;0    ;4400 ;0    ;HorzGlue=Both;
+                                                 ParentControl=1;
+                                                 InColumn=Yes;
+                                                 DrillDown=No;
+                                                 SourceExpr="Report Name";
+                                                 LookupFormID=Objects }
+    { 5   ;Label        ;0    ;0    ;0    ;0    ;ParentControl=4;
+                                                 InColumnHeading=Yes }
+    { 6   ;CommandButton;2640 ;7480 ;2200 ;550  ;HorzGlue=Right;
+                                                 VertGlue=Bottom;
+                                                 Default=Yes;
+                                                 PushAction=LookupOK;
+                                                 InvalidActionAppearance=Hide }
+    { 7   ;CommandButton;5060 ;7480 ;2200 ;550  ;HorzGlue=Right;
+                                                 VertGlue=Bottom;
+                                                 Cancel=Yes;
+                                                 PushAction=LookupCancel;
+                                                 InvalidActionAppearance=Hide }
+    { 8   ;CommandButton;7480 ;7480 ;2200 ;550  ;HorzGlue=Right;
+                                                 VertGlue=Bottom;
+                                                 PushAction=FormHelp }
+  }
+  CODE
+  {
+    VAR
+      ReportUsage2@1000 : 'Checklist,Form,Disk,Disklabel';
+
+    LOCAL PROCEDURE SetUsageFilter@1();
+    BEGIN
+      FILTERGROUP(2);
+      CASE ReportUsage2 OF
+        ReportUsage2::Checklist:
+          SETRANGE(Usage,Usage::"Intrastat Checklist");
+        ReportUsage2::Form:
+          SETRANGE(Usage,Usage::"Intrastat Form");
+        ReportUsage2::Disk:
+          SETRANGE(Usage,Usage::"Intrastat Disk");
+        ReportUsage2::Disklabel:
+          SETRANGE(Usage,Usage::"Intrastat Disklabel");
+      END;
+      FILTERGROUP(0);
+    END;
+
+    BEGIN
+    END.
+  }
+}
+

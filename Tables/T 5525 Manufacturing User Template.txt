@@ -1,0 +1,73 @@
+OBJECT Table 5525 Manufacturing User Template
+{
+  OBJECT-PROPERTIES
+  {
+    Date=05.11.08;
+    Time=12:00:00;
+    Version List=NAVW16.00;
+  }
+  PROPERTIES
+  {
+    CaptionML=[DEU=Produktion Benutzervorlage;
+               ENU=Manufacturing User Template];
+  }
+  FIELDS
+  {
+    { 1   ;   ;User ID             ;Code20        ;TableRelation=User;
+                                                   TestTableRelation=No;
+                                                   CaptionML=[DEU=Benutzer-ID;
+                                                              ENU=User ID] }
+    { 2   ;   ;Create Purchase Order;Option       ;CaptionML=[DEU=Bestellung erstellen;
+                                                              ENU=Create Purchase Order];
+                                                   OptionCaptionML=[DEU=" ,Bestellungen erst.,Bestellungen erst. & drucken,In Best.-Vorschlag kopieren";
+                                                                    ENU=" ,Make Purch. Orders,Make Purch. Orders & Print,Copy to Req. Wksh"];
+                                                   OptionString=[ ,Make Purch. Orders,Make Purch. Orders & Print,Copy to Req. Wksh] }
+    { 3   ;   ;Create Production Order;Option     ;CaptionML=[DEU=Fertigungsauftrag erstellen;
+                                                              ENU=Create Production Order];
+                                                   OptionCaptionML=[DEU=" ,Geplant,Fest geplant,Fest geplant & drucken,In Best.-Vorschlag kopieren";
+                                                                    ENU=" ,Planned,Firm Planned,Firm Planned & Print,Copy to Req. Wksh"];
+                                                   OptionString=[ ,Planned,Firm Planned,Firm Planned & Print,Copy to Req. Wksh] }
+    { 4   ;   ;Create Transfer Order;Option       ;CaptionML=[DEU=Umlagerungsauftrag erstellen;
+                                                              ENU=Create Transfer Order];
+                                                   OptionCaptionML=[DEU=" ,Umlag.-Auftr„ge erstellen,Umlag.-Auftrag erstellen & drucken,In Best.-Vorschlag kopieren";
+                                                                    ENU=" ,Make Trans. Orders,Make Trans. Order & Print,Copy to Req. Wksh"];
+                                                   OptionString=[ ,Make Trans. Orders,Make Trans. Order & Print,Copy to Req. Wksh] }
+    { 11  ;   ;Purchase Req. Wksh. Template;Code10;TableRelation="Req. Wksh. Template";
+                                                   CaptionML=[DEU=Eink.-Bestellvorschlagsvorlage;
+                                                              ENU=Purchase Req. Wksh. Template] }
+    { 12  ;   ;Purchase Wksh. Name ;Code10        ;TableRelation="Requisition Wksh. Name".Name WHERE (Worksheet Template Name=FIELD(Purchase Req. Wksh. Template));
+                                                   CaptionML=[DEU=Eink.-Bestellvorschlagsname;
+                                                              ENU=Purchase Wksh. Name] }
+    { 15  ;   ;Prod. Req. Wksh. Template;Code10   ;TableRelation="Req. Wksh. Template";
+                                                   CaptionML=[DEU=Prod.-Bestellvorschlagsvorlage;
+                                                              ENU=Prod. Req. Wksh. Template] }
+    { 16  ;   ;Prod. Wksh. Name    ;Code10        ;TableRelation="Requisition Wksh. Name".Name WHERE (Worksheet Template Name=FIELD(Prod. Req. Wksh. Template));
+                                                   CaptionML=[DEU=Prod.-Bestellvorschlagsname;
+                                                              ENU=Prod. Wksh. Name] }
+    { 19  ;   ;Transfer Req. Wksh. Template;Code10;TableRelation="Req. Wksh. Template";
+                                                   CaptionML=[DEU=Umlag.-Bestellvorschlagsvorlage;
+                                                              ENU=Transfer Req. Wksh. Template] }
+    { 20  ;   ;Transfer Wksh. Name ;Code10        ;TableRelation="Requisition Wksh. Name".Name WHERE (Worksheet Template Name=FIELD(Transfer Req. Wksh. Template));
+                                                   CaptionML=[DEU=Umlag.-Bestellvorschlagsname;
+                                                              ENU=Transfer Wksh. Name] }
+    { 21  ;   ;Make Orders         ;Option        ;CaptionML=[DEU=Auftr„ge erstellen;
+                                                              ENU=Make Orders];
+                                                   OptionCaptionML=[DEU=die aktive Zeile,die aktive Bestellung,Alle Zeilen;
+                                                                    ENU=the Active Line,the Active Order,All Lines];
+                                                   OptionString=the Active Line,the Active Order,All Lines }
+  }
+  KEYS
+  {
+    {    ;User ID                                 ;Clustered=Yes }
+  }
+  FIELDGROUPS
+  {
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

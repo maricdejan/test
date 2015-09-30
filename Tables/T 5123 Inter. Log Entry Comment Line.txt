@@ -1,0 +1,61 @@
+OBJECT Table 5123 Inter. Log Entry Comment Line
+{
+  OBJECT-PROPERTIES
+  {
+    Date=05.11.08;
+    Time=12:00:00;
+    Version List=NAVW16.00;
+  }
+  PROPERTIES
+  {
+    OnModify=BEGIN
+               "Last Date Modified" := TODAY;
+             END;
+
+    CaptionML=[DEU=Aktiv.-Prot.-Postenbem.-Zeile;
+               ENU=Inter. Log Entry Comment Line];
+    LookupFormID=Form5188;
+    DrillDownFormID=Form5188;
+  }
+  FIELDS
+  {
+    { 1   ;   ;Entry No.           ;Integer       ;TableRelation="Interaction Log Entry"."Entry No.";
+                                                   CaptionML=[DEU=Lfd. Nr.;
+                                                              ENU=Entry No.] }
+    { 4   ;   ;Line No.            ;Integer       ;CaptionML=[DEU=Zeilennr.;
+                                                              ENU=Line No.] }
+    { 5   ;   ;Date                ;Date          ;CaptionML=[DEU=Datum;
+                                                              ENU=Date] }
+    { 6   ;   ;Code                ;Code10        ;CaptionML=[DEU=Code;
+                                                              ENU=Code] }
+    { 7   ;   ;Comment             ;Text80        ;CaptionML=[DEU=Bemerkung;
+                                                              ENU=Comment] }
+    { 8   ;   ;Last Date Modified  ;Date          ;CaptionML=[DEU=Korrigiert am;
+                                                              ENU=Last Date Modified];
+                                                   Editable=No }
+  }
+  KEYS
+  {
+    {    ;Entry No.,Line No.                      ;Clustered=Yes }
+  }
+  FIELDGROUPS
+  {
+  }
+  CODE
+  {
+
+    PROCEDURE SetUpNewLine@1();
+    VAR
+      InteractionCommentLine@1000 : Record 5123;
+    BEGIN
+      InteractionCommentLine.SETRANGE("Entry No.","Entry No.");
+      InteractionCommentLine.SETRANGE(Date,WORKDATE);
+      IF NOT InteractionCommentLine.FIND('-') THEN
+        Date := WORKDATE;
+    END;
+
+    BEGIN
+    END.
+  }
+}
+

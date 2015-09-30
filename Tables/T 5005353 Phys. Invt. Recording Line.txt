@@ -1,0 +1,365 @@
+OBJECT Table 5005353 Phys. Invt. Recording Line
+{
+  OBJECT-PROPERTIES
+  {
+    Date=05.11.08;
+    Time=12:00:00;
+    Version List=NAVDACH6.00;
+  }
+  PROPERTIES
+  {
+    OnInsert=BEGIN
+               TestStatusOpen;
+             END;
+
+    OnModify=BEGIN
+               TestStatusOpen;
+             END;
+
+    OnDelete=BEGIN
+               TestStatusOpen;
+             END;
+
+    OnRename=BEGIN
+               ERROR(Text1140000,TABLECAPTION);
+             END;
+
+    CaptionML=[DEU=Inventurerfassungszeile;
+               ENU=Phys. Invt. Recording Line];
+    PasteIsValid=No;
+    LookupFormID=Form5005357;
+    DrillDownFormID=Form5005357;
+  }
+  FIELDS
+  {
+    { 1   ;   ;Order No.           ;Code20        ;TableRelation="Phys. Invt. Recording Header";
+                                                   CaptionML=[DEU=Auftragsnr.;
+                                                              ENU=Order No.] }
+    { 2   ;   ;Recording No.       ;Integer       ;TableRelation="Phys. Invt. Recording Header"."Recording No." WHERE (Order No.=FIELD(Order No.));
+                                                   CaptionML=[DEU=Erfassungsnr.;
+                                                              ENU=Recording No.] }
+    { 3   ;   ;Line No.            ;Integer       ;CaptionML=[DEU=Zeilennr.;
+                                                              ENU=Line No.] }
+    { 16  ;   ;Order Line No.      ;Integer       ;TableRelation="Phys. Inventory Order Line"."Line No." WHERE (Document No.=FIELD(Order No.));
+                                                   CaptionML=[DEU=Auftragszeilennr.;
+                                                              ENU=Order Line No.];
+                                                   Editable=No }
+    { 17  ;   ;Recorded without Order;Boolean     ;CaptionML=[DEU=Ohne Auftrag erfasst;
+                                                              ENU=Recorded without Order];
+                                                   Editable=No }
+    { 20  ;   ;Item No.            ;Code20        ;TableRelation=Item;
+                                                   OnValidate=VAR
+                                                                TempPhysInvtRecordingLine@1140000 : TEMPORARY Record 5005353;
+                                                              BEGIN
+                                                                TestStatusOpen;
+
+                                                                TempPhysInvtRecordingLine := Rec;
+                                                                INIT;
+                                                                "Item No." := TempPhysInvtRecordingLine."Item No.";
+
+                                                                IF "Item No." <> xRec."Item No." THEN
+                                                                  "Variant Code" := '';
+
+                                                                IF "Item No." = '' THEN
+                                                                  EXIT;
+
+                                                                GetPhysInvtRecordingHeader;
+                                                                GetItem;
+                                                                Item.TESTFIELD(Blocked,FALSE);
+
+                                                                VALIDATE(Description, Item.Description);
+                                                                VALIDATE("Description 2",Item."Description 2");
+
+                                                                VALIDATE("Unit of Measure Code",Item."Base Unit of Measure");
+                                                                IF "Unit of Measure Code" <> '' THEN BEGIN
+                                                                  UnitOfMeasure.GET("Unit of Measure Code");
+                                                                  "Unit of Measure" := UnitOfMeasure.Description;
+                                                                END ELSE
+                                                                  "Unit of Measure" := '';
+
+                                                                "Shelf/Bin No." := Item."Shelf No.";
+
+                                                                "Date Recorded" := PhysInvtRecordingHeader."Date Recorded";
+                                                                "Time Recorded" := PhysInvtRecordingHeader."Time Recorded";
+                                                                "Person Recorded" := PhysInvtRecordingHeader."Person Recorded";
+                                                                "Location Code" := PhysInvtRecordingHeader."Location Code";
+                                                                "Bin Code" := PhysInvtRecordingHeader."Bin Code";
+                                                              END;
+
+                                                   CaptionML=[DEU=Artikelnr.;
+                                                              ENU=Item No.] }
+    { 21  ;   ;Variant Code        ;Code10        ;TableRelation="Item Variant".Code WHERE (Item No.=FIELD(Item No.));
+                                                   OnValidate=BEGIN
+                                                                TestStatusOpen;
+                                                                TESTFIELD("Item No.");
+
+                                                                IF "Variant Code" = '' THEN
+                                                                  EXIT;
+
+                                                                ItemVariant.GET("Item No.","Variant Code");
+                                                                Description := ItemVariant.Description;
+                                                                "Description 2" := ItemVariant."Description 2";
+                                                              END;
+
+                                                   CaptionML=[DEU=Variantencode;
+                                                              ENU=Variant Code] }
+    { 22  ;   ;Location Code       ;Code10        ;TableRelation=Location;
+                                                   CaptionML=[DEU=Lagerortcode;
+                                                              ENU=Location Code] }
+    { 23  ;   ;Bin Code            ;Code20        ;TableRelation=Bin.Code WHERE (Location Code=FIELD(Location Code));
+                                                   OnValidate=BEGIN
+                                                                IF "Bin Code" <> '' THEN BEGIN
+                                                                  TESTFIELD("Location Code");
+                                                                  Location.GET("Location Code");
+                                                                  Location.TESTFIELD("Bin Mandatory", TRUE);
+                                                                  Location.TESTFIELD("Directed Put-away and Pick",FALSE);
+                                                                END;
+                                                              END;
+
+                                                   CaptionML=[DEU=Lagerplatzcode;
+                                                              ENU=Bin Code] }
+    { 30  ;   ;Description         ;Text30        ;CaptionML=[DEU=Beschreibung;
+                                                              ENU=Description] }
+    { 31  ;   ;Description 2       ;Text30        ;CaptionML=[DEU=Beschreibung 2;
+                                                              ENU=Description 2] }
+    { 32  ;   ;Unit of Measure     ;Text10        ;CaptionML=[DEU=Einheit;
+                                                              ENU=Unit of Measure] }
+    { 40  ;   ;Unit of Measure Code;Code10        ;TableRelation="Item Unit of Measure".Code WHERE (Item No.=FIELD(Item No.));
+                                                   OnValidate=BEGIN
+                                                                GetItem;
+                                                                "Qty. per Unit of Measure" := UOMMgt.GetQtyPerUnitOfMeasure(Item,"Unit of Measure Code");
+
+                                                                VALIDATE(Quantity);
+                                                              END;
+
+                                                   CaptionML=[DEU=Einheitencode;
+                                                              ENU=Unit of Measure Code] }
+    { 41  ;   ;Quantity            ;Decimal       ;OnValidate=BEGIN
+                                                                IF Quantity > 1 THEN
+                                                                  IF "Serial No." <> '' THEN
+                                                                    ERROR(Text1140009);
+                                                                GetPhysInvtRecordingHeader;
+
+                                                                "Quantity (Base)" := CalcBaseQty(Quantity);
+
+                                                                Recorded := TRUE;
+                                                                "Date Recorded" := PhysInvtRecordingHeader."Date Recorded";
+                                                                "Time Recorded" := PhysInvtRecordingHeader."Time Recorded";
+                                                                "Person Recorded" := PhysInvtRecordingHeader."Person Recorded";
+                                                              END;
+
+                                                   CaptionML=[DEU=Menge;
+                                                              ENU=Quantity];
+                                                   DecimalPlaces=0:5 }
+    { 42  ;   ;Quantity (Base)     ;Decimal       ;OnValidate=BEGIN
+                                                                TESTFIELD("Qty. per Unit of Measure",1);
+                                                                VALIDATE(Quantity,"Quantity (Base)");
+                                                              END;
+
+                                                   CaptionML=[DEU=Menge (Basis);
+                                                              ENU=Quantity (Base)];
+                                                   DecimalPlaces=0:5 }
+    { 43  ;   ;Qty. per Unit of Measure;Decimal   ;InitValue=1;
+                                                   CaptionML=[DEU=Menge pro Einheit;
+                                                              ENU=Qty. per Unit of Measure];
+                                                   DecimalPlaces=0:5;
+                                                   Editable=No }
+    { 45  ;   ;Recorded            ;Boolean       ;CaptionML=[DEU=Erfasst;
+                                                              ENU=Recorded] }
+    { 53  ;   ;Use Tracking Lines  ;Boolean       ;CaptionML=[DEU=Verfolgungszeilen verwenden;
+                                                              ENU=Use Tracking Lines];
+                                                   Editable=No }
+    { 99  ;   ;Shelf/Bin No.       ;Code10        ;CaptionML=[DEU=Regalnr.;
+                                                              ENU=Shelf/Bin No.] }
+    { 100 ;   ;Date Recorded       ;Date          ;CaptionML=[DEU=Erfassungsdatum;
+                                                              ENU=Date Recorded] }
+    { 101 ;   ;Time Recorded       ;Time          ;CaptionML=[DEU=Erfassungszeit;
+                                                              ENU=Time Recorded] }
+    { 102 ;   ;Person Recorded     ;Code20        ;TableRelation=Employee;
+                                                   ValidateTableRelation=No;
+                                                   TestTableRelation=No;
+                                                   CaptionML=[DEU=Erfasst von;
+                                                              ENU=Person Recorded] }
+    { 130 ;   ;Serial No.          ;Code20        ;OnValidate=BEGIN
+                                                                CheckSerialNo;
+                                                                IF "Serial No." <> '' THEN
+                                                                  VALIDATE(Quantity, 1);
+                                                              END;
+
+                                                   OnLookup=BEGIN
+                                                              ShowUsedTrackLines();
+                                                            END;
+
+                                                   CaptionML=[DEU=Seriennr.;
+                                                              ENU=Serial No.] }
+    { 131 ;   ;Lot No.             ;Code20        ;OnLookup=BEGIN
+                                                              ShowUsedTrackLines();
+                                                            END;
+
+                                                   CaptionML=[DEU=Chargennr.;
+                                                              ENU=Lot No.] }
+  }
+  KEYS
+  {
+    {    ;Order No.,Recording No.,Line No.        ;Clustered=Yes }
+    {    ;Order No.,Order Line No.                ;SumIndexFields=Quantity (Base) }
+    {    ;Order No.,Item No.,Variant Code,Location Code,Bin Code }
+    {    ;Order No.,Recording No.,Location Code,Bin Code }
+    {    ;Order No.,Recording No.,Shelf/Bin No.    }
+  }
+  FIELDGROUPS
+  {
+  }
+  CODE
+  {
+    VAR
+      Text1140000@1140000 : TextConst 'DEU=Sie kînnen einen %1 nicht umbenennen.;ENU=You cannot rename a %1.';
+      Text1140008@1140008 : TextConst 'DEU=Die Seriennummer %1 fÅr den Artikel ''%2'' ist bereits vorhanden.;ENU=Serial No. %1 for item %2 already exists.';
+      Text1140009@1140009 : TextConst 'DEU=Die Menge kann nicht grî·er als 1 sein, wenn eine Seriennummer zugewiesen ist.;ENU=Quantity cannot be larger than 1 when Serial No. is assigned.';
+      PhysInvtRecordingHeader@1140001 : Record 5005352;
+      Item@1140002 : Record 27;
+      ItemVariant@1140003 : Record 5401;
+      UnitOfMeasure@1140004 : Record 204;
+      UOMMgt@1140005 : Codeunit 5402;
+      Location@1140006 : Record 14;
+      ItemTrkgMgtPhysInvtLine@1140007 : Codeunit 5005364;
+
+    LOCAL PROCEDURE GetPhysInvtRecordingHeader@1140000();
+    BEGIN
+      TESTFIELD("Order No.");
+      TESTFIELD("Recording No.");
+
+      IF ("Order No." <> PhysInvtRecordingHeader."Order No.") OR
+         ("Recording No." <> PhysInvtRecordingHeader."Recording No.")
+      THEN
+        PhysInvtRecordingHeader.GET("Order No.", "Recording No.");
+    END;
+
+    LOCAL PROCEDURE GetItem@1140001();
+    BEGIN
+      TESTFIELD("Item No.");
+      IF "Item No." <> Item."No." THEN
+        Item.GET("Item No.");
+    END;
+
+    LOCAL PROCEDURE TestStatusOpen@1140002();
+    BEGIN
+      GetPhysInvtRecordingHeader;
+      PhysInvtRecordingHeader.TESTFIELD(Status, PhysInvtRecordingHeader.Status::Open);
+    END;
+
+    LOCAL PROCEDURE CalcBaseQty@1140003(Qty@1000 : Decimal) : Decimal;
+    BEGIN
+      TESTFIELD("Qty. per Unit of Measure");
+      EXIT(ROUND(Qty * "Qty. per Unit of Measure",0.00001));
+    END;
+
+    PROCEDURE EmptyLine@1140004() : Boolean;
+    BEGIN
+      EXIT(
+        ("Item No." = '') AND
+        ("Variant Code" = '') AND
+        ("Location Code" = '') AND
+        ("Bin Code" = '') );
+    END;
+
+    PROCEDURE ShowUsedTrackLines@1140005();
+    VAR
+      PhysInvtOrderHeader@1140000 : Record 5005350;
+      ItemLedgEntry@1140001 : Record 32;
+      WhseEntry@1140002 : Record 7312;
+      TempPhysInvtTrackBuffer@1140003 : TEMPORARY Record 5005360;
+      UsedTrackingLinesForm@1140004 : Form 5005374;
+      BinMandatory@1140005 : Boolean;
+    BEGIN
+      GetItem;
+
+      TempPhysInvtTrackBuffer.RESET;
+      TempPhysInvtTrackBuffer.DELETEALL;
+
+      PhysInvtOrderHeader.GET("Order No.");
+
+      IF ItemTrkgMgtPhysInvtLine.LocationIsBinMandatory("Location Code") AND
+         ItemTrkgMgtPhysInvtLine.GetTrackingNosFromWhse(Item)
+      THEN BEGIN
+        WhseEntry.RESET;
+        WhseEntry.SETCURRENTKEY(
+          "Location Code", "Bin Code", "Item No.", "Variant Code");
+        WhseEntry.SETRANGE("Location Code", "Location Code");
+        WhseEntry.SETRANGE("Bin Code", "Bin Code");
+        WhseEntry.SETRANGE("Item No.", "Item No.");
+        WhseEntry.SETRANGE("Variant Code", "Variant Code");
+        WhseEntry.SETRANGE("Registering Date", 0D, PhysInvtOrderHeader."Posting Date");
+        IF WhseEntry.FIND('-') THEN REPEAT
+          IF (WhseEntry."Serial No." <>'') OR (WhseEntry."Lot No." <>'') THEN BEGIN
+            IF NOT TempPhysInvtTrackBuffer.GET(WhseEntry."Serial No.", WhseEntry."Lot No.") THEN BEGIN
+              TempPhysInvtTrackBuffer.INIT;
+              TempPhysInvtTrackBuffer."Lot No" := WhseEntry."Lot No.";
+              TempPhysInvtTrackBuffer."Serial No." := WhseEntry."Serial No.";
+              TempPhysInvtTrackBuffer.INSERT;
+            END;
+            TempPhysInvtTrackBuffer."Qty. Expected (Base)" :=
+              TempPhysInvtTrackBuffer."Qty. Expected (Base)" +
+              WhseEntry."Qty. (Base)";
+            TempPhysInvtTrackBuffer.MODIFY;
+          END;
+        UNTIL WhseEntry.NEXT = 0;
+      END ELSE BEGIN
+        ItemLedgEntry.RESET;
+        ItemLedgEntry.SETCURRENTKEY("Item No.",Open,"Variant Code",Positive,"Location Code","Posting Date");
+        ItemLedgEntry.SETRANGE("Item No.", "Item No.");
+        ItemLedgEntry.SETRANGE("Variant Code", "Variant Code");
+        ItemLedgEntry.SETRANGE("Location Code", "Location Code");
+        ItemLedgEntry.SETRANGE("Posting Date", 0D, PhysInvtOrderHeader."Posting Date");
+        IF ItemLedgEntry.FIND('-') THEN REPEAT
+          IF (ItemLedgEntry."Serial No." <>'') OR (ItemLedgEntry."Lot No." <>'') THEN BEGIN
+            IF NOT TempPhysInvtTrackBuffer.GET(ItemLedgEntry."Serial No.", ItemLedgEntry."Lot No.") THEN BEGIN
+              TempPhysInvtTrackBuffer.INIT;
+              TempPhysInvtTrackBuffer."Lot No" := ItemLedgEntry."Lot No.";
+              TempPhysInvtTrackBuffer."Serial No." := ItemLedgEntry."Serial No.";
+              TempPhysInvtTrackBuffer.INSERT;
+            END;
+            TempPhysInvtTrackBuffer."Qty. Expected (Base)" :=
+              TempPhysInvtTrackBuffer."Qty. Expected (Base)" +
+              ItemLedgEntry.Quantity;
+            TempPhysInvtTrackBuffer.MODIFY;
+          END;
+        UNTIL ItemLedgEntry.NEXT = 0;
+      END;
+
+      IF TempPhysInvtTrackBuffer.FIND('-') THEN BEGIN
+        UsedTrackingLinesForm.SETRECORD(TempPhysInvtTrackBuffer);
+        UsedTrackingLinesForm.SetSources(TempPhysInvtTrackBuffer);
+        UsedTrackingLinesForm.LOOKUPMODE(TRUE);
+        IF UsedTrackingLinesForm.RUNMODAL = ACTION::LookupOK THEN BEGIN
+          UsedTrackingLinesForm.GETRECORD(TempPhysInvtTrackBuffer);
+          VALIDATE("Serial No.", TempPhysInvtTrackBuffer."Serial No.");
+          VALIDATE("Lot No.", TempPhysInvtTrackBuffer."Lot No");
+        END;
+      END;
+    END;
+
+    PROCEDURE CheckSerialNo@1140006();
+    VAR
+      PhysInvtRecordingLine@1140000 : Record 5005353;
+    BEGIN
+      PhysInvtRecordingLine.RESET;
+      PhysInvtRecordingLine.SETRANGE("Order No.","Order No.");
+      PhysInvtRecordingLine.SETRANGE("Item No.","Item No.");
+      IF PhysInvtRecordingLine.FINDSET THEN BEGIN
+        REPEAT
+          IF ("Serial No." <> '') THEN
+            IF (PhysInvtRecordingLine."Serial No." = "Serial No.") THEN
+              IF PhysInvtRecordingLine."Line No." <> "Line No." THEN
+                ERROR(Text1140008,"Serial No.","Item No.")
+              ELSE IF PhysInvtRecordingLine."Recording No." <> "Recording No." THEN
+                ERROR(Text1140008,"Serial No.","Item No.");
+        UNTIL PhysInvtRecordingLine.NEXT = 0;
+      END;
+    END;
+
+    BEGIN
+    END.
+  }
+}
+

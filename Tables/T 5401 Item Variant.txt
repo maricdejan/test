@@ -1,0 +1,64 @@
+OBJECT Table 5401 Item Variant
+{
+  OBJECT-PROPERTIES
+  {
+    Date=05.11.08;
+    Time=12:00:00;
+    Version List=NAVW16.00;
+  }
+  PROPERTIES
+  {
+    DataCaptionFields=Item No.,Code,Description;
+    OnDelete=VAR
+               ItemTranslation@1000 : Record 30;
+               SKU@1001 : Record 5700;
+               ItemIdent@1002 : Record 7704;
+             BEGIN
+               ItemTranslation.SETRANGE("Item No.","Item No.");
+               ItemTranslation.SETRANGE("Variant Code",Code);
+               ItemTranslation.DELETEALL;
+
+               SKU.SETRANGE("Item No.","Item No.");
+               SKU.SETRANGE("Variant Code",Code);
+               SKU.DELETEALL(TRUE);
+
+               ItemIdent.RESET;
+               ItemIdent.SETCURRENTKEY("Item No.");
+               ItemIdent.SETRANGE("Item No.","Item No.");
+               ItemIdent.SETRANGE("Variant Code",Code);
+               ItemIdent.DELETEALL;
+             END;
+
+    CaptionML=[DEU=Artikelvariante;
+               ENU=Item Variant];
+    LookupFormID=Form5401;
+  }
+  FIELDS
+  {
+    { 1   ;   ;Code                ;Code10        ;CaptionML=[DEU=Code;
+                                                              ENU=Code];
+                                                   NotBlank=Yes }
+    { 2   ;   ;Item No.            ;Code20        ;TableRelation=Item;
+                                                   CaptionML=[DEU=Artikelnr.;
+                                                              ENU=Item No.];
+                                                   NotBlank=Yes }
+    { 3   ;   ;Description         ;Text30        ;CaptionML=[DEU=Beschreibung;
+                                                              ENU=Description] }
+    { 4   ;   ;Description 2       ;Text30        ;CaptionML=[DEU=Beschreibung 2;
+                                                              ENU=Description 2] }
+  }
+  KEYS
+  {
+    {    ;Item No.,Code                           ;Clustered=Yes }
+  }
+  FIELDGROUPS
+  {
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

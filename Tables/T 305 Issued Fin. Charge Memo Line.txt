@@ -1,0 +1,154 @@
+OBJECT Table 305 Issued Fin. Charge Memo Line
+{
+  OBJECT-PROPERTIES
+  {
+    Date=05.11.08;
+    Time=12:00:00;
+    Version List=NAVW16.00;
+  }
+  PROPERTIES
+  {
+    CaptionML=[DEU=Reg. Zinsrechnungszeile;
+               ENU=Issued Fin. Charge Memo Line];
+  }
+  FIELDS
+  {
+    { 1   ;   ;Finance Charge Memo No.;Code20     ;TableRelation="Issued Fin. Charge Memo Header";
+                                                   CaptionML=[DEU=Zinsrechnungsnr.;
+                                                              ENU=Finance Charge Memo No.] }
+    { 2   ;   ;Line No.            ;Integer       ;CaptionML=[DEU=Zeilennr.;
+                                                              ENU=Line No.] }
+    { 3   ;   ;Attached to Line No.;Integer       ;TableRelation="Issued Fin. Charge Memo Line"."Line No." WHERE (Finance Charge Memo No.=FIELD(Finance Charge Memo No.));
+                                                   CaptionML=[DEU=Geh”rt zu Zeilennr.;
+                                                              ENU=Attached to Line No.] }
+    { 4   ;   ;Type                ;Option        ;CaptionML=[DEU=Art;
+                                                              ENU=Type];
+                                                   OptionCaptionML=[DEU=" ,Sachkonto,Debitorenposten";
+                                                                    ENU=" ,G/L Account,Customer Ledger Entry"];
+                                                   OptionString=[ ,G/L Account,Customer Ledger Entry] }
+    { 5   ;   ;Entry No.           ;Integer       ;TableRelation="Cust. Ledger Entry";
+                                                   OnLookup=BEGIN
+                                                              IF Type <> Type::"Customer Ledger Entry" THEN
+                                                                EXIT;
+                                                              IssuedFinChrgMemoHeader.GET("Finance Charge Memo No.");
+                                                              CustLedgEntry.SETCURRENTKEY("Customer No.");
+                                                              CustLedgEntry.SETRANGE("Customer No.",IssuedFinChrgMemoHeader."Customer No.");
+                                                              IF CustLedgEntry.GET("Entry No.") THEN;
+                                                              FORM.RUNMODAL(0,CustLedgEntry);
+                                                            END;
+
+                                                   CaptionML=[DEU=Lfd. Nr.;
+                                                              ENU=Entry No.];
+                                                   BlankZero=Yes }
+    { 7   ;   ;Posting Date        ;Date          ;CaptionML=[DEU=Buchungsdatum;
+                                                              ENU=Posting Date] }
+    { 8   ;   ;Document Date       ;Date          ;CaptionML=[DEU=Belegdatum;
+                                                              ENU=Document Date] }
+    { 9   ;   ;Due Date            ;Date          ;CaptionML=[DEU=F„lligkeitsdatum;
+                                                              ENU=Due Date] }
+    { 10  ;   ;Document Type       ;Option        ;CaptionML=[DEU=Belegart;
+                                                              ENU=Document Type];
+                                                   OptionCaptionML=[DEU=" ,Zahlung,Rechnung,Gutschrift,Zinsrechnung,Mahnung,Erstattung";
+                                                                    ENU=" ,Payment,Invoice,Credit Memo,Finance Charge Memo,Reminder,Refund"];
+                                                   OptionString=[ ,Payment,Invoice,Credit Memo,Finance Charge Memo,Reminder,Refund] }
+    { 11  ;   ;Document No.        ;Code20        ;OnLookup=BEGIN
+                                                              IF Type <> Type::"Customer Ledger Entry" THEN
+                                                                EXIT;
+                                                              IssuedFinChrgMemoHeader.GET("Finance Charge Memo No.");
+                                                              CustLedgEntry.SETCURRENTKEY("Customer No.");
+                                                              CustLedgEntry.SETRANGE("Customer No.",IssuedFinChrgMemoHeader."Customer No.");
+                                                              IF CustLedgEntry.GET("Entry No.") THEN;
+                                                              FORM.RUNMODAL(0,CustLedgEntry);
+                                                            END;
+
+                                                   CaptionML=[DEU=Belegnr.;
+                                                              ENU=Document No.] }
+    { 12  ;   ;Description         ;Text100       ;CaptionML=[DEU=Beschreibung;
+                                                              ENU=Description] }
+    { 13  ;   ;Original Amount     ;Decimal       ;CaptionML=[DEU=Ursprungsbetrag;
+                                                              ENU=Original Amount];
+                                                   BlankZero=Yes;
+                                                   AutoFormatType=1;
+                                                   AutoFormatExpr=GetCurrencyCode }
+    { 14  ;   ;Remaining Amount    ;Decimal       ;CaptionML=[DEU=Restbetrag;
+                                                              ENU=Remaining Amount];
+                                                   BlankZero=Yes;
+                                                   AutoFormatType=1;
+                                                   AutoFormatExpr=GetCurrencyCode }
+    { 15  ;   ;No.                 ;Code20        ;TableRelation=IF (Type=CONST(" ")) "Standard Text"
+                                                                 ELSE IF (Type=CONST(G/L Account)) "G/L Account";
+                                                   CaptionML=[DEU=Nr.;
+                                                              ENU=No.] }
+    { 16  ;   ;Amount              ;Decimal       ;CaptionML=[DEU=Betrag;
+                                                              ENU=Amount];
+                                                   BlankZero=Yes;
+                                                   AutoFormatType=1;
+                                                   AutoFormatExpr=GetCurrencyCode }
+    { 17  ;   ;Interest Rate       ;Decimal       ;CaptionML=[DEU=Zinssatz;
+                                                              ENU=Interest Rate];
+                                                   DecimalPlaces=0:5;
+                                                   BlankZero=Yes }
+    { 18  ;   ;Gen. Prod. Posting Group;Code10    ;TableRelation="Gen. Product Posting Group";
+                                                   CaptionML=[DEU=Produktbuchungsgruppe;
+                                                              ENU=Gen. Prod. Posting Group] }
+    { 19  ;   ;VAT %               ;Decimal       ;CaptionML=[DEU=MwSt. %;
+                                                              ENU=VAT %];
+                                                   DecimalPlaces=0:5 }
+    { 20  ;   ;VAT Calculation Type;Option        ;CaptionML=[DEU=MwSt.-Berechnungsart;
+                                                              ENU=VAT Calculation Type];
+                                                   OptionCaptionML=[DEU=Normale MwSt.,Erwerbsbesteuerung,Nur MwSt.,Verkaufssteuer;
+                                                                    ENU=Normal VAT,Reverse Charge VAT,Full VAT,Sales Tax];
+                                                   OptionString=Normal VAT,Reverse Charge VAT,Full VAT,Sales Tax }
+    { 21  ;   ;VAT Amount          ;Decimal       ;CaptionML=[DEU=MwSt.-Betrag;
+                                                              ENU=VAT Amount];
+                                                   AutoFormatType=1;
+                                                   AutoFormatExpr=GetCurrencyCode }
+    { 22  ;   ;Tax Group Code      ;Code10        ;TableRelation="Tax Group";
+                                                   CaptionML=[DEU=Steuergruppencode;
+                                                              ENU=Tax Group Code] }
+    { 23  ;   ;VAT Prod. Posting Group;Code10     ;TableRelation="VAT Product Posting Group";
+                                                   CaptionML=[DEU=MwSt.-Produktbuchungsgruppe;
+                                                              ENU=VAT Prod. Posting Group] }
+    { 24  ;   ;VAT Identifier      ;Code10        ;CaptionML=[DEU=MwSt.-Kennzeichen;
+                                                              ENU=VAT Identifier];
+                                                   Editable=No }
+    { 101 ;   ;System-Created Entry;Boolean       ;CaptionML=[DEU=Systembuchung;
+                                                              ENU=System-Created Entry];
+                                                   Editable=No }
+  }
+  KEYS
+  {
+    {    ;Finance Charge Memo No.,Line No.        ;SumIndexFields=Amount,VAT Amount,Remaining Amount;
+                                                   MaintainSIFTIndex=No;
+                                                   Clustered=Yes }
+    {    ;Finance Charge Memo No.,Type            ;SumIndexFields=Amount,VAT Amount,Remaining Amount;
+                                                   MaintainSQLIndex=No;
+                                                   MaintainSIFTIndex=No }
+  }
+  FIELDGROUPS
+  {
+  }
+  CODE
+  {
+    VAR
+      IssuedFinChrgMemoHeader@1000 : Record 304;
+      CustLedgEntry@1001 : Record 21;
+
+    PROCEDURE GetCurrencyCode@1() : Code[10];
+    VAR
+      IssuedFinChrgMemoHeader@1000 : Record 304;
+    BEGIN
+      IF ("Finance Charge Memo No." = IssuedFinChrgMemoHeader."No.") THEN
+        EXIT(IssuedFinChrgMemoHeader."Currency Code")
+      ELSE
+        IF IssuedFinChrgMemoHeader.GET("Finance Charge Memo No.") THEN
+          EXIT(IssuedFinChrgMemoHeader."Currency Code")
+        ELSE
+          EXIT('');
+    END;
+
+    BEGIN
+    END.
+  }
+}
+

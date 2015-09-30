@@ -1,0 +1,338 @@
+OBJECT Table 49 Invoice Post. Buffer
+{
+  OBJECT-PROPERTIES
+  {
+    Date=14.08.09;
+    Time=12:00:00;
+    Version List=NAVW16.00.01;
+  }
+  PROPERTIES
+  {
+    CaptionML=[DEU=Rechnungsbuchungspuffer;
+               ENU=Invoice Post. Buffer];
+  }
+  FIELDS
+  {
+    { 1   ;   ;Type                ;Option        ;CaptionML=[DEU=Art;
+                                                              ENU=Type];
+                                                   OptionCaptionML=[DEU=,Sachkonto,Artikel,Ressource,Anlage;
+                                                                    ENU=,G/L Account,Item,Resource,Fixed Asset];
+                                                   OptionString=,G/L Account,Item,Resource,Fixed Asset }
+    { 2   ;   ;G/L Account         ;Code20        ;TableRelation="G/L Account";
+                                                   CaptionML=[DEU=Sachkonto;
+                                                              ENU=G/L Account] }
+    { 4   ;   ;Global Dimension 1 Code;Code20     ;TableRelation="Dimension Value".Code WHERE (Global Dimension No.=CONST(1));
+                                                   CaptionML=[DEU=Globaler Dimensionscode 1;
+                                                              ENU=Global Dimension 1 Code];
+                                                   CaptionClass='1,1,1' }
+    { 5   ;   ;Global Dimension 2 Code;Code20     ;TableRelation="Dimension Value".Code WHERE (Global Dimension No.=CONST(2));
+                                                   CaptionML=[DEU=Globaler Dimensionscode 2;
+                                                              ENU=Global Dimension 2 Code];
+                                                   CaptionClass='1,1,2' }
+    { 6   ;   ;Job No.             ;Code20        ;TableRelation=Job;
+                                                   CaptionML=[DEU=Projektnr.;
+                                                              ENU=Job No.] }
+    { 7   ;   ;Amount              ;Decimal       ;CaptionML=[DEU=Betrag;
+                                                              ENU=Amount];
+                                                   AutoFormatType=1 }
+    { 8   ;   ;VAT Amount          ;Decimal       ;CaptionML=[DEU=MwSt.-Betrag;
+                                                              ENU=VAT Amount];
+                                                   AutoFormatType=1 }
+    { 10  ;   ;Gen. Bus. Posting Group;Code10     ;TableRelation="Gen. Business Posting Group";
+                                                   CaptionML=[DEU=GeschÑftsbuchungsgruppe;
+                                                              ENU=Gen. Bus. Posting Group] }
+    { 11  ;   ;Gen. Prod. Posting Group;Code10    ;TableRelation="Gen. Product Posting Group";
+                                                   CaptionML=[DEU=Produktbuchungsgruppe;
+                                                              ENU=Gen. Prod. Posting Group] }
+    { 12  ;   ;VAT Calculation Type;Option        ;CaptionML=[DEU=MwSt.-Berechnungsart;
+                                                              ENU=VAT Calculation Type];
+                                                   OptionCaptionML=[DEU=Normale MwSt.,Erwerbsbesteuerung,Nur MwSt.,Verkaufssteuer;
+                                                                    ENU=Normal VAT,Reverse Charge VAT,Full VAT,Sales Tax];
+                                                   OptionString=Normal VAT,Reverse Charge VAT,Full VAT,Sales Tax }
+    { 14  ;   ;VAT Base Amount     ;Decimal       ;CaptionML=[DEU=MwSt.-Bemessungsgrundlage;
+                                                              ENU=VAT Base Amount];
+                                                   AutoFormatType=1 }
+    { 17  ;   ;System-Created Entry;Boolean       ;CaptionML=[DEU=Systembuchung;
+                                                              ENU=System-Created Entry] }
+    { 18  ;   ;Tax Area Code       ;Code20        ;TableRelation="Tax Area";
+                                                   CaptionML=[DEU=Steuergebietscode;
+                                                              ENU=Tax Area Code] }
+    { 19  ;   ;Tax Liable          ;Boolean       ;CaptionML=[DEU=Steuerpflichtig;
+                                                              ENU=Tax Liable] }
+    { 20  ;   ;Tax Group Code      ;Code10        ;TableRelation="Tax Group";
+                                                   CaptionML=[DEU=Steuergruppencode;
+                                                              ENU=Tax Group Code] }
+    { 21  ;   ;Quantity            ;Decimal       ;CaptionML=[DEU=Menge;
+                                                              ENU=Quantity];
+                                                   DecimalPlaces=1:5 }
+    { 22  ;   ;Use Tax             ;Boolean       ;CaptionML=[DEU=Verbrauchssteuer;
+                                                              ENU=Use Tax] }
+    { 23  ;   ;VAT Bus. Posting Group;Code10      ;TableRelation="VAT Business Posting Group";
+                                                   CaptionML=[DEU=MwSt.-GeschÑftsbuchungsgruppe;
+                                                              ENU=VAT Bus. Posting Group] }
+    { 24  ;   ;VAT Prod. Posting Group;Code10     ;TableRelation="VAT Product Posting Group";
+                                                   CaptionML=[DEU=MwSt.-Produktbuchungsgruppe;
+                                                              ENU=VAT Prod. Posting Group] }
+    { 25  ;   ;Amount (ACY)        ;Decimal       ;CaptionML=[DEU=Betrag (BW);
+                                                              ENU=Amount (ACY)];
+                                                   AutoFormatType=1 }
+    { 26  ;   ;VAT Amount (ACY)    ;Decimal       ;CaptionML=[DEU=MwSt.-Betrag (BW);
+                                                              ENU=VAT Amount (ACY)];
+                                                   AutoFormatType=1 }
+    { 29  ;   ;VAT Base Amount (ACY);Decimal      ;CaptionML=[DEU=MwSt.-Bemessungsgrundlage (BW);
+                                                              ENU=VAT Base Amount (ACY)];
+                                                   AutoFormatType=1 }
+    { 30  ;   ;Dimension Entry No. ;Integer       ;CaptionML=[DEU=Dimension Lfd. Nr.;
+                                                              ENU=Dimension Entry No.] }
+    { 31  ;   ;VAT Difference      ;Decimal       ;CaptionML=[DEU=MwSt.-Differenz;
+                                                              ENU=VAT Difference];
+                                                   AutoFormatType=1 }
+    { 32  ;   ;VAT %               ;Decimal       ;CaptionML=[DEU=MwSt. %;
+                                                              ENU=VAT %];
+                                                   DecimalPlaces=1:1 }
+    { 5600;   ;FA Posting Date     ;Date          ;CaptionML=[DEU=Anlagedatum;
+                                                              ENU=FA Posting Date] }
+    { 5601;   ;FA Posting Type     ;Option        ;CaptionML=[DEU=Anlagenbuchungsart;
+                                                              ENU=FA Posting Type];
+                                                   OptionCaptionML=[DEU=" ,Anschaffung,Wartung";
+                                                                    ENU=" ,Acquisition Cost,Maintenance"];
+                                                   OptionString=[ ,Acquisition Cost,Maintenance] }
+    { 5602;   ;Depreciation Book Code;Code10      ;TableRelation="Depreciation Book";
+                                                   CaptionML=[DEU=AfA Buchcode;
+                                                              ENU=Depreciation Book Code] }
+    { 5603;   ;Salvage Value       ;Decimal       ;CaptionML=[DEU=Restwert;
+                                                              ENU=Salvage Value];
+                                                   AutoFormatType=1 }
+    { 5605;   ;Depr. until FA Posting Date;Boolean;CaptionML=[DEU=AfA bis Anlagedatum;
+                                                              ENU=Depr. until FA Posting Date] }
+    { 5606;   ;Depr. Acquisition Cost;Boolean     ;CaptionML=[DEU=RÅckw. AfA-Korr. b. Anschaff.;
+                                                              ENU=Depr. Acquisition Cost] }
+    { 5609;   ;Maintenance Code    ;Code10        ;TableRelation=Maintenance;
+                                                   CaptionML=[DEU=Wartungscode;
+                                                              ENU=Maintenance Code] }
+    { 5610;   ;Insurance No.       ;Code20        ;TableRelation=Insurance;
+                                                   CaptionML=[DEU=Versicherungsnr.;
+                                                              ENU=Insurance No.] }
+    { 5611;   ;Budgeted FA No.     ;Code20        ;TableRelation="Fixed Asset";
+                                                   CaptionML=[DEU=Plananlagennr.;
+                                                              ENU=Budgeted FA No.] }
+    { 5612;   ;Duplicate in Depreciation Book;Code10;
+                                                   TableRelation="Depreciation Book";
+                                                   CaptionML=[DEU=In AfA-Buch kopieren;
+                                                              ENU=Duplicate in Depreciation Book] }
+    { 5613;   ;Use Duplication List;Boolean       ;CaptionML=[DEU=Kopiervorgang aktivieren;
+                                                              ENU=Use Duplication List] }
+    { 5614;   ;Fixed Asset Line No.;Integer       ;CaptionML=[DEU=Anlagenzeilennr.;
+                                                              ENU=Fixed Asset Line No.] }
+  }
+  KEYS
+  {
+    {    ;Type,G/L Account,Gen. Bus. Posting Group,Gen. Prod. Posting Group,VAT Bus. Posting Group,VAT Prod. Posting Group,Tax Area Code,Tax Group Code,Tax Liable,Use Tax,Dimension Entry No.,Job No.,Fixed Asset Line No.;
+                                                   Clustered=Yes }
+  }
+  FIELDGROUPS
+  {
+  }
+  CODE
+  {
+
+    PROCEDURE PrepareSales@1(VAR SalesLine@1000 : Record 37);
+    BEGIN
+      CLEAR(Rec);
+      Type := SalesLine.Type;
+      "System-Created Entry" := TRUE;
+      "Gen. Bus. Posting Group" := SalesLine."Gen. Bus. Posting Group";
+      "Gen. Prod. Posting Group" := SalesLine."Gen. Prod. Posting Group";
+      "VAT Bus. Posting Group" := SalesLine."VAT Bus. Posting Group";
+      "VAT Prod. Posting Group" := SalesLine."VAT Prod. Posting Group";
+      "VAT Calculation Type" := SalesLine."VAT Calculation Type";
+      "Global Dimension 1 Code" := SalesLine."Shortcut Dimension 1 Code";
+      "Global Dimension 2 Code" := SalesLine."Shortcut Dimension 2 Code";
+      "Job No." := SalesLine."Job No.";
+      "VAT %" := SalesLine."VAT %";
+      "VAT Difference" := SalesLine."VAT Difference";
+      IF Type = Type::"Fixed Asset" THEN BEGIN
+        "FA Posting Date" := SalesLine."FA Posting Date";
+        "Depreciation Book Code" := SalesLine."Depreciation Book Code";
+        "Depr. until FA Posting Date" := SalesLine."Depr. until FA Posting Date";
+        "Duplicate in Depreciation Book" := SalesLine."Duplicate in Depreciation Book";
+        "Use Duplication List" := SalesLine."Use Duplication List";
+      END;
+
+      IF "VAT Calculation Type" = "VAT Calculation Type"::"Sales Tax" THEN BEGIN
+        "Tax Area Code" := SalesLine."Tax Area Code";
+        "Tax Group Code" := SalesLine."Tax Group Code";
+        "Tax Liable" := SalesLine."Tax Liable";
+        "Use Tax" := FALSE;
+        Quantity := SalesLine."Qty. to Invoice (Base)";
+      END;
+    END;
+
+    PROCEDURE CalcDiscount@2(PricesInclVAT@1000 : Boolean;DiscountAmount@1001 : Decimal;DiscountAmountACY@1002 : Decimal);
+    VAR
+      CurrencyLCY@1003 : Record 4;
+      CurrencyACY@1004 : Record 4;
+      GLSetup@1005 : Record 98;
+    BEGIN
+      CurrencyLCY.InitRoundingPrecision;
+      GLSetup.GET;
+      IF GLSetup."Additional Reporting Currency" <> '' THEN
+        CurrencyACY.GET(GLSetup."Additional Reporting Currency")
+      ELSE
+        CurrencyACY := CurrencyLCY;
+      "VAT Amount" := ROUND(
+        CalcVATAmount(PricesInclVAT,DiscountAmount,"VAT %"),
+        CurrencyLCY."Amount Rounding Precision",
+        CurrencyLCY.VATRoundingDirection);
+      "VAT Amount (ACY)" := ROUND(
+        CalcVATAmount(PricesInclVAT,DiscountAmountACY,"VAT %"),
+        CurrencyACY."Amount Rounding Precision",
+        CurrencyACY.VATRoundingDirection);
+
+      IF PricesInclVAT AND ("VAT %" <> 0) THEN BEGIN
+        "VAT Base Amount" := DiscountAmount - "VAT Amount";
+        "VAT Base Amount (ACY)" := DiscountAmountACY - "VAT Amount (ACY)";
+      END ELSE BEGIN
+        "VAT Base Amount" := DiscountAmount;
+        "VAT Base Amount (ACY)" := DiscountAmountACY;
+      END;
+      Amount := "VAT Base Amount";
+      "Amount (ACY)" := "VAT Base Amount (ACY)";
+    END;
+
+    LOCAL PROCEDURE CalcVATAmount@3(ValueInclVAT@1000 : Boolean;Value@1001 : Decimal;"VAT%"@1002 : Decimal) : Decimal;
+    BEGIN
+      IF ("VAT%" = 0) THEN
+        EXIT(0);
+      IF ValueInclVAT THEN
+        EXIT(Value / (1 + ("VAT%" / 100)) * ("VAT%" / 100))
+      ELSE
+        EXIT(Value * ("VAT%" / 100));
+    END;
+
+    PROCEDURE SetAccount@4(Account@1000 : Code[20];VAR TotalVAT@1004 : Decimal;VAR TotalVATACY@1003 : Decimal;VAR TotalAmount@1002 : Decimal;VAR TotalAmountACY@1001 : Decimal);
+    BEGIN
+      TotalVAT := TotalVAT - "VAT Amount";
+      TotalVATACY := TotalVATACY - "VAT Amount (ACY)";
+      TotalAmount := TotalAmount - Amount;
+      TotalAmountACY := TotalAmountACY - "Amount (ACY)";
+      "G/L Account" := Account;
+    END;
+
+    PROCEDURE SetAmounts@5(TotalVAT@1003 : Decimal;TotalVATACY@1002 : Decimal;TotalAmount@1001 : Decimal;TotalAmountACY@1000 : Decimal;VATDifference@1004 : Decimal);
+    BEGIN
+      Amount := TotalAmount;
+      "VAT Base Amount" := TotalAmount;
+      "VAT Amount" := TotalVAT;
+      "Amount (ACY)" := TotalAmountACY;
+      "VAT Base Amount (ACY)" := TotalAmountACY;
+      "VAT Amount (ACY)" := TotalVATACY;
+      "VAT Difference" := "VAT Difference";
+    END;
+
+    PROCEDURE PreparePurchase@6(VAR PurchLine@1000 : Record 39);
+    BEGIN
+      CLEAR(Rec);
+      Type := PurchLine.Type;
+      "System-Created Entry" := TRUE;
+      "Gen. Bus. Posting Group" := PurchLine."Gen. Bus. Posting Group";
+      "Gen. Prod. Posting Group" := PurchLine."Gen. Prod. Posting Group";
+      "VAT Bus. Posting Group" := PurchLine."VAT Bus. Posting Group";
+      "VAT Prod. Posting Group" := PurchLine."VAT Prod. Posting Group";
+      "VAT Calculation Type" := PurchLine."VAT Calculation Type";
+      "Global Dimension 1 Code" := PurchLine."Shortcut Dimension 1 Code";
+      "Global Dimension 2 Code" := PurchLine."Shortcut Dimension 2 Code";
+      "Job No." := PurchLine."Job No.";
+      "VAT %" := PurchLine."VAT %";
+      "VAT Difference" := PurchLine."VAT Difference";
+      IF Type = Type::"Fixed Asset" THEN BEGIN
+        "FA Posting Date" := PurchLine."FA Posting Date";
+        "Depreciation Book Code" := PurchLine."Depreciation Book Code";
+        "Depr. until FA Posting Date" := PurchLine."Depr. until FA Posting Date";
+        "Duplicate in Depreciation Book" := PurchLine."Duplicate in Depreciation Book";
+        "Use Duplication List" := PurchLine."Use Duplication List";
+        "FA Posting Type" := PurchLine."FA Posting Type";
+        "Depreciation Book Code" := PurchLine."Depreciation Book Code";
+        "Salvage Value" := PurchLine."Salvage Value";
+        "Depr. Acquisition Cost" := PurchLine."Depr. Acquisition Cost";
+        "Maintenance Code" := PurchLine."Maintenance Code";
+        "Insurance No." := PurchLine."Insurance No.";
+        "Budgeted FA No." := PurchLine."Budgeted FA No.";
+      END;
+
+      IF "VAT Calculation Type" = "VAT Calculation Type"::"Sales Tax" THEN BEGIN
+        "Tax Area Code" := PurchLine."Tax Area Code";
+        "Tax Group Code" := PurchLine."Tax Group Code";
+        "Tax Liable" := PurchLine."Tax Liable";
+        "Use Tax" := FALSE;
+        Quantity := PurchLine."Qty. to Invoice (Base)";
+      END;
+    END;
+
+    PROCEDURE CalcDiscountNoVAT@7(DiscountAmount@1001 : Decimal;DiscountAmountACY@1002 : Decimal);
+    BEGIN
+      "VAT Base Amount" := DiscountAmount;
+      "VAT Base Amount (ACY)" := DiscountAmountACY;
+      Amount := "VAT Base Amount";
+      "Amount (ACY)" := "VAT Base Amount (ACY)";
+    END;
+
+    PROCEDURE SetSalesTax@8(PurchaseLine@1000 : Record 39);
+    BEGIN
+      "Tax Area Code" := PurchaseLine."Tax Area Code";
+      "Tax Liable" := PurchaseLine."Tax Liable";
+      "Tax Group Code" := PurchaseLine."Tax Group Code";
+      "Use Tax" := PurchaseLine."Use Tax";
+      Quantity := PurchaseLine."Qty. to Invoice (Base)";
+    END;
+
+    PROCEDURE ReverseAmounts@9();
+    BEGIN
+      Amount := -Amount;
+      "VAT Base Amount" := -"VAT Base Amount";
+      "Amount (ACY)" := -"Amount (ACY)";
+      "VAT Base Amount (ACY)" := -"VAT Base Amount (ACY)";
+      "VAT Amount" := -"VAT Amount";
+      "VAT Amount (ACY)" := -"VAT Amount (ACY)";
+    END;
+
+    PROCEDURE SetAmountsNoVAT@10(TotalAmount@1001 : Decimal;TotalAmountACY@1000 : Decimal;VATDifference@1004 : Decimal);
+    BEGIN
+      Amount := TotalAmount;
+      "VAT Base Amount" := TotalAmount;
+      "VAT Amount" := 0;
+      "Amount (ACY)" := TotalAmountACY;
+      "VAT Base Amount (ACY)" := TotalAmountACY;
+      "VAT Amount (ACY)" := 0;
+      "VAT Difference" := "VAT Difference";
+    END;
+
+    PROCEDURE PrepareService@11(VAR ServiceLine@1000 : Record 5902);
+    BEGIN
+      CLEAR(Rec);
+      Type := ServiceLine.Type;
+      "System-Created Entry" := TRUE;
+      "Gen. Bus. Posting Group" := ServiceLine."Gen. Bus. Posting Group";
+      "Gen. Prod. Posting Group" := ServiceLine."Gen. Prod. Posting Group";
+      "VAT Bus. Posting Group" := ServiceLine."VAT Bus. Posting Group";
+      "VAT Prod. Posting Group" := ServiceLine."VAT Prod. Posting Group";
+      "VAT Calculation Type" := ServiceLine."VAT Calculation Type";
+      "Global Dimension 1 Code" := ServiceLine."Shortcut Dimension 1 Code";
+      "Global Dimension 2 Code" := ServiceLine."Shortcut Dimension 2 Code";
+      "Job No." := ServiceLine."Job No.";
+      "VAT %" := ServiceLine."VAT %";
+      "VAT Difference" := ServiceLine."VAT Difference";
+      IF "VAT Calculation Type" = "VAT Calculation Type"::"Sales Tax" THEN BEGIN
+        "Tax Area Code" := ServiceLine."Tax Area Code";
+        "Tax Group Code" := ServiceLine."Tax Group Code";
+        "Tax Liable" := ServiceLine."Tax Liable";
+        "Use Tax" := FALSE;
+        Quantity := ServiceLine."Qty. to Invoice (Base)";
+      END;
+    END;
+
+    BEGIN
+    END.
+  }
+}
+

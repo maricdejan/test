@@ -1,0 +1,91 @@
+OBJECT Page 9068 Project Manager Activities
+{
+  OBJECT-PROPERTIES
+  {
+    Date=05.11.08;
+    Time=12:00:00;
+    Version List=NAVW16.00;
+  }
+  PROPERTIES
+  {
+    CaptionML=[DEU=Aktivit„ten;
+               ENU=Activities];
+    SourceTable=Table9057;
+    PageType=CardPart;
+    OnOpenPage=BEGIN
+                 RESET;
+                 IF NOT GET THEN BEGIN
+                   INIT;
+                   INSERT;
+                 END;
+
+                 SETFILTER("Date Filter",'>=%1',WORKDATE);
+                 SETFILTER("Date Filter2",'<%1',WORKDATE);
+               END;
+
+  }
+  CONTROLS
+  {
+    { 1900000001;0;Container;
+                ContainerType=ContentArea }
+
+    { 7   ;1   ;Group     ;
+                CaptionML=[DEU=Fakturierung;
+                           ENU=Invoicing];
+                GroupType=CueGroup;
+                ActionList=ACTIONS
+                {
+                  { 4       ;0   ;Action    ;
+                                  CaptionML=[DEU=Verkaufsrechnung erstellen Projekt;
+                                             ENU=Job Create Sales Invoice];
+                                  RunObject=Report 1093;
+                                  Image=CreateJobSalesInvoice }
+                }
+                 }
+
+    { 1   ;2   ;Field     ;
+                SourceExpr="Upcoming Invoices";
+                DrillDownFormID=Job List }
+
+    { 5   ;2   ;Field     ;
+                SourceExpr="Invoices Due - Not Created";
+                DrillDownFormID=Job List }
+
+    { 8   ;1   ;Group     ;
+                CaptionML=[DEU=In Bearbeitung (WIP);
+                           ENU=Work in Process];
+                GroupType=CueGroup;
+                ActionList=ACTIONS
+                {
+                  { 14      ;0   ;Action    ;
+                                  CaptionML=[DEU=Projektartikelpreise aktualisieren;
+                                             ENU=Update Job Item Cost];
+                                  RunObject=Report 1095 }
+                  { 15      ;0   ;Action    ;
+                                  CaptionML=[DEU=WIP berechnen Projekt;
+                                             ENU=Job Calculate WIP];
+                                  RunObject=Report 1086 }
+                  { 16      ;0   ;Action    ;
+                                  CaptionML=[DEU=WIP nach Sachkonten Projekt;
+                                             ENU=Job Post WIP to G/L];
+                                  RunObject=Report 1085 }
+                }
+                 }
+
+    { 11  ;2   ;Field     ;
+                SourceExpr="Jobs - WIP Not Posted";
+                DrillDownFormID=Job List }
+
+    { 12  ;2   ;Field     ;
+                SourceExpr="Completed Jobs Ready to Post";
+                DrillDownFormID=Job List }
+
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

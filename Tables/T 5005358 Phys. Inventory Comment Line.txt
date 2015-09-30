@@ -1,0 +1,73 @@
+OBJECT Table 5005358 Phys. Inventory Comment Line
+{
+  OBJECT-PROPERTIES
+  {
+    Date=01.10.04;
+    Time=12:00:00;
+    Version List=NAVDACH4.00;
+  }
+  PROPERTIES
+  {
+    OnInsert=BEGIN
+               IF "Document Type" IN ["Document Type"::Order, "Document Type"::"Posted Order"] THEN
+                 TESTFIELD("Recording No.", 0);
+             END;
+
+    CaptionML=[DEU=Inventurbemerkungszeile;
+               ENU=Phys. Inventory Comment Line];
+    LookupFormID=Form5005367;
+    DrillDownFormID=Form5005367;
+  }
+  FIELDS
+  {
+    { 1   ;   ;Document Type       ;Option        ;CaptionML=[DEU=Belegart;
+                                                              ENU=Document Type];
+                                                   OptionCaptionML=[DEU=Auftrag,Erfassung,Geb. Auftrag,Geb. Erfassung;
+                                                                    ENU=Order,Recording,Posted Order,Posted Recording];
+                                                   OptionString=Order,Recording,Posted Order,Posted Recording }
+    { 2   ;   ;Order No.           ;Code20        ;TableRelation=IF (Document Type=CONST(Order)) "Phys. Inventory Order Header"
+                                                                 ELSE IF (Document Type=CONST(Recording)) "Phys. Invt. Recording Header"."Order No."
+                                                                 ELSE IF (Document Type=CONST(Posted Order)) "Post. Phys. Invt. Order Header"
+                                                                 ELSE IF (Document Type=CONST(Posted Recording)) "Posted Phys. Invt. Rec. Header"."Order No.";
+                                                   CaptionML=[DEU=Auftragsnr.;
+                                                              ENU=Order No.] }
+    { 3   ;   ;Recording No.       ;Integer       ;TableRelation=IF (Document Type=CONST(Recording)) "Phys. Invt. Recording Header"."Recording No." WHERE (Order No.=FIELD(Order No.))
+                                                                 ELSE IF (Document Type=CONST(Posted Recording)) "Posted Phys. Invt. Rec. Header"."Recording No." WHERE (Order No.=FIELD(Order No.));
+                                                   CaptionML=[DEU=Erfassungsnr.;
+                                                              ENU=Recording No.] }
+    { 4   ;   ;Line No.            ;Integer       ;CaptionML=[DEU=Zeilennr.;
+                                                              ENU=Line No.] }
+    { 10  ;   ;Date                ;Date          ;CaptionML=[DEU=Datum;
+                                                              ENU=Date] }
+    { 11  ;   ;Code                ;Code10        ;CaptionML=[DEU=Code;
+                                                              ENU=Code] }
+    { 12  ;   ;Comment             ;Text80        ;CaptionML=[DEU=Bemerkung;
+                                                              ENU=Comment] }
+  }
+  KEYS
+  {
+    {    ;Document Type,Order No.,Recording No.,Line No.;
+                                                   Clustered=Yes }
+  }
+  FIELDGROUPS
+  {
+  }
+  CODE
+  {
+
+    PROCEDURE SetUpNewLine@1140000();
+    VAR
+      PhysInvtCommentLine@1140000 : Record 5005358;
+    BEGIN
+      PhysInvtCommentLine.SETRANGE("Document Type","Document Type");
+      PhysInvtCommentLine.SETRANGE("Order No.","Order No.");
+      PhysInvtCommentLine.SETRANGE("Recording No.","Recording No.");
+      IF NOT PhysInvtCommentLine.FIND('-') THEN
+        Date := WORKDATE;
+    END;
+
+    BEGIN
+    END.
+  }
+}
+

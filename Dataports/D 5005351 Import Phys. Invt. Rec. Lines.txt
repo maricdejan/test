@@ -1,0 +1,135 @@
+OBJECT Dataport 5005351 Import Phys. Invt. Rec. Lines
+{
+  OBJECT-PROPERTIES
+  {
+    Date=07.08.06;
+    Time=12:00:00;
+    Version List=NAVDACH4.00.03;
+  }
+  PROPERTIES
+  {
+    CaptionML=[DEU=Inventurerfassungszeilen imp.;
+               ENU=Import Phys. Invt. Rec. Lines];
+    Import=Yes;
+  }
+  DATAITEMS
+  {
+    { PROPERTIES
+      {
+        DataItemTable=Table5005353;
+        AutoSave=No;
+        AutoUpdate=No;
+        DataItemTableView=SORTING(Order No.,Recording No.,Line No.);
+        OnPreDataItem=BEGIN
+                        PhysInvtRecHeader.TESTFIELD("Order No.");
+                        PhysInvtRecHeader.TESTFIELD("Recording No.");
+
+                        PhysInvtRecHeader.LOCKTABLE;
+                        PhysInvtRecLine.LOCKTABLE;
+
+                        PhysInvtRecLine.RESET;
+                        PhysInvtRecLine.SETRANGE("Order No.", PhysInvtRecHeader."Order No.");
+                        PhysInvtRecLine.SETRANGE("Recording No.", PhysInvtRecHeader."Recording No.");
+                        IF PhysInvtRecLine.FIND('+') THEN
+                          NextLineNo := PhysInvtRecLine."Line No." + 10000
+                        ELSE
+                          NextLineNo := 10000;
+                      END;
+
+        OnBeforeExportRecord=BEGIN
+                               EXIT;
+                             END;
+
+        OnAfterExportRecord=BEGIN
+                              EXIT;
+                            END;
+
+        OnAfterImportRecord=BEGIN
+                              TESTFIELD("Order No.", PhysInvtRecHeader."Order No.");
+                              TESTFIELD("Recording No.", PhysInvtRecHeader."Recording No.");
+
+                              IF PhysInvtRecLine.GET("Order No.", "Recording No.", "Line No.") THEN BEGIN
+                                PhysInvtRecLine.TESTFIELD("Item No.", "Item No.");
+                                PhysInvtRecLine.TESTFIELD("Variant Code", "Variant Code");
+                                PhysInvtRecLine.TESTFIELD("Location Code", "Location Code");
+                                PhysInvtRecLine.TESTFIELD("Bin Code", "Bin Code");
+                                PhysInvtRecLine.TESTFIELD(Recorded, FALSE);
+                                PhysInvtRecLine.VALIDATE("Unit of Measure Code", "Unit of Measure Code");
+                                PhysInvtRecLine.VALIDATE(Quantity, Quantity);
+                                PhysInvtRecLine.VALIDATE("Date Recorded", "Date Recorded");
+                                PhysInvtRecLine.VALIDATE("Time Recorded", "Time Recorded");
+                                PhysInvtRecLine.VALIDATE("Person Recorded", "Person Recorded");
+                                PhysInvtRecLine.MODIFY;
+                              END ELSE BEGIN
+                                PhysInvtRecLine.INIT;
+                                PhysInvtRecLine."Order No." := "Order No.";
+                                PhysInvtRecLine."Recording No." := "Recording No.";
+                                IF "Line No." <> 0 THEN BEGIN
+                                  PhysInvtRecLine."Line No." := "Line No.";
+                                  NextLineNo := "Line No." + 10000;
+                                END ELSE BEGIN
+                                  PhysInvtRecLine."Line No." := NextLineNo;
+                                  NextLineNo := NextLineNo + 10000;
+                                END;
+                                PhysInvtRecLine.VALIDATE("Item No.", "Item No.");
+                                PhysInvtRecLine.VALIDATE("Variant Code", "Variant Code");
+                                PhysInvtRecLine.VALIDATE("Location Code", "Location Code");
+                                PhysInvtRecLine.VALIDATE("Bin Code", "Bin Code");
+                                PhysInvtRecLine.VALIDATE("Unit of Measure Code", "Unit of Measure Code");
+                                PhysInvtRecLine.VALIDATE(Quantity, Quantity);
+                                PhysInvtRecLine.VALIDATE("Date Recorded", "Date Recorded");
+                                PhysInvtRecLine.VALIDATE("Time Recorded", "Time Recorded");
+                                PhysInvtRecLine.VALIDATE("Person Recorded", "Person Recorded");
+                                PhysInvtRecLine.INSERT;
+                              END;
+                            END;
+
+      }
+      FIELDS
+      {
+        {      ;     ;"Order No."          }
+        {      ;     ;"Recording No."      }
+        {      ;     ;"Line No."           }
+        {      ;     ;"Item No."           }
+        {      ;     ;"Variant Code"       }
+        {      ;     ;"Location Code"      }
+        {      ;     ;"Bin Code"           }
+        {      ;     ;Description          }
+        {      ;     ;"Description 2"      }
+        {      ;     ;"Unit of Measure Code" }
+        {      ;     ;"Shelf/Bin No."      }
+        {      ;     ;Quantity             }
+        {      ;     ;"Person Recorded"    }
+        {      ;     ;"Date Recorded"      }
+        {      ;     ;"Time Recorded"      }
+      }
+       }
+  }
+  REQUESTFORM
+  {
+    PROPERTIES
+    {
+      Width=9020;
+      Height=3410;
+    }
+    CONTROLS
+    {
+    }
+  }
+  CODE
+  {
+    VAR
+      PhysInvtRecHeader@1140000 : Record 5005352;
+      PhysInvtRecLine@1140001 : Record 5005353;
+      NextLineNo@1140002 : Integer;
+
+    PROCEDURE Def@1140000(NewPhysInvtRecHeader@1140000 : Record 5005352);
+    BEGIN
+      PhysInvtRecHeader := NewPhysInvtRecHeader;
+    END;
+
+    BEGIN
+    END.
+  }
+}
+

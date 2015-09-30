@@ -1,0 +1,510 @@
+OBJECT Form 5077 Create Interaction
+{
+  OBJECT-PROPERTIES
+  {
+    Date=14.08.09;
+    Time=12:00:00;
+    Version List=NAVW16.00.01;
+  }
+  PROPERTIES
+  {
+    Width=22000;
+    Height=25850;
+    CaptionML=[DEU=AktivitÑt erstellen;
+               ENU=Create Interaction];
+    Sizeable=No;
+    SavePosAndSize=No;
+    InsertAllowed=No;
+    DeleteAllowed=No;
+    LinksAllowed=No;
+    SourceTable=Table5077;
+    DataCaptionExpr=Caption;
+    OnOpenForm=BEGIN
+                 CurrForm.Step1.XPOS := 4400;
+                 CurrForm.Step1.YPOS := 0;
+                 CurrForm.Step2.XPOS := 4400;
+                 CurrForm.Step2.YPOS := 0;
+                 CurrForm.Step3.XPOS := 4400;
+                 CurrForm.Step3.YPOS := 0;
+                 CurrForm.Step4.XPOS := 4400;
+                 CurrForm.Step4.YPOS := 0;
+                 CurrForm.Step5.XPOS := 4400;
+                 CurrForm.Step5.YPOS := 0;
+                 FormWidth := CurrForm.Cancel.XPOS + CurrForm.Cancel.WIDTH + 220;
+                 CurrForm.XPOS := ROUND((CurrForm.WIDTH - FormWidth) / 2,1) + CurrForm.XPOS;
+                 CurrForm.YPOS := 3000;
+                 CurrForm.HEIGHT := CurrForm.Cancel.YPOS + CurrForm.Cancel.HEIGHT + 220;
+                 CurrForm.WIDTH := FormWidth;
+
+                 CurrForm."Wizard Contact Name".EDITABLE(FALSE);
+                 CurrForm."Campaign Description".EDITABLE(FALSE);
+                 CurrForm."Opportunity Description".EDITABLE(FALSE);
+
+                 CurrForm."Language Code".ENABLED("Interaction Template Code" <> '');
+
+                 CurrForm.ContactSearch.ENABLED := (GETFILTER("Contact No.") = '') AND (GETFILTER("Contact Company No.") = '');
+
+                 IF SalesPurchPerson.GET(GETFILTER("Salesperson Code")) THEN
+                   CurrForm."Salesperson Code".EDITABLE(FALSE);
+
+                 ShowStep(TRUE);
+
+                 CurrForm.UPDATE(FALSE);
+               END;
+
+    OnCloseForm=BEGIN
+                  IF NOT IsFinished THEN
+                    FinishWizard(IsFinished,AttachmentTemp);
+                END;
+
+  }
+  CONTROLS
+  {
+    { 5   ;Frame        ;13200;17600;8800 ;8250 ;Name=Step5;
+                                                 Visible=No;
+                                                 ShowCaption=No;
+                                                 Border=No }
+    { 17  ;Label        ;13640;17830;8140 ;430  ;ParentControl=5;
+                                                 InFrame=Yes;
+                                                 VertAlign=Top;
+                                                 MultiLine=Yes;
+                                                 LeaderDots=No;
+                                                 CaptionML=[DEU=Die folgenden Felder sind optional.;
+                                                            ENU=The following fields are optional.] }
+    { 51  ;CheckBox     ;13640;19800;8030 ;440  ;ParentControl=5;
+                                                 InFrame=Yes;
+                                                 CaptionML=[DEU=Dieser Kontakt war in der Zielgruppe der Kampagne.;
+                                                            ENU=This contact is being targeted as part of a campaign.];
+                                                 SourceExpr="Campaign Target" }
+    { 53  ;CheckBox     ;13640;20680;8030 ;440  ;ParentControl=5;
+                                                 InFrame=Yes;
+                                                 CaptionML=[DEU=Diese AktivitÑt ist eine Reaktion auf eine Kampagne.;
+                                                            ENU=This interaction is a response to a campaign.];
+                                                 NextControl=10;
+                                                 SourceExpr="Campaign Response" }
+    { 20  ;TextBox      ;13640;19030;5500 ;440  ;ParentControl=5;
+                                                 InFrame=Yes;
+                                                 Lookup=No;
+                                                 CaptionML=[DEU=Kampagnenbeschreibung;
+                                                            ENU=Campaign Description];
+                                                 SourceExpr="Campaign Description";
+                                                 TableRelation=Campaign;
+                                                 OnAssistEdit=VAR
+                                                                Campaign@1102601000 : Record 5071;
+                                                              BEGIN
+                                                                IF GETFILTER("Campaign No.") = '' THEN BEGIN
+                                                                  IF Campaign.GET("Campaign No.") THEN ;
+                                                                  IF FORM.RUNMODAL(0,Campaign) = ACTION::LookupOK THEN BEGIN
+                                                                    VALIDATE("Campaign No.",Campaign."No.");
+                                                                    "Campaign Description" := Campaign.Description;
+                                                                  END;
+                                                                END;
+                                                              END;
+                                                               }
+    { 49  ;Label        ;13640;18590;8030 ;440  ;ParentControl=20;
+                                                 InFrame=Yes;
+                                                 MultiLine=Yes;
+                                                 LeaderDots=No;
+                                                 CaptionML=[DEU=Mit welcher Kampagne ist die AktivitÑt verknÅpft?;
+                                                            ENU=What campaign is the interaction linked to?] }
+    { 54  ;TextBox      ;13640;21780;5500 ;440  ;ParentControl=5;
+                                                 InFrame=Yes;
+                                                 Lookup=No;
+                                                 CaptionML=[DEU=Geben Sie die VK-Chancennr. an.;
+                                                            ENU=What is the opportunity?];
+                                                 SourceExpr="Opportunity Description";
+                                                 TableRelation=Opportunity;
+                                                 OnAssistEdit=BEGIN
+                                                                IF Opp.GET("Opportunity No.") THEN ;
+                                                                IF FORM.RUNMODAL(0,Opp) = ACTION::LookupOK THEN BEGIN
+                                                                  VALIDATE("Opportunity No.",Opp."No.");
+                                                                  "Opportunity Description" := Opp.Description;
+                                                                END;
+                                                              END;
+                                                               }
+    { 56  ;Label        ;13640;21340;8030 ;440  ;ParentControl=54;
+                                                 InFrame=Yes;
+                                                 LeaderDots=No;
+                                                 CaptionML=[DEU=Geben Sie die VK-Chancennr. an.;
+                                                            ENU=What is the opportunity?] }
+    { 6   ;Frame        ;0    ;8250 ;13200;110  ;ShowCaption=No;
+                                                 TopLineOnly=Yes }
+    { 7   ;Image        ;0    ;0    ;4400 ;8250 ;BackColor=8388608;
+                                                 BackTransparent=No;
+                                                 Bitmap=23 }
+    { 8   ;CommandButton;3740 ;8580 ;2200 ;550  ;Name=Back;
+                                                 Enabled=No;
+                                                 CaptionML=[DEU=< &ZurÅck;
+                                                            ENU=< &Back];
+                                                 OnPush=BEGIN
+                                                          ShowStep(FALSE);
+                                                          PerformPrevWizardStatus;
+                                                          ShowStep(TRUE);
+                                                          CurrForm.UPDATE(TRUE)
+                                                        END;
+                                                         }
+    { 9   ;CommandButton;5940 ;8580 ;2200 ;550  ;Name=Next;
+                                                 CaptionML=[DEU=&Weiter >;
+                                                            ENU=&Next >];
+                                                 NextControl=11;
+                                                 OnPush=BEGIN
+                                                          CheckStatus;
+                                                          ShowStep(FALSE);
+                                                          PerformNextWizardStatus(AttachmentTemp);
+                                                          ShowStep(TRUE);
+                                                          CurrForm.UPDATE(TRUE);
+                                                        END;
+                                                         }
+    { 10  ;CommandButton;8360 ;8580 ;2200 ;550  ;Name=Finish;
+                                                 Enabled=No;
+                                                 CaptionML=[DEU=B&eenden;
+                                                            ENU=&Finish];
+                                                 OnPush=BEGIN
+                                                          FinishWizard(TRUE,AttachmentTemp);
+                                                          IsFinished := TRUE;
+                                                          CurrForm.CLOSE;
+                                                        END;
+                                                         }
+    { 11  ;CommandButton;10780;8580 ;2200 ;550  ;Name=Cancel;
+                                                 PushAction=Close;
+                                                 CaptionML=[DEU=Abbrechen;
+                                                            ENU=Cancel] }
+    { 4   ;Frame        ;4400 ;17600;8800 ;8250 ;Name=Step4;
+                                                 Visible=No;
+                                                 ShowCaption=No;
+                                                 Border=No }
+    { 16  ;Label        ;4840 ;17830;8140 ;770  ;ParentControl=4;
+                                                 InFrame=Yes;
+                                                 VertAlign=Top;
+                                                 MultiLine=Yes;
+                                                 LeaderDots=No;
+                                                 CaptionML=[DEU=Die folgenden Felder sind optional. Wenn Sie Ihre AktivitÑt jetzt protokollieren mîchten, klicken Sie auf Beenden.;
+                                                            ENU=The following fields are optional. If you want to log your interaction now, click Finish.] }
+    { 39  ;TextBox      ;4849 ;20570;2750 ;440  ;ParentControl=4;
+                                                 InFrame=Yes;
+                                                 NextControl=24;
+                                                 SourceExpr="Duration (Min.)" }
+    { 40  ;Label        ;4840 ;20122;8030 ;440  ;ParentControl=39;
+                                                 LeaderDots=No;
+                                                 CaptionML=[DEU=Geben Sie die Dauer der AktivitÑt ein (Min.):;
+                                                            ENU=How long did the interaction last (Min.)?] }
+    { 41  ;TextBox      ;4849 ;19470;2750 ;440  ;ParentControl=4;
+                                                 InFrame=Yes;
+                                                 SourceExpr="Cost (LCY)" }
+    { 42  ;Label        ;4849 ;19030;8030 ;440  ;ParentControl=41;
+                                                 LeaderDots=No;
+                                                 CaptionML=[DEU=Geben Sie die Kosten (MW) der AktivitÑt ein:;
+                                                            ENU=What is the cost of the interaction (LCY)?] }
+    { 3   ;Frame        ;13200;9350 ;8800 ;8250 ;Name=Step3;
+                                                 Visible=No;
+                                                 ShowCaption=No;
+                                                 Border=No }
+    { 15  ;Label        ;13640;9580 ;8140 ;770  ;ParentControl=3;
+                                                 InFrame=Yes;
+                                                 VertAlign=Top;
+                                                 MultiLine=Yes;
+                                                 LeaderDots=No;
+                                                 CaptionML=[DEU=Die folgenden Felder sind optional. Wenn Sie Ihre AktivitÑt jetzt protokollieren mîchten, klicken Sie auf Beenden.;
+                                                            ENU=The following fields are optional. If you want to log your interaction now, click Finish.] }
+    { 30  ;TextBox      ;13640;13430;2750 ;440  ;ParentControl=3;
+                                                 InFrame=Yes;
+                                                 SourceExpr="Information Flow" }
+    { 29  ;Label        ;13640;12980;8030 ;440  ;ParentControl=30;
+                                                 LeaderDots=No;
+                                                 CaptionML=[DEU=Geben Sie die Richtung des Informationsflusses an.;
+                                                            ENU=What is the direction of the information flow?] }
+    { 32  ;TextBox      ;13640;14530;2750 ;440  ;ParentControl=3;
+                                                 InFrame=Yes;
+                                                 SourceExpr="Initiated By" }
+    { 31  ;Label        ;13640;14090;8030 ;440  ;ParentControl=32;
+                                                 LeaderDots=No }
+    { 34  ;TextBox      ;13640;15630;2750 ;440  ;ParentControl=3;
+                                                 InFrame=Yes;
+                                                 SourceExpr=Evaluation }
+    { 33  ;Label        ;13640;15190;8030 ;440  ;ParentControl=34;
+                                                 LeaderDots=No;
+                                                 CaptionML=[DEU=Geben Sie die Bewertung der AktivitÑt an:;
+                                                            ENU=Enter the evaluation of the interaction here:] }
+    { 36  ;CheckBox     ;13640;16500;8030 ;440  ;ParentControl=3;
+                                                 InFrame=Yes;
+                                                 CaptionML=[DEU=Der Ansprechpartner wurde erfolgreich kontaktiert.;
+                                                            ENU=The interaction attempt was successful.];
+                                                 NextControl=9;
+                                                 SourceExpr="Interaction Successful" }
+    { 45  ;TextBox      ;13640;11220;2750 ;440  ;ParentControl=3;
+                                                 InFrame=Yes;
+                                                 SourceExpr="Correspondence Type";
+                                                 OnValidate=BEGIN
+                                                              ValidateCorrespondenceType;
+                                                            END;
+                                                             }
+    { 46  ;Label        ;13640;10780;8030 ;440  ;ParentControl=45;
+                                                 LeaderDots=No }
+    { 47  ;Label        ;13640;11880;8030 ;440  ;ParentControl=3;
+                                                 InFrame=Yes;
+                                                 LeaderDots=No;
+                                                 CaptionML=[DEU=Datum und Uhrzeit der AktivitÑt:;
+                                                            ENU=When did the interaction take place?] }
+    { 50  ;TextBox      ;13640;12320;1650 ;440  ;ParentControl=3;
+                                                 InFrame=Yes;
+                                                 NextControl=52;
+                                                 SourceExpr=Date }
+    { 52  ;TextBox      ;15400;12320;1650 ;440  ;ParentControl=3;
+                                                 InFrame=Yes;
+                                                 NextControl=30;
+                                                 SourceExpr="Time of Interaction" }
+    { 2   ;Frame        ;4400 ;9350 ;8800 ;8250 ;Name=Step2;
+                                                 Visible=No;
+                                                 ShowCaption=No;
+                                                 Border=No }
+    { 14  ;Label        ;4840 ;9580 ;8140 ;760  ;ParentControl=2;
+                                                 InFrame=Yes;
+                                                 VertAlign=Top;
+                                                 MultiLine=Yes;
+                                                 LeaderDots=No;
+                                                 CaptionML=[DEU=Wenn Sie auf Weiter klicken, wird entsprechend der AktivitÑtenvorlage:;
+                                                            ENU=When you click Next, if your interaction template is set up to:] }
+    { 28  ;Label        ;5280 ;10780;7700 ;760  ;ParentControl=2;
+                                                 InFrame=Yes;
+                                                 VertAlign=Top;
+                                                 MultiLine=Yes;
+                                                 LeaderDots=No;
+                                                 CaptionML=[DEU=ôffnen, anschlie·end wird die entsprechende Anlage geîffnet.;
+                                                            ENU=Open, then the relevant attachment is opened.] }
+    { 57  ;Label        ;4840 ;10780;220  ;440  ;ParentControl=2;
+                                                 InFrame=Yes;
+                                                 LeaderDots=No;
+                                                 CaptionML=[DEU=*;
+                                                            ENU=*] }
+    { 37  ;Label        ;5280 ;11770;7700 ;760  ;ParentControl=2;
+                                                 InFrame=Yes;
+                                                 VertAlign=Top;
+                                                 MultiLine=Yes;
+                                                 LeaderDots=No;
+                                                 CaptionML=[DEU=Importieren, anschlie·end wird das Dialogfeld fÅr den Dateiimport angezeigt.;
+                                                            ENU=Import, then the Import File dialog box is displayed.] }
+    { 38  ;Label        ;4840 ;11770;220  ;440  ;ParentControl=2;
+                                                 InFrame=Yes;
+                                                 LeaderDots=No;
+                                                 CaptionML=[DEU=*;
+                                                            ENU=*] }
+    { 1   ;Frame        ;13200;0    ;8800 ;8250 ;Name=Step1;
+                                                 Visible=No;
+                                                 ShowCaption=No;
+                                                 Border=No }
+    { 13  ;Label        ;13640;230  ;8140 ;1090 ;ParentControl=1;
+                                                 InFrame=Yes;
+                                                 VertAlign=Top;
+                                                 MultiLine=Yes;
+                                                 LeaderDots=No;
+                                                 CaptionML=[DEU=Dieser Assistent hilft Ihnen, AktivitÑten zu erstellen und Informationen bezÅglich Kosten und Dauer und den Bezug zu einer Kampagne zu speichern.;
+                                                            ENU=This wizard helps you to create interactions and record information regarding their cost, duration and connection to a campaign.] }
+    { 12  ;TextBox      ;13640;3300 ;2750 ;440  ;ParentControl=1;
+                                                 InFrame=Yes;
+                                                 SourceExpr="Interaction Template Code";
+                                                 OnAfterValidate=BEGIN
+                                                                   CurrForm."Language Code".ENABLED("Interaction Template Code" <> '');
+                                                                   IF Campaign.GET("Campaign No.") THEN
+                                                                     "Campaign Description" := Campaign.Description;
+                                                                 END;
+                                                                  }
+    { 18  ;Label        ;13640;2860 ;8030 ;440  ;ParentControl=12;
+                                                 LeaderDots=No;
+                                                 CaptionML=[DEU=Geben Sie die AktivitÑtenart an.;
+                                                            ENU=What is the type of interaction?] }
+    { 27  ;TextBox      ;13640;6600 ;5500 ;440  ;ParentControl=1;
+                                                 InFrame=Yes;
+                                                 NextControl=9;
+                                                 SourceExpr=Description }
+    { 26  ;Label        ;13640;6160 ;8030 ;440  ;ParentControl=27;
+                                                 LeaderDots=No;
+                                                 CaptionML=[DEU=Beschreiben Sie Ihre AktivitÑt.;
+                                                            ENU=Describe your interaction.] }
+    { 22  ;TextBox      ;13640;5500 ;2750 ;440  ;ParentControl=1;
+                                                 InFrame=Yes;
+                                                 SourceExpr="Salesperson Code" }
+    { 21  ;Label        ;13640;5060 ;8030 ;440  ;ParentControl=22;
+                                                 LeaderDots=No;
+                                                 CaptionML=[DEU=Geben Sie den zust. VerkÑufer an.;
+                                                            ENU=Who is the salesperson responsible?] }
+    { 35  ;TextBox      ;13640;4400 ;2750 ;440  ;ParentControl=1;
+                                                 InFrame=Yes;
+                                                 SourceExpr="Language Code" }
+    { 43  ;Label        ;13640;3960 ;8030 ;440  ;ParentControl=35;
+                                                 LeaderDots=No }
+    { 23  ;TextBox      ;13640;2200 ;5500 ;440  ;ParentControl=1;
+                                                 InFrame=Yes;
+                                                 Lookup=No;
+                                                 CaptionML=[DEU=Kontaktname;
+                                                            ENU=Contact Name];
+                                                 SourceExpr="Wizard Contact Name";
+                                                 OnAssistEdit=VAR
+                                                                Cont@1102601000 : Record 5050;
+                                                              BEGIN
+                                                                IF (GETFILTER("Contact No.") = '') AND (GETFILTER("Contact Company No.") = '') THEN BEGIN
+                                                                  IF Cont.GET("Contact No.") THEN ;
+                                                                  IF FORM.RUNMODAL(0,Cont) = ACTION::LookupOK THEN BEGIN
+                                                                    VALIDATE("Contact No.",Cont."No.");
+                                                                    "Wizard Contact Name" := Cont.Name;
+                                                                  END;
+                                                                END;
+                                                              END;
+                                                               }
+    { 19  ;Label        ;13640;1760 ;8030 ;440  ;ParentControl=23;
+                                                 InFrame=Yes;
+                                                 LeaderDots=No;
+                                                 CaptionML=[DEU=Geben Sie den Kontakt an.;
+                                                            ENU=Who are you interacting with?] }
+    { 24  ;CommandButton;19360;6600 ;440  ;440  ;ParentControl=1;
+                                                 InFrame=Yes;
+                                                 ShowCaption=No;
+                                                 BackTransparent=Yes;
+                                                 ToolTipML=[DEU=Bemerkung;
+                                                            ENU=Comment];
+                                                 NextControl=9;
+                                                 OnPush=BEGIN
+                                                          ShowComment
+                                                        END;
+                                                         }
+    { 25  ;PictureBox   ;19360;6600 ;440  ;440  ;Focusable=No;
+                                                 ParentControl=1;
+                                                 InFrame=Yes;
+                                                 ShowCaption=No;
+                                                 Border=No;
+                                                 BitmapPos=Center;
+                                                 BitmapList=7,6;
+                                                 ToolTipML=[DEU=Bemerkung;
+                                                            ENU=Comment];
+                                                 SourceExpr=CommentExists;
+                                                 OnPush=BEGIN
+                                                          ShowComment
+                                                        END;
+                                                         }
+    { 48  ;CommandButton;19360;2200 ;440  ;440  ;Name=ContactSearch;
+                                                 ParentControl=1;
+                                                 InFrame=Yes;
+                                                 ShowCaption=No;
+                                                 Bitmap=44;
+                                                 ToolTipML=[DEU=Kontaktsuche;
+                                                            ENU=Contact Search];
+                                                 OnPush=VAR
+                                                          SearchResult@1001 : Record 5113;
+                                                          Contact@1003 : Record 5050;
+                                                          ContactSearchForm@1000 : Form 5177;
+                                                        BEGIN
+                                                          ContactSearchForm.LOOKUPMODE(TRUE);
+                                                          IF ContactSearchForm.RUNMODAL = ACTION::LookupOK THEN BEGIN
+                                                            ContactSearchForm.GETRECORD(SearchResult);
+                                                            IF Contact.GET(SearchResult."Contact No.") THEN BEGIN
+                                                              "Wizard Contact Name" := SearchResult."Contact Name";
+                                                              "Contact No." := SearchResult."Contact No.";
+                                                              VALIDATE("Contact No.",SearchResult."Contact No.");
+                                                              MODIFY;
+                                                            END;
+                                                          END;
+                                                        END;
+                                                         }
+    { 44  ;Label        ;0    ;5940 ;4400 ;660  ;HorzAlign=Right;
+                                                 VertAlign=Bottom;
+                                                 ForeColor=12632256;
+                                                 FontSize=16;
+                                                 LeaderDots=No;
+                                                 CaptionML=[DEU=AktivitÑt;
+                                                            ENU=interaction] }
+  }
+  CODE
+  {
+    VAR
+      Text001@1001 : TextConst 'DEU=unbenannt;ENU=untitled';
+      Cont@1006 : Record 5050;
+      SalesPurchPerson@1007 : Record 13;
+      Campaign@1008 : Record 5071;
+      Todo@1022 : Record 5080;
+      InteractTmpl@1009 : Record 5064;
+      Opp@1016 : Record 5092;
+      AttachmentTemp@1000 : TEMPORARY Record 5062;
+      FormWidth@1018 : Integer;
+      IsFinished@1017 : Boolean;
+
+    LOCAL PROCEDURE ShowStep@2(Visible@1001 : Boolean);
+    BEGIN
+      CASE "Wizard Step" OF
+        "Wizard Step"::"1":
+          BEGIN
+            CurrForm.Step1.VISIBLE := Visible;
+            IF Visible THEN BEGIN
+              CurrForm.Back.ENABLED(FALSE);
+              CurrForm.Finish.ENABLED(FALSE);
+              CurrForm.Next.ENABLED(TRUE);
+              CurrForm."Wizard Contact Name".ACTIVATE;
+            END;
+          END;
+        "Wizard Step"::"2":
+          BEGIN
+            CurrForm.Step2.VISIBLE := Visible;
+            IF Visible THEN BEGIN
+              CurrForm.Back.ENABLED(TRUE);
+              CurrForm.Finish.ENABLED(FALSE);
+              CurrForm.Next.ENABLED(TRUE);
+              CurrForm.Next.ACTIVATE;
+            END;
+          END;
+        "Wizard Step"::"3":
+          BEGIN
+            CurrForm.Step3.VISIBLE := Visible;
+            IF Visible THEN BEGIN
+              CurrForm."Correspondence Type".ACTIVATE;
+              CurrForm.Back.ENABLED(TRUE);
+              CurrForm.Finish.ENABLED(TRUE);
+              CurrForm.Next.ENABLED(TRUE);
+            END;
+          END;
+        "Wizard Step"::"4":
+          BEGIN
+            CurrForm.Step4.VISIBLE := Visible;
+            IF Visible THEN BEGIN
+              CurrForm.Back.ENABLED(TRUE);
+              CurrForm.Finish.ENABLED(TRUE);
+              CurrForm.Next.ENABLED(TRUE);
+              CurrForm."Cost (LCY)".ACTIVATE;
+            END;
+          END;
+        "Wizard Step"::"5":
+          BEGIN
+            CurrForm.Step5.VISIBLE := Visible;
+            IF Visible THEN BEGIN
+              CurrForm."Campaign Description".ACTIVATE;
+              CurrForm.Back.ENABLED(TRUE);
+              CurrForm.Finish.ENABLED(TRUE);
+              CurrForm.Next.ENABLED(FALSE);
+            END;
+          END;
+      END;
+    END;
+
+    PROCEDURE Caption@1() : Text[260];
+    VAR
+      CaptionStr@1000 : Text[260];
+    BEGIN
+      IF Cont.GET(GETFILTER("Contact Company No.")) THEN
+        CaptionStr := COPYSTR(Cont."No." + ' ' + Cont.Name,1,MAXSTRLEN(CaptionStr));
+      IF Cont.GET(GETFILTER("Contact No.")) THEN
+        CaptionStr := COPYSTR(CaptionStr + ' ' + Cont."No." + ' ' + Cont.Name,1,MAXSTRLEN(CaptionStr));
+      IF SalesPurchPerson.GET(GETFILTER("Salesperson Code")) THEN
+        CaptionStr := COPYSTR(CaptionStr + ' ' + SalesPurchPerson.Code + ' ' + SalesPurchPerson.Name,1,MAXSTRLEN(CaptionStr));
+      IF Campaign.GET(GETFILTER("Campaign No.")) THEN
+        CaptionStr := COPYSTR(CaptionStr + ' ' + Campaign."No." + ' ' + Campaign.Description,1,MAXSTRLEN(CaptionStr));
+      IF Todo.GET(GETFILTER("To-do No.")) THEN
+        CaptionStr := COPYSTR(CaptionStr + ' ' + Todo."No." + ' ' + Todo.Description,1,MAXSTRLEN(CaptionStr));
+
+      IF CaptionStr = '' THEN
+        CaptionStr := Text001;
+
+      EXIT(CaptionStr);
+    END;
+
+    BEGIN
+    END.
+  }
+}
+

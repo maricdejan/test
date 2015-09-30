@@ -1,0 +1,332 @@
+OBJECT Page 5005151 Blanket Sales Order Archive
+{
+  OBJECT-PROPERTIES
+  {
+    Date=05.11.08;
+    Time=12:00:00;
+    Version List=NAVDACH6.00;
+  }
+  PROPERTIES
+  {
+    Editable=No;
+    CaptionML=[DEU=Rahmenauftragsarchiv;
+               ENU=Blanket Sales Order Archive];
+    SourceTable=Table5107;
+    SourceTableView=WHERE(Document Type=CONST(Blanket Order));
+    PageType=Document;
+    ActionList=ACTIONS
+    {
+      { 1900000003;0 ;ActionContainer;
+                      ActionContainerType=RelatedInformation }
+      { 1140128 ;1   ;ActionGroup;
+                      CaptionML=[DEU=Ver&sion;
+                                 ENU=Ver&sion] }
+      { 1140130 ;2   ;Action    ;
+                      ShortCutKey=Shift+F7;
+                      CaptionML=[DEU=Karte;
+                                 ENU=Card];
+                      RunObject=Page 21;
+                      RunFormLink=No.=FIELD(Sell-to Customer No.);
+                      Image=EditLines }
+      { 1140131 ;2   ;Action    ;
+                      CaptionML=[DEU=Dimensionen;
+                                 ENU=Dimensions];
+                      RunObject=Page 5158;
+                      RunFormLink=Table ID=CONST(5107),
+                                  Document Type=FIELD(Document Type),
+                                  Document No.=FIELD(No.),
+                                  Line No.=CONST(0),
+                                  Doc. No. Occurrence=FIELD(Doc. No. Occurrence),
+                                  Version No.=FIELD(Version No.);
+                      Promoted=Yes;
+                      Image=Dimensions;
+                      PromotedCategory=Process }
+      { 1140137 ;2   ;Action    ;
+                      CaptionML=[DEU=Be&merkungen;
+                                 ENU=Co&mments];
+                      RunObject=Page 5180;
+                      RunFormLink=Document Type=FIELD(Document Type),
+                                  No.=FIELD(No.),
+                                  Document Line No.=CONST(0),
+                                  Doc. No. Occurrence=FIELD(Doc. No. Occurrence),
+                                  Version No.=FIELD(Version No.);
+                      Promoted=Yes;
+                      Image=ViewComments;
+                      PromotedCategory=Process }
+      { 1140138 ;2   ;Action    ;
+                      CaptionML=[DEU=Drucken;
+                                 ENU=Print];
+                      Promoted=Yes;
+                      PromotedIsBig=Yes;
+                      Image=Print;
+                      PromotedCategory=Process;
+                      OnAction=BEGIN
+                                 DocPrint.PrintDACHSalesHeaderArch(Rec);
+                               END;
+                                }
+      { 1900000004;0 ;ActionContainer;
+                      ActionContainerType=ActionItems }
+      { 1140136 ;1   ;Action    ;
+                      Ellipsis=Yes;
+                      CaptionML=[DEU=&Wiederherstellen;
+                                 ENU=&Restore];
+                      Promoted=Yes;
+                      Image=MakeOrder;
+                      PromotedCategory=Process;
+                      OnAction=VAR
+                                 ArchiveManagement@1140000 : Codeunit 5063;
+                               BEGIN
+                                 ArchiveManagement.RestoreSalesDocument(Rec);
+                               END;
+                                }
+    }
+  }
+  CONTROLS
+  {
+    { 1900000001;0;Container;
+                ContainerType=ContentArea }
+
+    { 1140000;1;Group     ;
+                CaptionML=[DEU=Allgemein;
+                           ENU=General] }
+
+    { 1140001;2;Field     ;
+                SourceExpr="No.";
+                Importance=Promoted }
+
+    { 1140003;2;Field     ;
+                SourceExpr="Sell-to Customer No.";
+                Importance=Promoted }
+
+    { 1140036;2;Field     ;
+                SourceExpr="Sell-to Contact No." }
+
+    { 1140005;2;Field     ;
+                SourceExpr="Sell-to Customer Name" }
+
+    { 1140007;2;Field     ;
+                SourceExpr="Sell-to Address" }
+
+    { 1140009;2;Field     ;
+                SourceExpr="Sell-to Address 2" }
+
+    { 1140011;2;Field     ;
+                SourceExpr="Sell-to Post Code" }
+
+    { 1140035;2;Field     ;
+                SourceExpr="Sell-to City" }
+
+    { 1140013;2;Field     ;
+                SourceExpr="Sell-to Contact" }
+
+    { 1140015;2;Field     ;
+                SourceExpr="Posting Date";
+                Importance=Promoted }
+
+    { 1140017;2;Field     ;
+                SourceExpr="Order Date" }
+
+    { 1140019;2;Field     ;
+                SourceExpr="Document Date" }
+
+    { 1140021;2;Field     ;
+                SourceExpr="Requested Delivery Date" }
+
+    { 1140023;2;Field     ;
+                SourceExpr="Promised Delivery Date" }
+
+    { 1140025;2;Field     ;
+                SourceExpr="External Document No." }
+
+    { 1140027;2;Field     ;
+                SourceExpr="Salesperson Code" }
+
+    { 1140029;2;Field     ;
+                SourceExpr="Campaign No." }
+
+    { 1140031;2;Field     ;
+                SourceExpr="Responsibility Center" }
+
+    { 1140033;2;Field     ;
+                SourceExpr=Status;
+                Importance=Promoted }
+
+    { 1140127;1;Part      ;
+                Name=SalesLinesArchive;
+                SubFormLink=Document No.=FIELD(No.),
+                            Doc. No. Occurrence=FIELD(Doc. No. Occurrence),
+                            Version No.=FIELD(Version No.);
+                PagePartID=Page5005152 }
+
+    { 1905885101;1;Group  ;
+                CaptionML=[DEU=Fakturierung;
+                           ENU=Invoicing] }
+
+    { 1140038;2;Field     ;
+                SourceExpr="Bill-to Customer No.";
+                Importance=Promoted }
+
+    { 1140067;2;Field     ;
+                SourceExpr="Bill-to Contact No." }
+
+    { 1140040;2;Field     ;
+                SourceExpr="Bill-to Name" }
+
+    { 1140042;2;Field     ;
+                SourceExpr="Bill-to Address" }
+
+    { 1140044;2;Field     ;
+                SourceExpr="Bill-to Address 2" }
+
+    { 1140046;2;Field     ;
+                SourceExpr="Bill-to Post Code" }
+
+    { 1140066;2;Field     ;
+                SourceExpr="Bill-to City" }
+
+    { 1140048;2;Field     ;
+                SourceExpr="Bill-to Contact" }
+
+    { 1140050;2;Field     ;
+                SourceExpr="Shortcut Dimension 1 Code" }
+
+    { 1140052;2;Field     ;
+                SourceExpr="Shortcut Dimension 2 Code" }
+
+    { 1140054;2;Field     ;
+                SourceExpr="Payment Terms Code";
+                Importance=Promoted }
+
+    { 1140056;2;Field     ;
+                SourceExpr="Due Date";
+                Importance=Promoted }
+
+    { 1140058;2;Field     ;
+                SourceExpr="Payment Discount %" }
+
+    { 1140060;2;Field     ;
+                SourceExpr="Pmt. Discount Date" }
+
+    { 1140062;2;Field     ;
+                SourceExpr="Payment Method Code" }
+
+    { 1140064;2;Field     ;
+                SourceExpr="Prices Including VAT" }
+
+    { 1906801201;1;Group  ;
+                CaptionML=[DEU=Lieferung;
+                           ENU=Shipping] }
+
+    { 1140069;2;Field     ;
+                SourceExpr="Ship-to Code";
+                Importance=Promoted }
+
+    { 1140071;2;Field     ;
+                SourceExpr="Ship-to Name" }
+
+    { 1140073;2;Field     ;
+                SourceExpr="Ship-to Address" }
+
+    { 1140075;2;Field     ;
+                SourceExpr="Ship-to Address 2" }
+
+    { 1140077;2;Field     ;
+                SourceExpr="Ship-to Post Code";
+                Importance=Promoted }
+
+    { 1140101;2;Field     ;
+                SourceExpr="Ship-to City" }
+
+    { 1140079;2;Field     ;
+                SourceExpr="Ship-to Contact" }
+
+    { 1140081;2;Field     ;
+                SourceExpr="Location Code";
+                Importance=Promoted }
+
+    { 1140083;2;Field     ;
+                SourceExpr="Outbound Whse. Handling Time" }
+
+    { 1140085;2;Field     ;
+                SourceExpr="Shipment Method Code" }
+
+    { 1140087;2;Field     ;
+                SourceExpr="Shipping Agent Code" }
+
+    { 1140089;2;Field     ;
+                SourceExpr="Shipping Agent Service Code" }
+
+    { 1140091;2;Field     ;
+                SourceExpr="Shipping Time" }
+
+    { 1140093;2;Field     ;
+                SourceExpr="Late Order Shipping" }
+
+    { 1140095;2;Field     ;
+                SourceExpr="Package Tracking No." }
+
+    { 1140097;2;Field     ;
+                SourceExpr="Shipment Date";
+                Importance=Promoted }
+
+    { 1140099;2;Field     ;
+                SourceExpr="Shipping Advice" }
+
+    { 1907468901;1;Group  ;
+                CaptionML=[DEU=Auáenhandel;
+                           ENU=Foreign Trade] }
+
+    { 1140102;2;Field     ;
+                SourceExpr="Currency Code";
+                Importance=Promoted }
+
+    { 1140104;2;Field     ;
+                SourceExpr="EU 3-Party Trade" }
+
+    { 1140106;2;Field     ;
+                SourceExpr="Transaction Type" }
+
+    { 1140108;2;Field     ;
+                SourceExpr="Transaction Specification" }
+
+    { 1140110;2;Field     ;
+                SourceExpr="Transport Method" }
+
+    { 1140112;2;Field     ;
+                SourceExpr="Exit Point" }
+
+    { 1140114;2;Field     ;
+                SourceExpr=Area }
+
+    { 1904291901;1;Group  ;
+                CaptionML=[DEU=Version;
+                           ENU=Version] }
+
+    { 1140116;2;Field     ;
+                SourceExpr="Version No.";
+                Importance=Promoted }
+
+    { 1140118;2;Field     ;
+                SourceExpr="Archived By" }
+
+    { 1140120;2;Field     ;
+                SourceExpr="Date Archived";
+                Importance=Promoted }
+
+    { 1140122;2;Field     ;
+                SourceExpr="Time Archived" }
+
+    { 1140124;2;Field     ;
+                SourceExpr="Interaction Exist" }
+
+  }
+  CODE
+  {
+    VAR
+      DocPrint@1140000 : Codeunit 229;
+
+    BEGIN
+    END.
+  }
+}
+

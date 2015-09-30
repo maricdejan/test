@@ -1,0 +1,48 @@
+OBJECT Page 5005370 Expect. Phys. Inv. Track. List
+{
+  OBJECT-PROPERTIES
+  {
+    Date=01.10.04;
+    Time=12:00:00;
+    Version List=NAVDACH4.00;
+  }
+  PROPERTIES
+  {
+    Editable=No;
+    CaptionML=[DEU=Erw. Inventurverfolg.-šbers.;
+               ENU=Expect. Phys. Inv. Track. List];
+    SourceTable=Table5005361;
+    PageType=List;
+  }
+  CONTROLS
+  {
+    { 1900000001;0;Container;
+                ContainerType=ContentArea }
+
+    { 1140000;1;Group     ;
+                GroupType=Repeater }
+
+    { 1140001;2;Field     ;
+                SourceExpr="Serial No." }
+
+    { 1140003;2;Field     ;
+                SourceExpr="Lot No." }
+
+    { 1140005;2;Field     ;
+                SourceExpr="Quantity (Base)" }
+
+    { 1140007;2;Field     ;
+                SourceExpr="Order No" }
+
+    { 1140009;2;Field     ;
+                SourceExpr="Order Line No." }
+
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

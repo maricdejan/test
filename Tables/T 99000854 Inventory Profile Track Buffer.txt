@@ -1,0 +1,58 @@
+OBJECT Table 99000854 Inventory Profile Track Buffer
+{
+  OBJECT-PROPERTIES
+  {
+    Date=05.11.08;
+    Time=12:00:00;
+    Version List=NAVW16.00;
+  }
+  PROPERTIES
+  {
+    CaptionML=[DEU=Verfolgungspuffer Lagerprofil;
+               ENU=Inventory Profile Track Buffer];
+  }
+  FIELDS
+  {
+    { 1   ;   ;Line No.            ;Integer       ;CaptionML=[DEU=Zeilennr.;
+                                                              ENU=Line No.] }
+    { 2   ;   ;Priority            ;Integer       ;CaptionML=[DEU=Priorit„t;
+                                                              ENU=Priority] }
+    { 3   ;   ;Demand Line No.     ;Integer       ;CaptionML=[DEU=Bedarfszeilennr.;
+                                                              ENU=Demand Line No.] }
+    { 4   ;   ;Sequence No.        ;Integer       ;CaptionML=[DEU=Reihenfolge;
+                                                              ENU=Sequence No.] }
+    { 21  ;   ;Source Type         ;Integer       ;CaptionML=[DEU=Herkunftsart;
+                                                              ENU=Source Type] }
+    { 23  ;   ;Source ID           ;Code20        ;CaptionML=[DEU=Herkunfts-ID;
+                                                              ENU=Source ID] }
+    { 72  ;   ;Quantity Tracked    ;Decimal       ;CaptionML=[DEU=Verfolgte Menge;
+                                                              ENU=Quantity Tracked] }
+    { 73  ;   ;Surplus Type        ;Option        ;CaptionML=[DEU=šberschussart;
+                                                              ENU=Surplus Type];
+                                                   OptionCaptionML=[DEU=Kein,Planung,Rahmenauftrag,Sicherheitsbestand,Minimalbestand,Maximalbestand,Feste Bestellmenge,Max. Auftrag,Min. Auftrag,Losgr”áenrundungsfaktor,Toleranzmenge,Planungsflexibilit„t,Undefiniert,Notfallbestellung;
+                                                                    ENU=None,Forecast,BlanketOrder,SafetyStock,ReorderPoint,MaxInventory,FixedOrderQty,MaxOrder,MinOrder,OrderMultiple,DampenerQty,PlanningFlexibility,Undefined,EmergencyOrder];
+                                                   OptionString=None,Forecast,BlanketOrder,SafetyStock,ReorderPoint,MaxInventory,FixedOrderQty,MaxOrder,MinOrder,OrderMultiple,DampenerQty,PlanningFlexibility,Undefined,EmergencyOrder }
+    { 75  ;   ;Warning Level       ;Option        ;CaptionML=[DEU=Warnstufe;
+                                                              ENU=Warning Level];
+                                                   OptionCaptionML=[DEU=,Notfall,Ausnahme,Achtung;
+                                                                    ENU=,Emergency,Exception,Attention];
+                                                   OptionString=,Emergency,Exception,Attention }
+  }
+  KEYS
+  {
+    {    ;Line No.,Priority,Demand Line No.,Sequence No.;
+                                                   SumIndexFields=Quantity Tracked;
+                                                   MaintainSIFTIndex=No;
+                                                   Clustered=Yes }
+  }
+  FIELDGROUPS
+  {
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

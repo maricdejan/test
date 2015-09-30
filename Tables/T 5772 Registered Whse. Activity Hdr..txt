@@ -1,0 +1,167 @@
+OBJECT Table 5772 Registered Whse. Activity Hdr.
+{
+  OBJECT-PROPERTIES
+  {
+    Date=14.08.09;
+    Time=12:00:00;
+    Version List=NAVW16.00.01;
+  }
+  PROPERTIES
+  {
+    Permissions=TableData 5773=rimd;
+    OnDelete=VAR
+               RgstrdWhseActivLine@1001 : Record 5773;
+               WhseCommentLine@1000 : Record 5770;
+             BEGIN
+               RgstrdWhseActivLine.SETRANGE("Activity Type",Type);
+               RgstrdWhseActivLine.SETRANGE("No.","No.");
+               RgstrdWhseActivLine.DELETEALL;
+
+               WhseCommentLine.SETRANGE("Table Name",WhseCommentLine."Table Name"::"Rgstrd. Whse. Activity Header");
+               WhseCommentLine.SETRANGE(Type,Type);
+               WhseCommentLine.SETRANGE("No.","No.");
+               WhseCommentLine.DELETEALL;
+             END;
+
+    CaptionML=[DEU=Reg. LageraktivitÑtskopf;
+               ENU=Registered Whse. Activity Hdr.];
+    LookupFormID=Form5797;
+  }
+  FIELDS
+  {
+    { 1   ;   ;Type                ;Option        ;CaptionML=[DEU=Art;
+                                                              ENU=Type];
+                                                   OptionCaptionML=[DEU=" ,Einlagerung,Kommissionierung,Lagerplatzumlagerung";
+                                                                    ENU=" ,Put-away,Pick,Movement"];
+                                                   OptionString=[ ,Put-away,Pick,Movement] }
+    { 2   ;   ;No.                 ;Code20        ;CaptionML=[DEU=Nr.;
+                                                              ENU=No.] }
+    { 3   ;   ;Location Code       ;Code10        ;TableRelation=Location;
+                                                   CaptionML=[DEU=Lagerortcode;
+                                                              ENU=Location Code];
+                                                   NotBlank=Yes }
+    { 4   ;   ;Assigned User ID    ;Code20        ;TableRelation="Warehouse Employee" WHERE (Location Code=FIELD(Location Code));
+                                                   CaptionML=[DEU=Zugewiesene Benutzer-ID;
+                                                              ENU=Assigned User ID] }
+    { 5   ;   ;Assignment Date     ;Date          ;CaptionML=[DEU=Zuweisungsdatum;
+                                                              ENU=Assignment Date] }
+    { 6   ;   ;Assignment Time     ;Time          ;CaptionML=[DEU=Zuweisungszeit;
+                                                              ENU=Assignment Time] }
+    { 7   ;   ;Sorting Method      ;Option        ;CaptionML=[DEU=Sortiermethode;
+                                                              ENU=Sorting Method];
+                                                   OptionCaptionML=[DEU=" ,Artikel,Beleg,Regalnummer oder Lagerplatz,FÑlligkeitsdatum,Lief. an,LagerplatzprioritÑt,Aktionsart";
+                                                                    ENU=" ,Item,Document,Shelf or Bin,Due Date,Ship-To,Bin Ranking,Action Type"];
+                                                   OptionString=[ ,Item,Document,Shelf or Bin,Due Date,Ship-To,Bin Ranking,Action Type] }
+    { 8   ;   ;Registering Date    ;Date          ;CaptionML=[DEU=Registriert am;
+                                                              ENU=Registering Date] }
+    { 9   ;   ;No. Series          ;Code10        ;TableRelation="No. Series";
+                                                   CaptionML=[DEU=Nummernserie;
+                                                              ENU=No. Series];
+                                                   Editable=No }
+    { 10  ;   ;Comment             ;Boolean       ;FieldClass=FlowField;
+                                                   CalcFormula=Exist("Warehouse Comment Line" WHERE (Table Name=CONST(Rgstrd. Whse. Activity Header),
+                                                                                                     Type=FIELD(Type),
+                                                                                                     No.=FIELD(No.)));
+                                                   CaptionML=[DEU=Bemerkung;
+                                                              ENU=Comment];
+                                                   Editable=No }
+    { 11  ;   ;Whse. Activity No.  ;Code20        ;CaptionML=[DEU=LageraktivitÑtsnr.;
+                                                              ENU=Whse. Activity No.] }
+    { 12  ;   ;No. Printed         ;Integer       ;CaptionML=[DEU=Anzahl gedruckt;
+                                                              ENU=No. Printed];
+                                                   Editable=No }
+  }
+  KEYS
+  {
+    {    ;Type,No.                                ;Clustered=Yes }
+    {    ;No.,Type                                 }
+    {    ;Whse. Activity No.                       }
+    {    ;Location Code                            }
+  }
+  FIELDGROUPS
+  {
+  }
+  CODE
+  {
+    VAR
+      WhseSetup@1001 : Record 5769;
+      Text000@1000 : TextConst 'DEU=Sie mÅssen den Benutzer %1 erst als Lagermitarbeiter einrichten.;ENU=You must first set up user %1 as a warehouse employee.';
+
+    LOCAL PROCEDURE GetNoSeriesCode@7() : Code[10];
+    BEGIN
+      WhseSetup.GET;
+      CASE Type OF
+        Type::"Put-away":
+          EXIT(WhseSetup."Registered Whse. Put-away Nos.");
+        Type::Pick:
+          EXIT(WhseSetup."Registered Whse. Pick Nos.");
+        Type::Movement:
+          EXIT(WhseSetup."Registered Whse. Movement Nos.");
+      END;
+    END;
+
+    LOCAL PROCEDURE TestNoSeries@5() : Boolean;
+    BEGIN
+      WhseSetup.GET;
+      CASE Type OF
+        Type::"Put-away":
+          WhseSetup.TESTFIELD("Registered Whse. Put-away Nos.");
+        Type::Pick:
+          WhseSetup.TESTFIELD("Registered Whse. Pick Nos.");
+        Type::Movement:
+          WhseSetup.TESTFIELD("Registered Whse. Movement Nos.");
+      END;
+    END;
+
+    PROCEDURE OpenRegisteredActivityHeader@12(CurrentType@1005 : ' ,Put-away,Pick,Movement';ChangeLocation@1004 : Boolean;VAR CurrentLocationCode@1007 : Code[10];VAR NewRegisteredWhseActivHeader@1001 : Record 5772);
+    VAR
+      RegisteredWhseActivHeader@1002 : Record 5772;
+      WhseEmployee@1003 : Record 7301;
+      WmsManagement@1000 : Codeunit 7302;
+      FoundLocation@1006 : Boolean;
+    BEGIN
+      RegisteredWhseActivHeader.SETRANGE(Type,CurrentType);
+      IF USERID <> '' THEN BEGIN
+        WhseEmployee.SETRANGE("User ID",USERID);
+        IF NOT WhseEmployee.FIND('-') THEN
+          ERROR(Text000,USERID);
+
+        IF (CurrentLocationCode = '') AND ChangeLocation THEN
+          CurrentLocationCode := WmsManagement.GetDefaultLocation;
+        RegisteredWhseActivHeader.SETRANGE("Location Code",CurrentLocationCode);
+        IF NOT RegisteredWhseActivHeader.FIND('-') THEN BEGIN
+          REPEAT
+            RegisteredWhseActivHeader.SETRANGE("Location Code",WhseEmployee."Location Code");
+            IF RegisteredWhseActivHeader.FIND('-') THEN BEGIN
+              CurrentLocationCode := RegisteredWhseActivHeader."Location Code";
+              FoundLocation := TRUE;
+            END;
+          UNTIL (WhseEmployee.NEXT = 0) OR FoundLocation;
+        END;
+        NewRegisteredWhseActivHeader.FILTERGROUP := 2;
+        NewRegisteredWhseActivHeader.SETRANGE("Location Code",CurrentLocationCode);
+        NewRegisteredWhseActivHeader.FILTERGROUP := 0;
+      END;
+    END;
+
+    PROCEDURE LookupRegisteredActivityHeader@1(VAR CurrentLocationCode@1000 : Code[10];VAR RegisteredWhseActivHeader@1001 : Record 5772) : Boolean;
+    BEGIN
+      COMMIT;
+      IF USERID <> '' THEN BEGIN
+        RegisteredWhseActivHeader.FILTERGROUP := 2;
+        RegisteredWhseActivHeader.SETRANGE("Location Code");
+      END;
+      IF FORM.RUNMODAL(0,RegisteredWhseActivHeader) = ACTION::LookupOK THEN;
+      IF USERID <> '' THEN BEGIN
+        RegisteredWhseActivHeader.FILTERGROUP := 2;
+        RegisteredWhseActivHeader.SETRANGE("Location Code",RegisteredWhseActivHeader."Location Code");
+        RegisteredWhseActivHeader.FILTERGROUP := 0;
+      END;
+      CurrentLocationCode := RegisteredWhseActivHeader."Location Code";
+    END;
+
+    BEGIN
+    END.
+  }
+}
+

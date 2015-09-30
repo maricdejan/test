@@ -1,0 +1,33 @@
+OBJECT Codeunit 5005356 Phys. Invt. Order Reopen (Y/N)
+{
+  OBJECT-PROPERTIES
+  {
+    Date=01.10.04;
+    Time=12:00:00;
+    Version List=NAVDACH4.00;
+  }
+  PROPERTIES
+  {
+    TableNo=5005350;
+    OnRun=BEGIN
+            PhysInvtOrderHeader.COPY(Rec);
+
+            IF CONFIRM(Text1140000, FALSE) THEN
+              PhysInvtOrderReopen.RUN(PhysInvtOrderHeader);
+
+            Rec := PhysInvtOrderHeader;
+          END;
+
+  }
+  CODE
+  {
+    VAR
+      Text1140000@1140000 : TextConst 'DEU=Wollen Sie den Auftrag zum Bearbeiten ”ffnen?;ENU=Do you want to reopen the order?';
+      PhysInvtOrderHeader@1140001 : Record 5005350;
+      PhysInvtOrderReopen@1140002 : Codeunit 5005357;
+
+    BEGIN
+    END.
+  }
+}
+

@@ -1,0 +1,83 @@
+OBJECT Page 11007 GDPdU Table Relation
+{
+  OBJECT-PROPERTIES
+  {
+    Date=01.10.04;
+    Time=12:00:00;
+    Version List=NAVDACH4.00;
+  }
+  PROPERTIES
+  {
+    CaptionML=[DEU=GDPdU Tabellenrelationen;
+               ENU=GDPdU Table Relation];
+    InsertAllowed=No;
+    SourceTable=Table11004;
+    DataCaptionExpr=GetCaption;
+    DataCaptionFields=Record Code,Record Code;
+    PageType=Document;
+  }
+  CONTROLS
+  {
+    { 1900000001;0;Container;
+                ContainerType=ContentArea }
+
+    { 1140002;1;Group     ;
+                CaptionML=[DEU=Allgemein;
+                           ENU=General] }
+
+    { 1140003;2;Field     ;
+                Lookup=No;
+                CaptionML=[DEU=Von Tabellennr.;
+                           ENU=From Table No.];
+                SourceExpr="Relation To Table No.";
+                Editable=FALSE }
+
+    { 1140005;2;Field     ;
+                DrillDown=No;
+                CaptionML=[DEU=Von Tabellenname;
+                           ENU=From Table Name];
+                SourceExpr="Relation To Table Name";
+                Editable=FALSE }
+
+    { 1140009;2;Field     ;
+                Name=ToTableID;
+                CaptionML=[DEU=Zu Tabellennr.;
+                           ENU=To Table No.];
+                SourceExpr="Table No.";
+                TableRelation=Object.ID WHERE (Type=CONST(Table));
+                Editable=FALSE;
+                LookupFormID=Objects }
+
+    { 1140007;2;Field     ;
+                DrillDown=No;
+                CaptionML=[DEU=Zu Tabellenname;
+                           ENU=To Table Name];
+                SourceExpr="Table Name";
+                Editable=FALSE }
+
+    { 1140001;1;Part      ;
+                Name=TableRelationSubForm;
+                SubFormView=SORTING(Definition Group Code,Record Code,From Table No.,From Field No.,To Table No.,To Field No.);
+                SubFormLink=Definition Group Code=FIELD(Definition Group Code),
+                            Record Code=FIELD(Record Code),
+                            From Table No.=FIELD(Relation To Table No.),
+                            To Table No.=FIELD(Table No.);
+                PagePartID=Page11008 }
+
+  }
+  CODE
+  {
+
+    LOCAL PROCEDURE GetCaption@1140000() : Text[250];
+    VAR
+      GDPdURecordCode@1140000 : Record 11007;
+    BEGIN
+      IF GDPdURecordCode.GET("Record Code") THEN
+        EXIT(GDPdURecordCode.Code + ' ' + GDPdURecordCode.Description);
+    END;
+
+    BEGIN
+    END.
+  }
+}
+

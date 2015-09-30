@@ -1,0 +1,130 @@
+OBJECT Table 5624 FA Reclass. Journal Line
+{
+  OBJECT-PROPERTIES
+  {
+    Date=05.11.08;
+    Time=12:00:00;
+    Version List=NAVW16.00;
+  }
+  PROPERTIES
+  {
+    OnInsert=BEGIN
+               LOCKTABLE;
+               FAReclassJnlTempl.GET("Journal Template Name");
+               FAReclassJnlBatch.GET("Journal Template Name","Journal Batch Name");
+             END;
+
+    CaptionML=[DEU=Anlagen Umbuch.-Blattzeile;
+               ENU=FA Reclass. Journal Line];
+  }
+  FIELDS
+  {
+    { 1   ;   ;Journal Template Name;Code10       ;TableRelation="FA Reclass. Journal Template";
+                                                   CaptionML=[DEU=Buch.-Blattvorlagenname;
+                                                              ENU=Journal Template Name] }
+    { 2   ;   ;Journal Batch Name  ;Code10        ;TableRelation="FA Reclass. Journal Batch".Name WHERE (Journal Template Name=FIELD(Journal Template Name));
+                                                   CaptionML=[DEU=Buch.-Blattname;
+                                                              ENU=Journal Batch Name] }
+    { 3   ;   ;Line No.            ;Integer       ;CaptionML=[DEU=Zeilennr.;
+                                                              ENU=Line No.] }
+    { 4   ;   ;FA No.              ;Code20        ;TableRelation="Fixed Asset";
+                                                   OnValidate=BEGIN
+                                                                IF "FA No." = '' THEN
+                                                                  EXIT;
+                                                                FA.GET("FA No.");
+                                                                FA.TESTFIELD(Blocked,FALSE);
+                                                                FA.TESTFIELD(Inactive,FALSE);
+                                                                Description := FA.Description;
+                                                                IF "Depreciation Book Code" = '' THEN BEGIN
+                                                                  FASetup.GET;
+                                                                  "Depreciation Book Code" := FASetup."Default Depr. Book";
+                                                                END;
+                                                              END;
+
+                                                   CaptionML=[DEU=Anlagennr.;
+                                                              ENU=FA No.] }
+    { 5   ;   ;New FA No.          ;Code20        ;TableRelation="Fixed Asset";
+                                                   OnValidate=BEGIN
+                                                                IF "New FA No." = '' THEN
+                                                                  EXIT;
+                                                                FA.GET("New FA No.");
+                                                                FA.TESTFIELD(Blocked,FALSE);
+                                                                FA.TESTFIELD(Inactive,FALSE);
+                                                              END;
+
+                                                   CaptionML=[DEU=Neue Anlagennr.;
+                                                              ENU=New FA No.] }
+    { 6   ;   ;FA Posting Date     ;Date          ;CaptionML=[DEU=Anlagedatum;
+                                                              ENU=FA Posting Date] }
+    { 7   ;   ;Posting Date        ;Date          ;CaptionML=[DEU=Buchungsdatum;
+                                                              ENU=Posting Date] }
+    { 8   ;   ;Depreciation Book Code;Code10      ;TableRelation="Depreciation Book";
+                                                   CaptionML=[DEU=AfA Buchcode;
+                                                              ENU=Depreciation Book Code] }
+    { 9   ;   ;Reclassify Acq. Cost Amount;Decimal;OnValidate=BEGIN
+                                                                "Reclassify Acq. Cost %" := 0;
+                                                              END;
+
+                                                   CaptionML=[DEU=Anschaffungsbetrag umbuchen;
+                                                              ENU=Reclassify Acq. Cost Amount];
+                                                   MinValue=0;
+                                                   AutoFormatType=1 }
+    { 10  ;   ;Reclassify Acq. Cost %;Decimal     ;OnValidate=BEGIN
+                                                                "Reclassify Acq. Cost Amount" := 0;
+                                                              END;
+
+                                                   CaptionML=[DEU=Anschaffung % umbuchen;
+                                                              ENU=Reclassify Acq. Cost %];
+                                                   DecimalPlaces=0:8;
+                                                   MinValue=0;
+                                                   MaxValue=100 }
+    { 11  ;   ;Reclassify Acquisition Cost;Boolean;CaptionML=[DEU=Anschaffung umbuchen;
+                                                              ENU=Reclassify Acquisition Cost] }
+    { 12  ;   ;Reclassify Depreciation;Boolean    ;CaptionML=[DEU=Normal-AfA umbuchen;
+                                                              ENU=Reclassify Depreciation] }
+    { 13  ;   ;Reclassify Write-Down;Boolean      ;CaptionML=[DEU=Erhîhte AfA umbuchen;
+                                                              ENU=Reclassify Write-Down] }
+    { 14  ;   ;Reclassify Appreciation;Boolean    ;CaptionML=[DEU=Zuschreibung umbuchen;
+                                                              ENU=Reclassify Appreciation] }
+    { 15  ;   ;Reclassify Custom 1 ;Boolean       ;CaptionML=[DEU=Sonder-AfA umbuchen;
+                                                              ENU=Reclassify Custom 1] }
+    { 16  ;   ;Reclassify Custom 2 ;Boolean       ;CaptionML=[DEU=Benutzerdef. AfA umbuchen;
+                                                              ENU=Reclassify Custom 2] }
+    { 17  ;   ;Reclassify Salvage Value;Boolean   ;CaptionML=[DEU=Restwert umbuchen;
+                                                              ENU=Reclassify Salvage Value] }
+    { 18  ;   ;Insert Bal. Account ;Boolean       ;CaptionML=[DEU=Gegenkonto einfÅgen;
+                                                              ENU=Insert Bal. Account] }
+    { 19  ;   ;Description         ;Text50        ;CaptionML=[DEU=Beschreibung;
+                                                              ENU=Description] }
+    { 20  ;   ;Document No.        ;Code20        ;CaptionML=[DEU=Belegnr.;
+                                                              ENU=Document No.] }
+    { 22  ;   ;Calc. DB1 Depr. Amount;Boolean     ;CaptionML=[DEU=AfA-Betrag fÅr 'Degressiv 1' berechnen;
+                                                              ENU=Calc. DB1 Depr. Amount] }
+  }
+  KEYS
+  {
+    {    ;Journal Template Name,Journal Batch Name,Line No.;
+                                                   Clustered=Yes }
+    {    ;Journal Template Name,Journal Batch Name,FA Posting Date }
+  }
+  FIELDGROUPS
+  {
+  }
+  CODE
+  {
+    VAR
+      FA@1000 : Record 5600;
+      FASetup@1001 : Record 5603;
+      FAReclassJnlTempl@1002 : Record 5622;
+      FAReclassJnlBatch@1003 : Record 5623;
+
+    PROCEDURE SetUpNewLine@5(LastFAReclassJnlLine@1000 : Record 5624);
+    BEGIN
+      "FA Posting Date" := LastFAReclassJnlLine."FA Posting Date";
+    END;
+
+    BEGIN
+    END.
+  }
+}
+

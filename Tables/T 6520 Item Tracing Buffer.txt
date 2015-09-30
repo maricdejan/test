@@ -1,0 +1,146 @@
+OBJECT Table 6520 Item Tracing Buffer
+{
+  OBJECT-PROPERTIES
+  {
+    Date=05.11.08;
+    Time=12:00:00;
+    Version List=NAVW16.00;
+  }
+  PROPERTIES
+  {
+    CaptionML=[DEU=Artikelverfolgungspuffer;
+               ENU=Item Tracing Buffer];
+  }
+  FIELDS
+  {
+    { 1   ;   ;Line No.            ;Integer       ;CaptionML=[DEU=Zeilennr.;
+                                                              ENU=Line No.] }
+    { 2   ;   ;Parent Item Ledger Entry No.;Integer;
+                                                   CaptionML=[DEU=Lfd. Nr. Åbergeordneter Artikelposten;
+                                                              ENU=Parent Item Ledger Entry No.];
+                                                   Editable=No }
+    { 3   ;   ;Level               ;Integer       ;CaptionML=[DEU=Ebene;
+                                                              ENU=Level];
+                                                   Editable=No }
+    { 4   ;   ;Item No.            ;Code20        ;TableRelation=Item;
+                                                   CaptionML=[DEU=Artikelnr.;
+                                                              ENU=Item No.];
+                                                   Editable=No }
+    { 5   ;   ;Posting Date        ;Date          ;CaptionML=[DEU=Buchungsdatum;
+                                                              ENU=Posting Date];
+                                                   Editable=No }
+    { 6   ;   ;Entry Type          ;Option        ;CaptionML=[DEU=Postenart;
+                                                              ENU=Entry Type];
+                                                   OptionCaptionML=[DEU=Einkauf,Verkauf,Zugang,Abgang,Umlagerung,Verbrauch,Istmeldung;
+                                                                    ENU=Purchase,Sale,Positive Adjmt.,Negative Adjmt.,Transfer,Consumption,Output];
+                                                   OptionString=Purchase,Sale,Positive Adjmt.,Negative Adjmt.,Transfer,Consumption,Output;
+                                                   Editable=No }
+    { 7   ;   ;Source Type         ;Option        ;CaptionML=[DEU=Herkunftsart;
+                                                              ENU=Source Type];
+                                                   OptionCaptionML=[DEU=" ,Debitor,Kreditor,Artikel";
+                                                                    ENU=" ,Customer,Vendor,Item"];
+                                                   OptionString=[ ,Customer,Vendor,Item];
+                                                   Editable=No }
+    { 8   ;   ;Source No.          ;Code20        ;TableRelation=IF (Source Type=CONST(Customer)) Customer
+                                                                 ELSE IF (Source Type=CONST(Vendor)) Vendor
+                                                                 ELSE IF (Source Type=CONST(Item)) Item;
+                                                   CaptionML=[DEU=Herkunftsnr.;
+                                                              ENU=Source No.];
+                                                   Editable=No }
+    { 9   ;   ;Source Name         ;Text50        ;CaptionML=[DEU=Herkunftsname;
+                                                              ENU=Source Name];
+                                                   Editable=No }
+    { 10  ;   ;Document No.        ;Code20        ;CaptionML=[DEU=Belegnr.;
+                                                              ENU=Document No.];
+                                                   Editable=No }
+    { 11  ;   ;Description         ;Text50        ;OnLookup=BEGIN
+                                                              WhereUsedMgt.ShowDocument("Record Identifier");
+                                                            END;
+
+                                                   CaptionML=[DEU=Beschreibung;
+                                                              ENU=Description];
+                                                   Editable=No }
+    { 12  ;   ;Location Code       ;Code10        ;TableRelation=Location;
+                                                   CaptionML=[DEU=Lagerortcode;
+                                                              ENU=Location Code];
+                                                   Editable=No }
+    { 13  ;   ;Quantity            ;Decimal       ;CaptionML=[DEU=Menge;
+                                                              ENU=Quantity];
+                                                   DecimalPlaces=0:5;
+                                                   Editable=No }
+    { 14  ;   ;Remaining Quantity  ;Decimal       ;CaptionML=[DEU=Restmenge;
+                                                              ENU=Remaining Quantity];
+                                                   DecimalPlaces=0:5;
+                                                   Editable=No }
+    { 16  ;   ;Open                ;Boolean       ;CaptionML=[DEU=Offen;
+                                                              ENU=Open];
+                                                   Editable=No }
+    { 17  ;   ;Positive            ;Boolean       ;CaptionML=[DEU=Positiv;
+                                                              ENU=Positive];
+                                                   Editable=No }
+    { 18  ;   ;Variant Code        ;Code10        ;TableRelation="Item Variant".Code WHERE (Item No.=FIELD(Item No.));
+                                                   CaptionML=[DEU=Variantencode;
+                                                              ENU=Variant Code];
+                                                   Editable=No }
+    { 19  ;   ;Serial No.          ;Code20        ;OnLookup=BEGIN
+                                                              ItemTrackingMgt.LookupLotSerialNoInfo("Item No.","Variant Code",0,"Serial No.");
+                                                            END;
+
+                                                   CaptionML=[DEU=Seriennr.;
+                                                              ENU=Serial No.];
+                                                   Editable=No }
+    { 20  ;   ;Lot No.             ;Code20        ;OnLookup=BEGIN
+                                                              ItemTrackingMgt.LookupLotSerialNoInfo("Item No.","Variant Code",1,"Lot No.");
+                                                            END;
+
+                                                   CaptionML=[DEU=Chargennr.;
+                                                              ENU=Lot No.];
+                                                   Editable=No }
+    { 21  ;   ;Item Ledger Entry No.;Integer      ;TableRelation="Item Ledger Entry";
+                                                   CaptionML=[DEU=Artikelposten Lfd. Nr.;
+                                                              ENU=Item Ledger Entry No.];
+                                                   Editable=No }
+    { 22  ;   ;Created by          ;Code20        ;TableRelation=User;
+                                                   OnLookup=VAR
+                                                              LoginMgt@1000000000 : Codeunit 418;
+                                                              LookupUser@1000000001 : Code[20];
+                                                            BEGIN
+                                                              LookupUser := "Created by";
+                                                              LoginMgt.LookupUserID(LookupUser);
+                                                            END;
+
+                                                   TestTableRelation=No;
+                                                   CaptionML=[DEU=Errichtet von;
+                                                              ENU=Created by];
+                                                   Editable=No }
+    { 23  ;   ;Created on          ;Date          ;CaptionML=[DEU=Erstellt am;
+                                                              ENU=Created on];
+                                                   Editable=No }
+    { 24  ;   ;Record Identifier   ;RecordID      ;CaptionML=[DEU=Datensatzkennzeichen;
+                                                              ENU=Record Identifier];
+                                                   Editable=No }
+    { 25  ;   ;Item Description    ;Text50        ;CaptionML=[DEU=Artikelbeschreibung;
+                                                              ENU=Item Description] }
+  }
+  KEYS
+  {
+    {    ;Line No.                                ;Clustered=Yes }
+    {    ;Item Ledger Entry No.                    }
+    {    ;Serial No.,Item Ledger Entry No.         }
+    {    ;Lot No.,Item Ledger Entry No.            }
+    {    ;Item No.,Item Ledger Entry No.           }
+  }
+  FIELDGROUPS
+  {
+  }
+  CODE
+  {
+    VAR
+      ItemTrackingMgt@1000000000 : Codeunit 6500;
+      WhereUsedMgt@1000 : Codeunit 6520;
+
+    BEGIN
+    END.
+  }
+}
+

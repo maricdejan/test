@@ -1,0 +1,1840 @@
+OBJECT Report 11108 VAT - VIES Declaration XML
+{
+  OBJECT-PROPERTIES
+  {
+    Date=14.08.09;
+    Time=12:00:00;
+    Version List=NAVAT3.70.01,NAVDACH6.00.01;
+  }
+  PROPERTIES
+  {
+    CaptionML=[DEU=Zusammenfassende Meldung XML;
+               ENU=VAT - VIES Declaration XML];
+    ProcessingOnly=No;
+    OnInitReport=BEGIN
+                   Exportfilename := TextExportFileName;
+                 END;
+
+    OnPreReport=VAR
+                  RBMgt@1160000 : Codeunit 419;
+                BEGIN
+                  IF Reportingtype = Reportingtype::"Recall of an earlier report" THEN
+                    Filter := Text000
+                  ELSE
+                    Filter := "VAT Entry".GETFILTERS;
+
+                  IF ISSERVICETIER THEN
+                    XMLFileName := RBMgt.EnvironFileName('','xml');
+                  IF XMLFileName = '' THEN
+                    ERROR(Text001);
+                  IF Reportingtype = Reportingtype::"Normal transmission" THEN BEGIN
+                    IF Reportingdate <> 0D THEN
+                      ERROR(Text002);
+                  END;
+                  IF Reportingtype = Reportingtype::"Recall of an earlier report" THEN BEGIN
+                    IF Reportingdate = 0D THEN
+                      ERROR(Text003);
+                  END;
+                  IF NoSeries.Code = '' THEN
+                    ERROR(Text1160004);
+
+                  PaketNr := NoSeriesMgt.GetNextNo(NoSeries.Code,TODAY,TRUE);
+                  IF STRLEN(PaketNr) <> 9 THEN
+                    ERROR(Text1160006,NoSeries.Code);
+
+                  IF DELCHR(PaketNr,'=','01234567890 ') <> '' THEN
+                    ERROR(Text1160007);
+
+                  Companyinfo.GET;
+
+                  CLEAR(TotalSum);
+                  CLEAR(TotalSumEU3PartyTrade);
+                  CLEAR(SumXML);
+                  CLEAR(SumEU3PartyTradeXML);
+                END;
+
+    OnPostReport=BEGIN
+                   IF ISSERVICETIER THEN
+                     IF tempVATEntry.FIND('-') THEN BEGIN
+                       ToXMLFile := TextExportFileName;
+                       DOWNLOAD(XMLFileName,TextExportFileName,'',TextExportFileType,ToXMLFile);
+                     END;
+                   tempVATEntry.DELETEALL;
+                 END;
+
+  }
+  DATAITEMS
+  {
+    { PROPERTIES
+      {
+        DataItemTable=Table254;
+        DataItemTableView=SORTING(Type,Country/Region Code,VAT Registration No.,VAT Bus. Posting Group,VAT Prod. Posting Group,Posting Date)
+                          WHERE(Type=CONST(Sale),
+                                Bill-to/Pay-to No.=FILTER(<>''),
+                                Document Type=FILTER(' '|Invoice|Credit Memo|Payment|Refund));
+        OnPreDataItem=BEGIN
+                        SETFILTER("Posting Date",'%1..%2',RepPeriodFrom,RepPeriodTo);
+                        NoOfRecs := 0;
+                        CLEAR(Customer);
+
+                        // XML PART
+                        IF XMLFileName = '' THEN  BEGIN
+                          MESSAGE(Text1160005);
+                          CurrReport.BREAK;
+                        END;
+                      END;
+
+        OnAfterGetRecord=BEGIN
+                           CLEAR(VATRegNo);
+                           IF "VAT Registration No." = '' THEN BEGIN
+                             IF Customer."No." <> "Bill-to/Pay-to No." THEN BEGIN
+                               IF NOT Customer.GET("Bill-to/Pay-to No.") THEN
+                                 CLEAR(Customer)
+                               ELSE IF Customer."VAT Registration No." = '' THEN
+                                 ERROR(Text014,Customer."No.",Customer.Name);
+                             END;
+                             VATRegNo := Customer."VAT Registration No."
+                           END ELSE
+                             VATRegNo := "VAT Registration No.";
+
+                           tempVATEntry.SETRANGE(Type, Type::Sale);
+                           tempVATEntry.SETRANGE("Country/Region Code", "Country/Region Code");
+                           tempVATEntry.SETRANGE("VAT Registration No.", VATRegNo);
+                           tempVATEntry.SETRANGE("Bill-to/Pay-to No.", "Bill-to/Pay-to No.");
+                           tempVATEntry.SETRANGE("EU 3-Party Trade", "EU 3-Party Trade");
+                           IF tempVATEntry.FIND('-') THEN BEGIN
+                             tempVATEntry.Base := tempVATEntry.Base + Base;
+                             tempVATEntry."Additional-Currency Base" := tempVATEntry."Additional-Currency Base" + "Additional-Currency Base";
+                             tempVATEntry.MODIFY;
+                           END ELSE BEGIN
+                             tempVATEntry := "VAT Entry";
+                             tempVATEntry."VAT Registration No." := VATRegNo;
+                             tempVATEntry.INSERT;
+                             NoOfRecs := NoOfRecs + 1;
+                           END;
+                         END;
+
+        ReqFilterFields=VAT Bus. Posting Group;
+      }
+      SECTIONS
+      {
+        { PROPERTIES
+          {
+            SectionType=Header;
+            SectionWidth=18150;
+            SectionHeight=3807;
+          }
+          CONTROLS
+          {
+            { 16  ;TextBox      ;4650 ;2115 ;13500;423  ;VertAlign=Bottom;
+                                                         CaptionML=[DEU=Filter;
+                                                                    ENU=Filter];
+                                                         SourceExpr=Filter;
+                                                         DataSetFieldName=Filter }
+            { 20  ;TextBox      ;15900;423  ;2250 ;423  ;HorzAlign=Right;
+                                                         SourceExpr=USERID;
+                                                         DataSetFieldName=USERID }
+            { 25  ;TextBox      ;15000;0    ;3150 ;423  ;HorzAlign=Right;
+                                                         SourceExpr=FORMAT(TODAY,0,4);
+                                                         DataSetFieldName=FORMAT_TODAY_0_4_ }
+            { 26  ;Label        ;0    ;0    ;7500 ;423  ;FontSize=8;
+                                                         FontBold=Yes;
+                                                         CaptionML=[DEU=Zusammenfassende Meldung Disk;
+                                                                    ENU=VAT- VIES Declaration Disk];
+                                                         DataSetFieldName=VAT__VIES_Declaration_DiskCaption }
+            { 27  ;TextBox      ;0    ;423  ;7500 ;423  ;SourceExpr=COMPANYNAME;
+                                                         DataSetFieldName=COMPANYNAME }
+            { 5   ;TextBox      ;4650 ;1269 ;2850 ;423  ;VertAlign=Bottom;
+                                                         CaptionML=[DEU=Berichtszeitraum ab;
+                                                                    ENU=Reportingperiod from];
+                                                         SourceExpr=FORMAT(RepPeriodFrom);
+                                                         DataSetFieldName=RepPeriodFrom }
+            { 28  ;Label        ;0    ;1269 ;4500 ;423  ;ParentControl=5;
+                                                         HorzAlign=Left;
+                                                         VertAlign=Bottom;
+                                                         FontBold=Yes;
+                                                         MultiLine=Yes;
+                                                         CaptionML=[DEU=Berichtszeitraum ab;
+                                                                    ENU=Reportingperiod from];
+                                                         DataSetFieldName=Reportingperiod_fromCaption }
+            { 31  ;TextBox      ;4650 ;1692 ;2850 ;423  ;VertAlign=Bottom;
+                                                         CaptionML=[DEU=Berichtszeitraum bis;
+                                                                    ENU=Reportingperiod to];
+                                                         SourceExpr=FORMAT(RepPeriodTo);
+                                                         DataSetFieldName=RepPeriodTo }
+            { 32  ;Label        ;0    ;1692 ;4500 ;423  ;ParentControl=31;
+                                                         HorzAlign=Left;
+                                                         VertAlign=Bottom;
+                                                         FontBold=Yes;
+                                                         MultiLine=Yes;
+                                                         CaptionML=[DEU=Berichtszeitraum bis;
+                                                                    ENU=Reportingperiod to];
+                                                         DataSetFieldName=Reportingperiod_toCaption }
+            { 34  ;Label        ;0    ;2115 ;4500 ;423  ;ParentControl=16;
+                                                         HorzAlign=Left;
+                                                         VertAlign=Bottom;
+                                                         FontBold=Yes;
+                                                         MultiLine=Yes;
+                                                         DataSetFieldName=FilterCaption }
+            { 1000000002;Label  ;0    ;2538 ;4500 ;423  ;ParentControl=1000000003;
+                                                         HorzAlign=Left;
+                                                         VertAlign=Bottom;
+                                                         FontBold=Yes;
+                                                         MultiLine=Yes;
+                                                         DataSetFieldName=XMLFileNameCaption }
+            { 1000000003;TextBox;4650 ;2538 ;13500;423  ;HorzAlign=Left;
+                                                         VertAlign=Bottom;
+                                                         CaptionML=[DEU=XML-Datei;
+                                                                    ENU=XML-File];
+                                                         OptionCaptionML=[DEU=XML-Datei;
+                                                                          ENU=XML-File];
+                                                         SourceExpr=XMLFileName;
+                                                         DataSetFieldName=XMLFileName }
+            { 1000000004;TextBox;4650 ;2961 ;13500;423  ;HorzAlign=Left;
+                                                         VertAlign=Bottom;
+                                                         CaptionML=[DEU=Paketnr.;
+                                                                    ENU=Package No.];
+                                                         OptionCaptionML=[DEU=Paketnr.;
+                                                                          ENU=Paketnr.];
+                                                         SourceExpr=PaketNr;
+                                                         DataSetFieldName=PaketNr }
+            { 1000000005;Label  ;0    ;2961 ;4500 ;423  ;ParentControl=1000000004;
+                                                         HorzAlign=Left;
+                                                         VertAlign=Bottom;
+                                                         FontBold=Yes;
+                                                         MultiLine=Yes;
+                                                         DataSetFieldName=PaketNrCaption }
+            { 1140000;TextBox   ;8850 ;846  ;150  ;423  ;Visible=No;
+                                                         ForeColor=65535;
+                                                         SourceExpr=NoOfRecs;
+                                                         DataSetFieldName=NoOfRecs }
+          }
+           }
+        { PROPERTIES
+          {
+            SectionType=Header;
+            SectionWidth=18150;
+            SectionHeight=1269;
+          }
+          CONTROLS
+          {
+            { 15  ;Label        ;13200;0    ;2850 ;846  ;ParentControl=1160019;
+                                                         HorzAlign=Right;
+                                                         VertAlign=Bottom;
+                                                         FontBold=Yes;
+                                                         MultiLine=Yes;
+                                                         DataSetFieldName=SumPrn_Control1160019Caption }
+            { 14  ;Label        ;10050;0    ;2850 ;846  ;ParentControl=1160014;
+                                                         HorzAlign=Right;
+                                                         VertAlign=Bottom;
+                                                         FontBold=Yes;
+                                                         MultiLine=Yes;
+                                                         DataSetFieldName=SumPrnCaption }
+            { 12  ;Label        ;5400 ;0    ;4500 ;846  ;ParentControl=1160015;
+                                                         VertAlign=Bottom;
+                                                         FontBold=Yes;
+                                                         MultiLine=Yes;
+                                                         DataSetFieldName=Customer_NameCaption }
+            { 6   ;Label        ;3750 ;0    ;1500 ;846  ;ParentControl=1160016;
+                                                         VertAlign=Bottom;
+                                                         FontBold=Yes;
+                                                         MultiLine=Yes;
+                                                         DataSetFieldName=tempVATEntry__Bill_to_Pay_to_No__Caption }
+            { 21  ;Label        ;1650 ;0    ;1950 ;846  ;ParentControl=1160017;
+                                                         VertAlign=Bottom;
+                                                         FontBold=Yes;
+                                                         MultiLine=Yes;
+                                                         DataSetFieldName=tempVATEntry__VAT_Registration_No__Caption }
+            { 2   ;Label        ;0    ;0    ;1500 ;846  ;ParentControl=1160018;
+                                                         VertAlign=Bottom;
+                                                         FontBold=Yes;
+                                                         MultiLine=Yes;
+                                                         DataSetFieldName=tempVATEntry__Country_Region_Code_Caption }
+          }
+           }
+      }
+       }
+    { PROPERTIES
+      {
+        DataItemTable=Table2000000026;
+        DataItemTableView=SORTING(Number);
+        OnPreDataItem=BEGIN
+                        tempVATEntry.RESET;
+                        tempVATEntry.SETCURRENTKEY(Type,"Country/Region Code","VAT Registration No.");
+                        IF NOT tempVATEntry.FIND('-') THEN
+                          CurrReport.BREAK
+                        ELSE
+                          SETRANGE(Number,1,tempVATEntry.COUNT);
+                      END;
+
+        OnAfterGetRecord=BEGIN
+                           IF Number>1 THEN
+                             tempVATEntry.NEXT;
+
+                           IF Customer."No." <> tempVATEntry."Bill-to/Pay-to No." THEN
+                             IF NOT Customer.GET(tempVATEntry."Bill-to/Pay-to No.") THEN
+                               CLEAR(Customer);
+                           IF AmountsInReportCurrency THEN
+                             Sum := tempVATEntry."Additional-Currency Base"
+                           ELSE
+                             Sum := tempVATEntry.Base;
+                           SumPrn := ROUND((Sum * -100),100)/100;
+                           IF tempVATEntry."EU 3-Party Trade" THEN
+                             TotalSumEU3PartyTrade := TotalSumEU3PartyTrade + SumPrn
+                           ELSE
+                             TotalSum := TotalSum + SumPrn;
+                         END;
+
+      }
+      SECTIONS
+      {
+        { PROPERTIES
+          {
+            SectionType=Body;
+            SectionWidth=18150;
+            SectionHeight=450;
+            OnPreSection=BEGIN
+                           IF tempVATEntry."EU 3-Party Trade" THEN
+                             CurrReport.SHOWOUTPUT(FALSE);
+                         END;
+
+          }
+          CONTROLS
+          {
+            { 1160014;TextBox   ;10050;0    ;2850 ;450  ;CaptionML=[DEU=Bemessungsgrundlage;
+                                                                    ENU=Baseamount];
+                                                         SourceExpr=SumPrn;
+                                                         DataSetFieldName=SumPrn }
+            { 1160015;TextBox   ;5400 ;0    ;4500 ;450  ;CaptionML=[DEU=Debitor Name;
+                                                                    ENU=Customer Name];
+                                                         SourceExpr=Customer.Name;
+                                                         DataSetFieldName=Customer_Name }
+            { 1160016;TextBox   ;3750 ;0    ;1500 ;450  ;CaptionML=[DEU=Debitorennr.;
+                                                                    ENU=Customer No.];
+                                                         SourceExpr=tempVATEntry."Bill-to/Pay-to No.";
+                                                         DataSetFieldName=tempVATEntry__Bill_to_Pay_to_No__ }
+            { 1160017;TextBox   ;1650 ;0    ;1950 ;450  ;CaptionML=[DEU=UID;
+                                                                    ENU=UID];
+                                                         SourceExpr=tempVATEntry."VAT Registration No.";
+                                                         DataSetFieldName=tempVATEntry__VAT_Registration_No__ }
+            { 1160018;TextBox   ;0    ;0    ;1500 ;423  ;CaptionML=[DEU=LÑndercode;
+                                                                    ENU=Country Code];
+                                                         SourceExpr=tempVATEntry."Country/Region Code";
+                                                         DataSetFieldName=tempVATEntry__Country_Region_Code_ }
+            { 1140003;Label     ;18000;0    ;150  ;423  ;Visible=No;
+                                                         ForeColor=65535;
+                                                         FontSize=8;
+                                                         FontBold=Yes;
+                                                         CaptionML=[DEU=Ganzzahl;
+                                                                    ENU=Integer];
+                                                         DataSetFieldName=IntegerCaption }
+            { 1140002;TextBox   ;17850;27   ;150  ;423  ;Visible=No;
+                                                         ForeColor=65535;
+                                                         SourceExpr=tempVATEntry."EU 3-Party Trade";
+                                                         DataSetFieldName=tempVATEntry__EU_3_Party_Trade_ }
+          }
+           }
+        { PROPERTIES
+          {
+            SectionType=Body;
+            SectionWidth=18150;
+            SectionHeight=450;
+            OnPreSection=BEGIN
+                           IF NOT tempVATEntry."EU 3-Party Trade" THEN
+                             CurrReport.SHOWOUTPUT(FALSE);
+                         END;
+
+          }
+          CONTROLS
+          {
+            { 1160019;TextBox   ;13200;0    ;2850 ;450  ;CaptionML=[DEU=Bemessungsgrundlage EU-DreiecksgeschÑft;
+                                                                    ENU=Baseamount EU 3-Party Trade];
+                                                         SourceExpr=SumPrn;
+                                                         DataSetFieldName=SumPrn_Control1160019 }
+            { 1160020;TextBox   ;5400 ;0    ;4500 ;450  ;SourceExpr=Customer.Name;
+                                                         DataSetFieldName=Customer_Name_Control1160020 }
+            { 1160021;TextBox   ;3750 ;0    ;1500 ;450  ;SourceExpr=tempVATEntry."Bill-to/Pay-to No.";
+                                                         DataSetFieldName=tempVATEntry__Bill_to_Pay_to_No___Control1160021 }
+            { 1160022;TextBox   ;1650 ;0    ;1950 ;450  ;SourceExpr=tempVATEntry."VAT Registration No.";
+                                                         DataSetFieldName=tempVATEntry__VAT_Registration_No___Control1160022 }
+            { 1160023;TextBox   ;0    ;0    ;1500 ;423  ;SourceExpr=tempVATEntry."Country/Region Code";
+                                                         DataSetFieldName=tempVATEntry__Country_Region_Code__Control1160023 }
+          }
+           }
+      }
+       }
+    { PROPERTIES
+      {
+        DataItemTable=Table2000000026;
+        DataItemTableView=SORTING(Number)
+                          WHERE(Number=CONST(1));
+        DataItemVarName=Totaling;
+      }
+      SECTIONS
+      {
+        { PROPERTIES
+          {
+            SectionType=Body;
+            SectionWidth=18150;
+            SectionHeight=450;
+            OnPreSection=BEGIN
+                           IF NoOfRecs = 0 THEN
+                             CurrReport.SHOWOUTPUT(FALSE);
+                         END;
+
+          }
+          CONTROLS
+          {
+            { 17  ;TextBox      ;10050;0    ;2850 ;450  ;FontSize=7;
+                                                         FontBold=Yes;
+                                                         CaptionML=[DEU=Summe;
+                                                                    ENU=Total];
+                                                         SourceExpr=TotalSum;
+                                                         DataSetFieldName=TotalSum }
+            { 18  ;Label        ;7650 ;0    ;2250 ;450  ;ParentControl=17;
+                                                         FontSize=7;
+                                                         FontBold=Yes;
+                                                         MultiLine=Yes;
+                                                         DataSetFieldName=TotalSumCaption }
+            { 1160012;TextBox   ;13200;0    ;2850 ;450  ;SourceExpr=TotalSumEU3PartyTrade;
+                                                         DataSetFieldName=TotalSumEU3PartyTrade }
+          }
+           }
+      }
+       }
+    { PROPERTIES
+      {
+        DataItemTable=Table2000000026;
+        DataItemTableView=SORTING(Number);
+        DataItemVarName=XML;
+        OnPreDataItem=BEGIN
+                        IF NOT tempVATEntry.FIND('-') THEN
+                          CurrReport.BREAK
+                        ELSE BEGIN
+                          WriteXMLHeader;
+                          SETRANGE(Number,1,tempVATEntry.COUNT);
+                          WriteXMLGeneral;
+                          CLEAR(SumXML);
+                          CLEAR(SumEU3PartyTradeXML);
+                        END;
+                      END;
+
+        OnAfterGetRecord=VAR
+                           VATRegNo@1160000 : Text[20];
+                         BEGIN
+                           IF AmountsInReportCurrency THEN
+                             Sum := tempVATEntry."Additional-Currency Base"
+                           ELSE
+                             Sum := tempVATEntry.Base;
+                           IF tempVATEntry."EU 3-Party Trade" THEN
+                             SumEU3PartyTradeXML := SumEU3PartyTradeXML + Sum
+                           ELSE
+                             SumXML := SumXML + Sum;
+                           VATRegNo := tempVATEntry."VAT Registration No.";
+
+                           IF tempVATEntry.NEXT <> 0 THEN BEGIN
+                             IF tempVATEntry."VAT Registration No." <> VATRegNo THEN BEGIN
+                               IF SumXML <> 0 THEN
+                                 WriteXMLData(VATRegNo,SumXML,FALSE);
+                               IF SumEU3PartyTradeXML <> 0 THEN
+                                 WriteXMLData(VATRegNo,SumEU3PartyTradeXML,TRUE);
+                               CLEAR(SumXML);
+                               CLEAR(SumEU3PartyTradeXML);
+                               VATRegNo := tempVATEntry."VAT Registration No.";
+                             END;
+                           END ELSE BEGIN
+                             IF SumXML <> 0 THEN
+                               WriteXMLData(VATRegNo,SumXML,FALSE);
+                             IF SumEU3PartyTradeXML <> 0 THEN
+                               WriteXMLData(VATRegNo,SumEU3PartyTradeXML,TRUE);
+                           END;
+                         END;
+
+        OnPostDataItem=BEGIN
+                         IF NoOfRecs > 0 THEN
+                           WriteXMLFooter;
+                       END;
+
+      }
+      SECTIONS
+      {
+      }
+       }
+  }
+  REQUESTFORM
+  {
+    PROPERTIES
+    {
+      Width=8910;
+      Height=4950;
+      SaveValues=Yes;
+      OnOpenForm=BEGIN
+                   XMLFileName := '';
+                   RequestOptionsForm.XMLFileNameControl.VISIBLE := NOT ISSERVICETIER;
+                 END;
+
+    }
+    CONTROLS
+    {
+      { 5   ;TextBox      ;3630 ;990  ;1650 ;440  ;ParentControl=17;
+                                                   InFrame=Yes;
+                                                   CaptionML=[DEU=Enddatum;
+                                                              ENU=Ending Date];
+                                                   SourceExpr=RepPeriodTo }
+      { 6   ;Label        ;220  ;990  ;3300 ;440  ;ParentControl=5 }
+      { 3   ;TextBox      ;3630 ;440  ;1650 ;440  ;ParentControl=17;
+                                                   InFrame=Yes;
+                                                   CaptionML=[DEU=Startdatum;
+                                                              ENU=Starting Date];
+                                                   SourceExpr=RepPeriodFrom }
+      { 4   ;Label        ;220  ;440  ;3300 ;440  ;ParentControl=3 }
+      { 1   ;TextBox      ;3410 ;2860 ;5500 ;440  ;Name=XMLFileNameControl;
+                                                   CaptionML=[DEU=XML-Dateiname;
+                                                              ENU=XML File Name];
+                                                   SourceExpr=XMLFileName;
+                                                   OnAssistEdit=BEGIN
+                                                                  XMLFileName := CommonDialogMgt_CU.OpenFile(Text015,Exportfilename,4,TextExportFileType,1);
+                                                                END;
+                                                                 }
+      { 2   ;Label        ;0    ;2860 ;3300 ;440  ;ParentControl=1 }
+      { 9   ;TextBox      ;3410 ;1650 ;1650 ;440  ;CaptionML=[DEU=Berichtsdatum;
+                                                              ENU=Reporting Date];
+                                                   SourceExpr=Reportingdate }
+      { 10  ;Label        ;0    ;1650 ;3300 ;440  ;ParentControl=9 }
+      { 7   ;TextBox      ;3410 ;2200 ;2750 ;440  ;CaptionML=[DEU=Berichtstyp;
+                                                              ENU=Reporting Type];
+                                                   OptionCaptionML=[DEU=Normale öbertragung,RÅckruf eines frÅheren Berichts;
+                                                                    ENU=Normal transmission,Recall of an earlier report];
+                                                   OptionString=Normal transmission,Recall of an earlier report;
+                                                   SourceExpr=Reportingtype }
+      { 8   ;Label        ;0    ;2200 ;3300 ;440  ;ParentControl=7 }
+      { 15  ;CheckBox     ;3410 ;4510 ;440  ;440  ;ShowCaption=No;
+                                                   CaptionML=[DEU=BetrÑge in BerichtswÑhrung ausgeben;
+                                                              ENU=Show Amounts in Add. Reporting Currency];
+                                                   SourceExpr=AmountsInReportCurrency }
+      { 16  ;Label        ;0    ;4070 ;3300 ;880  ;ParentControl=15;
+                                                   MultiLine=Yes }
+      { 1150000;TextBox   ;3410 ;3410 ;2750 ;440  ;Lookup=Yes;
+                                                   CaptionML=[DEU=Nummernserie;
+                                                              ENU=No. Series];
+                                                   SourceExpr=NoSeries.Code;
+                                                   TableRelation="No. Series" }
+      { 1150001;Label     ;0    ;3410 ;3300 ;440  ;ParentControl=1150000 }
+      { 17  ;Frame        ;0    ;0    ;5390 ;1540 ;CaptionML=[DEU=Abrechnungsperiode;
+                                                              ENU=Statement Period] }
+    }
+  }
+  REQUESTPAGE
+  {
+    PROPERTIES
+    {
+      SaveValues=Yes;
+      OnInit=BEGIN
+               XMLFileNameControlVisible := TRUE;
+             END;
+
+      OnOpenPage=BEGIN
+                   XMLFileName := '';
+                   XMLFileNameControlVisible := NOT ISSERVICETIER;
+                 END;
+
+    }
+    CONTROLS
+    {
+      { 1900000001;0;Container;
+                  ContainerType=ContentArea }
+
+      { 1900000002;1;Group  ;
+                  CaptionML=[DEU=Optionen;
+                             ENU=Options] }
+
+      { 17  ;2   ;Group     ;
+                  CaptionML=[DEU=Abrechnungsperiode;
+                             ENU=Statement Period] }
+
+      { 3   ;3   ;Field     ;
+                  CaptionML=[DEU=Startdatum;
+                             ENU=Starting Date];
+                  SourceExpr=RepPeriodFrom }
+
+      { 5   ;3   ;Field     ;
+                  CaptionML=[DEU=Enddatum;
+                             ENU=Ending Date];
+                  SourceExpr=RepPeriodTo }
+
+      { 9   ;2   ;Field     ;
+                  CaptionML=[DEU=Berichtsdatum;
+                             ENU=Reporting Date];
+                  SourceExpr=Reportingdate }
+
+      { 7   ;2   ;Field     ;
+                  CaptionML=[DEU=Berichtstyp;
+                             ENU=Reporting Type];
+                  OptionCaptionML=[DEU=Normale öbertragung,RÅckruf eines frÅheren Berichts;
+                                   ENU=Normal transmission,Recall of an earlier report];
+                  SourceExpr=Reportingtype }
+
+      { 1   ;2   ;Field     ;
+                  Name=XMLFileNameControl;
+                  CaptionML=[DEU=XML-Dateiname;
+                             ENU=XML File Name];
+                  SourceExpr=XMLFileName;
+                  Visible=XMLFileNameControlVisible;
+                  OnAssistEdit=BEGIN
+                                 XMLFileName := CommonDialogMgt_CU.OpenFile(Text015,Exportfilename,4,TextExportFileType,1);
+                               END;
+                                }
+
+      { 1150000;2;Field     ;
+                  Lookup=Yes;
+                  CaptionML=[DEU=Nummernserie;
+                             ENU=No. Series];
+                  SourceExpr=NoSeries.Code;
+                  TableRelation="No. Series" }
+
+      { 15  ;2   ;Field     ;
+                  CaptionML=[DEU=BetrÑge in BerichtswÑhrung ausgeben;
+                             ENU=Show Amounts in Add. Reporting Currency];
+                  SourceExpr=AmountsInReportCurrency;
+                  MultiLine=Yes }
+
+    }
+  }
+  CODE
+  {
+    VAR
+      Text000@1160000 : TextConst 'DEU=Erneutes Aufrufen eines frÅheren Berichts;ENU=Recall of an earlier report';
+      Text001@1160001 : TextConst 'DEU=Dateiname darf nicht leer sein.;ENU=File Name must not be empty.';
+      Text002@1160002 : TextConst 'DEU=Das Berichtsdatum muss leer sein, falls die Kennzeichnung ''Normale öbertragung'' ist.;ENU=Reportingdate must be empty, if marking is "Normal transmission".';
+      Text003@1160003 : TextConst 'DEU=Das Berichtsdatum darf nicht leer sein, falls die Kennzeichnung ''Erneutes Aufrufen eines frÅheren Berichts'' ist.;ENU=Reportingdate must not be empty, if marking is "recall of an earlier report".';
+      Text014@1160014 : TextConst 'DEU=Debitor %1 %2 hat keine USt-IdNr.;ENU=Customer %1, %2 doesn''t have an UID.';
+      Text015@1140002 : TextConst 'DEU=R11108 Dateiname fÅr ZM;ENU=R11108 File Name for ZM';
+      Text1160004@1150004 : TextConst 'DEU=Sie haben keine Nummernserie definiert.;ENU=You didn''t define a No. Series.';
+      Text1160005@1150002 : TextConst 'DEU=Es wurde keine XML-Datei erstellt, weil Sie keinen XML-Dateinamen definiert haben.;ENU=No XML File was created, since you didn''t define a XML Filename.';
+      Text1160006@1150006 : TextConst 'DEU=Die Nummerserie %1 weist keine 9 Stellen auf.;ENU=The No. Series %1 has not 9 digits.';
+      Text1160007@1160016 : TextConst 'DEU=Die Nummernserie darf nur Zahlen enthalten.;ENU=The No. Series should only contain numbers.';
+      TextExportFileName@1140003 : TextConst 'DEU=ZM_jjjj_Qnn.xml;ENU=ZM_jjjj_Qnn.xml';
+      TextExportFileType@1140004 : TextConst 'DEU=XML-Dateien (*.xml)|*.xml|Alle Dateien (*.*)|*.*;ENU=XML Files (*.xml)|*.xml|All Files (*.*)|*.*';
+      Customer@1160024 : Record 18;
+      Companyinfo@1160018 : Record 79;
+      tempVATEntry@1160047 : TEMPORARY Record 254;
+      XMLFile@1150000 : File;
+      XMLFileName@1160017 : Text[250];
+      Filter@1160027 : Text[250];
+      VATRegNo@1160057 : Text[20];
+      Exportfilename@1160049 : Text[30];
+      RepPeriodFrom@1160020 : Date;
+      RepPeriodTo@1160021 : Date;
+      Reportingdate@1160022 : Date;
+      NoOfRecs@1160025 : Integer;
+      TotalSum@1160029 : Decimal;
+      TotalSumEU3PartyTrade@1160048 : Decimal;
+      Sum@1160050 : Decimal;
+      SumPrn@1160052 : Decimal;
+      SumXML@1160055 : Decimal;
+      SumEU3PartyTradeXML@1160056 : Decimal;
+      Reportingtype@1160034 : 'Normal transmission,Recall of an earlier report';
+      NoSeries@1150001 : Record 308;
+      NoSeriesMgt@1150003 : Codeunit 396;
+      CommonDialogMgt_CU@1000000001 : Codeunit 412;
+      PaketNr@1150005 : Code[9];
+      AmountsInReportCurrency@1160040 : Boolean;
+      GesamtrueckDone@1160054 : Boolean;
+      ToXMLFile@1160058 : Text[1024];
+      XMLFileNameControlVisible@19030808 : Boolean INDATASET;
+
+    PROCEDURE WriteXMLHeader@1160000();
+    BEGIN
+      GesamtrueckDone := FALSE;
+
+      IF NOT ISSERVICETIER THEN XMLFile.QUERYREPLACE(TRUE);
+      XMLFile.WRITEMODE(TRUE);
+      XMLFile.TEXTMODE(TRUE);
+      XMLFile.CREATE(XMLFileName);
+
+      XMLFile.WRITE('<?xml version="1.0" encoding="iso-8859-1"?>');
+      XMLFile.WRITE('<ERKLAERUNGS_UEBERMITTLUNG>');
+      XMLFile.WRITE('<INFO_DATEN>');
+      XMLFile.WRITE('<ART_IDENTIFIKATIONSBEGRIFF>FASTNR</ART_IDENTIFIKATIONSBEGRIFF>');
+      XMLFile.WRITE(STRSUBSTNO('<IDENTIFIKATIONSBEGRIFF>%1%2</IDENTIFIKATIONSBEGRIFF>',
+        Companyinfo."Tax Office Number",DELCHR(Companyinfo."Registration No.",'=','-/ ')));
+      XMLFile.WRITE(STRSUBSTNO('<PAKET_NR>%1</PAKET_NR>',PaketNr));
+      XMLFile.WRITE(STRSUBSTNO('<DATUM_ERSTELLUNG type="datum">%1</DATUM_ERSTELLUNG>',FORMAT(TODAY,10,'<YEAR4>-<MONTH,2>-<DAY,2>')));
+      XMLFile.WRITE(STRSUBSTNO('<UHRZEIT_ERSTELLUNG type="uhrzeit">%1</UHRZEIT_ERSTELLUNG>',
+        FORMAT(TIME,8,'<HOURS24,2><Filler Character,0>:<Minutes,2>:<seconds,2>')));
+      XMLFile.WRITE(STRSUBSTNO('<ANZAHL_ERKLAERUNGEN>%1</ANZAHL_ERKLAERUNGEN>',1));
+      XMLFile.WRITE('</INFO_DATEN>');
+      XMLFile.WRITE('<ERKLAERUNG art="U13">');
+    END;
+
+    PROCEDURE WriteXMLGeneral@1160001();
+    BEGIN
+      XMLFile.WRITE(STRSUBSTNO('<SATZNR>%1</SATZNR>',1));
+      XMLFile.WRITE('<ALLGEMEINE_DATEN>');
+      XMLFile.WRITE('<ANBRINGEN>U13</ANBRINGEN>');
+      XMLFile.WRITE(STRSUBSTNO('<ZRVON type="jahrmonat">%1</ZRVON>',FORMAT(RepPeriodFrom,7,'<YEAR4>-<MONTH,2>')));
+      XMLFile.WRITE(STRSUBSTNO('<ZRBIS type="jahrmonat">%1</ZRBIS>',FORMAT(RepPeriodTo,7,'<YEAR4>-<MONTH,2>')));
+      XMLFile.WRITE(STRSUBSTNO('<FASTNR>%1%2</FASTNR>',Companyinfo."Tax Office Number",DELCHR(Companyinfo."Registration No.",'=','-/ '))
+      );
+      XMLFile.WRITE(STRSUBSTNO('<KUNDENINFO>%1</KUNDENINFO>',DELCHR(FORMAT(DELCHR(Companyinfo.Name,'<>',' '),20),'<>',' ')));
+      XMLFile.WRITE('</ALLGEMEINE_DATEN>');
+    END;
+
+    PROCEDURE WriteXMLData@1160003(VATRegNo@1160000 : Text[20];Amount@1160001 : Decimal;EU3PartyTrade@1160002 : Boolean);
+    BEGIN
+      IF Reportingtype = Reportingtype::"Normal transmission" THEN BEGIN
+        XMLFile.WRITE('<ZM>');
+        XMLFile.WRITE(STRSUBSTNO('<UID_MS>%1</UID_MS>',DELCHR(FORMAT(DELCHR(VATRegNo,'<>',' '),15),'<>',' ')));
+        XMLFile.WRITE(STRSUBSTNO('<SUM_BGL type="kz">%1</SUM_BGL>',
+            DELCHR(FORMAT((ROUND((Amount * -100),100) / 100),11,'<Sign><integer>'),'<>',' ')));
+        IF EU3PartyTrade THEN
+          XMLFile.WRITE(STRSUBSTNO('<DREIECK>%1</DREIECK>',1))
+        ELSE
+          XMLFile.WRITE('<DREIECK/>');
+        XMLFile.WRITE('</ZM>');
+      END ELSE IF (Reportingtype = Reportingtype::"Recall of an earlier report") AND NOT GesamtrueckDone THEN BEGIN
+        XMLFile.WRITE('<GESAMTRUECKZIEHUNG>');
+        XMLFile.WRITE('<GESAMTRUECK>J</GESAMTRUECK>');
+        XMLFile.WRITE('</GESAMTRUECKZIEHUNG>');
+        GesamtrueckDone := TRUE;
+      END;
+    END;
+
+    PROCEDURE WriteXMLFooter@1160002();
+    BEGIN
+      XMLFile.WRITE('</ERKLAERUNG>');
+      XMLFile.WRITE('</ERKLAERUNGS_UEBERMITTLUNG>');
+      XMLFile.CLOSE;
+    END;
+
+    BEGIN
+    END.
+  }
+  RDLDATA
+  {
+    <?xml version="1.0" encoding="utf-8"?>
+<Report xmlns="http://schemas.microsoft.com/sqlserver/reporting/2005/01/reportdefinition" xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner">
+  <Body>
+    <Height>6.34893cm</Height>
+    <ReportItems>
+      <Table Name="Totaling">
+        <DataSetName>DataSet_Result</DataSetName>
+        <Footer>
+          <TableRows>
+            <TableRow>
+              <Height>0.423cm</Height>
+              <TableCells>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="textbox25">
+                      <Style>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                      </Style>
+                      <Value />
+                      <rd:DefaultName>textbox25</rd:DefaultName>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="textbox6">
+                      <Style>
+                        <FontSize>7pt</FontSize>
+                        <FontWeight>700</FontWeight>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <VerticalAlign>Middle</VerticalAlign>
+                      </Style>
+                      <Value>=Last(Fields!TotalSumCaption.Value)</Value>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="textbox7">
+                      <CanGrow>true</CanGrow>
+                      <Style>
+                        <FontSize>7pt</FontSize>
+                        <FontWeight>700</FontWeight>
+                        <Format>=Last(Fields!TotalSumFormat.Value)</Format>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <VerticalAlign>Middle</VerticalAlign>
+                      </Style>
+                      <Value>=Last(Fields!TotalSum.Value)</Value>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="textbox24">
+                      <CanGrow>true</CanGrow>
+                      <Style>
+                        <FontSize>7pt</FontSize>
+                        <Format>=Last(Fields!TotalSumEU3PartyTradeFormat.Value)</Format>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <VerticalAlign>Middle</VerticalAlign>
+                      </Style>
+                      <Value>=Last(Fields!TotalSumEU3PartyTrade.Value)</Value>
+                      <rd:DefaultName>textbox24</rd:DefaultName>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+              </TableCells>
+              <Visibility>
+                <Hidden>=Not(Fields!NoOfRecs.Value&lt;&gt;0)</Hidden>
+              </Visibility>
+            </TableRow>
+          </TableRows>
+        </Footer>
+        <TableColumns>
+          <TableColumn>
+            <Width>7.65cm</Width>
+          </TableColumn>
+          <TableColumn>
+            <Width>2.4cm</Width>
+          </TableColumn>
+          <TableColumn>
+            <Width>3.15cm</Width>
+          </TableColumn>
+          <TableColumn>
+            <Width>2.85cm</Width>
+          </TableColumn>
+        </TableColumns>
+        <Top>2.33333in</Top>
+        <Width>6.31969in</Width>
+        <ZIndex>2</ZIndex>
+      </Table>
+      <Table Name="Integer">
+        <DataSetName>DataSet_Result</DataSetName>
+        <Details>
+          <TableRows>
+            <TableRow>
+              <Height>0.423cm</Height>
+              <TableCells>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="textbox8">
+                      <Style>
+                        <FontSize>7pt</FontSize>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <VerticalAlign>Middle</VerticalAlign>
+                      </Style>
+                      <Value>=Fields!tempVATEntry__Country_Region_Code_.Value</Value>
+                      <rd:DefaultName>textbox8</rd:DefaultName>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="textbox9">
+                      <Style>
+                        <FontSize>7pt</FontSize>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <VerticalAlign>Middle</VerticalAlign>
+                      </Style>
+                      <Value>=Fields!tempVATEntry__VAT_Registration_No__.Value</Value>
+                      <rd:DefaultName>textbox9</rd:DefaultName>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="textbox10">
+                      <Style>
+                        <FontSize>7pt</FontSize>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <TextAlign>=IIf(IsNumeric(Fields!tempVATEntry__Bill_to_Pay_to_No__.Value),"Right","Left")</TextAlign>
+                        <VerticalAlign>Middle</VerticalAlign>
+                      </Style>
+                      <Value>=Fields!tempVATEntry__Bill_to_Pay_to_No__.Value</Value>
+                      <rd:DefaultName>textbox10</rd:DefaultName>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="textbox17">
+                      <Style>
+                        <FontSize>7pt</FontSize>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <VerticalAlign>Middle</VerticalAlign>
+                      </Style>
+                      <Value>=Fields!Customer_Name.Value</Value>
+                      <rd:DefaultName>textbox17</rd:DefaultName>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="textbox20">
+                      <CanGrow>true</CanGrow>
+                      <Style>
+                        <FontSize>7pt</FontSize>
+                        <Format>=Fields!SumPrnFormat.Value</Format>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <VerticalAlign>Middle</VerticalAlign>
+                      </Style>
+                      <Value>=Fields!SumPrn.Value</Value>
+                      <rd:DefaultName>textbox20</rd:DefaultName>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="textbox22">
+                      <Style>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                      </Style>
+                      <Value />
+                      <rd:DefaultName>textbox22</rd:DefaultName>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+              </TableCells>
+              <Visibility>
+                <Hidden>=Fields!tempVATEntry__EU_3_Party_Trade_.Value</Hidden>
+              </Visibility>
+            </TableRow>
+            <TableRow>
+              <Height>0.423cm</Height>
+              <TableCells>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="textbox11">
+                      <Style>
+                        <FontSize>7pt</FontSize>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <VerticalAlign>Middle</VerticalAlign>
+                      </Style>
+                      <Value>=Fields!tempVATEntry__Country_Region_Code_.Value</Value>
+                      <rd:DefaultName>textbox11</rd:DefaultName>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="textbox14">
+                      <Style>
+                        <FontSize>7pt</FontSize>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <VerticalAlign>Middle</VerticalAlign>
+                      </Style>
+                      <Value>=Fields!tempVATEntry__VAT_Registration_No__.Value</Value>
+                      <rd:DefaultName>textbox14</rd:DefaultName>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="textbox15">
+                      <Style>
+                        <FontSize>7pt</FontSize>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <TextAlign>=IIf(IsNumeric(Fields!tempVATEntry__Bill_to_Pay_to_No__.Value),"Right","Left")</TextAlign>
+                        <VerticalAlign>Middle</VerticalAlign>
+                      </Style>
+                      <Value>=Fields!tempVATEntry__Bill_to_Pay_to_No__.Value</Value>
+                      <rd:DefaultName>textbox15</rd:DefaultName>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="textbox18">
+                      <Style>
+                        <FontSize>7pt</FontSize>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <VerticalAlign>Middle</VerticalAlign>
+                      </Style>
+                      <Value>=Fields!Customer_Name.Value</Value>
+                      <rd:DefaultName>textbox18</rd:DefaultName>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="textbox21">
+                      <Style>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                      </Style>
+                      <Value />
+                      <rd:DefaultName>textbox21</rd:DefaultName>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="textbox23">
+                      <CanGrow>true</CanGrow>
+                      <Style>
+                        <FontSize>7pt</FontSize>
+                        <Format>=Fields!SumPrnFormat.Value</Format>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <VerticalAlign>Middle</VerticalAlign>
+                      </Style>
+                      <Value>=Fields!SumPrn.Value</Value>
+                      <rd:DefaultName>textbox23</rd:DefaultName>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+              </TableCells>
+              <Visibility>
+                <Hidden>=IIf(Fields!tempVATEntry__EU_3_Party_Trade_.Value,false,true)</Hidden>
+              </Visibility>
+            </TableRow>
+          </TableRows>
+        </Details>
+        <Filters>
+          <Filter>
+            <FilterExpression>=Len(Fields!IntegerCaption.Value)</FilterExpression>
+            <FilterValues>
+              <FilterValue>=0</FilterValue>
+            </FilterValues>
+            <Operator>NotEqual</Operator>
+          </Filter>
+        </Filters>
+        <Height>0.33311in</Height>
+        <TableColumns>
+          <TableColumn>
+            <Width>1.65cm</Width>
+          </TableColumn>
+          <TableColumn>
+            <Width>2.1cm</Width>
+          </TableColumn>
+          <TableColumn>
+            <Width>1.65cm</Width>
+          </TableColumn>
+          <TableColumn>
+            <Width>4.65cm</Width>
+          </TableColumn>
+          <TableColumn>
+            <Width>3.15cm</Width>
+          </TableColumn>
+          <TableColumn>
+            <Width>2.85cm</Width>
+          </TableColumn>
+        </TableColumns>
+        <Top>2in</Top>
+        <Width>6.31969in</Width>
+        <ZIndex>1</ZIndex>
+      </Table>
+      <Table Name="VATEntry">
+        <DataSetName>DataSet_Result</DataSetName>
+        <Filters>
+          <Filter>
+            <FilterExpression>=Fields!VAT__VIES_Declaration_DiskCaption.Value</FilterExpression>
+            <FilterValues>
+              <FilterValue>=""</FilterValue>
+            </FilterValues>
+            <Operator>NotEqual</Operator>
+          </Filter>
+        </Filters>
+        <Header>
+          <TableRows>
+            <TableRow>
+              <Height>0.423cm</Height>
+              <TableCells>
+                <TableCell>
+                  <ColSpan>5</ColSpan>
+                  <ReportItems>
+                    <Textbox Name="textbox12">
+                      <CanGrow>true</CanGrow>
+                      <Style>
+                        <FontSize>8pt</FontSize>
+                        <FontWeight>700</FontWeight>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <VerticalAlign>Middle</VerticalAlign>
+                      </Style>
+                      <Value>=Fields!VAT__VIES_Declaration_DiskCaption.Value</Value>
+                      <rd:DefaultName>textbox12</rd:DefaultName>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ColSpan>3</ColSpan>
+                  <ReportItems>
+                    <Textbox Name="textbox112">
+                      <CanGrow>true</CanGrow>
+                      <Style>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                      </Style>
+                      <Value />
+                      <rd:DefaultName>textbox112</rd:DefaultName>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ColSpan>2</ColSpan>
+                  <ReportItems>
+                    <Textbox Name="textbox13">
+                      <CanGrow>true</CanGrow>
+                      <Style>
+                        <FontSize>7pt</FontSize>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingTop>2pt</PaddingTop>
+                        <TextAlign>Right</TextAlign>
+                        <VerticalAlign>Middle</VerticalAlign>
+                      </Style>
+                      <Value>=Fields!FORMAT_TODAY_0_4_.Value</Value>
+                      <rd:DefaultName>textbox13</rd:DefaultName>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+              </TableCells>
+            </TableRow>
+            <TableRow>
+              <Height>0.423cm</Height>
+              <TableCells>
+                <TableCell>
+                  <ColSpan>5</ColSpan>
+                  <ReportItems>
+                    <Textbox Name="textbox31">
+                      <CanGrow>true</CanGrow>
+                      <Style>
+                        <FontSize>7pt</FontSize>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <VerticalAlign>Middle</VerticalAlign>
+                      </Style>
+                      <Value>=Fields!COMPANYNAME.Value</Value>
+                      <rd:DefaultName>textbox31</rd:DefaultName>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ColSpan>4</ColSpan>
+                  <ReportItems>
+                    <Textbox Name="textbox113">
+                      <CanGrow>true</CanGrow>
+                      <Style>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                      </Style>
+                      <Value />
+                      <rd:DefaultName>textbox113</rd:DefaultName>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="textbox39">
+                      <CanGrow>true</CanGrow>
+                      <Style>
+                        <FontSize>7pt</FontSize>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingTop>2pt</PaddingTop>
+                        <TextAlign>Right</TextAlign>
+                        <VerticalAlign>Middle</VerticalAlign>
+                      </Style>
+                      <Value>=Fields!USERID.Value</Value>
+                      <rd:DefaultName>textbox39</rd:DefaultName>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+              </TableCells>
+            </TableRow>
+            <TableRow>
+              <Height>0.423cm</Height>
+              <TableCells>
+                <TableCell>
+                  <ColSpan>10</ColSpan>
+                  <ReportItems>
+                    <Textbox Name="textbox19">
+                      <CanGrow>true</CanGrow>
+                      <Style>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                      </Style>
+                      <Value />
+                      <rd:DefaultName>textbox19</rd:DefaultName>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+              </TableCells>
+            </TableRow>
+            <TableRow>
+              <Height>0.423cm</Height>
+              <TableCells>
+                <TableCell>
+                  <ColSpan>3</ColSpan>
+                  <ReportItems>
+                    <Textbox Name="textbox40">
+                      <CanGrow>true</CanGrow>
+                      <Style>
+                        <FontSize>7pt</FontSize>
+                        <FontWeight>700</FontWeight>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <TextAlign>Left</TextAlign>
+                        <VerticalAlign>Bottom</VerticalAlign>
+                      </Style>
+                      <Value>=Fields!Reportingperiod_fromCaption.Value</Value>
+                      <rd:DefaultName>textbox40</rd:DefaultName>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ColSpan>2</ColSpan>
+                  <ReportItems>
+                    <Textbox Name="textbox43">
+                      <CanGrow>true</CanGrow>
+                      <Style>
+                        <FontSize>7pt</FontSize>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <VerticalAlign>Bottom</VerticalAlign>
+                      </Style>
+                      <Value>=Fields!RepPeriodFrom.Value</Value>
+                      <rd:DefaultName>textbox43</rd:DefaultName>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ColSpan>5</ColSpan>
+                  <ReportItems>
+                    <Textbox Name="textbox114">
+                      <CanGrow>true</CanGrow>
+                      <Style>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                      </Style>
+                      <Value />
+                      <rd:DefaultName>textbox114</rd:DefaultName>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+              </TableCells>
+            </TableRow>
+            <TableRow>
+              <Height>0.423cm</Height>
+              <TableCells>
+                <TableCell>
+                  <ColSpan>3</ColSpan>
+                  <ReportItems>
+                    <Textbox Name="textbox49">
+                      <CanGrow>true</CanGrow>
+                      <Style>
+                        <FontSize>7pt</FontSize>
+                        <FontWeight>700</FontWeight>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <TextAlign>Left</TextAlign>
+                        <VerticalAlign>Bottom</VerticalAlign>
+                      </Style>
+                      <Value>=Fields!Reportingperiod_toCaption.Value</Value>
+                      <rd:DefaultName>textbox49</rd:DefaultName>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ColSpan>2</ColSpan>
+                  <ReportItems>
+                    <Textbox Name="textbox52">
+                      <CanGrow>true</CanGrow>
+                      <Style>
+                        <FontSize>7pt</FontSize>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <VerticalAlign>Bottom</VerticalAlign>
+                      </Style>
+                      <Value>=Fields!RepPeriodTo.Value</Value>
+                      <rd:DefaultName>textbox52</rd:DefaultName>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ColSpan>5</ColSpan>
+                  <ReportItems>
+                    <Textbox Name="textbox115">
+                      <CanGrow>true</CanGrow>
+                      <Style>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                      </Style>
+                      <Value />
+                      <rd:DefaultName>textbox115</rd:DefaultName>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+              </TableCells>
+            </TableRow>
+            <TableRow>
+              <Height>0.423cm</Height>
+              <TableCells>
+                <TableCell>
+                  <ColSpan>3</ColSpan>
+                  <ReportItems>
+                    <Textbox Name="textbox58">
+                      <CanGrow>true</CanGrow>
+                      <Style>
+                        <FontSize>7pt</FontSize>
+                        <FontWeight>700</FontWeight>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <TextAlign>Left</TextAlign>
+                        <VerticalAlign>Bottom</VerticalAlign>
+                      </Style>
+                      <Value>=Fields!FilterCaption.Value</Value>
+                      <rd:DefaultName>textbox58</rd:DefaultName>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ColSpan>7</ColSpan>
+                  <ReportItems>
+                    <Textbox Name="textbox61">
+                      <CanGrow>true</CanGrow>
+                      <Style>
+                        <FontSize>7pt</FontSize>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingTop>2pt</PaddingTop>
+                        <VerticalAlign>Bottom</VerticalAlign>
+                      </Style>
+                      <Value>=Fields!Filter.Value</Value>
+                      <rd:DefaultName>textbox61</rd:DefaultName>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+              </TableCells>
+            </TableRow>
+            <TableRow>
+              <Height>0.423cm</Height>
+              <TableCells>
+                <TableCell>
+                  <ColSpan>3</ColSpan>
+                  <ReportItems>
+                    <Textbox Name="textbox1">
+                      <CanGrow>true</CanGrow>
+                      <Style>
+                        <FontSize>7pt</FontSize>
+                        <FontWeight>700</FontWeight>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <TextAlign>Left</TextAlign>
+                        <VerticalAlign>Bottom</VerticalAlign>
+                      </Style>
+                      <Value>=Fields!XMLFileNameCaption.Value</Value>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ColSpan>7</ColSpan>
+                  <ReportItems>
+                    <Textbox Name="textbox3">
+                      <CanGrow>true</CanGrow>
+                      <Style>
+                        <FontSize>7pt</FontSize>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingTop>2pt</PaddingTop>
+                        <VerticalAlign>Bottom</VerticalAlign>
+                      </Style>
+                      <Value>=Fields!XMLFileName.Value</Value>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+              </TableCells>
+            </TableRow>
+            <TableRow>
+              <Height>0.423cm</Height>
+              <TableCells>
+                <TableCell>
+                  <ColSpan>3</ColSpan>
+                  <ReportItems>
+                    <Textbox Name="textbox2">
+                      <CanGrow>true</CanGrow>
+                      <Style>
+                        <FontSize>7pt</FontSize>
+                        <FontWeight>700</FontWeight>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <TextAlign>Left</TextAlign>
+                        <VerticalAlign>Bottom</VerticalAlign>
+                      </Style>
+                      <Value>=Fields!PaketNrCaption.Value</Value>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ColSpan>7</ColSpan>
+                  <ReportItems>
+                    <Textbox Name="textbox4">
+                      <CanGrow>true</CanGrow>
+                      <Style>
+                        <FontSize>7pt</FontSize>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingTop>2pt</PaddingTop>
+                        <VerticalAlign>Bottom</VerticalAlign>
+                      </Style>
+                      <Value>=Fields!PaketNr.Value</Value>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+              </TableCells>
+            </TableRow>
+            <TableRow>
+              <Height>0.423cm</Height>
+              <TableCells>
+                <TableCell>
+                  <ColSpan>10</ColSpan>
+                  <ReportItems>
+                    <Textbox Name="textbox85">
+                      <CanGrow>true</CanGrow>
+                      <Style>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                      </Style>
+                      <Value />
+                      <rd:DefaultName>textbox85</rd:DefaultName>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+              </TableCells>
+            </TableRow>
+            <TableRow>
+              <Height>0.846cm</Height>
+              <TableCells>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="textbox103">
+                      <CanGrow>true</CanGrow>
+                      <Style>
+                        <FontSize>7pt</FontSize>
+                        <FontWeight>700</FontWeight>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <VerticalAlign>Bottom</VerticalAlign>
+                      </Style>
+                      <Value>=Fields!tempVATEntry__Country_Region_Code_Caption.Value</Value>
+                      <rd:DefaultName>textbox103</rd:DefaultName>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="textbox104">
+                      <CanGrow>true</CanGrow>
+                      <Style>
+                        <FontSize>7pt</FontSize>
+                        <FontWeight>700</FontWeight>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <VerticalAlign>Bottom</VerticalAlign>
+                      </Style>
+                      <Value>=Fields!tempVATEntry__VAT_Registration_No__Caption.Value</Value>
+                      <rd:DefaultName>textbox104</rd:DefaultName>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ColSpan>2</ColSpan>
+                  <ReportItems>
+                    <Textbox Name="textbox105">
+                      <CanGrow>true</CanGrow>
+                      <Style>
+                        <FontSize>7pt</FontSize>
+                        <FontWeight>700</FontWeight>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <VerticalAlign>Bottom</VerticalAlign>
+                      </Style>
+                      <Value>=Fields!tempVATEntry__Bill_to_Pay_to_No__Caption.Value</Value>
+                      <rd:DefaultName>textbox105</rd:DefaultName>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ColSpan>2</ColSpan>
+                  <ReportItems>
+                    <Textbox Name="textbox107">
+                      <CanGrow>true</CanGrow>
+                      <Style>
+                        <FontSize>7pt</FontSize>
+                        <FontWeight>700</FontWeight>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <VerticalAlign>Bottom</VerticalAlign>
+                      </Style>
+                      <Value>=Fields!Customer_NameCaption.Value</Value>
+                      <rd:DefaultName>textbox107</rd:DefaultName>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="textbox108">
+                      <CanGrow>true</CanGrow>
+                      <Style>
+                        <FontSize>7pt</FontSize>
+                        <FontWeight>700</FontWeight>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>4pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <TextAlign>Right</TextAlign>
+                        <VerticalAlign>Bottom</VerticalAlign>
+                      </Style>
+                      <Value>=Fields!SumPrnCaption.Value</Value>
+                      <rd:DefaultName>textbox108</rd:DefaultName>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ColSpan>2</ColSpan>
+                  <ReportItems>
+                    <Textbox Name="textbox109">
+                      <CanGrow>true</CanGrow>
+                      <Style>
+                        <FontSize>7pt</FontSize>
+                        <FontWeight>700</FontWeight>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <TextAlign>Right</TextAlign>
+                        <VerticalAlign>Bottom</VerticalAlign>
+                      </Style>
+                      <Value>=Fields!SumPrn_Control1160019Caption.Value</Value>
+                      <rd:DefaultName>textbox109</rd:DefaultName>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="textbox111">
+                      <CanGrow>true</CanGrow>
+                      <Style>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                      </Style>
+                      <Value />
+                      <rd:DefaultName>textbox111</rd:DefaultName>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+              </TableCells>
+            </TableRow>
+            <TableRow>
+              <Height>0.423cm</Height>
+              <TableCells>
+                <TableCell>
+                  <ColSpan>10</ColSpan>
+                  <ReportItems>
+                    <Textbox Name="textbox16">
+                      <CanGrow>true</CanGrow>
+                      <Style>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                      </Style>
+                      <Value />
+                      <rd:DefaultName>textbox16</rd:DefaultName>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+              </TableCells>
+            </TableRow>
+          </TableRows>
+        </Header>
+        <Height>1.99868in</Height>
+        <TableColumns>
+          <TableColumn>
+            <Width>1.65cm</Width>
+          </TableColumn>
+          <TableColumn>
+            <Width>2.1cm</Width>
+          </TableColumn>
+          <TableColumn>
+            <Width>0.9cm</Width>
+          </TableColumn>
+          <TableColumn>
+            <Width>0.75cm</Width>
+          </TableColumn>
+          <TableColumn>
+            <Width>2.09cm</Width>
+          </TableColumn>
+          <TableColumn>
+            <Width>2.56cm</Width>
+          </TableColumn>
+          <TableColumn>
+            <Width>3.15cm</Width>
+          </TableColumn>
+          <TableColumn>
+            <Width>1.8cm</Width>
+          </TableColumn>
+          <TableColumn>
+            <Width>1.05cm</Width>
+          </TableColumn>
+          <TableColumn>
+            <Width>2.1cm</Width>
+          </TableColumn>
+        </TableColumns>
+      </Table>
+    </ReportItems>
+  </Body>
+  <BottomMargin>2cm</BottomMargin>
+  <Code>Public Function BlankZero(ByVal Value As Decimal)
+    if Value = 0 then
+        Return ""
+    end if
+    Return Value
+End Function
+
+Public Function BlankPos(ByVal Value As Decimal)
+    if Value &gt; 0 then
+        Return ""
+    end if
+    Return Value
+End Function
+
+Public Function BlankZeroAndPos(ByVal Value As Decimal)
+    if Value &gt;= 0 then
+        Return ""
+    end if
+    Return Value
+End Function
+
+Public Function BlankNeg(ByVal Value As Decimal)
+    if Value &lt; 0 then
+        Return ""
+    end if
+    Return Value
+End Function
+
+Public Function BlankNegAndZero(ByVal Value As Decimal)
+    if Value &lt;= 0 then
+        Return ""
+    end if
+    Return Value
+End Function
+</Code>
+  <DataSets>
+    <DataSet Name="DataSet_Result">
+      <Query>
+        <CommandText />
+        <DataSourceName>DummyDataSource</DataSourceName>
+      </Query>
+      <Fields>
+        <Field Name="Filter">
+          <DataField>Filter</DataField>
+        </Field>
+        <Field Name="USERID">
+          <DataField>USERID</DataField>
+        </Field>
+        <Field Name="FORMAT_TODAY_0_4_">
+          <DataField>FORMAT_TODAY_0_4_</DataField>
+        </Field>
+        <Field Name="VAT__VIES_Declaration_DiskCaption">
+          <DataField>VAT__VIES_Declaration_DiskCaption</DataField>
+        </Field>
+        <Field Name="COMPANYNAME">
+          <DataField>COMPANYNAME</DataField>
+        </Field>
+        <Field Name="RepPeriodFrom">
+          <DataField>RepPeriodFrom</DataField>
+        </Field>
+        <Field Name="Reportingperiod_fromCaption">
+          <DataField>Reportingperiod_fromCaption</DataField>
+        </Field>
+        <Field Name="RepPeriodTo">
+          <DataField>RepPeriodTo</DataField>
+        </Field>
+        <Field Name="Reportingperiod_toCaption">
+          <DataField>Reportingperiod_toCaption</DataField>
+        </Field>
+        <Field Name="FilterCaption">
+          <DataField>FilterCaption</DataField>
+        </Field>
+        <Field Name="XMLFileNameCaption">
+          <DataField>XMLFileNameCaption</DataField>
+        </Field>
+        <Field Name="XMLFileName">
+          <DataField>XMLFileName</DataField>
+        </Field>
+        <Field Name="PaketNr">
+          <DataField>PaketNr</DataField>
+        </Field>
+        <Field Name="PaketNrCaption">
+          <DataField>PaketNrCaption</DataField>
+        </Field>
+        <Field Name="NoOfRecs">
+          <DataField>NoOfRecs</DataField>
+        </Field>
+        <Field Name="SumPrn_Control1160019Caption">
+          <DataField>SumPrn_Control1160019Caption</DataField>
+        </Field>
+        <Field Name="SumPrnCaption">
+          <DataField>SumPrnCaption</DataField>
+        </Field>
+        <Field Name="Customer_NameCaption">
+          <DataField>Customer_NameCaption</DataField>
+        </Field>
+        <Field Name="tempVATEntry__Bill_to_Pay_to_No__Caption">
+          <DataField>tempVATEntry__Bill_to_Pay_to_No__Caption</DataField>
+        </Field>
+        <Field Name="tempVATEntry__VAT_Registration_No__Caption">
+          <DataField>tempVATEntry__VAT_Registration_No__Caption</DataField>
+        </Field>
+        <Field Name="tempVATEntry__Country_Region_Code_Caption">
+          <DataField>tempVATEntry__Country_Region_Code_Caption</DataField>
+        </Field>
+        <Field Name="VAT_Entry_Entry_No_">
+          <DataField>VAT_Entry_Entry_No_</DataField>
+        </Field>
+        <Field Name="SumPrn">
+          <DataField>SumPrn</DataField>
+        </Field>
+        <Field Name="SumPrnFormat">
+          <DataField>SumPrnFormat</DataField>
+        </Field>
+        <Field Name="Customer_Name">
+          <DataField>Customer_Name</DataField>
+        </Field>
+        <Field Name="tempVATEntry__Bill_to_Pay_to_No__">
+          <DataField>tempVATEntry__Bill_to_Pay_to_No__</DataField>
+        </Field>
+        <Field Name="tempVATEntry__VAT_Registration_No__">
+          <DataField>tempVATEntry__VAT_Registration_No__</DataField>
+        </Field>
+        <Field Name="tempVATEntry__Country_Region_Code_">
+          <DataField>tempVATEntry__Country_Region_Code_</DataField>
+        </Field>
+        <Field Name="IntegerCaption">
+          <DataField>IntegerCaption</DataField>
+        </Field>
+        <Field Name="tempVATEntry__EU_3_Party_Trade_">
+          <DataField>tempVATEntry__EU_3_Party_Trade_</DataField>
+        </Field>
+        <Field Name="SumPrn_Control1160019Format">
+          <DataField>SumPrn_Control1160019Format</DataField>
+        </Field>
+        <Field Name="TotalSum">
+          <DataField>TotalSum</DataField>
+        </Field>
+        <Field Name="TotalSumFormat">
+          <DataField>TotalSumFormat</DataField>
+        </Field>
+        <Field Name="TotalSumCaption">
+          <DataField>TotalSumCaption</DataField>
+        </Field>
+        <Field Name="TotalSumEU3PartyTrade">
+          <DataField>TotalSumEU3PartyTrade</DataField>
+        </Field>
+        <Field Name="TotalSumEU3PartyTradeFormat">
+          <DataField>TotalSumEU3PartyTradeFormat</DataField>
+        </Field>
+      </Fields>
+      <rd:DataSetInfo>
+        <rd:DataSetName>DataSet</rd:DataSetName>
+        <rd:TableName>Result</rd:TableName>
+      </rd:DataSetInfo>
+    </DataSet>
+  </DataSets>
+  <DataSources>
+    <DataSource Name="DummyDataSource">
+      <ConnectionProperties>
+        <ConnectString />
+        <DataProvider>SQL</DataProvider>
+      </ConnectionProperties>
+      <rd:DataSourceID>3182e67e-b220-4236-893f-afae50f11e51</rd:DataSourceID>
+    </DataSource>
+  </DataSources>
+  <InteractiveHeight>11in</InteractiveHeight>
+  <InteractiveWidth>8.5in</InteractiveWidth>
+  <Language>=User!Language</Language>
+  <LeftMargin>1.5cm</LeftMargin>
+  <PageHeight>29.7cm</PageHeight>
+  <PageWidth>21cm</PageWidth>
+  <TopMargin>2cm</TopMargin>
+  <Width>18.15cm</Width>
+  <rd:DrawGrid>true</rd:DrawGrid>
+  <rd:ReportID>0aac6029-2809-41cf-92e3-2b94d5fd5874</rd:ReportID>
+  <rd:SnapToGrid>true</rd:SnapToGrid>
+</Report>
+    END_OF_RDLDatA
+  }
+}
+

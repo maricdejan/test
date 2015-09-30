@@ -1,0 +1,100 @@
+OBJECT Page 9030 Account Manager Activities
+{
+  OBJECT-PROPERTIES
+  {
+    Date=05.11.08;
+    Time=12:00:00;
+    Version List=NAVW16.00;
+  }
+  PROPERTIES
+  {
+    CaptionML=[DEU=Aktivit„ten;
+               ENU=Activities];
+    SourceTable=Table9054;
+    PageType=CardPart;
+    OnOpenPage=BEGIN
+                 RESET;
+                 IF NOT GET THEN BEGIN
+                   INIT;
+                   INSERT;
+                 END;
+
+                 SETFILTER("Due Date Filter",'<=%1',WORKDATE);
+                 SETFILTER("Overdue Date Filter",'<%1',WORKDATE);
+               END;
+
+  }
+  CONTROLS
+  {
+    { 1900000001;0;Container;
+                ContainerType=ContentArea }
+
+    { 6   ;1   ;Group     ;
+                CaptionML=[DEU=Zahlungen;
+                           ENU=Payments];
+                GroupType=CueGroup;
+                ActionList=ACTIONS
+                {
+                  { 1       ;0   ;Action    ;
+                                  CaptionML=[DEU=Zahlungseingangs Buch.-Blatt bearbeiten;
+                                             ENU=Edit Cash Receipt Journal];
+                                  RunObject=Page 255 }
+                  { 3       ;0   ;Action    ;
+                                  CaptionML=[DEU=Neue Verkaufsgutschrift;
+                                             ENU=New Sales Credit Memo];
+                                  RunObject=Page 44;
+                                  RunFormMode=Create }
+                  { 4       ;0   ;Action    ;
+                                  CaptionML=[DEU=Zahlungsausgangs Buch.-Blatt bearbeiten;
+                                             ENU=Edit Payment Journal];
+                                  RunObject=Page 256 }
+                  { 5       ;0   ;Action    ;
+                                  CaptionML=[DEU=Neue Einkaufsgutschrift;
+                                             ENU=New Purchase Credit Memo];
+                                  RunObject=Page 52;
+                                  RunFormMode=Create }
+                }
+                 }
+
+    { 7   ;2   ;Field     ;
+                SourceExpr="Overdue Sales Invoices";
+                DrillDownFormID=Customer Ledger Entries }
+
+    { 9   ;2   ;Field     ;
+                SourceExpr="Purchase Invoices Due Today";
+                DrillDownFormID=Vendor Ledger Entries }
+
+    { 19  ;1   ;Group     ;
+                CaptionML=[DEU=Beleggenehmigungen;
+                           ENU=Document Approvals];
+                GroupType=CueGroup;
+                ActionList=ACTIONS
+                {
+                  { 25      ;0   ;Action    ;
+                                  CaptionML=[DEU=Mahnungen erstellen...;
+                                             ENU=Create Reminders...];
+                                  RunObject=Report 188 }
+                  { 26      ;0   ;Action    ;
+                                  CaptionML=[DEU=Zinsrechnungen erstellen...;
+                                             ENU=Create Finance Charge Memos...];
+                                  RunObject=Report 191 }
+                }
+                 }
+
+    { 23  ;2   ;Field     ;
+                SourceExpr="POs Pending Approval";
+                DrillDownFormID=Purchase Order List }
+
+    { 20  ;2   ;Field     ;
+                SourceExpr="SOs Pending Approval";
+                DrillDownFormID=Sales Order List }
+
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

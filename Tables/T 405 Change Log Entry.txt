@@ -1,0 +1,101 @@
+OBJECT Table 405 Change Log Entry
+{
+  OBJECT-PROPERTIES
+  {
+    Date=05.11.08;
+    Time=12:00:00;
+    Version List=NAVW16.00;
+  }
+  PROPERTIES
+  {
+    CaptionML=[DEU=énderungsprotokollposten;
+               ENU=Change Log Entry];
+    LookupFormID=Form595;
+    DrillDownFormID=Form595;
+  }
+  FIELDS
+  {
+    { 1   ;   ;Entry No.           ;BigInteger    ;AutoIncrement=Yes;
+                                                   CaptionML=[DEU=Lfd. Nr.;
+                                                              ENU=Entry No.] }
+    { 2   ;   ;Date and Time       ;DateTime      ;CaptionML=[DEU=Datum und Uhrzeit;
+                                                              ENU=Date and Time] }
+    { 3   ;   ;Time                ;Time          ;CaptionML=[DEU=Zeit;
+                                                              ENU=Time] }
+    { 4   ;   ;User ID             ;Code20        ;CaptionML=[DEU=Benutzer-ID;
+                                                              ENU=User ID] }
+    { 5   ;   ;Table No.           ;Integer       ;TableRelation=AllObj."Object ID" WHERE (Object Type=CONST(Table));
+                                                   CaptionML=[DEU=Tabellennr.;
+                                                              ENU=Table No.] }
+    { 6   ;   ;Table Name          ;Text80        ;FieldClass=FlowField;
+                                                   CalcFormula=Lookup(AllObjWithCaption."Object Caption" WHERE (Object Type=CONST(Table),
+                                                                                                                Object ID=FIELD(Table No.)));
+                                                   CaptionML=[DEU=Tabellenname;
+                                                              ENU=Table Name] }
+    { 7   ;   ;Field No.           ;Integer       ;TableRelation=Field.No. WHERE (TableNo=FIELD(Table No.));
+                                                   CaptionML=[DEU=Feldnr.;
+                                                              ENU=Field No.] }
+    { 8   ;   ;Field Name          ;Text80        ;FieldClass=FlowField;
+                                                   CalcFormula=Lookup(Field."Field Caption" WHERE (TableNo=FIELD(Table No.),
+                                                                                                   No.=FIELD(Field No.)));
+                                                   CaptionML=[DEU=Feldname;
+                                                              ENU=Field Name] }
+    { 9   ;   ;Type of Change      ;Option        ;CaptionML=[DEU=énderungsart;
+                                                              ENU=Type of Change];
+                                                   OptionCaptionML=[DEU=EinfÅgen,Bearbeiten,Lîschen;
+                                                                    ENU=Insertion,Modification,Deletion];
+                                                   OptionString=Insertion,Modification,Deletion }
+    { 10  ;   ;Old Value           ;Text250       ;CaptionML=[DEU=Alter Wert;
+                                                              ENU=Old Value] }
+    { 11  ;   ;New Value           ;Text250       ;CaptionML=[DEU=Neuer Wert;
+                                                              ENU=New Value] }
+    { 12  ;   ;Primary Key         ;Text250       ;CaptionML=[DEU=PrimÑrschlÅssel;
+                                                              ENU=Primary Key] }
+    { 13  ;   ;Primary Key Field 1 No.;Integer    ;TableRelation=Field.No. WHERE (TableNo=FIELD(Table No.));
+                                                   CaptionML=[DEU=PrimÑrschlÅsselfeld 1 Nr.;
+                                                              ENU=Primary Key Field 1 No.] }
+    { 14  ;   ;Primary Key Field 1 Name;Text80    ;FieldClass=FlowField;
+                                                   CalcFormula=Lookup(Field."Field Caption" WHERE (TableNo=FIELD(Table No.),
+                                                                                                   No.=FIELD(Primary Key Field 1 No.)));
+                                                   CaptionML=[DEU=PrimÑrschlÅsselfeld 1 Name;
+                                                              ENU=Primary Key Field 1 Name] }
+    { 15  ;   ;Primary Key Field 1 Value;Text50   ;CaptionML=[DEU=PrimÑrschlÅsselfeld 1 Wert;
+                                                              ENU=Primary Key Field 1 Value] }
+    { 16  ;   ;Primary Key Field 2 No.;Integer    ;TableRelation=Field.No. WHERE (TableNo=FIELD(Table No.));
+                                                   CaptionML=[DEU=PrimÑrschlÅsselfeld 2 Nr.;
+                                                              ENU=Primary Key Field 2 No.] }
+    { 17  ;   ;Primary Key Field 2 Name;Text80    ;FieldClass=FlowField;
+                                                   CalcFormula=Lookup(Field."Field Caption" WHERE (TableNo=FIELD(Table No.),
+                                                                                                   No.=FIELD(Primary Key Field 2 No.)));
+                                                   CaptionML=[DEU=PrimÑrschlÅsselfeld 2 Name;
+                                                              ENU=Primary Key Field 2 Name] }
+    { 18  ;   ;Primary Key Field 2 Value;Text50   ;CaptionML=[DEU=PrimÑrschlÅsselfeld 2 Wert;
+                                                              ENU=Primary Key Field 2 Value] }
+    { 19  ;   ;Primary Key Field 3 No.;Integer    ;TableRelation=Field.No. WHERE (TableNo=FIELD(Table No.));
+                                                   CaptionML=[DEU=PrimÑrschlÅsselfeld 3 Nr.;
+                                                              ENU=Primary Key Field 3 No.] }
+    { 20  ;   ;Primary Key Field 3 Name;Text80    ;FieldClass=FlowField;
+                                                   CalcFormula=Lookup(Field."Field Caption" WHERE (TableNo=FIELD(Table No.),
+                                                                                                   No.=FIELD(Primary Key Field 3 No.)));
+                                                   CaptionML=[DEU=PrimÑrschlÅsselfeld 3 Name;
+                                                              ENU=Primary Key Field 3 Name] }
+    { 21  ;   ;Primary Key Field 3 Value;Text50   ;CaptionML=[DEU=PrimÑrschlÅsselfeld 3 Wert;
+                                                              ENU=Primary Key Field 3 Value] }
+  }
+  KEYS
+  {
+    {    ;Entry No.                               ;Clustered=Yes }
+    {    ;Table No.,Primary Key Field 1 Value      }
+    {    ;Table No.,Date and Time                  }
+  }
+  FIELDGROUPS
+  {
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

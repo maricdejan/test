@@ -1,0 +1,116 @@
+OBJECT Page 11006 GDPdU Field Selection Subform
+{
+  OBJECT-PROPERTIES
+  {
+    Date=05.11.08;
+    Time=12:00:00;
+    Version List=NAVDACH6.00;
+  }
+  PROPERTIES
+  {
+    Editable=No;
+    CaptionML=[DEU=" ";
+               ENU=" "];
+    SourceTable=Table2000000041;
+    SourceTableView=SORTING(TableNo,No.);
+    PageType=ListPart;
+    SourceTableTemporary=Yes;
+    ActionList=ACTIONS
+    {
+      { 1900000004;0 ;ActionContainer;
+                      ActionContainerType=ActionItems }
+      { 1906587504;1 ;ActionGroup;
+                      CaptionML=[DEU=F&unktionen;
+                                 ENU=F&unctions] }
+      { 1907835404;2 ;Action    ;
+                      CaptionML=[DEU=Ausw„hlen;
+                                 ENU=Select];
+                      OnAction=BEGIN
+                                 //This functionality was copied from page #11005. Unsupported part was commented. Please check it.
+                                 {CurrPage.NonSelectedFields.FORM.}
+                                 SelectGDPdUField;
+                               END;
+                                }
+    }
+  }
+  CONTROLS
+  {
+    { 1900000001;0;Container;
+                ContainerType=ContentArea }
+
+    { 1140000;1;Group     ;
+                GroupType=Repeater }
+
+    { 1140001;2;Field     ;
+                Lookup=No;
+                CaptionML=[DEU=Feldnr.;
+                           ENU=Field No.];
+                SourceExpr="No." }
+
+    { 1140003;2;Field     ;
+                DrillDown=No;
+                CaptionML=[DEU=Feldname;
+                           ENU=Field Name];
+                SourceExpr="Field Caption" }
+
+  }
+  CODE
+  {
+    VAR
+      TempField@1140000 : Record 2000000041;
+      GDPdUMgt@1140001 : Codeunit 11000;
+      GDPdUDefGrpCode@1140002 : Code[10];
+      GDPdURecordCode@1140003 : Code[10];
+      TableID@1140004 : Integer;
+      GDPdURecDefField@1140005 : Record 11005;
+
+    PROCEDURE SelectGDPdUField@1140000();
+    VAR
+      Field@1140000 : Record 2000000041;
+    BEGIN
+      CurrPage.SETSELECTIONFILTER(Field);
+      IF Field.FINDSET THEN BEGIN
+        GDPdUMgt.InsertGDPdURecDefField(Field,GDPdURecDefField,GDPdUDefGrpCode,GDPdURecordCode);
+        FindRecords;
+      END;
+    END;
+
+    PROCEDURE SetGDPdUCode@1140001(NewGDPdUDefGrpCode@1140000 : Code[10];NewGDPdURecordCode@1140001 : Code[10];NewTableID@1140002 : Integer);
+    BEGIN
+      GDPdUDefGrpCode := NewGDPdUDefGrpCode;
+      GDPdURecordCode := NewGDPdURecordCode;
+      TableID := NewTableID;
+
+      CurrPage.UPDATE;
+    END;
+
+    PROCEDURE FormUpdate@1140002();
+    BEGIN
+      CurrPage.UPDATE(FALSE);
+    END;
+
+    PROCEDURE FindRecords@1140003();
+    BEGIN
+      RESET;
+      DELETEALL;
+
+      TempField.SETRANGE(TableNo,TableID);
+      IF TempField.FINDSET THEN
+        REPEAT
+          IF NOT GDPdUMgt.FindGDPdURecDefField(GDPdUDefGrpCode,GDPdURecordCode,TempField.TableNo,TempField."No.") THEN BEGIN
+            Rec := TempField;
+            INSERT;
+          END;
+        UNTIL TempField.NEXT = 0;
+
+      IF FINDFIRST THEN;
+
+      SETRANGE(TableNo,TableID);
+      CurrPage.UPDATE(FALSE);
+    END;
+
+    BEGIN
+    END.
+  }
+}
+

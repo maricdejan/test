@@ -1,0 +1,123 @@
+OBJECT Report 11112 Update VAT Statement Template
+{
+  OBJECT-PROPERTIES
+  {
+    Date=14.08.09;
+    Time=12:00:00;
+    Version List=NAVDACH6.00.01;
+  }
+  PROPERTIES
+  {
+    CaptionML=[DEU=MwSt.-Abrechnungsvorlage aktualisieren;
+               ENU=Update VAT Statement Template];
+    ProcessingOnly=Yes;
+    OnInitReport=BEGIN
+                   TemplateName := 'UVA-2009';
+                   TemplateDescription := 'ôsterreichische MWST ab 2009';
+                 END;
+
+  }
+  DATAITEMS
+  {
+    { PROPERTIES
+      {
+        DataItemTable=Table2000000026;
+        DataItemTableView=SORTING(Number);
+        MaxIteration=1;
+        OnAfterGetRecord=VAR
+                           UpdateVATStatementAT@1160000 : Codeunit 11110;
+                         BEGIN
+                           IF TemplateName <> '' THEN
+                             UpdateVATStatementAT.UpdateVATStatementTemplate(TemplateName,TemplateDescription)
+                           ELSE
+                             ERROR(Text1160000);
+                         END;
+
+      }
+      SECTIONS
+      {
+      }
+       }
+  }
+  REQUESTFORM
+  {
+    PROPERTIES
+    {
+      Width=8910;
+      Height=990;
+    }
+    CONTROLS
+    {
+      { 1160001;TextBox   ;3410 ;0    ;2750 ;440  ;ValidateTableRelation=No;
+                                                   CaptionML=[DEU=Name der MwSt.-Abrechnungsvorlage;
+                                                              ENU=VAT Statement Template Name];
+                                                   SourceExpr=TemplateName;
+                                                   TableRelation="VAT Statement Template";
+                                                   OnAfterValidate=VAR
+                                                                     VATStatementTemplate@1101100000 : Record 255;
+                                                                   BEGIN
+                                                                     IF VATStatementTemplate.GET(TemplateName) THEN
+                                                                       TemplateDescription := VATStatementTemplate.Description;
+                                                                   END;
+                                                                    }
+      { 1160002;Label     ;0    ;0    ;3300 ;440  ;ParentControl=1160001 }
+      { 1160003;TextBox   ;3410 ;550  ;5500 ;440  ;CaptionML=[DEU=Beschreibung;
+                                                              ENU=Description];
+                                                   SourceExpr=TemplateDescription }
+      { 1160004;Label     ;0    ;550  ;3300 ;440  ;ParentControl=1160003 }
+    }
+  }
+  REQUESTPAGE
+  {
+    PROPERTIES
+    {
+    }
+    CONTROLS
+    {
+      { 1900000001;0;Container;
+                  ContainerType=ContentArea }
+
+      { 1900000002;1;Group  ;
+                  CaptionML=[DEU=Optionen;
+                             ENU=Options] }
+
+      { 1160001;2;Field     ;
+                  CaptionML=[DEU=Name der MwSt.-Abrechnungsvorlage;
+                             ENU=VAT Statement Template Name];
+                  SourceExpr=TemplateName;
+                  TableRelation="VAT Statement Template";
+                  OnValidate=BEGIN
+                               TemplateNameOnAfterValidate;
+                             END;
+                              }
+
+      { 1160003;2;Field     ;
+                  CaptionML=[DEU=Beschreibung;
+                             ENU=Description];
+                  SourceExpr=TemplateDescription }
+
+    }
+  }
+  CODE
+  {
+    VAR
+      Text1160000@1160000 : TextConst 'DEU=Geben Sie einen Namen fÅr die MwSt.-Abrechnungsvorlage an.;ENU=Please specify a VAT Statement Template Name.';
+      TemplateName@1160001 : Code[10];
+      TemplateDescription@1160002 : Text[80];
+
+    LOCAL PROCEDURE TemplateNameOnAfterValidate@19062792();
+    VAR
+      VATStatementTemplate@1101100000 : Record 255;
+    BEGIN
+      IF VATStatementTemplate.GET(TemplateName) THEN
+        TemplateDescription := VATStatementTemplate.Description;
+    END;
+
+    BEGIN
+    END.
+  }
+  RDLDATA
+  {
+  }
+}
+

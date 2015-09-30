@@ -1,0 +1,38 @@
+OBJECT Page 11001 Place of Receivers
+{
+  OBJECT-PROPERTIES
+  {
+    Date=24.08.01;
+    Time=12:00:00;
+    Version List=NAVDACH4.00;
+  }
+  PROPERTIES
+  {
+    CaptionML=[DEU=Sitz des Empf„ngers;
+               ENU=Place of Receivers];
+    SourceTable=Table11001;
+    PageType=List;
+  }
+  CONTROLS
+  {
+    { 1900000001;0;Container;
+                ContainerType=ContentArea }
+
+    { 1140000;1;Group     ;
+                GroupType=Repeater }
+
+    { 1140001;2;Field     ;
+                SourceExpr=Code }
+
+    { 1140003;2;Field     ;
+                SourceExpr=Text }
+
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

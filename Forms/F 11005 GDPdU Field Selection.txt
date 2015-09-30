@@ -1,0 +1,199 @@
+OBJECT Form 11005 GDPdU Field Selection
+{
+  OBJECT-PROPERTIES
+  {
+    Date=14.08.09;
+    Time=12:00:00;
+    Version List=NAVDACH6.00.01;
+  }
+  PROPERTIES
+  {
+    Width=17930;
+    Height=9240;
+    CaptionML=[DEU=GDPdU Feldauswahl;
+               ENU=GDPdU Field Selection];
+    Maximizable=No;
+    Sizeable=No;
+    SourceTable=Table11005;
+    DataCaptionExpr=GetCaption;
+    DelayedInsert=Yes;
+    OnOpenForm=BEGIN
+                 CurrForm.NonSelectedFields.FORM.SetGDPdUCode(
+                   GDPdURecDefField."Definition Group Code",
+                   GDPdURecDefField."Record Code",
+                   GDPdURecDefField."Table No.");
+                 UpdateSubform;
+               END;
+
+  }
+  CONTROLS
+  {
+    { 1140000;Frame     ;220  ;220  ;17490;8030 ;HorzGlue=Both;
+                                                 VertGlue=Both;
+                                                 ShowCaption=No }
+    { 1140001;TextBox   ;3850 ;440  ;1650 ;440  ;Editable=No;
+                                                 Focusable=No;
+                                                 ParentControl=1140000;
+                                                 InFrame=Yes;
+                                                 Lookup=No;
+                                                 CaptionML=[DEU=Tabellennr.;
+                                                            ENU=Table No.];
+                                                 SourceExpr=GDPdURecDefField."Table No." }
+    { 1140002;Label     ;440  ;440  ;3300 ;440  ;ParentControl=1140001 }
+    { 1140003;TextBox   ;3850 ;990  ;5500 ;440  ;Editable=No;
+                                                 Focusable=No;
+                                                 ParentControl=1140000;
+                                                 InFrame=Yes;
+                                                 DrillDown=No;
+                                                 CaptionML=[DEU=Tabellenname;
+                                                            ENU=Table Name];
+                                                 SourceExpr=GDPdURecDefField."Table Name" }
+    { 1140004;Label     ;440  ;990  ;3300 ;440  ;ParentControl=1140003 }
+    { 1140005;SubForm   ;440  ;2420 ;7260 ;5610 ;Name=NonSelectedFields;
+                                                 VertGlue=Both;
+                                                 Editable=No;
+                                                 ParentControl=1140000;
+                                                 InFrame=Yes;
+                                                 Border=No;
+                                                 SubFormID=Form11006;
+                                                 SubFormView=SORTING(TableNo,No.)
+                                                             WHERE(Type=FILTER(Option|Code|Text|Decimal|Integer|Date|Boolean),
+                                                                   Class=FILTER(Normal|FlowField));
+                                                 SubFormLink=TableNo=FIELD(Table No.) }
+    { 1140006;CommandButton;7920;2860;550 ;550  ;VertGlue=Bottom;
+                                                 FocusOnClick=No;
+                                                 ParentControl=1140000;
+                                                 InFrame=Yes;
+                                                 ShowCaption=No;
+                                                 BitmapPos=Center;
+                                                 AutoRepeat=Yes;
+                                                 Bitmap=16;
+                                                 CaptionML=[DEU=Ausw„hlen;
+                                                            ENU=Select];
+                                                 ToolTipML=[DEU=Ausw„hlen;
+                                                            ENU=Select];
+                                                 OnPush=BEGIN
+                                                          CurrForm.NonSelectedFields.FORM.SelectGDPdUField;
+                                                        END;
+                                                         }
+    { 1140007;CommandButton;7920;3520;550 ;550  ;VertGlue=Bottom;
+                                                 FocusOnClick=No;
+                                                 ParentControl=1140000;
+                                                 InFrame=Yes;
+                                                 ShowCaption=No;
+                                                 BitmapPos=Center;
+                                                 AutoRepeat=Yes;
+                                                 Bitmap=15;
+                                                 CaptionML=[DEU=Auswahl aufheben;
+                                                            ENU=Deselect];
+                                                 ToolTipML=[DEU=A&uswahl aufheben;
+                                                            ENU=Deselect];
+                                                 OnPush=BEGIN
+                                                          DeselectGDPdUField;
+                                                        END;
+                                                         }
+    { 1140008;TableBox  ;8690 ;2420 ;8800 ;5610 ;ParentControl=1140000;
+                                                 InFrame=Yes }
+    { 1140009;TextBox   ;0    ;2090 ;1700 ;440  ;Editable=No;
+                                                 ParentControl=1140008;
+                                                 InColumn=Yes;
+                                                 SourceExpr="Field No." }
+    { 1140010;Label     ;0    ;0    ;0    ;0    ;ParentControl=1140009;
+                                                 InColumnHeading=Yes }
+    { 1140011;TextBox   ;0    ;2090 ;4400 ;440  ;Editable=No;
+                                                 ParentControl=1140008;
+                                                 InColumn=Yes;
+                                                 DrillDown=No;
+                                                 SourceExpr="Field Name" }
+    { 1140012;Label     ;0    ;0    ;0    ;0    ;ParentControl=1140011;
+                                                 InColumnHeading=Yes }
+    { 1140019;TextBox   ;0    ;2640 ;550  ;440  ;ParentControl=1140008;
+                                                 InColumn=Yes;
+                                                 DrillDown=No;
+                                                 SourceExpr="Field Class" }
+    { 1140020;Label     ;0    ;0    ;0    ;0    ;ParentControl=1140019;
+                                                 InColumnHeading=Yes }
+    { 1140021;TextBox   ;0    ;2640 ;550  ;440  ;ParentControl=1140008;
+                                                 InColumn=Yes;
+                                                 SourceExpr="Datefilter Handling" }
+    { 1140022;Label     ;0    ;0    ;0    ;0    ;ParentControl=1140021;
+                                                 InColumnHeading=Yes }
+    { 1140013;Label     ;440  ;1760 ;3300 ;440  ;ParentControl=1140000;
+                                                 InFrame=Yes;
+                                                 LeaderDots=No;
+                                                 CaptionML=[DEU=Felder;
+                                                            ENU=Fields] }
+    { 1140014;Label     ;8690 ;1760 ;3300 ;440  ;ParentControl=1140000;
+                                                 InFrame=Yes;
+                                                 LeaderDots=No;
+                                                 CaptionML=[DEU=Ausgew„hlte Felder;
+                                                            ENU=Selected Fields] }
+    { 1140015;CommandButton;15510;8470;2200;550 ;HorzGlue=Right;
+                                                 VertGlue=Bottom;
+                                                 PushAction=FormHelp }
+    { 1140016;MenuButton;13090;8470 ;2200 ;550  ;HorzGlue=Right;
+                                                 VertGlue=Bottom;
+                                                 CaptionML=[DEU=F&unktionen;
+                                                            ENU=F&unctions];
+                                                 Menu=MENUITEMS
+                                                 {
+                                                   { ID=1140017;
+                                                     CaptionML=[DEU=Ausw„hlen;
+                                                                ENU=Select];
+                                                     OnPush=BEGIN
+                                                              CurrForm.NonSelectedFields.FORM.SelectGDPdUField;
+                                                            END;
+                                                             }
+                                                   { ID=1140018;
+                                                     CaptionML=[DEU=Auswahl aufheben;
+                                                                ENU=Deselect];
+                                                     OnPush=BEGIN
+                                                              // kcools.begin
+                                                              //SelectGDPdUField(FALSE);
+                                                              DeselectGDPdUField;
+                                                              // kcools.end
+                                                            END;
+                                                             }
+                                                 }
+                                                  }
+  }
+  CODE
+  {
+    VAR
+      GDPdURecDefField@1140000 : Record 11005;
+
+    PROCEDURE DeselectGDPdUField@1140003();
+    BEGIN
+      CurrForm.SETSELECTIONFILTER(GDPdURecDefField);
+      GDPdURecDefField.DELETEALL;
+      CurrForm.UPDATE(FALSE);
+      UpdateSubform;
+    END;
+
+    LOCAL PROCEDURE GetCaption@1140001() : Text[250];
+    VAR
+      GDPdURecordCode@1140000 : Record 11007;
+    BEGIN
+      IF GDPdURecordCode.GET(GDPdURecDefField."Record Code") THEN;
+      EXIT(GDPdURecordCode.Code + ' ' + GDPdURecordCode.Description);
+    END;
+
+    PROCEDURE SetGDPdUCode@1140002(NewGDPdUDefGrpCode@1140000 : Code[10];NewGDPdURecordCode@1140001 : Code[10];NewTableID@1140002 : Integer);
+    BEGIN
+      CLEAR(GDPdURecDefField);
+      GDPdURecDefField."Definition Group Code" := NewGDPdUDefGrpCode;
+      GDPdURecDefField."Record Code" := NewGDPdURecordCode;
+      GDPdURecDefField."Table No." := NewTableID;
+      GDPdURecDefField.CALCFIELDS("Table Name");
+    END;
+
+    PROCEDURE UpdateSubform@1140004();
+    BEGIN
+      CurrForm.NonSelectedFields.FORM.FindRecords;
+    END;
+
+    BEGIN
+    END.
+  }
+}
+

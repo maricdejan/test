@@ -1,0 +1,1324 @@
+OBJECT Form 1025 Job Statistics
+{
+  OBJECT-PROPERTIES
+  {
+    Date=05.11.08;
+    Time=12:00:00;
+    Version List=NAVW16.00;
+  }
+  PROPERTIES
+  {
+    Width=15950;
+    Height=11440;
+    Editable=No;
+    CaptionML=[DEU=Projektstatistik;
+               ENU=Job Statistics];
+    LinksAllowed=No;
+    SourceTable=Table167;
+    OnAfterGetRecord=BEGIN
+                       SETRANGE("No.");
+                     END;
+
+    OnAfterGetCurrRecord=BEGIN
+                           CLEAR(JobCalcStatistics);
+                           JobCalcStatistics.JobCalculateCommonFilters(Rec);
+                           JobCalcStatistics.CalculateAmounts;
+                           JobCalcStatistics.GetLCYCostAmounts(CL);
+                           JobCalcStatistics.GetLCYPriceAmounts(PL);
+                           JobCalcStatistics.GetCostAmounts(C);
+                           JobCalcStatistics.GetPriceAmounts(P);
+                         END;
+
+  }
+  CONTROLS
+  {
+    { 1   ;TabControl   ;220  ;220  ;15510;10340;HorzGlue=Both;
+                                                 VertGlue=Both;
+                                                 PageNamesML=[DEU=Allgemein,W„hrung;
+                                                              ENU=General,Currency] }
+    { 10  ;TextBox      ;3850 ;5280 ;2750 ;440  ;Editable=No;
+                                                 ParentControl=1;
+                                                 InPage=0;
+                                                 CaptionML=[DEU=Plan;
+                                                            ENU=Schedule];
+                                                 SourceExpr=CL[1];
+                                                 OnDrillDown=BEGIN
+                                                               JobCalcStatistics.ShowPlanningLine(1,1,TRUE);
+                                                             END;
+                                                              }
+    { 2   ;Label        ;440  ;5280 ;3300 ;440  ;ParentControl=10;
+                                                 CaptionML=[DEU=Plan;
+                                                            ENU=Schedule] }
+    { 12  ;TextBox      ;3850 ;5830 ;2750 ;440  ;Editable=No;
+                                                 ParentControl=1;
+                                                 InPage=0;
+                                                 CaptionML=[DEU=Verwendung;
+                                                            ENU=Usage];
+                                                 SourceExpr=CL[5];
+                                                 OnDrillDown=BEGIN
+                                                               JobCalcStatistics.ShowLedgEntry(1,1,TRUE);
+                                                             END;
+                                                              }
+    { 3   ;Label        ;440  ;5830 ;3300 ;440  ;ParentControl=12;
+                                                 CaptionML=[DEU=Verwendung;
+                                                            ENU=Usage] }
+    { 13  ;TextBox      ;3850 ;6380 ;2750 ;440  ;Editable=No;
+                                                 ParentControl=1;
+                                                 InPage=0;
+                                                 CaptionML=[DEU=Vertrag;
+                                                            ENU=Contract];
+                                                 SourceExpr=CL[9];
+                                                 OnDrillDown=BEGIN
+                                                               JobCalcStatistics.ShowPlanningLine(1,1,FALSE);
+                                                             END;
+                                                              }
+    { 7   ;Label        ;440  ;6380 ;3300 ;440  ;ParentControl=13;
+                                                 CaptionML=[DEU=Vertrag;
+                                                            ENU=Contract] }
+    { 14  ;TextBox      ;3850 ;6930 ;2750 ;440  ;Editable=No;
+                                                 ParentControl=1;
+                                                 InPage=0;
+                                                 CaptionML=[DEU=Fakturiert;
+                                                            ENU=Invoiced];
+                                                 SourceExpr=CL[13];
+                                                 OnDrillDown=BEGIN
+                                                               JobCalcStatistics.ShowLedgEntry(1,1,FALSE);
+                                                             END;
+                                                              }
+    { 9   ;Label        ;440  ;6930 ;3300 ;440  ;ParentControl=14;
+                                                 CaptionML=[DEU=Fakturiert;
+                                                            ENU=Invoiced] }
+    { 16  ;TextBox      ;6820 ;5280 ;2750 ;440  ;Editable=No;
+                                                 ParentControl=1;
+                                                 InPage=0;
+                                                 CaptionML=[DEU=Einstandspreis Plan MW (Artikel);
+                                                            ENU=Schedule Cost LCY (Item)];
+                                                 SourceExpr=CL[2];
+                                                 OnDrillDown=BEGIN
+                                                               JobCalcStatistics.ShowPlanningLine(1,2,TRUE);
+                                                             END;
+                                                              }
+    { 17  ;TextBox      ;6820 ;5830 ;2750 ;440  ;Editable=No;
+                                                 ParentControl=1;
+                                                 InPage=0;
+                                                 CaptionML=[DEU=Verbrauchskosten MW (Artikel);
+                                                            ENU=Usage Cost LCY (Item)];
+                                                 SourceExpr=CL[6];
+                                                 OnDrillDown=BEGIN
+                                                               JobCalcStatistics.ShowLedgEntry(1,2,TRUE);
+                                                             END;
+                                                              }
+    { 18  ;TextBox      ;6820 ;6380 ;2750 ;440  ;Editable=No;
+                                                 ParentControl=1;
+                                                 InPage=0;
+                                                 CaptionML=[DEU=Einstandsbetrag Vertrag MW (Artikel);
+                                                            ENU=Contract Cost LCY (Item)];
+                                                 SourceExpr=CL[10];
+                                                 OnDrillDown=BEGIN
+                                                               JobCalcStatistics.ShowPlanningLine(1,2,FALSE);
+                                                             END;
+                                                              }
+    { 19  ;TextBox      ;6820 ;6930 ;2750 ;440  ;Editable=No;
+                                                 ParentControl=1;
+                                                 InPage=0;
+                                                 CaptionML=[DEU=Einstandsbetrag fakturiert MW (Artikel);
+                                                            ENU=Invoiced Cost LCY (Item)];
+                                                 SourceExpr=CL[14];
+                                                 OnDrillDown=BEGIN
+                                                               JobCalcStatistics.ShowLedgEntry(1,2,FALSE);
+                                                             END;
+                                                              }
+    { 21  ;TextBox      ;9790 ;5280 ;2750 ;440  ;Editable=No;
+                                                 ParentControl=1;
+                                                 InPage=0;
+                                                 CaptionML=[DEU=Einstandspreis Plan MW (Sachkonto);
+                                                            ENU=Schedule Cost LCY (G/L Acc.)];
+                                                 SourceExpr=CL[3];
+                                                 OnDrillDown=BEGIN
+                                                               JobCalcStatistics.ShowPlanningLine(1,3,TRUE);
+                                                             END;
+                                                              }
+    { 22  ;TextBox      ;9790 ;5830 ;2750 ;440  ;Editable=No;
+                                                 ParentControl=1;
+                                                 InPage=0;
+                                                 CaptionML=[DEU=Verbrauchskosten MW (Sachkonto);
+                                                            ENU=Usage Cost LCY (G/L Acc.)];
+                                                 SourceExpr=CL[7];
+                                                 OnDrillDown=BEGIN
+                                                               JobCalcStatistics.ShowLedgEntry(1,3,TRUE);
+                                                             END;
+                                                              }
+    { 23  ;TextBox      ;9790 ;6380 ;2750 ;440  ;Editable=No;
+                                                 ParentControl=1;
+                                                 InPage=0;
+                                                 CaptionML=[DEU=Einstandsbetrag Vertrag MW (Sachkonto);
+                                                            ENU=Contract Cost LCY (G/L Acc.)];
+                                                 SourceExpr=CL[11];
+                                                 OnDrillDown=BEGIN
+                                                               JobCalcStatistics.ShowPlanningLine(1,3,FALSE);
+                                                             END;
+                                                              }
+    { 24  ;TextBox      ;9790 ;6930 ;2750 ;440  ;Editable=No;
+                                                 ParentControl=1;
+                                                 InPage=0;
+                                                 CaptionML=[DEU=Einstandsbetrag fakturiert MW (Sachkonto);
+                                                            ENU=Invoiced Cost LCY (G/L Acc.)];
+                                                 SourceExpr=CL[15];
+                                                 OnDrillDown=BEGIN
+                                                               JobCalcStatistics.ShowLedgEntry(1,3,FALSE);
+                                                             END;
+                                                              }
+    { 26  ;TextBox      ;12760;5280 ;2750 ;440  ;Editable=No;
+                                                 ParentControl=1;
+                                                 InPage=0;
+                                                 CaptionML=[DEU=Einstandsbetrag Plan MW (Total);
+                                                            ENU=Schedule Cost LCY (Total)];
+                                                 SourceExpr=CL[4];
+                                                 OnDrillDown=BEGIN
+                                                               JobCalcStatistics.ShowPlanningLine(1,0,TRUE);
+                                                             END;
+                                                              }
+    { 27  ;TextBox      ;12760;5830 ;2750 ;440  ;Editable=No;
+                                                 ParentControl=1;
+                                                 InPage=0;
+                                                 CaptionML=[DEU=Verbrauchskosten MW (Total);
+                                                            ENU=Usage Cost LCY (Total)];
+                                                 SourceExpr=CL[8];
+                                                 OnDrillDown=BEGIN
+                                                               JobCalcStatistics.ShowLedgEntry(1,0,TRUE);
+                                                             END;
+                                                              }
+    { 28  ;TextBox      ;12760;6380 ;2750 ;440  ;Editable=No;
+                                                 ParentControl=1;
+                                                 InPage=0;
+                                                 CaptionML=[DEU=Einstandsbetrag Vertrag MW (Total);
+                                                            ENU=Contract Cost LCY (Total)];
+                                                 SourceExpr=CL[12];
+                                                 OnDrillDown=BEGIN
+                                                               JobCalcStatistics.ShowPlanningLine(1,0,FALSE);
+                                                             END;
+                                                              }
+    { 29  ;TextBox      ;12760;6930 ;2750 ;440  ;Editable=No;
+                                                 ParentControl=1;
+                                                 InPage=0;
+                                                 CaptionML=[DEU=Einstandsbetrag fakturiert MW (Total);
+                                                            ENU=Invoiced Cost LCY (Total)];
+                                                 SourceExpr=CL[16];
+                                                 OnDrillDown=BEGIN
+                                                               JobCalcStatistics.ShowLedgEntry(1,0,FALSE);
+                                                             END;
+                                                              }
+    { 30  ;Label        ;440  ;4620 ;2750 ;440  ;ParentControl=1;
+                                                 InPage=0;
+                                                 HorzAlign=Left;
+                                                 FontBold=Yes;
+                                                 LeaderDots=No;
+                                                 CaptionML=[DEU=Einstandsbetrag MW;
+                                                            ENU=Cost LCY] }
+    { 32  ;TextBox      ;12760;2310 ;2750 ;440  ;Editable=No;
+                                                 ParentControl=1;
+                                                 InPage=0;
+                                                 CaptionML=[DEU=VK-Preis Plan MW (Total);
+                                                            ENU=Schedule Price LCY (Total)];
+                                                 SourceExpr=PL[4];
+                                                 OnDrillDown=BEGIN
+                                                               JobCalcStatistics.ShowPlanningLine(3,0,TRUE);
+                                                             END;
+                                                              }
+    { 33  ;TextBox      ;12760;2860 ;2750 ;440  ;Editable=No;
+                                                 ParentControl=1;
+                                                 InPage=0;
+                                                 CaptionML=[DEU=VK-Preis Verbrauch MW (Total);
+                                                            ENU=Usage Price LCY (Total)];
+                                                 SourceExpr=PL[8];
+                                                 OnDrillDown=BEGIN
+                                                               JobCalcStatistics.ShowLedgEntry(3,0,TRUE);
+                                                             END;
+                                                              }
+    { 34  ;TextBox      ;12760;3410 ;2750 ;440  ;Editable=No;
+                                                 ParentControl=1;
+                                                 InPage=0;
+                                                 CaptionML=[DEU=Vertragspreis MW (Total);
+                                                            ENU=Contract Price LCY (Total)];
+                                                 SourceExpr=PL[12];
+                                                 OnDrillDown=BEGIN
+                                                               JobCalcStatistics.ShowPlanningLine(3,0,FALSE);
+                                                             END;
+                                                              }
+    { 36  ;TextBox      ;9790 ;2310 ;2750 ;440  ;Editable=No;
+                                                 ParentControl=1;
+                                                 InPage=0;
+                                                 CaptionML=[DEU=VK-Preis Plan MW (Sachkonto);
+                                                            ENU=Schedule Price LCY (G/L Acc.)];
+                                                 SourceExpr=PL[3];
+                                                 OnDrillDown=BEGIN
+                                                               JobCalcStatistics.ShowPlanningLine(3,3,TRUE);
+                                                             END;
+                                                              }
+    { 37  ;TextBox      ;9790 ;2860 ;2750 ;440  ;Editable=No;
+                                                 ParentControl=1;
+                                                 InPage=0;
+                                                 CaptionML=[DEU=VK-Preis Verbrauch MW (Sachkonto);
+                                                            ENU=Usage Price LCY (G/L Acc.)];
+                                                 SourceExpr=PL[7];
+                                                 OnDrillDown=BEGIN
+                                                               JobCalcStatistics.ShowLedgEntry(3,3,TRUE);
+                                                             END;
+                                                              }
+    { 38  ;TextBox      ;9790 ;3410 ;2750 ;440  ;Editable=No;
+                                                 ParentControl=1;
+                                                 InPage=0;
+                                                 CaptionML=[DEU=Vertragspreis MW (Sachkonto);
+                                                            ENU=Contract Price LCY (G/L Acc.)];
+                                                 SourceExpr=PL[11];
+                                                 OnDrillDown=BEGIN
+                                                               JobCalcStatistics.ShowPlanningLine(3,3,FALSE);
+                                                             END;
+                                                              }
+    { 39  ;TextBox      ;9790 ;3960 ;2750 ;440  ;Editable=No;
+                                                 ParentControl=1;
+                                                 InPage=0;
+                                                 CaptionML=[DEU=Preis fakturiert MW (Sachkonto);
+                                                            ENU=Invoiced Price LCY (G/L Acc.)];
+                                                 SourceExpr=PL[15];
+                                                 OnDrillDown=BEGIN
+                                                               JobCalcStatistics.ShowLedgEntry(3,3,FALSE);
+                                                             END;
+                                                              }
+    { 40  ;TextBox      ;12760;3960 ;2750 ;440  ;Editable=No;
+                                                 ParentControl=1;
+                                                 InPage=0;
+                                                 CaptionML=[DEU=Preis fakturiert MW (Total);
+                                                            ENU=Invoiced Price LCY (Total)];
+                                                 SourceExpr=PL[16];
+                                                 OnDrillDown=BEGIN
+                                                               JobCalcStatistics.ShowLedgEntry(3,0,FALSE);
+                                                             END;
+                                                              }
+    { 42  ;TextBox      ;6820 ;2310 ;2750 ;440  ;Editable=No;
+                                                 ParentControl=1;
+                                                 InPage=0;
+                                                 CaptionML=[DEU=VK-Preis Plan MW (Artikel);
+                                                            ENU=Schedule Price LCY (Item)];
+                                                 SourceExpr=PL[2];
+                                                 OnDrillDown=BEGIN
+                                                               JobCalcStatistics.ShowPlanningLine(3,2,TRUE);
+                                                             END;
+                                                              }
+    { 43  ;TextBox      ;6820 ;2860 ;2750 ;440  ;Editable=No;
+                                                 ParentControl=1;
+                                                 InPage=0;
+                                                 CaptionML=[DEU=VK-Preis Verbrauch MW (Artikel);
+                                                            ENU=Usage Price LCY (Item)];
+                                                 SourceExpr=PL[6];
+                                                 OnDrillDown=BEGIN
+                                                               JobCalcStatistics.ShowLedgEntry(3,2,TRUE);
+                                                             END;
+                                                              }
+    { 44  ;TextBox      ;6820 ;3410 ;2750 ;440  ;Editable=No;
+                                                 ParentControl=1;
+                                                 InPage=0;
+                                                 CaptionML=[DEU=Vertragspreis MW (Artikel);
+                                                            ENU=Contract Price LCY (Item)];
+                                                 SourceExpr=PL[10];
+                                                 OnDrillDown=BEGIN
+                                                               JobCalcStatistics.ShowPlanningLine(3,2,FALSE);
+                                                             END;
+                                                              }
+    { 45  ;TextBox      ;6820 ;3960 ;2750 ;440  ;Editable=No;
+                                                 ParentControl=1;
+                                                 InPage=0;
+                                                 CaptionML=[DEU=Preis fakturiert MW (Artikel);
+                                                            ENU=Invoiced Price LCY (Item)];
+                                                 SourceExpr=PL[14];
+                                                 OnDrillDown=BEGIN
+                                                               JobCalcStatistics.ShowLedgEntry(3,2,FALSE);
+                                                             END;
+                                                              }
+    { 46  ;TextBox      ;3850 ;2310 ;2750 ;440  ;Editable=No;
+                                                 ParentControl=1;
+                                                 InPage=0;
+                                                 CaptionML=[DEU=Plan;
+                                                            ENU=Schedule];
+                                                 SourceExpr=PL[1];
+                                                 OnDrillDown=BEGIN
+                                                               JobCalcStatistics.ShowPlanningLine(3,1,TRUE);
+                                                             END;
+                                                              }
+    { 51  ;Label        ;440  ;2310 ;3300 ;440  ;ParentControl=46;
+                                                 CaptionML=[DEU=Plan;
+                                                            ENU=Schedule] }
+    { 48  ;TextBox      ;3850 ;2860 ;2750 ;440  ;Editable=No;
+                                                 ParentControl=1;
+                                                 InPage=0;
+                                                 CaptionML=[DEU=Verwendung;
+                                                            ENU=Usage];
+                                                 SourceExpr=PL[5];
+                                                 OnDrillDown=BEGIN
+                                                               JobCalcStatistics.ShowLedgEntry(3,1,TRUE);
+                                                             END;
+                                                              }
+    { 52  ;Label        ;440  ;2860 ;3300 ;440  ;ParentControl=48;
+                                                 CaptionML=[DEU=Verwendung;
+                                                            ENU=Usage] }
+    { 49  ;TextBox      ;3850 ;3410 ;2750 ;440  ;Editable=No;
+                                                 ParentControl=1;
+                                                 InPage=0;
+                                                 CaptionML=[DEU=Vertrag;
+                                                            ENU=Contract];
+                                                 SourceExpr=PL[9];
+                                                 OnDrillDown=BEGIN
+                                                               JobCalcStatistics.ShowPlanningLine(3,1,FALSE);
+                                                             END;
+                                                              }
+    { 53  ;Label        ;440  ;3410 ;3300 ;440  ;ParentControl=49;
+                                                 CaptionML=[DEU=Vertrag;
+                                                            ENU=Contract] }
+    { 50  ;TextBox      ;3850 ;3960 ;2750 ;440  ;Editable=No;
+                                                 ParentControl=1;
+                                                 InPage=0;
+                                                 CaptionML=[DEU=Fakturiert;
+                                                            ENU=Invoiced];
+                                                 SourceExpr=PL[13];
+                                                 OnDrillDown=BEGIN
+                                                               JobCalcStatistics.ShowLedgEntry(3,1,FALSE);
+                                                             END;
+                                                              }
+    { 54  ;Label        ;440  ;3960 ;3300 ;440  ;ParentControl=50;
+                                                 CaptionML=[DEU=Fakturiert;
+                                                            ENU=Invoiced] }
+    { 55  ;Label        ;440  ;1650 ;2750 ;440  ;ParentControl=1;
+                                                 InPage=0;
+                                                 HorzAlign=Left;
+                                                 FontBold=Yes;
+                                                 LeaderDots=No;
+                                                 CaptionML=[DEU=Preis MW;
+                                                            ENU=Price LCY] }
+    { 31  ;TextBox      ;12760;8250 ;2750 ;440  ;Editable=No;
+                                                 ParentControl=1;
+                                                 InPage=0;
+                                                 CaptionML=[DEU=DB Plan MW (Total);
+                                                            ENU=Schedule Profit LCY (Total)];
+                                                 SourceExpr=PL[4] - CL[4];
+                                                 OnDrillDown=BEGIN
+                                                               JobCalcStatistics.ShowPlanningLine(3,0,TRUE);
+                                                             END;
+                                                              }
+    { 35  ;TextBox      ;12760;8800 ;2750 ;440  ;Editable=No;
+                                                 ParentControl=1;
+                                                 InPage=0;
+                                                 CaptionML=[DEU=Verbrauchs-DB MW (Total);
+                                                            ENU=Usage Profit LCY (Total)];
+                                                 SourceExpr=PL[8] - CL[8];
+                                                 OnDrillDown=BEGIN
+                                                               JobCalcStatistics.ShowLedgEntry(3,0,TRUE);
+                                                             END;
+                                                              }
+    { 41  ;TextBox      ;12760;9350 ;2750 ;440  ;Editable=No;
+                                                 ParentControl=1;
+                                                 InPage=0;
+                                                 CaptionML=[DEU=Vertrags-DB MW (Total);
+                                                            ENU=Contract Profit LCY (Total)];
+                                                 SourceExpr=PL[12] - CL[12];
+                                                 OnDrillDown=BEGIN
+                                                               JobCalcStatistics.ShowPlanningLine(3,0,FALSE);
+                                                             END;
+                                                              }
+    { 47  ;TextBox      ;12760;9900 ;2750 ;440  ;Editable=No;
+                                                 ParentControl=1;
+                                                 InPage=0;
+                                                 CaptionML=[DEU=DB fakturiert MW (Total);
+                                                            ENU=Invoiced Profit LCY (Total)];
+                                                 SourceExpr=PL[16] - CL[16];
+                                                 OnDrillDown=BEGIN
+                                                               JobCalcStatistics.ShowLedgEntry(3,0,FALSE);
+                                                             END;
+                                                              }
+    { 56  ;TextBox      ;9790 ;8250 ;2750 ;440  ;Editable=No;
+                                                 ParentControl=1;
+                                                 InPage=0;
+                                                 CaptionML=[DEU=DB Plan MW (Sachkonto);
+                                                            ENU=Schedule Profit LCY (G/L Acc.)];
+                                                 SourceExpr=PL[3] - CL[3];
+                                                 OnDrillDown=BEGIN
+                                                               JobCalcStatistics.ShowPlanningLine(3,3,TRUE);
+                                                             END;
+                                                              }
+    { 57  ;TextBox      ;9790 ;8800 ;2750 ;440  ;Editable=No;
+                                                 ParentControl=1;
+                                                 InPage=0;
+                                                 CaptionML=[DEU=Verbrauchs-DB MW (Sachkonto);
+                                                            ENU=Usage Profit LCY (G/L Acc.)];
+                                                 SourceExpr=PL[7] - CL[7];
+                                                 OnDrillDown=BEGIN
+                                                               JobCalcStatistics.ShowLedgEntry(3,3,TRUE);
+                                                             END;
+                                                              }
+    { 58  ;TextBox      ;9790 ;9350 ;2750 ;440  ;Editable=No;
+                                                 ParentControl=1;
+                                                 InPage=0;
+                                                 CaptionML=[DEU=Vertrags-DB MW (Sachkonto);
+                                                            ENU=Contract Profit LCY (G/L Acc.)];
+                                                 SourceExpr=PL[11] - CL[11];
+                                                 OnDrillDown=BEGIN
+                                                               JobCalcStatistics.ShowPlanningLine(3,3,FALSE);
+                                                             END;
+                                                              }
+    { 59  ;TextBox      ;9790 ;9900 ;2750 ;440  ;Editable=No;
+                                                 ParentControl=1;
+                                                 InPage=0;
+                                                 CaptionML=[DEU=DB fakturiert MW (Sachkonto);
+                                                            ENU=Invoiced Profit LCY (G/L Acc.)];
+                                                 SourceExpr=PL[15] - CL[15];
+                                                 OnDrillDown=BEGIN
+                                                               JobCalcStatistics.ShowLedgEntry(3,3,FALSE);
+                                                             END;
+                                                              }
+    { 60  ;TextBox      ;6820 ;8250 ;2750 ;440  ;Editable=No;
+                                                 ParentControl=1;
+                                                 InPage=0;
+                                                 CaptionML=[DEU=DB Plan MW (Artikel);
+                                                            ENU=Schedule Profit LCY (Item)];
+                                                 SourceExpr=PL[2] - CL[2];
+                                                 OnDrillDown=BEGIN
+                                                               JobCalcStatistics.ShowPlanningLine(3,2,TRUE);
+                                                             END;
+                                                              }
+    { 61  ;TextBox      ;6820 ;8800 ;2750 ;440  ;Editable=No;
+                                                 ParentControl=1;
+                                                 InPage=0;
+                                                 CaptionML=[DEU=Verbrauchs-DB MW (Artikel);
+                                                            ENU=Usage Profit LCY (Item)];
+                                                 SourceExpr=PL[6] - CL[6];
+                                                 OnDrillDown=BEGIN
+                                                               JobCalcStatistics.ShowLedgEntry(3,2,TRUE);
+                                                             END;
+                                                              }
+    { 62  ;TextBox      ;6820 ;9350 ;2750 ;440  ;Editable=No;
+                                                 ParentControl=1;
+                                                 InPage=0;
+                                                 CaptionML=[DEU=Vertrags-DB MW (Artikel);
+                                                            ENU=Contract Profit LCY (Item)];
+                                                 SourceExpr=PL[10] - CL[10];
+                                                 OnDrillDown=BEGIN
+                                                               JobCalcStatistics.ShowPlanningLine(3,2,FALSE);
+                                                             END;
+                                                              }
+    { 63  ;TextBox      ;6820 ;9900 ;2750 ;440  ;Editable=No;
+                                                 ParentControl=1;
+                                                 InPage=0;
+                                                 CaptionML=[DEU=DB fakturiert MW (Artikel);
+                                                            ENU=Invoiced Profit LCY (Item)];
+                                                 SourceExpr=PL[14] - CL[14];
+                                                 OnDrillDown=BEGIN
+                                                               JobCalcStatistics.ShowLedgEntry(3,2,FALSE);
+                                                             END;
+                                                              }
+    { 64  ;TextBox      ;3850 ;8250 ;2750 ;440  ;Editable=No;
+                                                 ParentControl=1;
+                                                 InPage=0;
+                                                 CaptionML=[DEU=Plan;
+                                                            ENU=Schedule];
+                                                 SourceExpr=PL[1] - CL[1];
+                                                 OnDrillDown=BEGIN
+                                                               JobCalcStatistics.ShowPlanningLine(3,1,TRUE);
+                                                             END;
+                                                              }
+    { 68  ;Label        ;440  ;8250 ;3300 ;440  ;ParentControl=64;
+                                                 CaptionML=[DEU=Plan;
+                                                            ENU=Schedule] }
+    { 65  ;TextBox      ;3850 ;8800 ;2750 ;440  ;Editable=No;
+                                                 ParentControl=1;
+                                                 InPage=0;
+                                                 CaptionML=[DEU=Verwendung;
+                                                            ENU=Usage];
+                                                 SourceExpr=PL[5] - CL[5];
+                                                 OnDrillDown=BEGIN
+                                                               JobCalcStatistics.ShowLedgEntry(3,1,TRUE);
+                                                             END;
+                                                              }
+    { 69  ;Label        ;440  ;8800 ;3300 ;440  ;ParentControl=65;
+                                                 CaptionML=[DEU=Verwendung;
+                                                            ENU=Usage] }
+    { 66  ;TextBox      ;3850 ;9350 ;2750 ;440  ;Editable=No;
+                                                 ParentControl=1;
+                                                 InPage=0;
+                                                 CaptionML=[DEU=Vertrag;
+                                                            ENU=Contract];
+                                                 SourceExpr=PL[9] - CL[9];
+                                                 OnDrillDown=BEGIN
+                                                               JobCalcStatistics.ShowPlanningLine(3,1,FALSE);
+                                                             END;
+                                                              }
+    { 70  ;Label        ;440  ;9350 ;3300 ;440  ;ParentControl=66;
+                                                 CaptionML=[DEU=Vertrag;
+                                                            ENU=Contract] }
+    { 67  ;TextBox      ;3850 ;9900 ;2750 ;440  ;Editable=No;
+                                                 ParentControl=1;
+                                                 InPage=0;
+                                                 CaptionML=[DEU=Fakturiert;
+                                                            ENU=Invoiced];
+                                                 SourceExpr=PL[13] - CL[13];
+                                                 OnDrillDown=BEGIN
+                                                               JobCalcStatistics.ShowLedgEntry(3,1,FALSE);
+                                                             END;
+                                                              }
+    { 71  ;Label        ;440  ;9900 ;3300 ;440  ;ParentControl=67;
+                                                 CaptionML=[DEU=Fakturiert;
+                                                            ENU=Invoiced] }
+    { 72  ;Label        ;440  ;7590 ;2750 ;440  ;ParentControl=1;
+                                                 InPage=0;
+                                                 HorzAlign=Left;
+                                                 FontBold=Yes;
+                                                 LeaderDots=No;
+                                                 CaptionML=[DEU=DB MW;
+                                                            ENU=Profit LCY] }
+    { 11  ;Label        ;3850 ;990  ;2750 ;440  ;ParentControl=1;
+                                                 InPage=0;
+                                                 HorzAlign=Right;
+                                                 LeaderDots=No;
+                                                 CaptionML=[DEU=Ressource;
+                                                            ENU=Resource] }
+    { 15  ;Label        ;6820 ;990  ;2750 ;440  ;ParentControl=1;
+                                                 InPage=0;
+                                                 HorzAlign=Right;
+                                                 LeaderDots=No;
+                                                 CaptionML=[DEU=Artikel;
+                                                            ENU=Item] }
+    { 20  ;Label        ;9790 ;990  ;2750 ;440  ;ParentControl=1;
+                                                 InPage=0;
+                                                 HorzAlign=Right;
+                                                 LeaderDots=No;
+                                                 CaptionML=[DEU=Sachkonto;
+                                                            ENU=G/L Account] }
+    { 25  ;Label        ;12760;990  ;2750 ;440  ;ParentControl=1;
+                                                 InPage=0;
+                                                 HorzAlign=Right;
+                                                 LeaderDots=No;
+                                                 CaptionML=[DEU=Gesamt;
+                                                            ENU=Total] }
+    { 4   ;TextBox      ;3850 ;1650 ;2750 ;440  ;Visible=No;
+                                                 ParentControl=1;
+                                                 InPage=0;
+                                                 ForeColor=65535;
+                                                 CaptionML=[DEU=Preis MW;
+                                                            ENU=Price LCY];
+                                                 SourceExpr=Text000 }
+    { 5   ;TextBox      ;6820 ;1650 ;2750 ;440  ;Visible=No;
+                                                 ParentControl=1;
+                                                 InPage=0;
+                                                 ForeColor=65535;
+                                                 SourceExpr=Text000 }
+    { 6   ;TextBox      ;9790 ;1650 ;2750 ;440  ;Visible=No;
+                                                 ParentControl=1;
+                                                 InPage=0;
+                                                 ForeColor=65535;
+                                                 SourceExpr=Text000 }
+    { 88  ;TextBox      ;12760;1650 ;2750 ;440  ;Visible=No;
+                                                 ParentControl=1;
+                                                 InPage=0;
+                                                 ForeColor=65535;
+                                                 SourceExpr=Text000 }
+    { 115 ;TextBox      ;3850 ;4620 ;2750 ;440  ;Visible=No;
+                                                 ParentControl=1;
+                                                 InPage=0;
+                                                 ForeColor=65535;
+                                                 CaptionML=[DEU=Einstandsbetrag MW;
+                                                            ENU=Cost LCY];
+                                                 SourceExpr=Text000 }
+    { 129 ;TextBox      ;6820 ;4620 ;2750 ;440  ;Visible=No;
+                                                 ParentControl=1;
+                                                 InPage=0;
+                                                 ForeColor=65535;
+                                                 SourceExpr=Text000 }
+    { 145 ;TextBox      ;9790 ;4620 ;2750 ;440  ;Visible=No;
+                                                 ParentControl=1;
+                                                 InPage=0;
+                                                 ForeColor=65535;
+                                                 SourceExpr=Text000 }
+    { 146 ;TextBox      ;12760;4620 ;2750 ;440  ;Visible=No;
+                                                 ParentControl=1;
+                                                 InPage=0;
+                                                 ForeColor=65535;
+                                                 SourceExpr=Text000 }
+    { 147 ;TextBox      ;3850 ;7590 ;2750 ;440  ;Visible=No;
+                                                 ParentControl=1;
+                                                 InPage=0;
+                                                 ForeColor=65535;
+                                                 CaptionML=[DEU=DB MW;
+                                                            ENU=Profit LCY];
+                                                 SourceExpr=Text000 }
+    { 148 ;TextBox      ;6820 ;7590 ;2750 ;440  ;Visible=No;
+                                                 ParentControl=1;
+                                                 InPage=0;
+                                                 ForeColor=65535;
+                                                 SourceExpr=Text000 }
+    { 149 ;TextBox      ;9790 ;7590 ;2750 ;440  ;Visible=No;
+                                                 ParentControl=1;
+                                                 InPage=0;
+                                                 ForeColor=65535;
+                                                 SourceExpr=Text000 }
+    { 150 ;TextBox      ;12760;7590 ;2750 ;440  ;Visible=No;
+                                                 ParentControl=1;
+                                                 InPage=0;
+                                                 ForeColor=65535;
+                                                 SourceExpr=Text000 }
+    { 75  ;Label        ;440  ;1650 ;2750 ;440  ;ParentControl=1;
+                                                 InPage=1;
+                                                 HorzAlign=Left;
+                                                 FontBold=Yes;
+                                                 LeaderDots=No;
+                                                 CaptionML=[DEU=VK-Preis;
+                                                            ENU=Price] }
+    { 80  ;Label        ;440  ;4620 ;2750 ;440  ;ParentControl=1;
+                                                 InPage=1;
+                                                 HorzAlign=Left;
+                                                 FontBold=Yes;
+                                                 LeaderDots=No;
+                                                 CaptionML=[DEU=Kosten;
+                                                            ENU=Cost] }
+    { 85  ;Label        ;440  ;7590 ;2750 ;440  ;ParentControl=1;
+                                                 InPage=1;
+                                                 HorzAlign=Left;
+                                                 FontBold=Yes;
+                                                 LeaderDots=No;
+                                                 CaptionML=[DEU=DB;
+                                                            ENU=Profit] }
+    { 91  ;TextBox      ;3850 ;5280 ;2750 ;440  ;Editable=No;
+                                                 ParentControl=1;
+                                                 InPage=1;
+                                                 CaptionML=[DEU=Plan;
+                                                            ENU=Schedule];
+                                                 SourceExpr=C[1];
+                                                 OnDrillDown=BEGIN
+                                                               JobCalcStatistics.ShowPlanningLine(2,1,TRUE);
+                                                             END;
+                                                              }
+    { 81  ;Label        ;440  ;5280 ;3300 ;440  ;ParentControl=91;
+                                                 CaptionML=[DEU=Plan;
+                                                            ENU=Schedule] }
+    { 92  ;TextBox      ;3850 ;5830 ;2750 ;440  ;Editable=No;
+                                                 ParentControl=1;
+                                                 InPage=1;
+                                                 CaptionML=[DEU=Verwendung;
+                                                            ENU=Usage];
+                                                 SourceExpr=C[5];
+                                                 OnDrillDown=BEGIN
+                                                               JobCalcStatistics.ShowLedgEntry(2,1,TRUE);
+                                                             END;
+                                                              }
+    { 82  ;Label        ;440  ;5830 ;3300 ;440  ;ParentControl=92;
+                                                 CaptionML=[DEU=Verwendung;
+                                                            ENU=Usage] }
+    { 93  ;TextBox      ;3850 ;6380 ;2750 ;440  ;Editable=No;
+                                                 ParentControl=1;
+                                                 InPage=1;
+                                                 CaptionML=[DEU=Vertrag;
+                                                            ENU=Contract];
+                                                 SourceExpr=C[9];
+                                                 OnDrillDown=BEGIN
+                                                               JobCalcStatistics.ShowPlanningLine(2,1,FALSE);
+                                                             END;
+                                                              }
+    { 83  ;Label        ;440  ;6380 ;3300 ;440  ;ParentControl=93;
+                                                 CaptionML=[DEU=Vertrag;
+                                                            ENU=Contract] }
+    { 94  ;TextBox      ;3850 ;6930 ;2750 ;440  ;Editable=No;
+                                                 ParentControl=1;
+                                                 InPage=1;
+                                                 CaptionML=[DEU=Fakturiert;
+                                                            ENU=Invoiced];
+                                                 SourceExpr=C[13];
+                                                 OnDrillDown=BEGIN
+                                                               JobCalcStatistics.ShowLedgEntry(2,1,FALSE);
+                                                             END;
+                                                              }
+    { 84  ;Label        ;440  ;6930 ;3300 ;440  ;ParentControl=94;
+                                                 CaptionML=[DEU=Fakturiert;
+                                                            ENU=Invoiced] }
+    { 95  ;TextBox      ;3850 ;2310 ;2750 ;440  ;Editable=No;
+                                                 ParentControl=1;
+                                                 InPage=1;
+                                                 CaptionML=[DEU=Plan;
+                                                            ENU=Schedule];
+                                                 SourceExpr=P[1];
+                                                 OnDrillDown=BEGIN
+                                                               JobCalcStatistics.ShowPlanningLine(4,1,TRUE);
+                                                             END;
+                                                              }
+    { 76  ;Label        ;440  ;2310 ;3300 ;440  ;ParentControl=95;
+                                                 CaptionML=[DEU=Plan;
+                                                            ENU=Schedule] }
+    { 96  ;TextBox      ;3850 ;2860 ;2750 ;440  ;Editable=No;
+                                                 ParentControl=1;
+                                                 InPage=1;
+                                                 CaptionML=[DEU=Verwendung;
+                                                            ENU=Usage];
+                                                 SourceExpr=P[5];
+                                                 OnDrillDown=BEGIN
+                                                               JobCalcStatistics.ShowLedgEntry(4,1,TRUE);
+                                                             END;
+                                                              }
+    { 77  ;Label        ;440  ;2860 ;3300 ;440  ;ParentControl=96;
+                                                 CaptionML=[DEU=Verwendung;
+                                                            ENU=Usage] }
+    { 97  ;TextBox      ;3850 ;3410 ;2750 ;440  ;Editable=No;
+                                                 ParentControl=1;
+                                                 InPage=1;
+                                                 CaptionML=[DEU=Vertrag;
+                                                            ENU=Contract];
+                                                 SourceExpr=P[9];
+                                                 OnDrillDown=BEGIN
+                                                               JobCalcStatistics.ShowPlanningLine(4,1,FALSE);
+                                                             END;
+                                                              }
+    { 78  ;Label        ;440  ;3410 ;3300 ;440  ;ParentControl=97;
+                                                 CaptionML=[DEU=Vertrag;
+                                                            ENU=Contract] }
+    { 98  ;TextBox      ;3850 ;3960 ;2750 ;440  ;Editable=No;
+                                                 ParentControl=1;
+                                                 InPage=1;
+                                                 CaptionML=[DEU=Fakturiert;
+                                                            ENU=Invoiced];
+                                                 SourceExpr=P[13];
+                                                 OnDrillDown=BEGIN
+                                                               JobCalcStatistics.ShowLedgEntry(4,1,FALSE);
+                                                             END;
+                                                              }
+    { 79  ;Label        ;440  ;3960 ;3300 ;440  ;ParentControl=98;
+                                                 CaptionML=[DEU=Fakturiert;
+                                                            ENU=Invoiced] }
+    { 99  ;TextBox      ;3850 ;8250 ;2750 ;440  ;Editable=No;
+                                                 ParentControl=1;
+                                                 InPage=1;
+                                                 CaptionML=[DEU=Plan;
+                                                            ENU=Schedule];
+                                                 SourceExpr=P[1] - C[1];
+                                                 OnDrillDown=BEGIN
+                                                               JobCalcStatistics.ShowPlanningLine(4,1,TRUE);
+                                                             END;
+                                                              }
+    { 86  ;Label        ;440  ;8250 ;3300 ;440  ;ParentControl=99;
+                                                 CaptionML=[DEU=Plan;
+                                                            ENU=Schedule] }
+    { 100 ;TextBox      ;3850 ;8800 ;2750 ;440  ;Editable=No;
+                                                 ParentControl=1;
+                                                 InPage=1;
+                                                 CaptionML=[DEU=Verwendung;
+                                                            ENU=Usage];
+                                                 SourceExpr=P[5] - C[5];
+                                                 OnDrillDown=BEGIN
+                                                               JobCalcStatistics.ShowLedgEntry(3,1,TRUE);
+                                                             END;
+                                                              }
+    { 87  ;Label        ;440  ;8800 ;3300 ;440  ;ParentControl=100;
+                                                 CaptionML=[DEU=Verwendung;
+                                                            ENU=Usage] }
+    { 101 ;TextBox      ;3850 ;9350 ;2750 ;440  ;Editable=No;
+                                                 ParentControl=1;
+                                                 InPage=1;
+                                                 CaptionML=[DEU=Vertrag;
+                                                            ENU=Contract];
+                                                 SourceExpr=P[9] - C[9];
+                                                 OnDrillDown=BEGIN
+                                                               JobCalcStatistics.ShowPlanningLine(4,1,FALSE);
+                                                             END;
+                                                              }
+    { 89  ;Label        ;440  ;9350 ;3300 ;440  ;ParentControl=101;
+                                                 CaptionML=[DEU=Vertrag;
+                                                            ENU=Contract] }
+    { 102 ;TextBox      ;3850 ;9900 ;2750 ;440  ;Editable=No;
+                                                 ParentControl=1;
+                                                 InPage=1;
+                                                 CaptionML=[DEU=Fakturiert;
+                                                            ENU=Invoiced];
+                                                 SourceExpr=P[13] - C[13];
+                                                 OnDrillDown=BEGIN
+                                                               JobCalcStatistics.ShowLedgEntry(3,1,FALSE);
+                                                             END;
+                                                              }
+    { 90  ;Label        ;440  ;9900 ;3300 ;440  ;ParentControl=102;
+                                                 CaptionML=[DEU=Fakturiert;
+                                                            ENU=Invoiced] }
+    { 103 ;Label        ;3850 ;990  ;2750 ;440  ;ParentControl=1;
+                                                 InPage=1;
+                                                 HorzAlign=Right;
+                                                 LeaderDots=No;
+                                                 CaptionML=[DEU=Ressource;
+                                                            ENU=Resource] }
+    { 104 ;TextBox      ;6820 ;5280 ;2750 ;440  ;Editable=No;
+                                                 ParentControl=1;
+                                                 InPage=1;
+                                                 CaptionML=[DEU=Einstandspreis Plan (Artikel);
+                                                            ENU=Schedule Cost (Item)];
+                                                 SourceExpr=C[2];
+                                                 OnDrillDown=BEGIN
+                                                               JobCalcStatistics.ShowPlanningLine(2,2,TRUE);
+                                                             END;
+                                                              }
+    { 105 ;TextBox      ;6820 ;5830 ;2750 ;440  ;Editable=No;
+                                                 ParentControl=1;
+                                                 InPage=1;
+                                                 CaptionML=[DEU=Verbrauchskosten (Artikel);
+                                                            ENU=Usage Cost (Item)];
+                                                 SourceExpr=C[6];
+                                                 OnDrillDown=BEGIN
+                                                               JobCalcStatistics.ShowLedgEntry(2,2,TRUE);
+                                                             END;
+                                                              }
+    { 106 ;TextBox      ;6820 ;6380 ;2750 ;440  ;Editable=No;
+                                                 ParentControl=1;
+                                                 InPage=1;
+                                                 CaptionML=[DEU=Einstandsbetrag Vertrag (Artikel);
+                                                            ENU=Contract Cost (Item)];
+                                                 SourceExpr=C[10];
+                                                 OnDrillDown=BEGIN
+                                                               JobCalcStatistics.ShowPlanningLine(2,2,FALSE);
+                                                             END;
+                                                              }
+    { 107 ;TextBox      ;6820 ;6930 ;2750 ;440  ;Editable=No;
+                                                 ParentControl=1;
+                                                 InPage=1;
+                                                 CaptionML=[DEU=Einstandsbetrag fakturiert (Artikel);
+                                                            ENU=Invoiced Cost (Item)];
+                                                 SourceExpr=C[14];
+                                                 OnDrillDown=BEGIN
+                                                               JobCalcStatistics.ShowLedgEntry(2,2,FALSE);
+                                                             END;
+                                                              }
+    { 108 ;TextBox      ;6820 ;2310 ;2750 ;440  ;Editable=No;
+                                                 ParentControl=1;
+                                                 InPage=1;
+                                                 CaptionML=[DEU=VK-Preis Plan (Artikel);
+                                                            ENU=Schedule Price (Item)];
+                                                 SourceExpr=P[2];
+                                                 OnDrillDown=BEGIN
+                                                               JobCalcStatistics.ShowPlanningLine(4,2,TRUE);
+                                                             END;
+                                                              }
+    { 109 ;TextBox      ;6820 ;2860 ;2750 ;440  ;Editable=No;
+                                                 ParentControl=1;
+                                                 InPage=1;
+                                                 CaptionML=[DEU=VK-Preis Verbrauch (Artikel);
+                                                            ENU=Usage Price (Item)];
+                                                 SourceExpr=P[6];
+                                                 OnDrillDown=BEGIN
+                                                               JobCalcStatistics.ShowLedgEntry(4,2,TRUE);
+                                                             END;
+                                                              }
+    { 110 ;TextBox      ;6820 ;3410 ;2750 ;440  ;Editable=No;
+                                                 ParentControl=1;
+                                                 InPage=1;
+                                                 CaptionML=[DEU=Vertragspreis (Artikel);
+                                                            ENU=Contract Price (Item)];
+                                                 SourceExpr=P[10];
+                                                 OnDrillDown=BEGIN
+                                                               JobCalcStatistics.ShowPlanningLine(4,2,FALSE);
+                                                             END;
+                                                              }
+    { 111 ;TextBox      ;6820 ;3960 ;2750 ;440  ;Editable=No;
+                                                 ParentControl=1;
+                                                 InPage=1;
+                                                 CaptionML=[DEU=Preis fakturiert (Artikel);
+                                                            ENU=Invoiced Price (Item)];
+                                                 SourceExpr=P[14];
+                                                 OnDrillDown=BEGIN
+                                                               JobCalcStatistics.ShowLedgEntry(4,2,FALSE);
+                                                             END;
+                                                              }
+    { 112 ;TextBox      ;6820 ;8250 ;2750 ;440  ;Editable=No;
+                                                 ParentControl=1;
+                                                 InPage=1;
+                                                 CaptionML=[DEU=DB Plan (Artikel);
+                                                            ENU=Schedule Profit (Item)];
+                                                 SourceExpr=P[2] - C[2];
+                                                 OnDrillDown=BEGIN
+                                                               JobCalcStatistics.ShowPlanningLine(4,2,TRUE);
+                                                             END;
+                                                              }
+    { 113 ;TextBox      ;6820 ;8800 ;2750 ;440  ;Editable=No;
+                                                 ParentControl=1;
+                                                 InPage=1;
+                                                 CaptionML=[DEU=Verbrauchs-DB (Artikel);
+                                                            ENU=Usage Profit (Item)];
+                                                 SourceExpr=P[6] - C[6];
+                                                 OnDrillDown=BEGIN
+                                                               JobCalcStatistics.ShowLedgEntry(3,2,TRUE);
+                                                             END;
+                                                              }
+    { 114 ;TextBox      ;6820 ;9350 ;2750 ;440  ;Editable=No;
+                                                 ParentControl=1;
+                                                 InPage=1;
+                                                 CaptionML=[DEU=Vertrags-DB (Artikel);
+                                                            ENU=Contract Profit (Item)];
+                                                 SourceExpr=P[10] - C[10];
+                                                 OnDrillDown=BEGIN
+                                                               JobCalcStatistics.ShowPlanningLine(4,2,FALSE);
+                                                             END;
+                                                              }
+    { 116 ;TextBox      ;6820 ;9900 ;2750 ;440  ;Editable=No;
+                                                 ParentControl=1;
+                                                 InPage=1;
+                                                 CaptionML=[DEU=DB fakturiert (Artikel);
+                                                            ENU=Invoiced Profit (Item)];
+                                                 SourceExpr=P[14] - C[14];
+                                                 OnDrillDown=BEGIN
+                                                               JobCalcStatistics.ShowLedgEntry(3,2,FALSE);
+                                                             END;
+                                                              }
+    { 117 ;Label        ;6820 ;990  ;2750 ;440  ;ParentControl=1;
+                                                 InPage=1;
+                                                 HorzAlign=Right;
+                                                 LeaderDots=No;
+                                                 CaptionML=[DEU=Artikel;
+                                                            ENU=Item] }
+    { 118 ;TextBox      ;9790 ;5280 ;2750 ;440  ;Editable=No;
+                                                 ParentControl=1;
+                                                 InPage=1;
+                                                 CaptionML=[DEU=Einstandspreis Plan (Sachkonto);
+                                                            ENU=Schedule Cost (G/L Acc.)];
+                                                 SourceExpr=C[3];
+                                                 OnDrillDown=BEGIN
+                                                               JobCalcStatistics.ShowPlanningLine(2,3,TRUE);
+                                                             END;
+                                                              }
+    { 119 ;TextBox      ;9790 ;5830 ;2750 ;440  ;Editable=No;
+                                                 ParentControl=1;
+                                                 InPage=1;
+                                                 CaptionML=[DEU=Verbrauchskosten (Sachkonto);
+                                                            ENU=Usage Cost (G/L Acc.)];
+                                                 SourceExpr=C[7];
+                                                 OnDrillDown=BEGIN
+                                                               JobCalcStatistics.ShowLedgEntry(2,3,TRUE);
+                                                             END;
+                                                              }
+    { 120 ;TextBox      ;9790 ;6380 ;2750 ;440  ;Editable=No;
+                                                 ParentControl=1;
+                                                 InPage=1;
+                                                 CaptionML=[DEU=Einstandsbetrag Vertrag (Sachkonto);
+                                                            ENU=Contract Cost (G/L Acc.)];
+                                                 SourceExpr=C[11];
+                                                 OnDrillDown=BEGIN
+                                                               JobCalcStatistics.ShowPlanningLine(2,3,FALSE);
+                                                             END;
+                                                              }
+    { 121 ;TextBox      ;9790 ;6930 ;2750 ;440  ;Editable=No;
+                                                 ParentControl=1;
+                                                 InPage=1;
+                                                 CaptionML=[DEU=Einstandsbetrag fakturiert (Sachkonto);
+                                                            ENU=Invoiced Cost (G/L Acc.)];
+                                                 SourceExpr=C[15];
+                                                 OnDrillDown=BEGIN
+                                                               JobCalcStatistics.ShowLedgEntry(2,3,FALSE);
+                                                             END;
+                                                              }
+    { 122 ;TextBox      ;9790 ;2310 ;2750 ;440  ;Editable=No;
+                                                 ParentControl=1;
+                                                 InPage=1;
+                                                 CaptionML=[DEU=VK-Preis Plan (Sachkonto);
+                                                            ENU=Schedule Price (G/L Acc.)];
+                                                 SourceExpr=P[3];
+                                                 OnDrillDown=BEGIN
+                                                               JobCalcStatistics.ShowPlanningLine(4,3,TRUE);
+                                                             END;
+                                                              }
+    { 123 ;TextBox      ;9790 ;2860 ;2750 ;440  ;Editable=No;
+                                                 ParentControl=1;
+                                                 InPage=1;
+                                                 CaptionML=[DEU=VK-Preis Verbrauch (Sachkonto);
+                                                            ENU=Usage Price (G/L Acc.)];
+                                                 SourceExpr=P[7];
+                                                 OnDrillDown=BEGIN
+                                                               JobCalcStatistics.ShowLedgEntry(4,3,TRUE);
+                                                             END;
+                                                              }
+    { 124 ;TextBox      ;9790 ;3410 ;2750 ;440  ;Editable=No;
+                                                 ParentControl=1;
+                                                 InPage=1;
+                                                 CaptionML=[DEU=Vertragspreis (Sachkonto);
+                                                            ENU=Contract Price (G/L Acc.)];
+                                                 SourceExpr=P[11];
+                                                 OnDrillDown=BEGIN
+                                                               JobCalcStatistics.ShowPlanningLine(4,3,FALSE);
+                                                             END;
+                                                              }
+    { 125 ;TextBox      ;9790 ;3960 ;2750 ;440  ;Editable=No;
+                                                 ParentControl=1;
+                                                 InPage=1;
+                                                 CaptionML=[DEU=Preis fakturiert (Sachkonto);
+                                                            ENU=Invoiced Price (G/L Acc.)];
+                                                 SourceExpr=P[15];
+                                                 OnDrillDown=BEGIN
+                                                               JobCalcStatistics.ShowLedgEntry(4,3,FALSE);
+                                                             END;
+                                                              }
+    { 126 ;TextBox      ;9790 ;8250 ;2750 ;440  ;Editable=No;
+                                                 ParentControl=1;
+                                                 InPage=1;
+                                                 CaptionML=[DEU=DB Plan (Sachkonto);
+                                                            ENU=Schedule Profit (G/L Acc.)];
+                                                 SourceExpr=P[3] - C[3];
+                                                 OnDrillDown=BEGIN
+                                                               JobCalcStatistics.ShowPlanningLine(4,3,TRUE);
+                                                             END;
+                                                              }
+    { 127 ;TextBox      ;9790 ;8800 ;2750 ;440  ;Editable=No;
+                                                 ParentControl=1;
+                                                 InPage=1;
+                                                 CaptionML=[DEU=Verbrauchs-DB (Sachkonto);
+                                                            ENU=Usage Profit (G/L Acc.)];
+                                                 SourceExpr=P[7] - C[7];
+                                                 OnDrillDown=BEGIN
+                                                               JobCalcStatistics.ShowLedgEntry(3,3,TRUE);
+                                                             END;
+                                                              }
+    { 128 ;TextBox      ;9790 ;9350 ;2750 ;440  ;Editable=No;
+                                                 ParentControl=1;
+                                                 InPage=1;
+                                                 CaptionML=[DEU=Vertrags-DB (Sachkonto);
+                                                            ENU=Contract Profit (G/L Acc.)];
+                                                 SourceExpr=P[11] - C[11];
+                                                 OnDrillDown=BEGIN
+                                                               JobCalcStatistics.ShowPlanningLine(4,3,FALSE);
+                                                             END;
+                                                              }
+    { 130 ;TextBox      ;9790 ;9900 ;2750 ;440  ;Editable=No;
+                                                 ParentControl=1;
+                                                 InPage=1;
+                                                 CaptionML=[DEU=DB fakturiert (Sachkonto);
+                                                            ENU=Invoiced Profit (G/L Acc.)];
+                                                 SourceExpr=P[15] - C[15];
+                                                 OnDrillDown=BEGIN
+                                                               JobCalcStatistics.ShowLedgEntry(3,3,FALSE);
+                                                             END;
+                                                              }
+    { 131 ;Label        ;9790 ;990  ;2750 ;440  ;ParentControl=1;
+                                                 InPage=1;
+                                                 HorzAlign=Right;
+                                                 LeaderDots=No;
+                                                 CaptionML=[DEU=Sachkonto;
+                                                            ENU=G/L Account] }
+    { 132 ;TextBox      ;12760;5280 ;2750 ;440  ;Editable=No;
+                                                 ParentControl=1;
+                                                 InPage=1;
+                                                 CaptionML=[DEU=Einstandspreis Plan (Total);
+                                                            ENU=Schedule Cost (Total)];
+                                                 SourceExpr=C[4];
+                                                 OnDrillDown=BEGIN
+                                                               JobCalcStatistics.ShowPlanningLine(2,0,TRUE);
+                                                             END;
+                                                              }
+    { 133 ;TextBox      ;12760;5830 ;2750 ;440  ;Editable=No;
+                                                 ParentControl=1;
+                                                 InPage=1;
+                                                 CaptionML=[DEU=Verbrauchskosten (Total);
+                                                            ENU=Usage Cost (Total)];
+                                                 SourceExpr=C[8];
+                                                 OnDrillDown=BEGIN
+                                                               JobCalcStatistics.ShowLedgEntry(2,0,TRUE);
+                                                             END;
+                                                              }
+    { 134 ;TextBox      ;12760;6380 ;2750 ;440  ;Editable=No;
+                                                 ParentControl=1;
+                                                 InPage=1;
+                                                 CaptionML=[DEU=Einstandsbetrag Vertrag (Total);
+                                                            ENU=Contract Cost (Total)];
+                                                 SourceExpr=C[12];
+                                                 OnDrillDown=BEGIN
+                                                               JobCalcStatistics.ShowPlanningLine(2,0,FALSE);
+                                                             END;
+                                                              }
+    { 135 ;TextBox      ;12760;6930 ;2750 ;440  ;Editable=No;
+                                                 ParentControl=1;
+                                                 InPage=1;
+                                                 CaptionML=[DEU=Einstandsbetrag fakturiert (Total);
+                                                            ENU=Invoiced Cost (Total)];
+                                                 SourceExpr=C[16];
+                                                 OnDrillDown=BEGIN
+                                                               JobCalcStatistics.ShowLedgEntry(2,0,FALSE);
+                                                             END;
+                                                              }
+    { 136 ;TextBox      ;12760;2310 ;2750 ;440  ;Editable=No;
+                                                 ParentControl=1;
+                                                 InPage=1;
+                                                 CaptionML=[DEU=VK-Preis Plan (Total);
+                                                            ENU=Schedule Price (Total)];
+                                                 SourceExpr=P[4];
+                                                 OnDrillDown=BEGIN
+                                                               JobCalcStatistics.ShowPlanningLine(4,0,TRUE);
+                                                             END;
+                                                              }
+    { 137 ;TextBox      ;12760;2860 ;2750 ;440  ;Editable=No;
+                                                 ParentControl=1;
+                                                 InPage=1;
+                                                 CaptionML=[DEU=VK-Preis Verbrauch (Total);
+                                                            ENU=Usage Price (Total)];
+                                                 SourceExpr=P[8];
+                                                 OnDrillDown=BEGIN
+                                                               JobCalcStatistics.ShowLedgEntry(4,0,TRUE);
+                                                             END;
+                                                              }
+    { 138 ;TextBox      ;12760;3410 ;2750 ;440  ;Editable=No;
+                                                 ParentControl=1;
+                                                 InPage=1;
+                                                 CaptionML=[DEU=Vertragspreis (Total);
+                                                            ENU=Contract Price (Total)];
+                                                 SourceExpr=P[12];
+                                                 OnDrillDown=BEGIN
+                                                               JobCalcStatistics.ShowPlanningLine(4,0,FALSE);
+                                                             END;
+                                                              }
+    { 139 ;TextBox      ;12760;3960 ;2750 ;440  ;Editable=No;
+                                                 ParentControl=1;
+                                                 InPage=1;
+                                                 CaptionML=[DEU=Preis fakturiert (Total);
+                                                            ENU=Invoiced Price (Total)];
+                                                 SourceExpr=P[16];
+                                                 OnDrillDown=BEGIN
+                                                               JobCalcStatistics.ShowLedgEntry(4,0,FALSE);
+                                                             END;
+                                                              }
+    { 140 ;TextBox      ;12760;8250 ;2750 ;440  ;Editable=No;
+                                                 ParentControl=1;
+                                                 InPage=1;
+                                                 CaptionML=[DEU=DB Plan (Total);
+                                                            ENU=Schedule Profit (Total)];
+                                                 SourceExpr=P[4] - C[4];
+                                                 OnDrillDown=BEGIN
+                                                               JobCalcStatistics.ShowPlanningLine(4,0,TRUE);
+                                                             END;
+                                                              }
+    { 141 ;TextBox      ;12760;8800 ;2750 ;440  ;Editable=No;
+                                                 ParentControl=1;
+                                                 InPage=1;
+                                                 CaptionML=[DEU=Verbrauchs-DB (Total);
+                                                            ENU=Usage Profit (Total)];
+                                                 SourceExpr=P[8] - C[8];
+                                                 OnDrillDown=BEGIN
+                                                               JobCalcStatistics.ShowLedgEntry(3,0,TRUE);
+                                                             END;
+                                                              }
+    { 142 ;TextBox      ;12760;9350 ;2750 ;440  ;Editable=No;
+                                                 ParentControl=1;
+                                                 InPage=1;
+                                                 CaptionML=[DEU=Vertrags-DB (Total);
+                                                            ENU=Contract Profit (Total)];
+                                                 SourceExpr=P[12] - C[12];
+                                                 OnDrillDown=BEGIN
+                                                               JobCalcStatistics.ShowPlanningLine(4,0,FALSE);
+                                                             END;
+                                                              }
+    { 143 ;TextBox      ;12760;9900 ;2750 ;440  ;Editable=No;
+                                                 ParentControl=1;
+                                                 InPage=1;
+                                                 CaptionML=[DEU=DB fakturiert (Total);
+                                                            ENU=Invoiced Profit (Total)];
+                                                 SourceExpr=P[16] - C[16];
+                                                 OnDrillDown=BEGIN
+                                                               JobCalcStatistics.ShowLedgEntry(3,0,FALSE);
+                                                             END;
+                                                              }
+    { 144 ;Label        ;12760;990  ;2750 ;440  ;ParentControl=1;
+                                                 InPage=1;
+                                                 HorzAlign=Right;
+                                                 LeaderDots=No;
+                                                 CaptionML=[DEU=Gesamt;
+                                                            ENU=Total] }
+    { 151 ;TextBox      ;3850 ;1650 ;2750 ;440  ;Visible=No;
+                                                 ParentControl=1;
+                                                 InPage=1;
+                                                 ForeColor=65535;
+                                                 CaptionML=[DEU=VK-Preis;
+                                                            ENU=Price];
+                                                 SourceExpr=Text000 }
+    { 152 ;TextBox      ;6820 ;1650 ;2750 ;440  ;Visible=No;
+                                                 ParentControl=1;
+                                                 InPage=1;
+                                                 ForeColor=65535;
+                                                 SourceExpr=Text000 }
+    { 153 ;TextBox      ;9790 ;1650 ;2750 ;440  ;Visible=No;
+                                                 ParentControl=1;
+                                                 InPage=1;
+                                                 ForeColor=65535;
+                                                 SourceExpr=Text000 }
+    { 154 ;TextBox      ;12760;1650 ;2750 ;440  ;Visible=No;
+                                                 ParentControl=1;
+                                                 InPage=1;
+                                                 ForeColor=65535;
+                                                 SourceExpr=Text000 }
+    { 155 ;TextBox      ;3850 ;4620 ;2750 ;440  ;Visible=No;
+                                                 ParentControl=1;
+                                                 InPage=1;
+                                                 ForeColor=65535;
+                                                 CaptionML=[DEU=Kosten;
+                                                            ENU=Cost];
+                                                 SourceExpr=Text000 }
+    { 156 ;TextBox      ;6820 ;4620 ;2750 ;440  ;Visible=No;
+                                                 ParentControl=1;
+                                                 InPage=1;
+                                                 ForeColor=65535;
+                                                 SourceExpr=Text000 }
+    { 157 ;TextBox      ;9790 ;4620 ;2750 ;440  ;Visible=No;
+                                                 ParentControl=1;
+                                                 InPage=1;
+                                                 ForeColor=65535;
+                                                 SourceExpr=Text000 }
+    { 158 ;TextBox      ;12760;4620 ;2750 ;440  ;Visible=No;
+                                                 ParentControl=1;
+                                                 InPage=1;
+                                                 ForeColor=65535;
+                                                 SourceExpr=Text000 }
+    { 159 ;TextBox      ;3850 ;7590 ;2750 ;440  ;Visible=No;
+                                                 ParentControl=1;
+                                                 InPage=1;
+                                                 ForeColor=65535;
+                                                 CaptionML=[DEU=DB;
+                                                            ENU=Profit];
+                                                 SourceExpr=Text000 }
+    { 160 ;TextBox      ;6820 ;7590 ;2750 ;440  ;Visible=No;
+                                                 ParentControl=1;
+                                                 InPage=1;
+                                                 ForeColor=65535;
+                                                 SourceExpr=Text000 }
+    { 161 ;TextBox      ;9790 ;7590 ;2750 ;440  ;Visible=No;
+                                                 ParentControl=1;
+                                                 InPage=1;
+                                                 ForeColor=65535;
+                                                 SourceExpr=Text000 }
+    { 162 ;TextBox      ;12760;7590 ;2750 ;440  ;Visible=No;
+                                                 ParentControl=1;
+                                                 InPage=1;
+                                                 ForeColor=65535;
+                                                 SourceExpr=Text000 }
+    { 8   ;CommandButton;13530;10670;2200 ;550  ;HorzGlue=Right;
+                                                 VertGlue=Bottom;
+                                                 PushAction=FormHelp }
+    { 73  ;MenuButton   ;11110;10670;2200 ;550  ;HorzGlue=Right;
+                                                 VertGlue=Bottom;
+                                                 CaptionML=[DEU=Pro&jekt;
+                                                            ENU=&Job];
+                                                 Menu=MENUITEMS
+                                                 {
+                                                   { ID=74;
+                                                     PushAction=LookupTable;
+                                                     ShortCutKey=F5;
+                                                     CaptionML=[DEU=šbersicht;
+                                                                ENU=List] }
+                                                 }
+                                                  }
+  }
+  CODE
+  {
+    VAR
+      JobCalcStatistics@1001 : Codeunit 1008;
+      CL@1000 : ARRAY [16] OF Decimal;
+      PL@1003 : ARRAY [16] OF Decimal;
+      P@1005 : ARRAY [16] OF Decimal;
+      C@1004 : ARRAY [16] OF Decimal;
+      Text000@1002 : TextConst 'DEU=Platzhalter;ENU=Placeholder';
+
+    BEGIN
+    END.
+  }
+}
+

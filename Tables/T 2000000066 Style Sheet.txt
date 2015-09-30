@@ -1,0 +1,50 @@
+OBJECT Table 2000000066 Style Sheet
+{
+  OBJECT-PROPERTIES
+  {
+    Date=11.12.10;
+    Time=12:00:00;
+    Version List=;
+  }
+  PROPERTIES
+  {
+    DataPerCompany=No;
+    CaptionML=[DEU=Formatvorlage;
+               ENU=Style Sheet];
+  }
+  FIELDS
+  {
+    { 1   ;   ;Style Sheet ID      ;GUID          ;CaptionML=[DEU=Formatvorlagen-ID;
+                                                              ENU=Style Sheet ID] }
+    { 2   ;   ;Object Type         ;Option        ;CaptionML=[DEU=Objektart;
+                                                              ENU=Object Type];
+                                                   OptionCaptionML=[DEU=Form,Report,Page;
+                                                                    ENU=Form,Report,Page];
+                                                   OptionString=Form,Report,Page }
+    { 3   ;   ;Object ID           ;Integer       ;CaptionML=[DEU=Objekt-ID;
+                                                              ENU=Object ID] }
+    { 4   ;   ;Program ID          ;GUID          ;CaptionML=[DEU=Programm-ID;
+                                                              ENU=Program ID] }
+    { 5   ;   ;Name                ;Text250       ;CaptionML=[DEU=Name;
+                                                              ENU=Name] }
+    { 6   ;   ;Style Sheet         ;BLOB          ;CaptionML=[DEU=Formatvorlage;
+                                                              ENU=Style Sheet] }
+    { 7   ;   ;Date                ;Date          ;CaptionML=[DEU=Datum;
+                                                              ENU=Date] }
+  }
+  KEYS
+  {
+    {    ;Style Sheet ID                          ;Clustered=Yes }
+    {    ;Object Type,Object ID,Program ID         }
+  }
+  FIELDGROUPS
+  {
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

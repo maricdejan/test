@@ -1,0 +1,60 @@
+OBJECT Page 11009 GDPdU Field List
+{
+  OBJECT-PROPERTIES
+  {
+    Date=14.08.09;
+    Time=12:00:00;
+    Version List=NAVDACH6.00.01;
+  }
+  PROPERTIES
+  {
+    Editable=No;
+    CaptionML=[DEU=GDPdU FelderÅbersicht;
+               ENU=GDPdU Field List];
+    SourceTable=Table2000000041;
+    DataCaptionExpr=GetCaption;
+    SourceTableView=SORTING(TableNo,No.);
+    PageType=List;
+  }
+  CONTROLS
+  {
+    { 1900000001;0;Container;
+                ContainerType=ContentArea }
+
+    { 1140000;1;Group     ;
+                GroupType=Repeater }
+
+    { 1140001;2;Field     ;
+                CaptionML=[DEU=Feldnr.;
+                           ENU=Field No.];
+                SourceExpr="No." }
+
+    { 1140003;2;Field     ;
+                CaptionML=[DEU=Feldname;
+                           ENU=Field Name];
+                SourceExpr="Field Caption" }
+
+    { 1140005;2;Field     ;
+                CaptionML=[DEU=Typ;
+                           ENU=Type];
+                SourceExpr=Type }
+
+  }
+  CODE
+  {
+
+    LOCAL PROCEDURE GetCaption@1140000() : Text[250];
+    VAR
+      AllObjWithCaption@1140000 : Record 2000000058;
+    BEGIN
+      IF AllObjWithCaption.GET(AllObjWithCaption."Object Type"::Table,TableNo) THEN
+        EXIT(FORMAT(TableNo) + ' ' + AllObjWithCaption."Object Caption")
+      ELSE
+        EXIT('');
+    END;
+
+    BEGIN
+    END.
+  }
+}
+

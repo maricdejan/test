@@ -1,0 +1,81 @@
+OBJECT Page 9084 Customer Details FactBox
+{
+  OBJECT-PROPERTIES
+  {
+    Date=05.11.08;
+    Time=12:00:00;
+    Version List=NAVW16.00;
+  }
+  PROPERTIES
+  {
+    CaptionML=[DEU=Debitorendetails;
+               ENU=Customer Details];
+    SourceTable=Table18;
+    PageType=CardPart;
+    ActionList=ACTIONS
+    {
+      { 1900000004;0 ;ActionContainer;
+                      ActionContainerType=ActionItems }
+      { 9       ;1   ;ActionGroup;
+                      CaptionML=[DEU=Aktionen;
+                                 ENU=Actions] }
+      { 15      ;2   ;Action    ;
+                      CaptionML=[DEU=Lief. an Adresse;
+                                 ENU=Ship-to Address];
+                      RunObject=Page 301;
+                      RunFormLink=Customer No.=FIELD(No.) }
+      { 21      ;2   ;Action    ;
+                      CaptionML=[DEU=Bemerkungen;
+                                 ENU=Comments];
+                      RunObject=Page 124;
+                      RunFormLink=Table Name=CONST(Customer),
+                                  No.=FIELD(No.);
+                      Image=ViewComments }
+    }
+  }
+  CONTROLS
+  {
+    { 1900000001;0;Container;
+                ContainerType=ContentArea }
+
+    { 11  ;1   ;Field     ;
+                CaptionML=[DEU=Debitorennr.;
+                           ENU=Customer No.];
+                SourceExpr="No.";
+                OnDrillDown=BEGIN
+                              ShowDetails;
+                            END;
+                             }
+
+    { 16  ;1   ;Field     ;
+                SourceExpr="Phone No." }
+
+    { 1   ;1   ;Field     ;
+                SourceExpr="E-Mail" }
+
+    { 18  ;1   ;Field     ;
+                SourceExpr="Fax No." }
+
+    { 3   ;1   ;Field     ;
+                SourceExpr="Credit Limit (LCY)" }
+
+    { 5   ;1   ;Field     ;
+                SourceExpr="Payment Terms Code" }
+
+    { 7   ;1   ;Field     ;
+                SourceExpr=Contact }
+
+  }
+  CODE
+  {
+
+    PROCEDURE ShowDetails@1102601000();
+    BEGIN
+      FORM.RUN(FORM::"Customer Card",Rec);
+    END;
+
+    BEGIN
+    END.
+  }
+}
+

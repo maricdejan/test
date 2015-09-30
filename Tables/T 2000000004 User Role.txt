@@ -1,0 +1,37 @@
+OBJECT Table 2000000004 User Role
+{
+  OBJECT-PROPERTIES
+  {
+    Date=25.05.05;
+    Time=12:00:00;
+    Version List=;
+  }
+  PROPERTIES
+  {
+    DataPerCompany=No;
+    DataCaptionFields=Role ID,Name;
+    CaptionML=[DEU=Benutzerrolle;
+               ENU=User Role];
+  }
+  FIELDS
+  {
+    { 1   ;   ;Role ID             ;Code20        ;CaptionML=[DEU=Rollen-ID;
+                                                              ENU=Role ID] }
+    { 2   ;   ;Name                ;Text30        ;CaptionML=[DEU=Name;
+                                                              ENU=Name] }
+  }
+  KEYS
+  {
+    {    ;Role ID                                 ;Clustered=Yes }
+  }
+  FIELDGROUPS
+  {
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

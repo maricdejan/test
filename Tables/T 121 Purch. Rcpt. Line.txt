@@ -1,0 +1,737 @@
+OBJECT Table 121 Purch. Rcpt. Line
+{
+  OBJECT-PROPERTIES
+  {
+    Date=14.08.09;
+    Time=12:00:00;
+    Version List=NAVW16.00.01,NAVDACH6.00;
+  }
+  PROPERTIES
+  {
+    Permissions=TableData 32=r,
+                TableData 5802=r;
+    OnDelete=VAR
+               PurchDocLineComments@1000 : Record 43;
+             BEGIN
+               DimMgt.DeletePostedDocDim(DATABASE::"Purch. Rcpt. Line","Document No.","Line No.");
+               PurchDocLineComments.SETRANGE("Document Type",PurchDocLineComments."Document Type"::Receipt);
+               PurchDocLineComments.SETRANGE("No.","Document No.");
+               PurchDocLineComments.SETRANGE("Document Line No.","Line No.");
+               IF NOT PurchDocLineComments.ISEMPTY THEN
+                 PurchDocLineComments.DELETEALL;
+             END;
+
+    CaptionML=[DEU=Einkaufslieferzeile;
+               ENU=Purch. Rcpt. Line];
+    LookupFormID=Form528;
+  }
+  FIELDS
+  {
+    { 2   ;   ;Buy-from Vendor No. ;Code20        ;TableRelation=Vendor;
+                                                   CaptionML=[DEU=Eink. von Kred.-Nr.;
+                                                              ENU=Buy-from Vendor No.];
+                                                   Editable=No }
+    { 3   ;   ;Document No.        ;Code20        ;TableRelation="Purch. Rcpt. Header";
+                                                   CaptionML=[DEU=Belegnr.;
+                                                              ENU=Document No.] }
+    { 4   ;   ;Line No.            ;Integer       ;CaptionML=[DEU=Zeilennr.;
+                                                              ENU=Line No.] }
+    { 5   ;   ;Type                ;Option        ;CaptionML=[DEU=Art;
+                                                              ENU=Type];
+                                                   OptionCaptionML=[DEU=" ,Sachkonto,Artikel,,WG/Anlage,Zu-/Abschlag (Artikel)";
+                                                                    ENU=" ,G/L Account,Item,,Fixed Asset,Charge (Item)"];
+                                                   OptionString=[ ,G/L Account,Item,,Fixed Asset,Charge (Item)] }
+    { 6   ;   ;No.                 ;Code20        ;TableRelation=IF (Type=CONST(G/L Account)) "G/L Account"
+                                                                 ELSE IF (Type=CONST(Item)) Item
+                                                                 ELSE IF (Type=CONST(Fixed Asset)) "Fixed Asset"
+                                                                 ELSE IF (Type=CONST("Charge (Item)")) "Item Charge";
+                                                   CaptionML=[DEU=Nr.;
+                                                              ENU=No.] }
+    { 7   ;   ;Location Code       ;Code10        ;TableRelation=Location WHERE (Use As In-Transit=CONST(No));
+                                                   CaptionML=[DEU=Lagerortcode;
+                                                              ENU=Location Code] }
+    { 8   ;   ;Posting Group       ;Code10        ;TableRelation=IF (Type=CONST(Item)) "Inventory Posting Group"
+                                                                 ELSE IF (Type=CONST(Fixed Asset)) "FA Posting Group";
+                                                   CaptionML=[DEU=Buchungsgruppe;
+                                                              ENU=Posting Group];
+                                                   Editable=No }
+    { 10  ;   ;Expected Receipt Date;Date         ;CaptionML=[DEU=Erwartetes Wareneingangsdatum;
+                                                              ENU=Expected Receipt Date] }
+    { 11  ;   ;Description         ;Text50        ;CaptionML=[DEU=Beschreibung;
+                                                              ENU=Description] }
+    { 12  ;   ;Description 2       ;Text50        ;CaptionML=[DEU=Beschreibung 2;
+                                                              ENU=Description 2] }
+    { 13  ;   ;Unit of Measure     ;Text10        ;CaptionML=[DEU=Einheit;
+                                                              ENU=Unit of Measure] }
+    { 15  ;   ;Quantity            ;Decimal       ;CaptionML=[DEU=Menge;
+                                                              ENU=Quantity];
+                                                   DecimalPlaces=0:5 }
+    { 22  ;   ;Direct Unit Cost    ;Decimal       ;CaptionML=[DEU=EK-Preis;
+                                                              ENU=Direct Unit Cost];
+                                                   AutoFormatType=2;
+                                                   AutoFormatExpr=GetCurrencyCodeFromHeader }
+    { 23  ;   ;Unit Cost (LCY)     ;Decimal       ;CaptionML=[DEU=Einstandspreis (MW);
+                                                              ENU=Unit Cost (LCY)];
+                                                   AutoFormatType=2 }
+    { 25  ;   ;VAT %               ;Decimal       ;CaptionML=[DEU=MwSt. %;
+                                                              ENU=VAT %];
+                                                   DecimalPlaces=0:5;
+                                                   Editable=No }
+    { 27  ;   ;Line Discount %     ;Decimal       ;CaptionML=[DEU=Zeilenrabatt %;
+                                                              ENU=Line Discount %];
+                                                   DecimalPlaces=0:5;
+                                                   MinValue=0;
+                                                   MaxValue=100 }
+    { 31  ;   ;Unit Price (LCY)    ;Decimal       ;CaptionML=[DEU=VK-Preis (MW);
+                                                              ENU=Unit Price (LCY)];
+                                                   AutoFormatType=2 }
+    { 32  ;   ;Allow Invoice Disc. ;Boolean       ;InitValue=Yes;
+                                                   CaptionML=[DEU=Rech.-Rabatt zulassen;
+                                                              ENU=Allow Invoice Disc.] }
+    { 34  ;   ;Gross Weight        ;Decimal       ;CaptionML=[DEU=Bruttogewicht;
+                                                              ENU=Gross Weight];
+                                                   DecimalPlaces=0:5 }
+    { 35  ;   ;Net Weight          ;Decimal       ;CaptionML=[DEU=Nettogewicht;
+                                                              ENU=Net Weight];
+                                                   DecimalPlaces=0:5 }
+    { 36  ;   ;Units per Parcel    ;Decimal       ;CaptionML=[DEU=Anzahl pro Paket;
+                                                              ENU=Units per Parcel];
+                                                   DecimalPlaces=0:5 }
+    { 37  ;   ;Unit Volume         ;Decimal       ;CaptionML=[DEU=Volumen;
+                                                              ENU=Unit Volume];
+                                                   DecimalPlaces=0:5 }
+    { 38  ;   ;Appl.-to Item Entry ;Integer       ;CaptionML=[DEU=Ausgleich mit Artikelposten;
+                                                              ENU=Appl.-to Item Entry] }
+    { 39  ;   ;Item Rcpt. Entry No.;Integer       ;CaptionML=[DEU=Artikellief. Lfd. Nr.;
+                                                              ENU=Item Rcpt. Entry No.] }
+    { 40  ;   ;Shortcut Dimension 1 Code;Code20   ;TableRelation="Dimension Value".Code WHERE (Global Dimension No.=CONST(1));
+                                                   CaptionML=[DEU=Shortcutdimensionscode 1;
+                                                              ENU=Shortcut Dimension 1 Code];
+                                                   CaptionClass='1,2,1' }
+    { 41  ;   ;Shortcut Dimension 2 Code;Code20   ;TableRelation="Dimension Value".Code WHERE (Global Dimension No.=CONST(2));
+                                                   CaptionML=[DEU=Shortcutdimensionscode 2;
+                                                              ENU=Shortcut Dimension 2 Code];
+                                                   CaptionClass='1,2,2' }
+    { 45  ;   ;Job No.             ;Code20        ;TableRelation=Job;
+                                                   CaptionML=[DEU=Projektnr.;
+                                                              ENU=Job No.] }
+    { 54  ;   ;Indirect Cost %     ;Decimal       ;CaptionML=[DEU=Kosten %;
+                                                              ENU=Indirect Cost %];
+                                                   DecimalPlaces=0:5;
+                                                   MinValue=0 }
+    { 58  ;   ;Qty. Rcd. Not Invoiced;Decimal     ;CaptionML=[DEU=Lief. nicht fakt. Menge;
+                                                              ENU=Qty. Rcd. Not Invoiced];
+                                                   DecimalPlaces=0:5;
+                                                   Editable=No }
+    { 61  ;   ;Quantity Invoiced   ;Decimal       ;CaptionML=[DEU=Menge fakturiert;
+                                                              ENU=Quantity Invoiced];
+                                                   DecimalPlaces=0:5;
+                                                   Editable=No }
+    { 65  ;   ;Order No.           ;Code20        ;CaptionML=[DEU=Bestellnummer;
+                                                              ENU=Order No.] }
+    { 66  ;   ;Order Line No.      ;Integer       ;CaptionML=[DEU=Bestellzeilennr.;
+                                                              ENU=Order Line No.] }
+    { 68  ;   ;Pay-to Vendor No.   ;Code20        ;TableRelation=Vendor;
+                                                   CaptionML=[DEU=Zahlung an Kred.-Nr.;
+                                                              ENU=Pay-to Vendor No.] }
+    { 70  ;   ;Vendor Item No.     ;Text20        ;CaptionML=[DEU=Kred.-Artikelnr.;
+                                                              ENU=Vendor Item No.] }
+    { 71  ;   ;Sales Order No.     ;Code20        ;CaptionML=[DEU=Verkaufsauftragsnr.;
+                                                              ENU=Sales Order No.] }
+    { 72  ;   ;Sales Order Line No.;Integer       ;CaptionML=[DEU=Verkaufsauftragszeilennr.;
+                                                              ENU=Sales Order Line No.] }
+    { 74  ;   ;Gen. Bus. Posting Group;Code10     ;TableRelation="Gen. Business Posting Group";
+                                                   CaptionML=[DEU=GeschÑftsbuchungsgruppe;
+                                                              ENU=Gen. Bus. Posting Group] }
+    { 75  ;   ;Gen. Prod. Posting Group;Code10    ;TableRelation="Gen. Product Posting Group";
+                                                   CaptionML=[DEU=Produktbuchungsgruppe;
+                                                              ENU=Gen. Prod. Posting Group] }
+    { 77  ;   ;VAT Calculation Type;Option        ;CaptionML=[DEU=MwSt.-Berechnungsart;
+                                                              ENU=VAT Calculation Type];
+                                                   OptionCaptionML=[DEU=Normale MwSt.,Erwerbsbesteuerung,Nur MwSt.,Verkaufssteuer;
+                                                                    ENU=Normal VAT,Reverse Charge VAT,Full VAT,Sales Tax];
+                                                   OptionString=Normal VAT,Reverse Charge VAT,Full VAT,Sales Tax }
+    { 78  ;   ;Transaction Type    ;Code10        ;TableRelation="Transaction Type";
+                                                   CaptionML=[DEU=Art des GeschÑftes;
+                                                              ENU=Transaction Type] }
+    { 79  ;   ;Transport Method    ;Code10        ;TableRelation="Transport Method";
+                                                   CaptionML=[DEU=Verkehrszweig;
+                                                              ENU=Transport Method] }
+    { 80  ;   ;Attached to Line No.;Integer       ;TableRelation="Purch. Rcpt. Line"."Line No." WHERE (Document No.=FIELD(Document No.));
+                                                   CaptionML=[DEU=Gehîrt zu Zeilennr.;
+                                                              ENU=Attached to Line No.] }
+    { 81  ;   ;Entry Point         ;Code10        ;TableRelation="Entry/Exit Point";
+                                                   CaptionML=[DEU=Entladehafen;
+                                                              ENU=Entry Point] }
+    { 82  ;   ;Area                ;Code10        ;TableRelation=Area;
+                                                   CaptionML=[DEU=Bestimmungsregion;
+                                                              ENU=Area] }
+    { 83  ;   ;Transaction Specification;Code10   ;TableRelation="Transaction Specification";
+                                                   CaptionML=[DEU=Verfahren;
+                                                              ENU=Transaction Specification] }
+    { 85  ;   ;Tax Area Code       ;Code20        ;TableRelation="Tax Area";
+                                                   CaptionML=[DEU=Steuergebietscode;
+                                                              ENU=Tax Area Code] }
+    { 86  ;   ;Tax Liable          ;Boolean       ;CaptionML=[DEU=Steuerpflichtig;
+                                                              ENU=Tax Liable] }
+    { 87  ;   ;Tax Group Code      ;Code10        ;TableRelation="Tax Group";
+                                                   CaptionML=[DEU=Steuergruppencode;
+                                                              ENU=Tax Group Code] }
+    { 88  ;   ;Use Tax             ;Boolean       ;CaptionML=[DEU=Verbrauchssteuer;
+                                                              ENU=Use Tax] }
+    { 89  ;   ;VAT Bus. Posting Group;Code10      ;TableRelation="VAT Business Posting Group";
+                                                   CaptionML=[DEU=MwSt.-GeschÑftsbuchungsgruppe;
+                                                              ENU=VAT Bus. Posting Group] }
+    { 90  ;   ;VAT Prod. Posting Group;Code10     ;TableRelation="VAT Product Posting Group";
+                                                   CaptionML=[DEU=MwSt.-Produktbuchungsgruppe;
+                                                              ENU=VAT Prod. Posting Group] }
+    { 91  ;   ;Currency Code       ;Code10        ;FieldClass=FlowField;
+                                                   CalcFormula=Lookup("Purch. Rcpt. Header"."Currency Code" WHERE (No.=FIELD(Document No.)));
+                                                   CaptionML=[DEU=WÑhrungscode;
+                                                              ENU=Currency Code];
+                                                   Editable=No }
+    { 97  ;   ;Blanket Order No.   ;Code20        ;TableRelation="Purchase Header".No. WHERE (Document Type=CONST(Blanket Order));
+                                                   TestTableRelation=No;
+                                                   CaptionML=[DEU=Rahmenbestellungsnr.;
+                                                              ENU=Blanket Order No.] }
+    { 98  ;   ;Blanket Order Line No.;Integer     ;TableRelation="Purchase Line"."Line No." WHERE (Document Type=CONST(Blanket Order),
+                                                                                                   Document No.=FIELD(Blanket Order No.));
+                                                   TestTableRelation=No;
+                                                   CaptionML=[DEU=Rahmenbestellungszeilennr.;
+                                                              ENU=Blanket Order Line No.] }
+    { 99  ;   ;VAT Base Amount     ;Decimal       ;CaptionML=[DEU=MwSt.-Bemessungsgrundlage;
+                                                              ENU=VAT Base Amount];
+                                                   Editable=No;
+                                                   AutoFormatType=1;
+                                                   AutoFormatExpr=GetCurrencyCodeFromHeader }
+    { 100 ;   ;Unit Cost           ;Decimal       ;CaptionML=[DEU=Einstandspreis;
+                                                              ENU=Unit Cost];
+                                                   Editable=No;
+                                                   AutoFormatType=2;
+                                                   AutoFormatExpr=GetCurrencyCodeFromHeader }
+    { 131 ;   ;Posting Date        ;Date          ;CaptionML=[DEU=Buchungsdatum;
+                                                              ENU=Posting Date] }
+    { 1001;   ;Job Task No.        ;Code20        ;TableRelation="Job Task"."Job Task No." WHERE (Job No.=FIELD(Job No.));
+                                                   CaptionML=[DEU=Projektaufgabennr.;
+                                                              ENU=Job Task No.] }
+    { 1002;   ;Job Line Type       ;Option        ;CaptionML=[DEU=Projektzeilenart;
+                                                              ENU=Job Line Type];
+                                                   OptionCaptionML=[DEU=" ,Plan,Vertrag,Plan und Vertrag";
+                                                                    ENU=" ,Schedule,Contract,Both Schedule and Contract"];
+                                                   OptionString=[ ,Schedule,Contract,Both Schedule and Contract] }
+    { 1003;   ;Job Unit Price      ;Decimal       ;CaptionML=[DEU=VK-Preis Projekt;
+                                                              ENU=Job Unit Price];
+                                                   BlankZero=Yes }
+    { 1004;   ;Job Total Price     ;Decimal       ;CaptionML=[DEU=Verkaufsbetrag Projekt;
+                                                              ENU=Job Total Price];
+                                                   BlankZero=Yes }
+    { 1005;   ;Job Line Amount     ;Decimal       ;CaptionML=[DEU=Zeilenbetrag Projekt;
+                                                              ENU=Job Line Amount];
+                                                   BlankZero=Yes;
+                                                   AutoFormatType=1;
+                                                   AutoFormatExpr="Job Currency Code" }
+    { 1006;   ;Job Line Discount Amount;Decimal   ;CaptionML=[DEU=Zeilenrabattbetrag Projekt;
+                                                              ENU=Job Line Discount Amount];
+                                                   BlankZero=Yes;
+                                                   AutoFormatType=1;
+                                                   AutoFormatExpr="Job Currency Code" }
+    { 1007;   ;Job Line Discount % ;Decimal       ;CaptionML=[DEU=Zeilenrabatt % Projekt;
+                                                              ENU=Job Line Discount %];
+                                                   DecimalPlaces=0:5;
+                                                   MinValue=0;
+                                                   MaxValue=100;
+                                                   BlankZero=Yes }
+    { 1008;   ;Job Unit Price (LCY);Decimal       ;CaptionML=[DEU=VK-Preis Projekt (MW);
+                                                              ENU=Job Unit Price (LCY)];
+                                                   BlankZero=Yes }
+    { 1009;   ;Job Total Price (LCY);Decimal      ;CaptionML=[DEU=Verkaufsbetrag Projekt (MW);
+                                                              ENU=Job Total Price (LCY)];
+                                                   BlankZero=Yes }
+    { 1010;   ;Job Line Amount (LCY);Decimal      ;CaptionML=[DEU=Zeilenbetrag Projekt (MW);
+                                                              ENU=Job Line Amount (LCY)];
+                                                   BlankZero=Yes;
+                                                   AutoFormatType=1 }
+    { 1011;   ;Job Line Disc. Amount (LCY);Decimal;CaptionML=[DEU=Zeilenrabattbetrag Projekt (MW);
+                                                              ENU=Job Line Disc. Amount (LCY)];
+                                                   BlankZero=Yes;
+                                                   AutoFormatType=1 }
+    { 1012;   ;Job Currency Factor ;Decimal       ;CaptionML=[DEU=WÑhrungsfaktor Projekt;
+                                                              ENU=Job Currency Factor];
+                                                   BlankZero=Yes }
+    { 1013;   ;Job Currency Code   ;Code20        ;CaptionML=[DEU=WÑhrungscode Projekt;
+                                                              ENU=Job Currency Code] }
+    { 5401;   ;Prod. Order No.     ;Code20        ;TableRelation="Production Order".No. WHERE (Status=FILTER(Released|Finished));
+                                                   ValidateTableRelation=No;
+                                                   TestTableRelation=No;
+                                                   CaptionML=[DEU=FA-Nr.;
+                                                              ENU=Prod. Order No.] }
+    { 5402;   ;Variant Code        ;Code10        ;TableRelation=IF (Type=CONST(Item)) "Item Variant".Code WHERE (Item No.=FIELD(No.));
+                                                   CaptionML=[DEU=Variantencode;
+                                                              ENU=Variant Code] }
+    { 5403;   ;Bin Code            ;Code20        ;TableRelation=Bin.Code WHERE (Location Code=FIELD(Location Code),
+                                                                                 Item Filter=FIELD(No.),
+                                                                                 Variant Filter=FIELD(Variant Code));
+                                                   CaptionML=[DEU=Lagerplatzcode;
+                                                              ENU=Bin Code] }
+    { 5404;   ;Qty. per Unit of Measure;Decimal   ;CaptionML=[DEU=Menge pro Einheit;
+                                                              ENU=Qty. per Unit of Measure];
+                                                   DecimalPlaces=0:5;
+                                                   Editable=No }
+    { 5407;   ;Unit of Measure Code;Code10        ;TableRelation=IF (Type=CONST(Item)) "Item Unit of Measure".Code WHERE (Item No.=FIELD(No.))
+                                                                 ELSE "Unit of Measure";
+                                                   CaptionML=[DEU=Einheitencode;
+                                                              ENU=Unit of Measure Code] }
+    { 5415;   ;Quantity (Base)     ;Decimal       ;CaptionML=[DEU=Menge (Basis);
+                                                              ENU=Quantity (Base)];
+                                                   DecimalPlaces=0:5 }
+    { 5461;   ;Qty. Invoiced (Base);Decimal       ;CaptionML=[DEU=Menge fakturiert (Basis);
+                                                              ENU=Qty. Invoiced (Base)];
+                                                   DecimalPlaces=0:5;
+                                                   Editable=No }
+    { 5600;   ;FA Posting Date     ;Date          ;CaptionML=[DEU=Anlagedatum;
+                                                              ENU=FA Posting Date] }
+    { 5601;   ;FA Posting Type     ;Option        ;CaptionML=[DEU=Anlagenbuchungsart;
+                                                              ENU=FA Posting Type];
+                                                   OptionCaptionML=[DEU=" ,Anschaffung,Wartung";
+                                                                    ENU=" ,Acquisition Cost,Maintenance"];
+                                                   OptionString=[ ,Acquisition Cost,Maintenance] }
+    { 5602;   ;Depreciation Book Code;Code10      ;TableRelation="Depreciation Book";
+                                                   CaptionML=[DEU=AfA Buchcode;
+                                                              ENU=Depreciation Book Code] }
+    { 5603;   ;Salvage Value       ;Decimal       ;CaptionML=[DEU=Restwert;
+                                                              ENU=Salvage Value];
+                                                   AutoFormatType=1 }
+    { 5605;   ;Depr. until FA Posting Date;Boolean;CaptionML=[DEU=AfA bis Anlagedatum;
+                                                              ENU=Depr. until FA Posting Date] }
+    { 5606;   ;Depr. Acquisition Cost;Boolean     ;CaptionML=[DEU=RÅckw. AfA-Korr. b. Anschaff.;
+                                                              ENU=Depr. Acquisition Cost] }
+    { 5609;   ;Maintenance Code    ;Code10        ;TableRelation=Maintenance;
+                                                   CaptionML=[DEU=Wartungscode;
+                                                              ENU=Maintenance Code] }
+    { 5610;   ;Insurance No.       ;Code20        ;TableRelation=Insurance;
+                                                   CaptionML=[DEU=Versicherungsnr.;
+                                                              ENU=Insurance No.] }
+    { 5611;   ;Budgeted FA No.     ;Code20        ;TableRelation="Fixed Asset";
+                                                   CaptionML=[DEU=Plananlagennr.;
+                                                              ENU=Budgeted FA No.] }
+    { 5612;   ;Duplicate in Depreciation Book;Code10;
+                                                   TableRelation="Depreciation Book";
+                                                   CaptionML=[DEU=In AfA-Buch kopieren;
+                                                              ENU=Duplicate in Depreciation Book] }
+    { 5613;   ;Use Duplication List;Boolean       ;CaptionML=[DEU=Kopiervorgang aktivieren;
+                                                              ENU=Use Duplication List] }
+    { 5700;   ;Responsibility Center;Code10       ;TableRelation="Responsibility Center";
+                                                   CaptionML=[DEU=ZustÑndigkeitseinheitencode;
+                                                              ENU=Responsibility Center] }
+    { 5705;   ;Cross-Reference No. ;Code20        ;CaptionML=[DEU=Referenznr.;
+                                                              ENU=Cross-Reference No.] }
+    { 5706;   ;Unit of Measure (Cross Ref.);Code10;TableRelation=IF (Type=CONST(Item)) "Item Unit of Measure".Code WHERE (Item No.=FIELD(No.));
+                                                   CaptionML=[DEU=Einheit (Referenz);
+                                                              ENU=Unit of Measure (Cross Ref.)] }
+    { 5707;   ;Cross-Reference Type;Option        ;CaptionML=[DEU=Referenzart;
+                                                              ENU=Cross-Reference Type];
+                                                   OptionCaptionML=[DEU=" ,Debitor,Kreditor,Barcode";
+                                                                    ENU=" ,Customer,Vendor,Bar Code"];
+                                                   OptionString=[ ,Customer,Vendor,Bar Code] }
+    { 5708;   ;Cross-Reference Type No.;Code30    ;CaptionML=[DEU=Referenzartennr.;
+                                                              ENU=Cross-Reference Type No.] }
+    { 5709;   ;Item Category Code  ;Code10        ;TableRelation=IF (Type=CONST(Item)) "Item Category";
+                                                   CaptionML=[DEU=Artikelkategoriencode;
+                                                              ENU=Item Category Code] }
+    { 5710;   ;Nonstock            ;Boolean       ;CaptionML=[DEU=Katalogartikel;
+                                                              ENU=Nonstock] }
+    { 5711;   ;Purchasing Code     ;Code10        ;TableRelation=Purchasing;
+                                                   CaptionML=[DEU=Einkaufscode;
+                                                              ENU=Purchasing Code] }
+    { 5712;   ;Product Group Code  ;Code10        ;TableRelation="Product Group".Code WHERE (Item Category Code=FIELD(Item Category Code));
+                                                   CaptionML=[DEU=Produktgruppencode;
+                                                              ENU=Product Group Code] }
+    { 5714;   ;Special Order Sales No.;Code20     ;CaptionML=[DEU=Spezialauftrag-Auftragsnr.;
+                                                              ENU=Special Order Sales No.] }
+    { 5715;   ;Special Order Sales Line No.;Integer;
+                                                   CaptionML=[DEU=Spezialauftrag-Verk.-Zeilennr.;
+                                                              ENU=Special Order Sales Line No.] }
+    { 5790;   ;Requested Receipt Date;Date        ;CaptionML=[DEU=GewÅnschtes Wareneingangsdatum;
+                                                              ENU=Requested Receipt Date] }
+    { 5791;   ;Promised Receipt Date;Date         ;CaptionML=[DEU=Zugesagtes Wareneingangsdatum;
+                                                              ENU=Promised Receipt Date] }
+    { 5792;   ;Lead Time Calculation;DateFormula  ;CaptionML=[DEU=Beschaffungszeit;
+                                                              ENU=Lead Time Calculation] }
+    { 5793;   ;Inbound Whse. Handling Time;DateFormula;
+                                                   CaptionML=[DEU=Eingeh. Lagerdurchlaufzeit;
+                                                              ENU=Inbound Whse. Handling Time] }
+    { 5794;   ;Planned Receipt Date;Date          ;CaptionML=[DEU=Geplantes Wareneingangsdatum;
+                                                              ENU=Planned Receipt Date] }
+    { 5795;   ;Order Date          ;Date          ;CaptionML=[DEU=Bestelldatum;
+                                                              ENU=Order Date] }
+    { 5811;   ;Item Charge Base Amount;Decimal    ;CaptionML=[DEU=Artikel Zu-/Abschl.-Bemessung;
+                                                              ENU=Item Charge Base Amount];
+                                                   AutoFormatType=1;
+                                                   AutoFormatExpr=GetCurrencyCodeFromHeader }
+    { 5817;   ;Correction          ;Boolean       ;CaptionML=[DEU=Storno;
+                                                              ENU=Correction];
+                                                   Editable=No }
+    { 6608;   ;Return Reason Code  ;Code10        ;TableRelation="Return Reason";
+                                                   CaptionML=[DEU=Reklamationsgrundcode;
+                                                              ENU=Return Reason Code] }
+    { 99000750;;Routing No.        ;Code20        ;TableRelation="Routing Header";
+                                                   CaptionML=[DEU=Arbeitsplannr.;
+                                                              ENU=Routing No.] }
+    { 99000751;;Operation No.      ;Code10        ;TableRelation="Prod. Order Routing Line"."Operation No." WHERE (Status=FILTER(Released..),
+                                                                                                                   Prod. Order No.=FIELD(Prod. Order No.),
+                                                                                                                   Routing No.=FIELD(Routing No.));
+                                                   CaptionML=[DEU=Arbeitsgangnr.;
+                                                              ENU=Operation No.] }
+    { 99000752;;Work Center No.    ;Code20        ;TableRelation="Work Center";
+                                                   CaptionML=[DEU=Arbeitsplatzgruppennr.;
+                                                              ENU=Work Center No.] }
+    { 99000754;;Prod. Order Line No.;Integer      ;TableRelation="Prod. Order Line"."Line No." WHERE (Status=FILTER(Released..),
+                                                                                                      Prod. Order No.=FIELD(Prod. Order No.));
+                                                   CaptionML=[DEU=FA-Zeilennr.;
+                                                              ENU=Prod. Order Line No.] }
+    { 99000755;;Overhead Rate      ;Decimal       ;CaptionML=[DEU=Gemeinkostensatz;
+                                                              ENU=Overhead Rate];
+                                                   DecimalPlaces=0:5 }
+    { 99000759;;Routing Reference No.;Integer     ;CaptionML=[DEU=Arbeitsplanref.-Nr.;
+                                                              ENU=Routing Reference No.] }
+  }
+  KEYS
+  {
+    {    ;Document No.,Line No.                   ;Clustered=Yes }
+    {    ;Order No.,Order Line No.,Posting Date    }
+    {    ;Blanket Order No.,Blanket Order Line No.;KeyGroups=SOP(Blank) }
+    {    ;Item Rcpt. Entry No.                     }
+    {    ;Pay-to Vendor No.                        }
+    {    ;Buy-from Vendor No.                      }
+  }
+  FIELDGROUPS
+  {
+  }
+  CODE
+  {
+    VAR
+      Text000@1000 : TextConst 'DEU=Wareneingangsnr. %1:;ENU=Receipt No. %1:';
+      Text001@1001 : TextConst 'DEU=Das Programm kann diese Einkaufszeile nicht finden.;ENU=The program cannot find this purchase line.';
+      Currency@1005 : Record 4;
+      PurchRcptHeader@1004 : Record 120;
+      DimMgt@1003 : Codeunit 408;
+      CurrencyRead@1002 : Boolean;
+
+    PROCEDURE GetCurrencyCodeFromHeader@1() : Code[10];
+    BEGIN
+      IF "Document No." = PurchRcptHeader."No." THEN
+        EXIT(PurchRcptHeader."Currency Code");
+      IF PurchRcptHeader.GET("Document No.") THEN
+        EXIT(PurchRcptHeader."Currency Code");
+      EXIT('');
+    END;
+
+    PROCEDURE ShowDimensions@25();
+    VAR
+      PostedDocDim@1000 : Record 359;
+      PostedDocDimensions@1001 : Form 547;
+    BEGIN
+      TESTFIELD("No.");
+      TESTFIELD("Line No.");
+      PostedDocDim.SETRANGE("Table ID",DATABASE::"Purch. Rcpt. Line");
+      PostedDocDim.SETRANGE("Document No.","Document No.");
+      PostedDocDim.SETRANGE("Line No.","Line No.");
+      PostedDocDimensions.SETTABLEVIEW(PostedDocDim);
+      PostedDocDimensions.RUNMODAL;
+    END;
+
+    PROCEDURE ShowItemTrackingLines@3();
+    VAR
+      ItemTrackingMgt@1000 : Codeunit 6500;
+    BEGIN
+      ItemTrackingMgt.CallPostedItemTrackingForm(DATABASE::"Purch. Rcpt. Line",0,"Document No.",'',0,"Line No.");
+    END;
+
+    PROCEDURE InsertInvLineFromRcptLine@2(VAR PurchLine@1000 : Record 39;VAR TempFromDocDim@1012 : TEMPORARY Record 357);
+    VAR
+      PurchInvHeader@1010 : Record 38;
+      PurchOrderHeader@1007 : Record 38;
+      PurchOrderLine@1005 : Record 39;
+      TempPurchLine@1003 : Record 39;
+      ToDocDim@1009 : Record 357;
+      FromDocDim@1008 : Record 357;
+      PurchSetup@1011 : Record 312;
+      TransferOldExtLines@1002 : Codeunit 379;
+      ItemTrackingMgt@1004 : Codeunit 6500;
+      NextLineNo@1001 : Integer;
+      ExtTextLine@1006 : Boolean;
+    BEGIN
+      SETRANGE("Document No.","Document No.");
+
+      TempPurchLine := PurchLine;
+      IF PurchLine.FIND('+') THEN
+        NextLineNo := PurchLine."Line No." + 10000
+      ELSE
+        NextLineNo := 10000;
+
+      IF PurchInvHeader."No." <> TempPurchLine."Document No." THEN
+        PurchInvHeader.GET(TempPurchLine."Document Type",TempPurchLine."Document No.");
+
+      IF PurchLine."Receipt No." <> "Document No." THEN BEGIN
+        PurchLine.INIT;
+        PurchLine."Line No." := NextLineNo;
+        PurchLine."Document Type" := TempPurchLine."Document Type";
+        PurchLine."Document No." := TempPurchLine."Document No.";
+        PurchLine.Description := STRSUBSTNO(Text000,"Document No.");
+        PurchLine.INSERT;
+        NextLineNo := NextLineNo + 10000;
+      END;
+
+      TransferOldExtLines.ClearLineNumbers;
+
+      REPEAT
+        ExtTextLine := (TransferOldExtLines.GetNewLineNumber("Attached to Line No.") <> 0);
+
+        IF PurchOrderLine.GET(
+            PurchOrderLine."Document Type"::Order,"Order No.","Order Line No.")
+        THEN BEGIN
+          IF (PurchOrderHeader."Document Type" <> PurchOrderLine."Document Type"::Order) OR
+             (PurchOrderHeader."No." <> PurchOrderLine."Document No.")
+          THEN
+            PurchOrderHeader.GET(PurchOrderLine."Document Type"::Order,"Order No.");
+
+          InitCurrency("Currency Code");
+
+          IF PurchInvHeader."Prices Including VAT" THEN BEGIN
+            IF NOT PurchOrderHeader."Prices Including VAT" THEN
+              PurchOrderLine."Direct Unit Cost" :=
+                ROUND(
+                  PurchOrderLine."Direct Unit Cost" * (1 + PurchOrderLine."VAT %" / 100),
+                  Currency."Unit-Amount Rounding Precision");
+          END ELSE BEGIN
+            IF PurchOrderHeader."Prices Including VAT" THEN
+              PurchOrderLine."Direct Unit Cost" :=
+                ROUND(
+                  PurchOrderLine."Direct Unit Cost" / (1 + PurchOrderLine."VAT %" / 100),
+                  Currency."Unit-Amount Rounding Precision");
+          END;
+        END ELSE BEGIN
+          IF ExtTextLine THEN BEGIN
+            PurchOrderLine.INIT;
+            PurchOrderLine."Line No." := "Order Line No.";
+            PurchOrderLine.Description := Description;
+            PurchOrderLine."Description 2" := "Description 2";
+          END ELSE
+            ERROR(Text001);
+        END;
+        PurchLine := PurchOrderLine;
+        PurchLine."Line No." := NextLineNo;
+        PurchLine."Document Type" := TempPurchLine."Document Type";
+        PurchLine."Document No." := TempPurchLine."Document No.";
+        PurchLine."Variant Code" := "Variant Code";
+        PurchLine."Location Code" := "Location Code";
+        PurchLine."Quantity (Base)" := 0;
+        PurchLine.Quantity := 0;
+        PurchLine."Outstanding Qty. (Base)" := 0;
+        PurchLine."Outstanding Quantity" := 0;
+        PurchLine."Quantity Received" := 0;
+        PurchLine."Qty. Received (Base)" := 0;
+        PurchLine."Quantity Invoiced" := 0;
+        PurchLine."Qty. Invoiced (Base)" := 0;
+        PurchLine.Amount := 0;
+        PurchLine."Amount Including VAT" := 0;
+        PurchLine."Sales Order No." := '';
+        PurchLine."Sales Order Line No." := 0;
+        PurchLine."Drop Shipment" := FALSE;
+        PurchLine."Special Order Sales No." := '';
+        PurchLine."Special Order Sales Line No." := 0;
+        PurchLine."Special Order" := FALSE;
+        PurchLine."Receipt No." := "Document No.";
+        PurchLine."Receipt Line No." := "Line No.";
+        IF NOT ExtTextLine THEN BEGIN
+          PurchLine.VALIDATE(Quantity,Quantity - "Quantity Invoiced");
+          PurchLine.VALIDATE("Direct Unit Cost",PurchOrderLine."Direct Unit Cost");
+          PurchLine.VALIDATE("Line Discount %",PurchOrderLine."Line Discount %");
+          PurchSetup.GET;
+          IF NOT PurchSetup."Calc. Inv. Discount" THEN
+            IF PurchOrderLine.Quantity = 0 THEN
+              PurchLine.VALIDATE("Inv. Discount Amount",0)
+            ELSE
+              PurchLine.VALIDATE(
+                "Inv. Discount Amount",
+                ROUND(
+                  PurchOrderLine."Inv. Discount Amount" * PurchLine.Quantity / PurchOrderLine.Quantity,
+                  Currency."Amount Rounding Precision"));
+        END;
+
+        PurchLine."Attached to Line No." :=
+          TransferOldExtLines.TransferExtendedText(
+            "Line No.",
+            NextLineNo,
+            "Attached to Line No.");
+        PurchLine."Shortcut Dimension 1 Code" := PurchOrderLine."Shortcut Dimension 1 Code";
+        PurchLine."Shortcut Dimension 2 Code" := PurchOrderLine."Shortcut Dimension 2 Code";
+
+        IF "Sales Order No." = '' THEN
+          PurchLine."Drop Shipment" := FALSE
+        ELSE
+          PurchLine."Drop Shipment" := TRUE;
+
+        PurchLine.INSERT;
+
+        ItemTrackingMgt.CopyHandledItemTrkgToInvLine2(PurchOrderLine,PurchLine);
+
+        FromDocDim.SETRANGE("Table ID",DATABASE::"Purchase Line");
+        FromDocDim.SETRANGE("Document Type",PurchOrderLine."Document Type");
+        FromDocDim.SETRANGE("Document No.",PurchOrderLine."Document No.");
+        FromDocDim.SETRANGE("Line No.",PurchOrderLine."Line No.");
+
+        ToDocDim.SETRANGE("Table ID",DATABASE::"Purchase Line");
+        ToDocDim.SETRANGE("Document Type",PurchLine."Document Type");
+        ToDocDim.SETRANGE("Document No.",PurchLine."Document No.");
+        ToDocDim.SETRANGE("Line No.", PurchLine."Line No.");
+        ToDocDim.DELETEALL;
+
+        IF FromDocDim.FIND('-') THEN
+          REPEAT
+            TempFromDocDim.INIT;
+            TempFromDocDim := FromDocDim;
+            TempFromDocDim."Table ID" := DATABASE::"Purchase Line";
+            TempFromDocDim."Document Type" := PurchLine."Document Type";
+            TempFromDocDim."Document No." := PurchLine."Document No.";
+            TempFromDocDim."Line No." := PurchLine."Line No.";
+            TempFromDocDim.INSERT;
+          UNTIL FromDocDim.NEXT = 0;
+
+        NextLineNo := NextLineNo + 10000;
+        IF "Attached to Line No." = 0 THEN
+          SETRANGE("Attached to Line No.","Line No.");
+      UNTIL (NEXT = 0) OR ("Attached to Line No." = 0);
+    END;
+
+    PROCEDURE GetPurchInvLines@4(VAR TempPurchInvLine@1000 : TEMPORARY Record 123);
+    VAR
+      PurchInvLine@1003 : Record 123;
+      ItemLedgEntry@1002 : Record 32;
+      ValueEntry@1001 : Record 5802;
+    BEGIN
+      TempPurchInvLine.RESET;
+      TempPurchInvLine.DELETEALL;
+
+      IF Type <> Type::Item THEN
+        EXIT;
+
+      FilterPstdDocLnItemLedgEntries(ItemLedgEntry);
+      ItemLedgEntry.SETFILTER("Invoiced Quantity",'<>0');
+      IF ItemLedgEntry.FINDSET THEN BEGIN
+        ValueEntry.SETCURRENTKEY("Item Ledger Entry No.","Entry Type");
+        ValueEntry.SETRANGE("Entry Type",ValueEntry."Entry Type"::"Direct Cost");
+        ValueEntry.SETFILTER("Invoiced Quantity",'<>0');
+        REPEAT
+          ValueEntry.SETRANGE("Item Ledger Entry No.",ItemLedgEntry."Entry No.");
+          IF ValueEntry.FINDSET THEN
+            REPEAT
+              IF ValueEntry."Document Type" = ValueEntry."Document Type"::"Purchase Invoice" THEN
+                IF PurchInvLine.GET(ValueEntry."Document No.",ValueEntry."Document Line No.") THEN BEGIN
+                  TempPurchInvLine.INIT;
+                  TempPurchInvLine := PurchInvLine;
+                  IF TempPurchInvLine.INSERT THEN;
+                END;
+            UNTIL ValueEntry.NEXT = 0;
+        UNTIL ItemLedgEntry.NEXT = 0;
+      END;
+    END;
+
+    PROCEDURE CalcReceivedPurchNotReturned@6(VAR RemainingQty@1003 : Decimal;VAR RevUnitCostLCY@1005 : Decimal;ExactCostReverse@1006 : Boolean);
+    VAR
+      ItemLedgEntry@1000 : Record 32;
+      TotalCostLCY@1007 : Decimal;
+      TotalQtyBase@1002 : Decimal;
+    BEGIN
+      RemainingQty := 0;
+      IF (Type <> Type::Item) OR (Quantity <= 0) THEN BEGIN
+        RevUnitCostLCY := "Unit Cost (LCY)";
+        EXIT;
+      END;
+
+      RevUnitCostLCY := 0;
+      FilterPstdDocLnItemLedgEntries(ItemLedgEntry);
+      IF ItemLedgEntry.FINDSET THEN
+        REPEAT
+          RemainingQty := RemainingQty + ItemLedgEntry."Remaining Quantity";
+          IF ExactCostReverse THEN BEGIN
+            ItemLedgEntry.CALCFIELDS("Cost Amount (Expected)","Cost Amount (Actual)");
+            TotalCostLCY :=
+              TotalCostLCY + ItemLedgEntry."Cost Amount (Expected)" + ItemLedgEntry."Cost Amount (Actual)";
+            TotalQtyBase := TotalQtyBase + ItemLedgEntry.Quantity;
+          END;
+        UNTIL ItemLedgEntry.NEXT = 0;
+
+      IF ExactCostReverse AND (RemainingQty <> 0) AND (TotalQtyBase <> 0) THEN
+        RevUnitCostLCY := ABS(TotalCostLCY / TotalQtyBase) * "Qty. per Unit of Measure"
+      ELSE
+        RevUnitCostLCY := "Unit Cost (LCY)";
+
+      RemainingQty := CalcQty(RemainingQty);
+    END;
+
+    LOCAL PROCEDURE CalcQty@10(QtyBase@1000 : Decimal) : Decimal;
+    BEGIN
+      IF "Qty. per Unit of Measure" = 0 THEN
+        EXIT(QtyBase);
+      EXIT(ROUND(QtyBase / "Qty. per Unit of Measure",0.00001));
+    END;
+
+    PROCEDURE FilterPstdDocLnItemLedgEntries@5(VAR ItemLedgEntry@1000 : Record 32);
+    BEGIN
+      ItemLedgEntry.RESET;
+      ItemLedgEntry.SETCURRENTKEY("Document No.");
+      ItemLedgEntry.SETRANGE("Document No.","Document No.");
+      ItemLedgEntry.SETRANGE("Document Type",ItemLedgEntry."Document Type"::"Purchase Receipt");
+      ItemLedgEntry.SETRANGE("Document Line No.","Line No.");
+    END;
+
+    PROCEDURE ShowItemLedgEntries@8();
+    VAR
+      ItemLedgEntry@1000 : Record 32;
+    BEGIN
+      IF Type = Type::Item THEN BEGIN
+        FilterPstdDocLnItemLedgEntries(ItemLedgEntry);
+        FORM.RUNMODAL(0,ItemLedgEntry);
+      END;
+    END;
+
+    PROCEDURE ShowItemPurchInvLines@9();
+    VAR
+      TempPurchInvLine@1001 : TEMPORARY Record 123;
+    BEGIN
+      IF Type = Type::Item THEN BEGIN
+        GetPurchInvLines(TempPurchInvLine);
+        FORM.RUNMODAL(FORM::"Posted Purchase Invoice Lines",TempPurchInvLine);
+      END;
+    END;
+
+    LOCAL PROCEDURE InitCurrency@7(CurrencyCode@1001 : Code[10]);
+    BEGIN
+      IF (Currency.Code = CurrencyCode) AND CurrencyRead THEN
+        EXIT;
+
+      IF CurrencyCode <> '' THEN
+        Currency.GET(CurrencyCode)
+      ELSE
+        Currency.InitRoundingPrecision;
+      CurrencyRead := TRUE;
+    END;
+
+    PROCEDURE ShowLineComments@11();
+    VAR
+      PurchDocLineComments@1002 : Record 43;
+      PurchDocCommentSheet@1000 : Form 66;
+    BEGIN
+      PurchDocLineComments.SETRANGE("Document Type",PurchDocLineComments."Document Type"::Receipt);
+      PurchDocLineComments.SETRANGE("No.","Document No.");
+      PurchDocLineComments.SETRANGE("Document Line No.","Line No.");
+      PurchDocCommentSheet.SETTABLEVIEW(PurchDocLineComments);
+      PurchDocCommentSheet.RUNMODAL;
+    END;
+
+    BEGIN
+    END.
+  }
+}
+

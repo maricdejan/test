@@ -1,0 +1,506 @@
+OBJECT Codeunit 2 Company-Initialize
+{
+  OBJECT-PROPERTIES
+  {
+    Date=14.08.09;
+    Time=12:00:00;
+    Version List=NAVW16.00.01,LIQEM6.00,NAVDACH6.00;
+  }
+  PROPERTIES
+  {
+    OnRun=VAR
+            ApplicationLaunchMgt@1001 : Codeunit 403;
+          BEGIN
+            Window.OPEN(Text000);
+
+            WITH GLSetup DO
+              IF NOT FIND('-') THEN BEGIN
+                INIT;
+                INSERT;
+              END;
+
+            WITH SalesSetup DO
+              IF NOT FIND('-') THEN BEGIN
+                INIT;
+                INSERT;
+              END;
+
+            WITH RMSetup DO
+              IF NOT FIND('-') THEN BEGIN
+                INIT;
+                INSERT;
+              END;
+
+            WITH InteractionTmplSetup DO
+              IF NOT FIND('-') THEN BEGIN
+                INIT;
+                INSERT;
+              END;
+
+            WITH ServiceMgtSetup DO
+              IF NOT FIND('-') THEN BEGIN
+                INIT;
+                INSERT;
+              END;
+
+            WITH PurchSetup DO
+              IF NOT FIND('-') THEN BEGIN
+                INIT;
+                INSERT;
+              END;
+
+            WITH InvtSetup DO
+              IF NOT FIND('-') THEN BEGIN
+                INIT;
+                INSERT;
+              END;
+
+            WITH ResSetup DO
+              IF NOT FIND('-') THEN BEGIN
+                INIT;
+                INSERT;
+              END;
+
+            WITH JobSetup DO
+              IF NOT FIND('-') THEN BEGIN
+                INIT;
+                INSERT;
+              END;
+
+            WITH FASetup DO
+              IF NOT FIND('-') THEN BEGIN
+                INIT;
+                INSERT;
+              END;
+
+            WITH FAMatrixPostingType DO
+              IF ISEMPTY THEN
+                CreateTypes;
+
+            WITH HumanResSetup DO
+              IF NOT FIND('-') THEN BEGIN
+                INIT;
+                INSERT;
+              END;
+
+            WITH WhseSetup DO
+              IF NOT FIND('-') THEN BEGIN
+                INIT;
+                INSERT;
+              END;
+
+            WITH NonstockItemSetup DO
+              IF NOT FIND('-') THEN BEGIN
+                INIT;
+                INSERT;
+              END;
+
+            WITH EPSetup DO
+              IF NOT FIND('-') THEN BEGIN
+                INIT;
+                INSERT(TRUE);
+              END;
+
+            WITH NotificationSetup DO
+              IF NOT FIND('-') THEN BEGIN
+                INIT;
+                INSERT;
+              END;
+
+            WITH ApprovalSetup DO
+              IF NOT FIND('-') THEN BEGIN
+                INIT;
+                INSERT;
+              END;
+
+            WITH MobSalesSetup DO
+              IF NOT FIND('-') THEN BEGIN
+                INIT;
+                INSERT;
+              END;
+
+
+            WITH LiquiditySetup DO
+              IF NOT FIND('-') THEN BEGIN
+                INIT;
+                INSERT;
+              END;
+
+            AddOnIntegrMgt.InitMfgSetup;
+
+            IF NOT (SourceCodeSetup.FIND('-') OR SourceCode.FIND('-')) THEN
+              WITH SourceCodeSetup DO BEGIN
+                INIT;
+                InsertSourceCode(Sales,Text001,Text002);
+                InsertSourceCode(Purchases,Text003,Text004);
+                InsertSourceCode("Deleted Document",Text005,COPYSTR(FIELDCAPTION("Deleted Document"),1,30));
+                InsertSourceCode("Inventory Post Cost",Text006,ReportName(REPORT::"Post Inventory Cost to G/L"));
+                InsertSourceCode("Exchange Rate Adjmt.",Text007,ReportName(REPORT::"Adjust Exchange Rates"));
+                InsertSourceCode("Close Income Statement",Text010,ReportName(REPORT::"Close Income Statement"));
+                InsertSourceCode(Consolidation,Text011,Text012);
+                InsertSourceCode("General Journal",Text013,FormName(FORM::"General Journal"));
+                InsertSourceCode("Sales Journal",Text014,FormName(FORM::"Sales Journal"));
+                InsertSourceCode("Purchase Journal",Text015,FormName(FORM::"Purchase Journal"));
+                InsertSourceCode("Cash Receipt Journal",Text016,FormName(FORM::"Cash Receipt Journal"));
+                InsertSourceCode("Payment Journal",Text017,FormName(FORM::"Payment Journal"));
+                InsertSourceCode("Item Journal",Text018,FormName(FORM::"Item Journal"));
+                InsertSourceCode(Transfer,Text063,Text064);
+                InsertSourceCode("Item Reclass. Journal",Text065,FormName(FORM::"Item Reclass. Journal"));
+                InsertSourceCode("Phys. Inventory Journal",Text020,FormName(FORM::"Phys. Inventory Journal"));
+                InsertSourceCode("BOM Journal",Text021,FormName(FORM::"BOM Journal"));
+                InsertSourceCode("Revaluation Journal",Text066,FormName(FORM::"Revaluation Journal"));
+                InsertSourceCode("Consumption Journal",Text067,FormName(FORM::"Consumption Journal"));
+                InsertSourceCode("Output Journal",Text069,FormName(FORM::"Output Journal"));
+                InsertSourceCode("Production Journal",Text092,FormName(FORM::"Production Journal"));
+                InsertSourceCode("Capacity Journal",Text070,FormName(FORM::"Capacity Journal"));
+                InsertSourceCode("Resource Journal",Text022,FormName(FORM::"Resource Journal"));
+                InsertSourceCode("Job Journal",Text023,FormName(FORM::"Job Journal"));
+                InsertSourceCode("Job G/L Journal",Text096,FormName(FORM::"Job G/L Journal"));
+                InsertSourceCode("Job G/L WIP",Text097,Text098);
+                InsertSourceCode("Sales Entry Application",Text024,Text025);
+                InsertSourceCode("Unapplied Sales Entry Appln.",Text086,Text087);
+                InsertSourceCode("Unapplied Purch. Entry Appln.",Text088,Text089);
+                InsertSourceCode(Reversal,Text090,Text091);
+                InsertSourceCode("Purchase Entry Application",Text026,Text027);
+                InsertSourceCode("VAT Settlement",Text028,ReportName(REPORT::"Calc. and Post VAT Settlement"));
+                InsertSourceCode("Compress G/L",Text029,ReportName(REPORT::"Date Compress General Ledger"));
+                InsertSourceCode("Compress VAT Entries",Text030,ReportName(REPORT::"Date Compress VAT Entries"));
+                InsertSourceCode("Compress Cust. Ledger",Text031,ReportName(REPORT::"Date Compress Customer Ledger"));
+                InsertSourceCode("Compress Vend. Ledger",Text032,ReportName(REPORT::"Date Compress Vendor Ledger"));
+                InsertSourceCode("Compress BOM Ledger",Text034,ReportName(REPORT::"Date Compress BOM Ledger"));
+                InsertSourceCode("Compress Res. Ledger",Text035,ReportName(REPORT::"Date Compress Resource Ledger"));
+                InsertSourceCode("Compress Job Ledger",Text036,Text099);
+                InsertSourceCode("Compress Bank Acc. Ledger",Text037,ReportName(REPORT::"Date Compress Bank Acc. Ledger"));
+                InsertSourceCode("Compress Check Ledger",Text038,ReportName(REPORT::"Delete Check Ledger Entries"));
+                InsertSourceCode("Financially Voided Check",Text039,Text040);
+                InsertSourceCode(Reminder,Text041,Text042);
+                InsertSourceCode("Finance Charge Memo",Text043,Text044);
+                InsertSourceCode("Trans. Bank Rec. to Gen. Jnl.",Text076,ReportName(REPORT::"Trans. Bank Rec. to Gen. Jnl."));
+                InsertSourceCode("Fixed Asset G/L Journal",Text045,FormName(FORM::"Fixed Asset G/L Journal"));
+                InsertSourceCode("Fixed Asset Journal",Text046,FormName(FORM::"Fixed Asset Journal"));
+                InsertSourceCode("Insurance Journal",Text047,FormName(FORM::"Insurance Journal"));
+                InsertSourceCode("Compress FA Ledger",Text048,ReportName(REPORT::"Date Compress FA Ledger"));
+                InsertSourceCode("Compress Maintenance Ledger",Text049,ReportName(REPORT::"Date Compress Maint. Ledger"));
+                InsertSourceCode("Compress Insurance Ledger",Text050,ReportName(REPORT::"Date Compress Insurance Ledger"));
+                InsertSourceCode("Adjust Add. Reporting Currency",Text051,ReportName(REPORT::"Adjust Add. Reporting Currency"));
+                InsertSourceCode(Flushing,Text99000004,Text99000005);
+                InsertSourceCode("Adjust Cost",Text068,ReportName(REPORT::"Adjust Cost - Item Entries"));
+                InsertSourceCode("Whse. Item Journal",Text071,FormName(FORM::"Whse. Item Journal"));
+                InsertSourceCode("Whse. Phys. Invt. Journal",Text072,FormName(FORM::"Whse. Phys. Invt. Journal"));
+                InsertSourceCode("Whse. Reclassification Journal",Text073,FormName(FORM::"Whse. Reclassification Journal"));
+                InsertSourceCode("Compress Whse. Entries",Text083,ReportName(REPORT::"Date Compress Whse. Entries"));
+                InsertSourceCode("Whse. Put-away",Text077,Text080);
+                InsertSourceCode("Whse. Pick",Text078,Text081);
+                InsertSourceCode("Whse. Movement",Text079,Text082);
+                InsertSourceCode("Service Management",Text074,Text075);
+                InsertSourceCode("IC General Journal",Text084,Text085);
+                InsertSourceCode("Liquidity Journal",Text1140001,Text1140002);
+                InsertSourceCode("Phys. Invt. Order",Text1140007,Text1140003);
+                InsertSourceCode("Delivery Reminder",Text1140004,Text1140005);
+                INSERT;
+              END;
+
+            IF NOT (ApprovalCode.FIND('-') AND ApprovalTemplates.FIND('-')) THEN
+              ApprovalMgt.SetupDefualtApprovals;
+
+            IF NOT Stdtxt.FIND('-') THEN BEGIN
+              InsertStandardText(Text052,Text053);
+              InsertStandardText(Text054,Text055);
+              InsertStandardText(Text056,Text057);
+              InsertStandardText(Text058,Text059);
+            END;
+
+            WITH ReportSelection DO
+              IF NOT FIND('-') THEN BEGIN
+                InsertRepSelection(Usage::"S.Quote",'1',REPORT::"Sales - Quote");
+                InsertRepSelection(Usage::"S.Blanket",'1',REPORT::"Blanket Sales Order");
+                InsertRepSelection(Usage::"S.Order",'1',REPORT::"Order Confirmation");
+                InsertRepSelection(Usage::"S.Work Order",'1',REPORT::"Work Order");
+                InsertRepSelection(Usage::"S.Invoice",'1',REPORT::"Sales - Invoice");
+                InsertRepSelection(Usage::"S.Return",'1',REPORT::"Return Order Confirmation");
+                InsertRepSelection(Usage::"S.Cr.Memo",'1',REPORT::"Sales - Credit Memo");
+                InsertRepSelection(Usage::"S.Shipment",'1',REPORT::"Sales - Shipment");
+                InsertRepSelection(Usage::"S.Ret.Rcpt.",'1',REPORT::"Sales - Return Receipt");
+                InsertRepSelection(Usage::"S.Test",'1',REPORT::"Sales Document - Test");
+                InsertRepSelection(Usage::"P.Quote",'1',REPORT::"Purchase - Quote");
+                InsertRepSelection(Usage::"P.Blanket",'1',REPORT::"Blanket Purchase Order");
+                InsertRepSelection(Usage::"P.Order",'1',REPORT::Order);
+                InsertRepSelection(Usage::"P.Invoice",'1',REPORT::"Purchase - Invoice");
+                InsertRepSelection(Usage::"P.Return",'1',REPORT::"Return Order");
+                InsertRepSelection(Usage::"P.Cr.Memo",'1',REPORT::"Purchase - Credit Memo");
+                InsertRepSelection(Usage::"P.Receipt",'1',REPORT::"Purchase - Receipt");
+                InsertRepSelection(Usage::"P.Ret.Shpt.",'1',REPORT::"Purchase - Return Shipment");
+                InsertRepSelection(Usage::"P.Test",'1',REPORT::"Purchase Document - Test");
+                InsertRepSelection(Usage::"B.Stmt",'1',REPORT::"Bank Account Statement");
+                InsertRepSelection(Usage::"B.Recon.Test",'1',REPORT::"Bank Acc. Recon. - Test");
+                InsertRepSelection(Usage::"B.Check",'1',REPORT::Check);
+                InsertRepSelection(Usage::Reminder,'1',REPORT::Reminder);
+                InsertRepSelection(Usage::"Fin.Charge",'1',REPORT::"Finance Charge Memo");
+                InsertRepSelection(Usage::"Rem.Test",'1',REPORT::"Reminder - Test");
+                InsertRepSelection(Usage::"F.C.Test",'1',REPORT::"Finance Charge Memo - Test");
+                InsertRepSelection(Usage::Inv1,'1',REPORT::"Transfer Order");
+                InsertRepSelection(Usage::Inv2,'1',REPORT::"Transfer Shipment");
+                InsertRepSelection(Usage::Inv3,'1',REPORT::"Transfer Receipt");
+                InsertRepSelection(Usage::"Invt. Period Test",'1',REPORT::"Close Inventory Period - Test");
+                InsertRepSelection(Usage::"Prod. Order",'1',REPORT::"Prod. Order - Job Card");
+                InsertRepSelection(Usage::M1,'1',REPORT::"Prod. Order - Job Card");
+                InsertRepSelection(Usage::M2,'1',REPORT::"Prod. Order - Mat. Requisition");
+                InsertRepSelection(Usage::M3,'1',REPORT::"Prod. Order - Shortage List");
+                InsertRepSelection(Usage::M4,'1',REPORT::"Prod. Order Gantt Chart");
+                InsertRepSelection(Usage::"SM.Quote",'1',REPORT::"Service Quote");
+                InsertRepSelection(Usage::"SM.Order",'1',REPORT::"Service Order");
+                InsertRepSelection(Usage::"SM.Invoice",'1',REPORT::"Service - Invoice");
+                InsertRepSelection(Usage::"SM.Credit Memo",'1',REPORT::"Service - Credit Memo");
+                InsertRepSelection(Usage::"SM.Shipment",'1',REPORT::"Service - Shipment");
+                InsertRepSelection(Usage::"SM.Contract Quote",'1',REPORT::"Service Contract Quote");
+                InsertRepSelection(Usage::"SM.Contract",'1',REPORT::"Service Contract");
+                InsertRepSelection(Usage::"SM.Test",'1',REPORT::"Service Document - Test");
+                InsertRepSelection(Usage::"S.Test Prepmt.",'1',REPORT::"Sales Prepmt. Document Test");
+                InsertRepSelection(Usage::"P.Test Prepmt.",'1',REPORT::"Purchase Prepmt. Doc. - Test");
+                InsertRepSelection(Usage::"S.Arch. Quote",'1',REPORT::"Archived Sales Quote");
+                InsertRepSelection(Usage::"S.Arch. Order",'1',REPORT::"Archived Sales Order");
+                InsertRepSelection(Usage::"P.Arch. Quote",'1',REPORT::"Archived Purchase Quote");
+                InsertRepSelection(Usage::"P.Arch. Order",'1',REPORT::"Archived Purchase Order");
+                InsertRepSelection(Usage::"P. Arch. Return Order",'1',REPORT::"Arch.Purch. Return Order");
+                InsertRepSelection(Usage::"S. Arch. Return Order",'1',REPORT::"Arch. Sales Return Order");
+              END;
+
+            WITH DACHReportSelections DO
+              IF NOT FIND('-') THEN BEGIN
+                InsertDACHRepSelection(Usage::"Phys. Invt. Order Test",'1',REPORT::"Phys. Invt. Order - Test");
+                InsertDACHRepSelection(Usage::"Phys. Invt. Order",'1',REPORT::"Phys. Invt. Order Diff. List");
+                InsertDACHRepSelection(Usage::"Posted Phys. Invt. Order",'1',REPORT::"Posted Phys. Invt. Order Diff.");
+                InsertDACHRepSelection(Usage::"Phys. Invt. Recording",'1',REPORT::"Phys. Invt. Recording");
+                InsertDACHRepSelection(Usage::"Posted Phys. Invt. Recording",'1',REPORT::"Posted Phys. Invt. Recording");
+                InsertDACHRepSelection(Usage::"Delivery Reminder Test",'1',REPORT::"Delivery Reminder - Test");
+                InsertDACHRepSelection(Usage::"Issued Delivery Reminder",'1',REPORT::"Issued Delivery Reminder");
+                InsertDACHRepSelection(Usage::"S.Arch. Blanket Order",'1',REPORT::"Archived Blanket Sales Order");
+                InsertDACHRepSelection(Usage::"P.Arch. Blanket Order",'1',REPORT::"Archived Blanket Purch. Order");
+                InsertDACHRepSelection(Usage::"Intrastat Checklist",'1',REPORT::"Intrastat - Checklist DE");
+                InsertDACHRepSelection(Usage::"Intrastat Form",'1',REPORT::"Intrastat - Form DE");
+                InsertDACHRepSelection(Usage::"Intrastat Disk",'1',REPORT::"Intrastat - Disk Tax Auth DE");
+                InsertDACHRepSelection(Usage::"Intrastat Disklabel",'1',REPORT::"Intrastat  Disk (Labels)");
+                InsertDACHRepSelection(Usage::"VAT Statement",'1',REPORT::"VAT Statement Germany");
+                InsertDACHRepSelection(Usage::"Sales VAT Acc. Proof",'1',REPORT::"Sales VAT Adv. Not. Acc. Proof");
+                InsertDACHRepSelection(Usage::"VAT Statement Schedule",'1',REPORT::"VAT Statement Schedule");
+              END;
+
+            ApplicationLaunchMgt.InsertStyleSheets;
+
+            InsertClientAddIns;
+
+            Window.CLOSE;
+
+            IF STRPOS(COMPANYNAME,Text093) = 1 THEN
+              EXIT;
+
+            COMMIT;
+            FORM.RUNMODAL(FORM::"Company Setup");
+          END;
+
+  }
+  CODE
+  {
+    VAR
+      Text000@1000 : TextConst 'DEU=Mandant wird initialisiert...;ENU=Initializing company...';
+      Text001@1001 : TextConst 'DEU=VERKAUF;ENU=SALES';
+      Text002@1002 : TextConst 'DEU=Verkauf;ENU=Sales';
+      Text003@1003 : TextConst 'DEU=EINKAUF;ENU=PURCHASES';
+      Text004@1004 : TextConst 'DEU=Einkauf;ENU=Purchases';
+      Text005@1005 : TextConst 'DEU=L™SCH;ENU=DELETE';
+      Text006@1006 : TextConst 'DEU=LWERTBUCH;ENU=INVTPCOST';
+      Text007@1007 : TextConst 'DEU=KURSREG;ENU=EXCHRATADJ';
+      Text010@1010 : TextConst 'DEU=JAHRABSCH;ENU=CLSINCOME';
+      Text011@1011 : TextConst 'DEU=KONSOL;ENU=CONSOLID';
+      Text012@1012 : TextConst 'DEU=Konsolidierung;ENU=Consolidation';
+      Text013@1013 : TextConst 'DEU=FIBUBUCHBL;ENU=GENJNL';
+      Text014@1014 : TextConst 'DEU=VERKBUCHBL;ENU=SALESJNL';
+      Text015@1015 : TextConst 'DEU=EINKBUCHBL;ENU=PURCHJNL';
+      Text016@1016 : TextConst 'DEU=ZLGEINBUBL;ENU=CASHRECJNL';
+      Text017@1017 : TextConst 'DEU=ZLGAUGBUBL;ENU=PAYMENTJNL';
+      Text018@1018 : TextConst 'DEU=ARTBUCHBL;ENU=ITEMJNL';
+      Text020@1019 : TextConst 'DEU=INVEBUCHBL;ENU=PHYSINVJNL';
+      Text021@1020 : TextConst 'DEU=STšCKLBUBL;ENU=BOMJNL';
+      Text022@1021 : TextConst 'DEU=RESBUCHBL;ENU=RESJNL';
+      Text023@1022 : TextConst 'DEU=PROJBUCHBL;ENU=JOBJNL';
+      Text024@1023 : TextConst 'DEU=VERKAUSGL;ENU=SALESAPPL';
+      Text025@1024 : TextConst 'DEU=Verk.-Posten ausgleichen;ENU=Sales Entry Application';
+      Text026@1025 : TextConst 'DEU=EINKAUSGL;ENU=PURCHAPPL';
+      Text027@1026 : TextConst 'DEU=Eink.-Posten ausgleichen;ENU=Purchase Entry Application';
+      Text028@1027 : TextConst 'DEU=MWSTABR;ENU=VATSTMT';
+      Text029@1028 : TextConst 'DEU=KOMPRSACHP;ENU=COMPRGL';
+      Text030@1029 : TextConst 'DEU=KOMPRMWST;ENU=COMPRVAT';
+      Text031@1030 : TextConst 'DEU=KOMPRDEBI;ENU=COMPRCUST';
+      Text032@1031 : TextConst 'DEU=KOMPRKREDI;ENU=COMPRVEND';
+      Text034@1033 : TextConst 'DEU=KOMPRSTL;ENU=COMPRBOM';
+      Text035@1034 : TextConst 'DEU=KOMPRRESS;ENU=COMPRRES';
+      Text036@1035 : TextConst 'DEU=KOMPRPROJ;ENU=COMPRJOB';
+      Text037@1036 : TextConst 'DEU=KOMPRBANK;ENU=COMPRBANK';
+      Text038@1037 : TextConst 'DEU=SCHECKKMPR;ENU=COMPRCHECK';
+      Text039@1038 : TextConst 'DEU=ANNULSCHCK;ENU=FINVOIDCHK';
+      Text040@1039 : TextConst 'DEU=Stornierter Scheck;ENU=Financially Voided Check';
+      Text041@1040 : TextConst 'DEU=MAHNUNG;ENU=REMINDER';
+      Text042@1041 : TextConst 'DEU=Mahnung;ENU=Reminder';
+      Text043@1042 : TextConst 'DEU=ZINSRECH;ENU=FINCHRG';
+      Text044@1043 : TextConst 'DEU=Zinsrechnung;ENU=Finance Charge Memo';
+      Text045@1044 : TextConst 'DEU=ANLFIBUBBL;ENU=FAGLJNL';
+      Text046@1045 : TextConst 'DEU=ANLBUBL;ENU=FAJNL';
+      Text047@1046 : TextConst 'DEU=VERSBUCHBL;ENU=INSJNL';
+      Text048@1047 : TextConst 'DEU=KOMPRANL;ENU=COMPRFA';
+      Text049@1048 : TextConst 'DEU=KOMPRWART;ENU=COMPRMAINT';
+      Text050@1049 : TextConst 'DEU=KOMPRVERS;ENU=COMPRINS';
+      Text051@1050 : TextConst 'DEU=REGULBW;ENU=ADJADDCURR';
+      Text052@1051 : TextConst 'DEU=MA;ENU=MD';
+      Text053@1052 : TextConst 'DEU=Monatliche AfA;ENU=Monthly Depreciation';
+      Text054@1053 : TextConst 'DEU=FK;ENU=SC';
+      Text055@1054 : TextConst 'DEU=Frachtkosten;ENU=Shipping Charge';
+      Text056@1055 : TextConst 'DEU=VUV;ENU=SUC';
+      Text057@1056 : TextConst 'DEU=Verkauf unter Vertrag;ENU=Sale under Contract';
+      Text058@1057 : TextConst 'DEU=RS;ENU=TE';
+      Text059@1058 : TextConst 'DEU=Reisespesen;ENU=Travel Expenses';
+      Text063@1062 : TextConst 'DEU=UMLAG;ENU=TRANSFER';
+      Text064@1063 : TextConst 'DEU=Umlagerung;ENU=Transfer';
+      Text065@1064 : TextConst 'DEU=UMLAGBUBL;ENU=RECLASSJNL';
+      Text066@1065 : TextConst 'DEU=NEUBWBUBL;ENU=REVALJNL';
+      Text067@1066 : TextConst 'DEU=FAVERBUBL;ENU=CONSUMPJNL';
+      Text068@1067 : TextConst 'DEU=LAGERREGUL;ENU=INVTADJMT';
+      Text069@1069 : TextConst 'DEU=FAISTMBUBL;ENU=POINOUTJNL';
+      Text070@1073 : TextConst 'DEU=KAPAZBUBL;ENU=CAPACITJNL';
+      Text071@1107 : TextConst 'DEU=LOGARTIKEL;ENU=WHITEM';
+      Text072@1105 : TextConst 'DEU=LOGINVENT;ENU=WHPHYSINVT';
+      Text073@1068 : TextConst 'DEU=LOGUMLBUBL;ENU=WHRCLSSJNL';
+      Text074@1070 : TextConst 'DEU=SERVICE;ENU=SERVICE';
+      Text075@1074 : TextConst 'DEU=Service;ENU=Service Management';
+      Text076@1075 : TextConst 'DEU=BANKKTO;ENU=BANKREC';
+      Text077@1077 : TextConst 'DEU=EINLAG;ENU=WHPUTAWAY';
+      Text078@1078 : TextConst 'DEU=KOMMISS;ENU=WHPICK';
+      Text079@1079 : TextConst 'DEU=LAGPLUMLAG;ENU=WHMOVEMENT';
+      Text080@1080 : TextConst 'DEU=Einlagerung;ENU=Whse. Put-away';
+      Text081@1081 : TextConst 'DEU=Kommissionierung;ENU=Whse. Pick';
+      Text082@1082 : TextConst 'DEU=Lagerpl.-Umlagerung;ENU=Whse. Movement';
+      Text083@1100 : TextConst 'DEU=KOMPRLOG;ENU=COMPRWHSE';
+      Text084@1106 : TextConst 'DEU=INNERBETR;ENU=INTERCOMP';
+      Text085@1108 : TextConst 'DEU=Intercompany;ENU=Intercompany';
+      Text086@1114 : TextConst 'DEU=NIGEBVKABG;ENU=UNAPPSALES';
+      Text087@1113 : TextConst 'DEU=Nicht gebucht. VK-Posten-Ausgl;ENU=Unapplied Sales Entry Application';
+      Text088@1112 : TextConst 'DEU=NIGEBEKABG;ENU=UNAPPPURCH';
+      Text089@1111 : TextConst 'DEU=Nicht gebucht. EK-Posten-Ausgl;ENU=Unapplied Purchase Entry Application';
+      Text090@1110 : TextConst 'DEU=STORNO;ENU=REVERSAL';
+      Text091@1109 : TextConst 'DEU="Stornoposten ";ENU="Reversal Entry "';
+      Text092@1115 : TextConst 'DEU=FERTAUFTR;ENU=PRODORDER';
+      Text093@1059 : TextConst 'DEU=CRONUS;ENU=CRONUS';
+      Text99000004@1071 : TextConst 'DEU=BUCHUNG;ENU=FLUSHING';
+      Text99000005@1072 : TextConst 'DEU=Buchung;ENU=Flushing';
+      GLSetup@1083 : Record 98;
+      SalesSetup@1085 : Record 311;
+      PurchSetup@1086 : Record 312;
+      InvtSetup@1087 : Record 313;
+      ResSetup@1088 : Record 314;
+      JobSetup@1089 : Record 315;
+      HumanResSetup@1090 : Record 5218;
+      RMSetup@1091 : Record 5079;
+      InteractionTmplSetup@1076 : Record 5122;
+      ServiceMgtSetup@1092 : Record 5911;
+      NonstockItemSetup@1093 : Record 5719;
+      FASetup@1094 : Record 5603;
+      FAMatrixPostingType@1102601000 : Record 5647;
+      SourceCode@1095 : Record 230;
+      SourceCodeSetup@1096 : Record 242;
+      ApprovalSetup@1124 : Record 452;
+      ApprovalCode@1118 : Record 453;
+      ApprovalTemplates@1120 : Record 464;
+      Stdtxt@1097 : Record 7;
+      ReportSelection@1098 : Record 77;
+      WhseSetup@1099 : Record 5769;
+      EPSetup@1117 : Record 6800;
+      NotificationSetup@1116 : Record 8000;
+      MobSalesSetup@1032 : Record 8725;
+      ObjTransl@1104 : Record 377;
+      AddOnIntegrMgt@1102 : Codeunit 5403;
+      ApprovalMgt@1119 : Codeunit 439;
+      Window@1103 : Dialog;
+      Text096@1008 : TextConst 'DEU=DEAKTBUCH;ENU=JOBGLJNL';
+      Text097@1009 : TextConst 'DEU=AKTIVBUCH;ENU=JOBGLWIP';
+      Text098@1122 : TextConst 'DEU=WIP-Posten;ENU=WIP Entry';
+      Text099@1123 : TextConst 'DEU=Datumskompr. Projektposten;ENU=Date Compress Job Ledge';
+      LiquiditySetup@1461000 : Record 5055253;
+      Text1140001@1461001 : TextConst 'DEU=LIQBUCHBL;ENU=LIQJNL';
+      Text1140002@1461002 : TextConst 'DEU=Liquidit„t Buch.-Blatt;ENU=Liquidity Journal';
+      Text1140007@1140007 : TextConst 'DEU=INVAUFTR;ENU=PHYINVORD';
+      Text1140003@1140003 : TextConst 'DEU=Inventurauftr„ge;ENU=Phys. Invt. Orders';
+      Text1140004@1140004 : TextConst 'DEU=LIEFANM;ENU=DELREM';
+      Text1140005@1140005 : TextConst 'DEU=Lieferanmahnungen;ENU=Delivery Reminders';
+      DACHReportSelections@1140008 : Record 26100;
+
+    LOCAL PROCEDURE InsertSourceCode@1(VAR SourceCodeDefCode@1000 : Code[10];Code@1001 : Code[10];Description@1002 : Text[50]);
+    BEGIN
+      SourceCodeDefCode := Code;
+      SourceCode.INIT;
+      SourceCode.Code := Code;
+      SourceCode.Description := Description;
+      SourceCode.INSERT;
+    END;
+
+    LOCAL PROCEDURE InsertStandardText@4(Code@1000 : Code[10];Description@1001 : Text[50]);
+    BEGIN
+      Stdtxt.INIT;
+      Stdtxt.Code := Code;
+      Stdtxt.Description := Description;
+      Stdtxt.INSERT;
+    END;
+
+    LOCAL PROCEDURE InsertRepSelection@2(ReportUsage@1000 : Integer;Sequence@1001 : Code[10];ReportID@1002 : Integer);
+    BEGIN
+      ReportSelection.INIT;
+      ReportSelection.Usage := ReportUsage;
+      ReportSelection.Sequence := Sequence;
+      ReportSelection."Report ID" := ReportID;
+      ReportSelection.INSERT;
+    END;
+
+    LOCAL PROCEDURE FormName@5(FormID@1000 : Integer) : Text[50];
+    BEGIN
+      EXIT(COPYSTR(ObjTransl.TranslateObject(ObjTransl."Object Type"::Form,FormID),1,30));
+    END;
+
+    LOCAL PROCEDURE ReportName@6(ReportID@1000 : Integer) : Text[50];
+    BEGIN
+      EXIT(COPYSTR(ObjTransl.TranslateObject(ObjTransl."Object Type"::Report,ReportID),1,30));
+    END;
+
+    LOCAL PROCEDURE InsertClientAddIns@8();
+    BEGIN
+      InsertClientAddIn(
+        'Microsoft.Dynamics.NAV.MicrosoftDynamicsOnlineConnectControl','31bf3856ad364e35','',
+        'Microsoft Dynamics Online Connect control add-in');
+    END;
+
+    LOCAL PROCEDURE InsertClientAddIn@17(ControlAddInName@1000 : Text[220];PublicKeyToken@1001 : Text[20];Version@1002 : Text[25];Description@1003 : Text[250]);
+    VAR
+      ClienAddIn@1004 : Record 2000000069;
+    BEGIN
+      IF ClienAddIn.GET(ControlAddInName,PublicKeyToken) THEN
+        EXIT;
+
+      ClienAddIn.INIT;
+      ClienAddIn."Control Add-in Name" := ControlAddInName;
+      ClienAddIn."Public Key Token" := PublicKeyToken;
+      ClienAddIn.Version := Version;
+      ClienAddIn.Description := Description;
+      ClienAddIn.INSERT;
+    END;
+
+    LOCAL PROCEDURE InsertDACHRepSelection@1140000(ReportUsage@1140000 : Integer;Sequence@1140001 : Code[10];ReportID@1140002 : Integer);
+    BEGIN
+      DACHReportSelections.INIT;
+      DACHReportSelections.Usage := ReportUsage;
+      DACHReportSelections.Sequence := Sequence;
+      DACHReportSelections."Report ID" := ReportID;
+      DACHReportSelections.INSERT;
+    END;
+
+    BEGIN
+    END.
+  }
+}
+

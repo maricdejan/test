@@ -1,0 +1,73 @@
+OBJECT Form 11021 Proxy Account
+{
+  OBJECT-PROPERTIES
+  {
+    Date=12.01.06;
+    Time=12:00:00;
+    Version List=NAVDACH4.00.02;
+  }
+  PROPERTIES
+  {
+    Width=7480;
+    Height=3630;
+    CaptionML=[DEU=Proxykonto;
+               ENU=Proxy Account];
+    ActiveControlOnOpen=1140001;
+  }
+  CONTROLS
+  {
+    { 1140000;Frame     ;220  ;220  ;7040 ;2420 ;ShowCaption=No }
+    { 1140001;TextBox   ;3850 ;1430 ;2750 ;440  ;ParentControl=1140000;
+                                                 InFrame=Yes;
+                                                 SourceExpr=ProxyUser }
+    { 1140002;Label     ;440  ;1430 ;3300 ;440  ;ParentControl=1140001;
+                                                 InFrame=Yes;
+                                                 CaptionML=[DEU=Benutzer;
+                                                            ENU=User] }
+    { 1140003;TextBox   ;3850 ;1980 ;2750 ;440  ;ParentControl=1140000;
+                                                 InFrame=Yes;
+                                                 PasswordText=Yes;
+                                                 SourceExpr=ProxyPassword }
+    { 1140004;Label     ;440  ;1980 ;3300 ;440  ;ParentControl=1140003;
+                                                 InFrame=Yes;
+                                                 CaptionML=[DEU=Kennwort;
+                                                            ENU=Password] }
+    { 1140005;TextBox   ;440  ;440  ;6600 ;770  ;Focusable=No;
+                                                 ParentControl=1140000;
+                                                 InFrame=Yes;
+                                                 BackTransparent=Yes;
+                                                 Border=No;
+                                                 SourceExpr=Text1140000 }
+    { 1140006;CommandButton;5060;2860;2200;550  ;HorzGlue=Right;
+                                                 VertGlue=Bottom;
+                                                 PushAction=FormHelp }
+    { 1140007;CommandButton;2640;2860;2200;550  ;HorzGlue=Right;
+                                                 VertGlue=Bottom;
+                                                 PushAction=Cancel;
+                                                 OnPush=BEGIN
+                                                          CurrForm.CLOSE
+                                                        END;
+                                                         }
+    { 1140008;CommandButton;220;2860;2200 ;550  ;HorzGlue=Right;
+                                                 VertGlue=Bottom;
+                                                 Default=Yes;
+                                                 PushAction=OK }
+  }
+  CODE
+  {
+    VAR
+      Text1140000@1140000 : TextConst 'DEU=Bitte geben Sie Benutzer und Kennwort fÅr den Proxyserver ein.;ENU=Please enter User and Password for Proxy Server';
+      ProxyUser@1140001 : Text[30];
+      ProxyPassword@1140002 : Text[30];
+
+    PROCEDURE GetProxyUserAccount@1140000(VAR User@1140000 : Text[30];VAR Password@1140001 : Text[30]);
+    BEGIN
+      User := ProxyUser;
+      Password := ProxyPassword;
+    END;
+
+    BEGIN
+    END.
+  }
+}
+

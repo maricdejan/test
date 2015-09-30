@@ -1,0 +1,131 @@
+OBJECT Page 5005362 Posted Phys. Invt. Recording
+{
+  OBJECT-PROPERTIES
+  {
+    Date=05.11.08;
+    Time=12:00:00;
+    Version List=NAVDACH6.00;
+  }
+  PROPERTIES
+  {
+    CaptionML=[DEU=Geb. Inventurerfassung;
+               ENU=Posted Phys. Invt. Recording];
+    InsertAllowed=No;
+    SourceTable=Table5005356;
+    PageType=Document;
+    ActionList=ACTIONS
+    {
+      { 1900000003;0 ;ActionContainer;
+                      ActionContainerType=RelatedInformation }
+      { 1140025 ;1   ;ActionGroup;
+                      CaptionML=[DEU=Erfa&ssung;
+                                 ENU=&Recording] }
+      { 1140027 ;2   ;Action    ;
+                      CaptionML=[DEU=Be&merkungen;
+                                 ENU=Co&mments];
+                      RunObject=Page 5005366;
+                      RunFormLink=Document Type=CONST(Posted Recording),
+                                  Order No.=FIELD(Order No.),
+                                  Recording No.=FIELD(Recording No.);
+                      Image=ViewComments }
+      { 1900000004;0 ;ActionContainer;
+                      ActionContainerType=ActionItems }
+      { 1140028 ;1   ;Action    ;
+                      Ellipsis=Yes;
+                      CaptionML=[DEU=D&rucken;
+                                 ENU=&Print];
+                      Promoted=Yes;
+                      Image=Print;
+                      PromotedCategory=Process;
+                      OnAction=VAR
+                                 DocPrint@1140001 : Codeunit 229;
+                               BEGIN
+                                 PrintDocumentComfort.PostedPhysInvtRecPrint(Rec,TRUE);
+                               END;
+                                }
+      { 1900000006;0 ;ActionContainer;
+                      ActionContainerType=Reports }
+      { 1902051106;1 ;Action    ;
+                      CaptionML=[DEU=Geb. Inventurerfassung;
+                                 ENU=Posted Phys. Invt. Recording];
+                      RunObject=Report 5005354;
+                      Promoted=No;
+                      PromotedCategory=Report }
+    }
+  }
+  CONTROLS
+  {
+    { 1900000001;0;Container;
+                ContainerType=ContentArea }
+
+    { 1140000;1;Group     ;
+                CaptionML=[DEU=Allgemein;
+                           ENU=General] }
+
+    { 1140014;2;Field     ;
+                SourceExpr="Order No.";
+                Editable=FALSE }
+
+    { 1140016;2;Field     ;
+                SourceExpr="Recording No.";
+                Editable=FALSE }
+
+    { 1140019;2;Field     ;
+                SourceExpr=Description;
+                Editable=FALSE }
+
+    { 1140012;2;Field     ;
+                SourceExpr="Location Code";
+                Importance=Promoted;
+                Editable=FALSE }
+
+    { 1140002;2;Field     ;
+                SourceExpr="Person Responsible";
+                Editable=FALSE }
+
+    { 1140010;2;Field     ;
+                SourceExpr=Status;
+                Importance=Promoted;
+                Editable=FALSE }
+
+    { 1140008;2;Field     ;
+                SourceExpr="Person Recorded";
+                Editable=FALSE }
+
+    { 1140004;2;Field     ;
+                SourceExpr="Date Recorded";
+                Editable=FALSE }
+
+    { 1140006;2;Field     ;
+                SourceExpr="Time Recorded";
+                Editable=FALSE }
+
+    { 1140021;2;Field     ;
+                SourceExpr="Recording without order permit";
+                Editable=FALSE }
+
+    { 1140024;1;Part      ;
+                SubFormView=SORTING(Order No.,Recording No.,Line No.);
+                SubFormLink=Order No.=FIELD(Order No.),
+                            Recording No.=FIELD(Recording No.);
+                PagePartID=Page5005364 }
+
+    { 1900000007;0;Container;
+                ContainerType=FactBoxArea }
+
+    { 1905767507;1;Part   ;
+                Visible=TRUE;
+                PartType=System;
+                SystemPartID=Notes }
+
+  }
+  CODE
+  {
+    VAR
+      PrintDocumentComfort@1140000 : Codeunit 5005396;
+
+    BEGIN
+    END.
+  }
+}
+

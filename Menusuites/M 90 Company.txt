@@ -1,0 +1,86 @@
+OBJECT MenuSuite 90 Company
+{
+  OBJECT-PROPERTIES
+  {
+    Date=30.09.15;
+    Time=10:32:01;
+    Version List=;
+  }
+  PROPERTIES
+  {
+  }
+  MENUNODES
+  {
+    {                ;[{42A93A0E-43CE-451E-9A39-AB183117B2CE}] ;NextNodeID=[{7047FF4C-3545-47A0-BBDC-956BA8CFC9F5}] }
+    { MenuItem       ;[{7047FF4C-3545-47A0-BBDC-956BA8CFC9F5}] ;Name=Relocate Attachments;
+                                                                CaptionML=[DEU=Dateianh„nge verschieben ...;
+                                                                           ENU=Relocate Attachments...];
+                                                                RunObjectType=Report;
+                                                                RunObjectID=5181;
+                                                                Visible=Yes }
+    { MenuGroup      ;[{4DAA9296-5463-41F8-955B-21BFFBEAEC17}] ;Name=New Group;
+                                                                CaptionML=[DEU=Berichtsauswahl;
+                                                                           ENU=Report Selections];
+                                                                Visible=Yes;
+                                                                NextNodeID=[{4069D465-9B81-48A8-AF76-D19E76722875}] }
+    { MenuItem       ;[{20AE5F7B-8682-4A81-99FC-92E4F6F04F17}] ;Name=Report Selections;
+                                                                CaptionML=[DEU=Bankkonto;
+                                                                           ENU=Bank Account];
+                                                                RunObjectType=Form;
+                                                                RunObjectID=385;
+                                                                Visible=Yes }
+    { MenuItem       ;[{19B52597-0F9E-4DF9-B208-02107FD786C8}] ;Name=Report Selection Reminder and;
+                                                                CaptionML=[DEU=Mahnung und Zinsrechnung;
+                                                                           ENU=Reminder and Fin. Charge];
+                                                                RunObjectType=Form;
+                                                                RunObjectID=524;
+                                                                Visible=Yes }
+    { MenuItem       ;[{426E7737-6278-486B-8340-F1A63272A734}] ;Name=Report Selection Sales;
+                                                                CaptionML=[DEU=Verkauf;
+                                                                           ENU=Sales];
+                                                                RunObjectType=Form;
+                                                                RunObjectID=306;
+                                                                Visible=Yes }
+    { MenuItem       ;[{029F0A0A-0510-4184-A5E8-54DDE9045ACB}] ;Name=Report Selection Purchase;
+                                                                CaptionML=[DEU=Einkauf;
+                                                                           ENU=Purchase];
+                                                                RunObjectType=Form;
+                                                                RunObjectID=347;
+                                                                Visible=Yes }
+    { MenuItem       ;[{5CBDAF64-D366-4302-B0E2-13DCAB032ACF}] ;Name=Report Selections Inventory;
+                                                                CaptionML=[DEU=Lager;
+                                                                           ENU=Inventory];
+                                                                RunObjectType=Form;
+                                                                RunObjectID=5754;
+                                                                Visible=Yes }
+    { MenuItem       ;[{C9FBBF22-C8FF-4629-A9E0-E5A4248F13D5}] ;Name=Report Selections Prod. Order;
+                                                                CaptionML=[DEU=Fertigungsauftrag;
+                                                                           ENU=Prod. Order];
+                                                                RunObjectType=Form;
+                                                                RunObjectID=99000917;
+                                                                Visible=Yes }
+    { MenuItem       ;[{581FDA66-C4FB-4B3E-8820-F648736D6EE7}] ;Name=Report Selection Service;
+                                                                CaptionML=[DEU=Service;
+                                                                           ENU=Service];
+                                                                RunObjectType=Form;
+                                                                RunObjectID=5932;
+                                                                Visible=Yes;
+                                                                Deleted=Yes }
+    {                ;[{28B406BE-DD89-43EC-B2B9-6BB90DC2583B}] ;NextNodeID=[{C93250C4-F9FD-4810-8E15-0233C2E07625}] }
+    { MenuGroup      ;[{C93250C4-F9FD-4810-8E15-0233C2E07625}] ;Name=DSSGit;
+                                                                CaptionML=ENU=DSSGit;
+                                                                MemberOfMenu=[{19A352FE-D90D-424E-B85F-CF3B8E98CF0E}];
+                                                                ParentNodeID=[{19A352FE-D90D-424E-B85F-CF3B8E98CF0E}];
+                                                                Visible=Yes;
+                                                                NextNodeID=[{00000000-0000-0000-0000-000000000000}];
+                                                                FirstChild=[{9A670310-5883-4C2B-8C78-B49CBF4BD277}] }
+    { MenuItem       ;[{9A670310-5883-4C2B-8C78-B49CBF4BD277}] ;Name=DSS GitHub Setup;
+                                                                CaptionML=ENU=DSS GitHub Setup;
+                                                                MemberOfMenu=[{19A352FE-D90D-424E-B85F-CF3B8E98CF0E}];
+                                                                RunObjectType=Form;
+                                                                RunObjectID=50000;
+                                                                ParentNodeID=[{C93250C4-F9FD-4810-8E15-0233C2E07625}];
+                                                                Visible=Yes;
+                                                                NextNodeID=[{00000000-0000-0000-0000-000000000000}] }
+  }
+}

@@ -1,0 +1,322 @@
+OBJECT Table 85 Acc. Schedule Line
+{
+  OBJECT-PROPERTIES
+  {
+    Date=05.11.08;
+    Time=12:00:00;
+    Version List=NAVW16.00;
+  }
+  PROPERTIES
+  {
+    OnInsert=BEGIN
+               IF xRec."Line No." = 0 THEN
+                 IF NOT AccSchedName.GET("Schedule Name") THEN BEGIN
+                   AccSchedName.INIT;
+                   AccSchedName.Name := "Schedule Name";
+                   IF AccSchedName.Name = '' THEN
+                     AccSchedName.Description := Text000;
+                   AccSchedName.INSERT;
+                 END;
+             END;
+
+    CaptionML=[DEU=Kontenschemazeile;
+               ENU=Acc. Schedule Line];
+  }
+  FIELDS
+  {
+    { 1   ;   ;Schedule Name       ;Code10        ;TableRelation="Acc. Schedule Name";
+                                                   CaptionML=[DEU=Schemaname;
+                                                              ENU=Schedule Name] }
+    { 2   ;   ;Line No.            ;Integer       ;CaptionML=[DEU=Zeilennr.;
+                                                              ENU=Line No.] }
+    { 3   ;   ;Row No.             ;Code10        ;CaptionML=[DEU=Rubrikennr.;
+                                                              ENU=Row No.] }
+    { 4   ;   ;Description         ;Text80        ;CaptionML=[DEU=Beschreibung;
+                                                              ENU=Description] }
+    { 5   ;   ;Totaling            ;Text250       ;TableRelation=IF (Totaling Type=CONST(Posting Accounts)) "G/L Account"
+                                                                 ELSE IF (Totaling Type=CONST(Total Accounts)) "G/L Account";
+                                                   OnValidate=BEGIN
+                                                                CASE "Totaling Type" OF
+                                                                  "Totaling Type"::"Posting Accounts","Totaling Type"::"Total Accounts":
+                                                                    BEGIN
+                                                                      GLAcc.SETFILTER("No.",Totaling);
+                                                                      GLAcc.CALCFIELDS(Balance);
+                                                                    END;
+                                                                  "Totaling Type"::Formula,"Totaling Type"::"Set Base For Percent":
+                                                                    BEGIN
+                                                                      Totaling := UPPERCASE(Totaling);
+                                                                      CheckFormula(Totaling);
+                                                                    END;
+                                                                END;
+                                                              END;
+
+                                                   ValidateTableRelation=No;
+                                                   TestTableRelation=No;
+                                                   CaptionML=[DEU=ZusammenzÑhlung;
+                                                              ENU=Totaling] }
+    { 6   ;   ;Totaling Type       ;Option        ;OnValidate=BEGIN
+                                                                VALIDATE(Totaling);
+                                                              END;
+
+                                                   CaptionML=[DEU=ZusammenzÑhlungsart;
+                                                              ENU=Totaling Type];
+                                                   OptionCaptionML=[DEU=Kontensumme,Summensumme,Formel,,,Festgelegte Basis fÅr Prozent;
+                                                                    ENU=Posting Accounts,Total Accounts,Formula,,,Set Base For Percent];
+                                                   OptionString=Posting Accounts,Total Accounts,Formula,,,Set Base For Percent }
+    { 7   ;   ;New Page            ;Boolean       ;CaptionML=[DEU=Neue Seite;
+                                                              ENU=New Page] }
+    { 11  ;   ;Date Filter         ;Date          ;FieldClass=FlowFilter;
+                                                   CaptionML=[DEU=Datumsfilter;
+                                                              ENU=Date Filter] }
+    { 12  ;   ;Dimension 1 Filter  ;Code20        ;FieldClass=FlowFilter;
+                                                   CaptionML=[DEU=Dimensionsfilter 1;
+                                                              ENU=Dimension 1 Filter];
+                                                   CaptionClass=GetCaptionClass(1) }
+    { 13  ;   ;Dimension 2 Filter  ;Code20        ;FieldClass=FlowFilter;
+                                                   CaptionML=[DEU=Dimensionsfilter 2;
+                                                              ENU=Dimension 2 Filter];
+                                                   CaptionClass=GetCaptionClass(2) }
+    { 14  ;   ;Budget Filter       ;Code10        ;FieldClass=FlowFilter;
+                                                   TableRelation="G/L Budget Name";
+                                                   CaptionML=[DEU=Budgetfilter;
+                                                              ENU=Budget Filter] }
+    { 15  ;   ;Business Unit Filter;Code10        ;FieldClass=FlowFilter;
+                                                   TableRelation="Business Unit";
+                                                   CaptionML=[DEU=Konzernmandantenfilter;
+                                                              ENU=Business Unit Filter] }
+    { 16  ;   ;Show                ;Option        ;CaptionML=[DEU=Anzeigen;
+                                                              ENU=Show];
+                                                   OptionCaptionML=[DEU=Ja,Nein,Wenn eine Spalte nicht 0 ist,Bei positivem Saldo,Bei negativem Saldo;
+                                                                    ENU=Yes,No,If Any Column Not Zero,When Positive Balance,When Negative Balance];
+                                                   OptionString=Yes,No,If Any Column Not Zero,When Positive Balance,When Negative Balance }
+    { 17  ;   ;Dimension 3 Filter  ;Code20        ;FieldClass=FlowFilter;
+                                                   CaptionML=[DEU=Dimensionsfilter 3;
+                                                              ENU=Dimension 3 Filter];
+                                                   CaptionClass=GetCaptionClass(3) }
+    { 18  ;   ;Dimension 4 Filter  ;Code20        ;FieldClass=FlowFilter;
+                                                   CaptionML=[DEU=Dimensionsfilter 4;
+                                                              ENU=Dimension 4 Filter];
+                                                   CaptionClass=GetCaptionClass(4) }
+    { 19  ;   ;Dimension 1 Totaling;Text80        ;ValidateTableRelation=No;
+                                                   TestTableRelation=No;
+                                                   CaptionML=[DEU=Dimensionssumme 1;
+                                                              ENU=Dimension 1 Totaling];
+                                                   CaptionClass=GetCaptionClass(5) }
+    { 20  ;   ;Dimension 2 Totaling;Text80        ;ValidateTableRelation=No;
+                                                   TestTableRelation=No;
+                                                   CaptionML=[DEU=Dimensionssumme 2;
+                                                              ENU=Dimension 2 Totaling];
+                                                   CaptionClass=GetCaptionClass(6) }
+    { 21  ;   ;Dimension 3 Totaling;Text80        ;ValidateTableRelation=No;
+                                                   TestTableRelation=No;
+                                                   CaptionML=[DEU=Dimensionssumme 3;
+                                                              ENU=Dimension 3 Totaling];
+                                                   CaptionClass=GetCaptionClass(7) }
+    { 22  ;   ;Dimension 4 Totaling;Text80        ;ValidateTableRelation=No;
+                                                   TestTableRelation=No;
+                                                   CaptionML=[DEU=Dimensionssumme 4;
+                                                              ENU=Dimension 4 Totaling];
+                                                   CaptionClass=GetCaptionClass(8) }
+    { 23  ;   ;Bold                ;Boolean       ;CaptionML=[DEU=Fett;
+                                                              ENU=Bold] }
+    { 24  ;   ;Italic              ;Boolean       ;CaptionML=[DEU=Kursiv;
+                                                              ENU=Italic] }
+    { 25  ;   ;Underline           ;Boolean       ;CaptionML=[DEU=Unterstrichen;
+                                                              ENU=Underline] }
+    { 26  ;   ;Show Opposite Sign  ;Boolean       ;CaptionML=[DEU=Umgekehrtes Vorzeichen anz.;
+                                                              ENU=Show Opposite Sign] }
+    { 27  ;   ;Row Type            ;Option        ;CaptionML=[DEU=Zeilenart;
+                                                              ENU=Row Type];
+                                                   OptionCaptionML=[DEU=Bewegung,Saldo bis Datum,Saldovortrag;
+                                                                    ENU=Net Change,Balance at Date,Beginning Balance];
+                                                   OptionString=Net Change,Balance at Date,Beginning Balance }
+    { 28  ;   ;Amount Type         ;Option        ;CaptionML=[DEU=Betragsart;
+                                                              ENU=Amount Type];
+                                                   OptionCaptionML=[DEU=Nettobetrag,Sollbetrag,Habenbetrag;
+                                                                    ENU=Net Amount,Debit Amount,Credit Amount];
+                                                   OptionString=Net Amount,Debit Amount,Credit Amount }
+  }
+  KEYS
+  {
+    {    ;Schedule Name,Line No.                  ;Clustered=Yes }
+  }
+  FIELDGROUPS
+  {
+  }
+  CODE
+  {
+    VAR
+      Text000@1000 : TextConst 'DEU=Standardkontenschema;ENU=Default Schedule';
+      Text001@1001 : TextConst 'DEU=Die Klammer an der Position %1 wurde falsch gesetzt.;ENU=The parenthesis at position %1 is misplaced.';
+      Text002@1002 : TextConst 'DEU=Sie kînnen nicht zwei aufeinander folgende Operatoren haben. Der Fehler tritt an der Position %1 auf.;ENU=You cannot have two consecutive operators. The error occurred at position %1.';
+      Text003@1003 : TextConst 'DEU=Es fehlt ein Operant nach der Position %1.;ENU=There is an operand missing after position %1.';
+      Text004@1004 : TextConst 'DEU=Es gibt mehr linke als rechte Klammern.;ENU=There are more left parentheses than right parentheses.';
+      Text005@1005 : TextConst 'DEU=Es gibt mehr rechte als linke Klammern.;ENU=There are more right parentheses than left parentheses.';
+      Text006@1006 : TextConst 'DEU=1,6,,Dimensionsfilter 1;ENU=1,6,,Dimension 1 Filter';
+      Text007@1007 : TextConst 'DEU=1,6,,Dimensionsfilter 2;ENU=1,6,,Dimension 2 Filter';
+      Text008@1008 : TextConst 'DEU=1,6,,Dimensionsfilter 3;ENU=1,6,,Dimension 3 Filter';
+      Text009@1009 : TextConst 'DEU=1,6,,Dimensionsfilter 4;ENU=1,6,,Dimension 4 Filter';
+      Text010@1010 : TextConst 'DEU=,, ZusammenzÑhlung;ENU=,, Totaling';
+      Text011@1011 : TextConst 'DEU=1,5,,Dimensionssumme 1;ENU=1,5,,Dimension 1 Totaling';
+      Text012@1012 : TextConst 'DEU=1,5,,Dimensionssumme 2;ENU=1,5,,Dimension 2 Totaling';
+      Text013@1013 : TextConst 'DEU=1,5,,Dimensionssumme 3;ENU=1,5,,Dimension 3 Totaling';
+      Text014@1014 : TextConst 'DEU=1,5,,Dimensionssumme 4;ENU=1,5,,Dimension 4 Totaling';
+      AccSchedName@1015 : Record 84;
+      GLAcc@1016 : Record 15;
+      AnalysisView@1017 : Record 363;
+      GLSetup@1018 : Record 98;
+      HasGLSetup@1019 : Boolean;
+      Text015@1020 : TextConst 'DEU=Der %1 bezieht sich auf die %2 %3, die nicht vorhanden ist. Das Feld %4 in der Tabelle %5 wurde jetzt gelîscht.;ENU=The %1 refers to %2 %3, which does not exist. The field %4 on table %5 has now been deleted.';
+
+    PROCEDURE LookUpDimFilter@57(DimNo@1000 : Integer;VAR Text@1001 : Text[250]) : Boolean;
+    VAR
+      DimVal@1002 : Record 349;
+      DimValList@1003 : Form 560;
+    BEGIN
+      GetAccSchedSetup;
+      CASE DimNo OF
+        1: DimVal.SETRANGE("Dimension Code",AnalysisView."Dimension 1 Code");
+        2: DimVal.SETRANGE("Dimension Code",AnalysisView."Dimension 2 Code");
+        3: DimVal.SETRANGE("Dimension Code",AnalysisView."Dimension 3 Code");
+        4: DimVal.SETRANGE("Dimension Code",AnalysisView."Dimension 4 Code");
+      END;
+      DimValList.LOOKUPMODE(TRUE);
+      DimValList.SETTABLEVIEW(DimVal);
+      IF DimValList.RUNMODAL = ACTION::LookupOK THEN BEGIN
+        DimValList.GETRECORD(DimVal);
+        Text := Text + DimValList.GetSelectionFilter;
+        EXIT(TRUE);
+      END ELSE
+        EXIT(FALSE)
+    END;
+
+    PROCEDURE CheckFormula@1(Formula@1000 : Code[80]);
+    VAR
+      i@1001 : Integer;
+      ParenthesesLevel@1002 : Integer;
+      HasOperator@1003 : Boolean;
+    BEGIN
+      ParenthesesLevel := 0;
+      FOR i := 1 TO STRLEN(Formula) DO BEGIN
+        IF Formula[i] = '(' THEN
+          ParenthesesLevel := ParenthesesLevel + 1
+        ELSE
+          IF Formula[i] = ')' THEN
+            ParenthesesLevel := ParenthesesLevel - 1;
+        IF ParenthesesLevel < 0 THEN
+          ERROR(Text001,i);
+        IF Formula[i] IN ['+','-','*','/','^'] THEN BEGIN
+          IF HasOperator THEN
+            ERROR(Text002,i)
+          ELSE
+            HasOperator := TRUE;
+          IF i = STRLEN(Formula) THEN
+            ERROR(Text003,i)
+          ELSE
+            IF Formula[i+1] = ')' THEN
+              ERROR(Text003,i);
+        END ELSE
+          HasOperator := FALSE;
+      END;
+      IF ParenthesesLevel > 0 THEN
+        ERROR(Text004)
+      ELSE
+        IF ParenthesesLevel < 0 THEN
+          ERROR(Text005);
+    END;
+
+    PROCEDURE GetCaptionClass@7(AnalysisViewDimType@1000 : Integer) : Text[250];
+    BEGIN
+      GetAccSchedSetup;
+      CASE AnalysisViewDimType OF
+        1:
+          BEGIN
+            IF AnalysisView."Dimension 1 Code" <> '' THEN
+              EXIT('1,6,' + AnalysisView."Dimension 1 Code")
+            ELSE
+              EXIT(Text006);
+          END;
+        2:
+          BEGIN
+            IF AnalysisView."Dimension 2 Code" <> '' THEN
+              EXIT('1,6,' + AnalysisView."Dimension 2 Code")
+            ELSE
+              EXIT(Text007);
+          END;
+        3:
+          BEGIN
+            IF AnalysisView."Dimension 3 Code" <> '' THEN
+              EXIT('1,6,' + AnalysisView."Dimension 3 Code")
+            ELSE
+              EXIT(Text008);
+          END;
+        4:
+          BEGIN
+            IF AnalysisView."Dimension 4 Code" <> '' THEN
+              EXIT('1,6,' + AnalysisView."Dimension 4 Code")
+            ELSE
+              EXIT(Text009);
+          END;
+        5:
+          BEGIN
+            IF AnalysisView."Dimension 1 Code" <> '' THEN
+              EXIT('1,5,' + AnalysisView."Dimension 1 Code" + Text010)
+            ELSE
+              EXIT(Text011);
+          END;
+        6:
+          BEGIN
+            IF AnalysisView."Dimension 2 Code" <> '' THEN
+              EXIT('1,5,' + AnalysisView."Dimension 2 Code" + Text010)
+            ELSE
+              EXIT(Text012);
+          END;
+        7:
+          BEGIN
+            IF AnalysisView."Dimension 3 Code" <> '' THEN
+              EXIT('1,5,' + AnalysisView."Dimension 3 Code" + Text010)
+            ELSE
+              EXIT(Text013);
+          END;
+        8:
+          BEGIN
+            IF AnalysisView."Dimension 4 Code" <> '' THEN
+              EXIT('1,5,' + AnalysisView."Dimension 4 Code" + Text010)
+            ELSE
+              EXIT(Text014);
+          END;
+      END;
+    END;
+
+    LOCAL PROCEDURE GetAccSchedSetup@2();
+    BEGIN
+      IF "Schedule Name" <> AccSchedName.Name THEN
+        AccSchedName.GET("Schedule Name");
+      IF AccSchedName."Analysis View Name" <> '' THEN BEGIN
+        IF AccSchedName."Analysis View Name" <> AnalysisView.Code THEN
+          IF NOT AnalysisView.GET(AccSchedName."Analysis View Name") THEN BEGIN
+            MESSAGE(
+              Text015,
+              AccSchedName.TABLECAPTION,AnalysisView.TABLECAPTION,AccSchedName."Analysis View Name",
+              AccSchedName.FIELDCAPTION("Analysis View Name"),AccSchedName.TABLECAPTION);
+            AccSchedName."Analysis View Name" := '';
+            AccSchedName.MODIFY;
+          END;
+      END;
+
+      IF AccSchedName."Analysis View Name" = '' THEN BEGIN
+        IF NOT HasGLSetup THEN BEGIN
+          GLSetup.GET;
+          HasGLSetup := TRUE;
+        END;
+        CLEAR(AnalysisView);
+        AnalysisView."Dimension 1 Code" := GLSetup."Global Dimension 1 Code";
+        AnalysisView."Dimension 2 Code" := GLSetup."Global Dimension 2 Code";
+      END;
+    END;
+
+    BEGIN
+    END.
+  }
+}
+

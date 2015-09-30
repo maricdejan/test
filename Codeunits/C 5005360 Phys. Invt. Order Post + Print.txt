@@ -1,0 +1,42 @@
+OBJECT Codeunit 5005360 Phys. Invt. Order Post + Print
+{
+  OBJECT-PROPERTIES
+  {
+    Date=01.10.04;
+    Time=12:00:00;
+    Version List=NAVDACH4.00;
+  }
+  PROPERTIES
+  {
+    TableNo=5005350;
+    OnRun=BEGIN
+            PhysInvtOrderHeader.COPY(Rec);
+
+            IF NOT CONFIRM(Text1140000,FALSE) THEN
+              EXIT;
+
+            PhysInvtOrderPost.RUN(PhysInvtOrderHeader);
+
+            PostedPhysInvtOrderHeader."No." := PhysInvtOrderHeader."Last Posting No.";
+            PostedPhysInvtOrderHeader.SETRECFILTER;
+            PrintDocumentComfort.PostedPhysInvtOrderPrint(
+              PostedPhysInvtOrderHeader,FALSE);
+
+            Rec := PhysInvtOrderHeader;
+          END;
+
+  }
+  CODE
+  {
+    VAR
+      Text1140000@1140000 : TextConst 'DEU=Wollen Sie den Auftrag buchen und drucken?;ENU=Do you want to post and print the order?';
+      PhysInvtOrderHeader@1140001 : Record 5005350;
+      PostedPhysInvtOrderHeader@1140002 : Record 5005354;
+      PhysInvtOrderPost@1140003 : Codeunit 5005359;
+      PrintDocumentComfort@1140004 : Codeunit 5005396;
+
+    BEGIN
+    END.
+  }
+}
+

@@ -1,0 +1,87 @@
+OBJECT Form 383 Bank Account Statement
+{
+  OBJECT-PROPERTIES
+  {
+    Date=08.06.01;
+    Time=12:00:00;
+    Version List=NAVW13.00;
+  }
+  PROPERTIES
+  {
+    Width=16500;
+    Height=8470;
+    CaptionML=[DEU=Bankkontoauszug;
+               ENU=Bank Account Statement];
+    SaveValues=Yes;
+    InsertAllowed=No;
+    SourceTable=Table275;
+  }
+  CONTROLS
+  {
+    { 10  ;CommandButton;14080;7700 ;2200 ;550  ;HorzGlue=Right;
+                                                 VertGlue=Bottom;
+                                                 PushAction=FormHelp }
+    { 11  ;SubForm      ;220  ;2530 ;16060;4950 ;HorzGlue=Both;
+                                                 VertGlue=Both;
+                                                 Border=No;
+                                                 SubFormID=Form384;
+                                                 SubFormLink=Bank Account No.=FIELD(Bank Account No.),
+                                                             Statement No.=FIELD(Statement No.) }
+    { 1   ;Frame        ;220  ;220  ;16060;2090 ;HorzGlue=Both;
+                                                 ShowCaption=No }
+    { 2   ;TextBox      ;3850 ;440  ;2750 ;440  ;Editable=No;
+                                                 ParentControl=1;
+                                                 InFrame=Yes;
+                                                 SourceExpr="Bank Account No." }
+    { 3   ;Label        ;440  ;440  ;3300 ;440  ;ParentControl=2 }
+    { 6   ;TextBox      ;12980;440  ;1650 ;440  ;Editable=No;
+                                                 ParentControl=1;
+                                                 InFrame=Yes;
+                                                 NextControl=11;
+                                                 SourceExpr="Statement Date" }
+    { 7   ;Label        ;9570 ;440  ;3300 ;440  ;ParentControl=6 }
+    { 4   ;TextBox      ;3850 ;1100 ;2750 ;440  ;Editable=No;
+                                                 ParentControl=1;
+                                                 InFrame=Yes;
+                                                 SourceExpr="Statement No." }
+    { 5   ;Label        ;440  ;1100 ;3300 ;440  ;ParentControl=4 }
+    { 8   ;TextBox      ;12980;1100 ;2750 ;440  ;Editable=No;
+                                                 ParentControl=1;
+                                                 InFrame=Yes;
+                                                 SourceExpr="Balance Last Statement" }
+    { 9   ;Label        ;9570 ;1100 ;3300 ;440  ;ParentControl=8 }
+    { 13  ;TextBox      ;12980;1650 ;2750 ;440  ;Editable=No;
+                                                 ParentControl=1;
+                                                 InFrame=Yes;
+                                                 SourceExpr="Statement Ending Balance" }
+    { 15  ;Label        ;9570 ;1650 ;3300 ;440  ;ParentControl=13 }
+    { 16  ;MenuButton   ;11660;7700 ;2200 ;550  ;HorzGlue=Right;
+                                                 VertGlue=Bottom;
+                                                 CaptionML=[DEU=Aus&zug;
+                                                            ENU=St&atement];
+                                                 Menu=MENUITEMS
+                                                 {
+                                                   { ID=17;
+                                                     PushAction=LookupTable;
+                                                     ShortCutKey=F5;
+                                                     CaptionML=[DEU=š&bersicht;
+                                                                ENU=&List] }
+                                                   { ID=18;
+                                                     PushAction=RunObject;
+                                                     ShortCutKey=Shift+F5;
+                                                     CaptionML=[DEU=&Karte;
+                                                                ENU=&Card];
+                                                     RunObject=Form 370;
+                                                     RunFormLinkType=OnUpdate;
+                                                     RunFormLink=No.=FIELD(Bank Account No.) }
+                                                 }
+                                                  }
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

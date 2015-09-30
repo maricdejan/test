@@ -1,0 +1,80 @@
+OBJECT Form 11002 GDPdU Definition Groups
+{
+  OBJECT-PROPERTIES
+  {
+    Date=13.02.07;
+    Time=12:00:00;
+    Version List=NAVDACH5.00;
+  }
+  PROPERTIES
+  {
+    Width=12320;
+    Height=6710;
+    CaptionML=[DEU=GDPdU Definitionsgruppen;
+               ENU=GDPdU Definition Groups];
+    TableBoxID=1140000;
+    SourceTable=Table11002;
+  }
+  CONTROLS
+  {
+    { 1140000;TableBox  ;220  ;220  ;11880;5500 ;HorzGlue=Both;
+                                                 VertGlue=Both }
+    { 1140001;TextBox   ;0    ;0    ;1650 ;0    ;ParentControl=1140000;
+                                                 InColumn=Yes;
+                                                 SourceExpr=Code }
+    { 1140002;Label     ;0    ;0    ;0    ;0    ;ParentControl=1140001;
+                                                 InColumnHeading=Yes }
+    { 1140003;TextBox   ;0    ;0    ;4400 ;0    ;HorzGlue=Both;
+                                                 ParentControl=1140000;
+                                                 InColumn=Yes;
+                                                 SourceExpr=Description }
+    { 1140004;Label     ;0    ;0    ;0    ;0    ;ParentControl=1140003;
+                                                 InColumnHeading=Yes }
+    { 1140005;CommandButton;220;5940;2200 ;550  ;HorzGlue=Right;
+                                                 VertGlue=Bottom;
+                                                 Default=Yes;
+                                                 PushAction=LookupOK;
+                                                 InvalidActionAppearance=Hide }
+    { 1140006;CommandButton;2640;5940;2200;550  ;HorzGlue=Right;
+                                                 VertGlue=Bottom;
+                                                 Cancel=Yes;
+                                                 PushAction=LookupCancel;
+                                                 InvalidActionAppearance=Hide }
+    { 1140007;CommandButton;9900;5940;2200;550  ;HorzGlue=Right;
+                                                 VertGlue=Bottom;
+                                                 PushAction=FormHelp }
+    { 1140008;MenuButton;5060 ;5940 ;2200 ;550  ;HorzGlue=Right;
+                                                 VertGlue=Bottom;
+                                                 CaptionML=[DEU=Defini&tionsgruppe;
+                                                            ENU=&Definition Group];
+                                                 Menu=MENUITEMS
+                                                 {
+                                                   { ID=1140009;
+                                                     PushAction=RunObject;
+                                                     CaptionML=[DEU=Da&tensatzdefinitionen;
+                                                                ENU=Re&cord Definitions];
+                                                     RunObject=Form 11003;
+                                                     RunFormLinkType=OnUpdate;
+                                                     RunFormView=SORTING(Definition Group Code,Record Code);
+                                                     RunFormLink=Definition Group Code=FIELD(Code) }
+                                                 }
+                                                  }
+    { 1140010;CommandButton;7480;5940;2200;550  ;HorzGlue=Right;
+                                                 VertGlue=Bottom;
+                                                 CaptionML=[DEU=Daten&satzdefinition erstellen;
+                                                            ENU=&Create Record Definition];
+                                                 OnPush=VAR
+                                                          TempDefGroup@1140000 : TEMPORARY Record 11002;
+                                                        BEGIN
+                                                          TempDefGroup.CreateDefGroupFromDefGroup(Rec)
+                                                        END;
+                                                         }
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

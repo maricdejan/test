@@ -1,0 +1,27 @@
+OBJECT Codeunit 235 G/L Reg.-Gen. Ledger
+{
+  OBJECT-PROPERTIES
+  {
+    Date=08.06.01;
+    Time=12:00:00;
+    Version List=NAVW13.00;
+  }
+  PROPERTIES
+  {
+    TableNo=45;
+    OnRun=BEGIN
+            GLEntry.SETRANGE("Entry No.","From Entry No.","To Entry No.");
+            FORM.RUN(FORM::"General Ledger Entries",GLEntry);
+          END;
+
+  }
+  CODE
+  {
+    VAR
+      GLEntry@1000 : Record 17;
+
+    BEGIN
+    END.
+  }
+}
+

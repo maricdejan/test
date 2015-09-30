@@ -1,0 +1,82 @@
+OBJECT Table 46 Item Register
+{
+  OBJECT-PROPERTIES
+  {
+    Date=05.11.08;
+    Time=12:00:00;
+    Version List=NAVW16.00;
+  }
+  PROPERTIES
+  {
+    CaptionML=[DEU=Artikeljournal;
+               ENU=Item Register];
+    LookupFormID=Form117;
+  }
+  FIELDS
+  {
+    { 1   ;   ;No.                 ;Integer       ;CaptionML=[DEU=Nr.;
+                                                              ENU=No.] }
+    { 2   ;   ;From Entry No.      ;Integer       ;TableRelation="Item Ledger Entry";
+                                                   CaptionML=[DEU=Von Lfd. Nr.;
+                                                              ENU=From Entry No.] }
+    { 3   ;   ;To Entry No.        ;Integer       ;TableRelation="Item Ledger Entry";
+                                                   CaptionML=[DEU=Bis Lfd. Nr.;
+                                                              ENU=To Entry No.] }
+    { 4   ;   ;Creation Date       ;Date          ;CaptionML=[DEU=Errichtungsdatum;
+                                                              ENU=Creation Date] }
+    { 5   ;   ;Source Code         ;Code10        ;TableRelation="Source Code";
+                                                   CaptionML=[DEU=Herkunftscode;
+                                                              ENU=Source Code] }
+    { 6   ;   ;User ID             ;Code20        ;TableRelation=User;
+                                                   OnLookup=VAR
+                                                              LoginMgt@1000 : Codeunit 418;
+                                                            BEGIN
+                                                              LoginMgt.LookupUserID("User ID");
+                                                            END;
+
+                                                   TestTableRelation=No;
+                                                   CaptionML=[DEU=Benutzer-ID;
+                                                              ENU=User ID] }
+    { 7   ;   ;Journal Batch Name  ;Code10        ;TableRelation="Item Journal Batch";
+                                                   TestTableRelation=No;
+                                                   CaptionML=[DEU=Buch.-Blattname;
+                                                              ENU=Journal Batch Name] }
+    { 10  ;   ;From Phys. Inventory Entry No.;Integer;
+                                                   TableRelation="Phys. Inventory Ledger Entry";
+                                                   CaptionML=[DEU=Von Inventur Lfd. Nr.;
+                                                              ENU=From Phys. Inventory Entry No.] }
+    { 11  ;   ;To Phys. Inventory Entry No.;Integer;
+                                                   TableRelation="Phys. Inventory Ledger Entry";
+                                                   CaptionML=[DEU=Bis Inventur Lfd. Nr.;
+                                                              ENU=To Phys. Inventory Entry No.] }
+    { 5800;   ;From Value Entry No.;Integer       ;TableRelation="Value Entry";
+                                                   CaptionML=[DEU=Von Wertposten Lfd. Nr.;
+                                                              ENU=From Value Entry No.] }
+    { 5801;   ;To Value Entry No.  ;Integer       ;TableRelation="Value Entry";
+                                                   CaptionML=[DEU=Bis Wertposten Lfd. Nr.;
+                                                              ENU=To Value Entry No.] }
+    { 5831;   ;From Capacity Entry No.;Integer    ;TableRelation="Capacity Ledger Entry";
+                                                   CaptionML=[DEU=Von Kapazit„tsposten Lfd. Nr.;
+                                                              ENU=From Capacity Entry No.] }
+    { 5832;   ;To Capacity Entry No.;Integer      ;TableRelation="Capacity Ledger Entry";
+                                                   CaptionML=[DEU=Bis Kapazit„tsposten Lfd. Nr.;
+                                                              ENU=To Capacity Entry No.] }
+  }
+  KEYS
+  {
+    {    ;No.                                     ;Clustered=Yes }
+    {    ;Creation Date                            }
+    {    ;Source Code,Journal Batch Name,Creation Date }
+  }
+  FIELDGROUPS
+  {
+    { 1   ;DropDown            ;No.,From Entry No.,To Entry No.,Creation Date,Source Code }
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

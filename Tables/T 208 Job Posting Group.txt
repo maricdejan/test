@@ -1,0 +1,69 @@
+OBJECT Table 208 Job Posting Group
+{
+  OBJECT-PROPERTIES
+  {
+    Date=05.11.08;
+    Time=12:00:00;
+    Version List=NAVW16.00;
+  }
+  PROPERTIES
+  {
+    CaptionML=[DEU=Projektbuchungsgruppe;
+               ENU=Job Posting Group];
+    LookupFormID=Form211;
+    DrillDownFormID=Form211;
+  }
+  FIELDS
+  {
+    { 1   ;   ;Code                ;Code10        ;CaptionML=[DEU=Code;
+                                                              ENU=Code];
+                                                   NotBlank=Yes }
+    { 2   ;   ;WIP Costs Account   ;Code20        ;TableRelation="G/L Account";
+                                                   CaptionML=[DEU=Konto f. Kosten n. abgs. Arb.;
+                                                              ENU=WIP Costs Account] }
+    { 3   ;   ;WIP Accrued Costs Account;Code20   ;TableRelation="G/L Account";
+                                                   CaptionML=[DEU=Konto f. aufgel. Kosten n. abgs. Arb.;
+                                                              ENU=WIP Accrued Costs Account] }
+    { 4   ;   ;Job Costs Applied Account;Code20   ;TableRelation="G/L Account";
+                                                   CaptionML=[DEU=Projektkostenausgleich-Konto;
+                                                              ENU=Job Costs Applied Account] }
+    { 5   ;   ;Job Costs Adjustment Account;Code20;TableRelation="G/L Account";
+                                                   CaptionML=[DEU=Projektkostenregulierung-Konto;
+                                                              ENU=Job Costs Adjustment Account] }
+    { 6   ;   ;G/L Expense Acc. (Contract);Code20 ;TableRelation="G/L Account";
+                                                   CaptionML=[DEU=Aufwandssachkonto (Vertrag);
+                                                              ENU=G/L Expense Acc. (Contract)] }
+    { 7   ;   ;Job Sales Adjustment Account;Code20;TableRelation="G/L Account";
+                                                   CaptionML=[DEU=Projektverkaufsregulierungs-Konto;
+                                                              ENU=Job Sales Adjustment Account] }
+    { 8   ;   ;WIP Accrued Sales Account;Code20   ;TableRelation="G/L Account";
+                                                   CaptionML=[DEU=Konto f. aufgel. Verk„ufe n. abgs. Arb.;
+                                                              ENU=WIP Accrued Sales Account] }
+    { 9   ;   ;WIP Invoiced Sales Account;Code20  ;TableRelation="G/L Account";
+                                                   CaptionML=[DEU=Konto f. fakt. Verk„ufe n. abgs. Arb.;
+                                                              ENU=WIP Invoiced Sales Account] }
+    { 10  ;   ;Job Sales Applied Account;Code20   ;TableRelation="G/L Account";
+                                                   CaptionML=[DEU=Projektverkaufsausgleich-Konto;
+                                                              ENU=Job Sales Applied Account] }
+    { 11  ;   ;Recognized Costs Account;Code20    ;TableRelation="G/L Account";
+                                                   CaptionML=[DEU=Konto deklarierte Kosten;
+                                                              ENU=Recognized Costs Account] }
+    { 12  ;   ;Recognized Sales Account;Code20    ;TableRelation="G/L Account";
+                                                   CaptionML=[DEU=Konto deklarierte Verk„ufe;
+                                                              ENU=Recognized Sales Account] }
+  }
+  KEYS
+  {
+    {    ;Code                                    ;Clustered=Yes }
+  }
+  FIELDGROUPS
+  {
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

@@ -1,0 +1,55 @@
+OBJECT Table 5642 Depreciation Table Header
+{
+  OBJECT-PROPERTIES
+  {
+    Date=05.11.08;
+    Time=12:00:00;
+    Version List=NAVW16.00;
+  }
+  PROPERTIES
+  {
+    DataCaptionFields=Code,Description;
+    OnDelete=BEGIN
+               DeprTableLine.LOCKTABLE;
+               DeprTableLine.SETRANGE("Depreciation Table Code",Code);
+               DeprTableLine.DELETEALL(TRUE);
+             END;
+
+    CaptionML=[DEU=AfA-Tabellenkopf;
+               ENU=Depreciation Table Header];
+    LookupFormID=Form5663;
+  }
+  FIELDS
+  {
+    { 1   ;   ;Code                ;Code10        ;CaptionML=[DEU=Code;
+                                                              ENU=Code];
+                                                   NotBlank=Yes }
+    { 2   ;   ;Description         ;Text30        ;CaptionML=[DEU=Beschreibung;
+                                                              ENU=Description] }
+    { 3   ;   ;Period Length       ;Option        ;CaptionML=[DEU=Periodenl„nge;
+                                                              ENU=Period Length];
+                                                   OptionCaptionML=[DEU=Monat,Periode,Quartal,Jahr;
+                                                                    ENU=Month,Period,Quarter,Year];
+                                                   OptionString=Month,Period,Quarter,Year }
+    { 4   ;   ;Total No. of Units  ;Decimal       ;CaptionML=[DEU=Anzahl d. Einheiten;
+                                                              ENU=Total No. of Units];
+                                                   DecimalPlaces=0:5;
+                                                   MinValue=0 }
+  }
+  KEYS
+  {
+    {    ;Code                                    ;Clustered=Yes }
+  }
+  FIELDGROUPS
+  {
+  }
+  CODE
+  {
+    VAR
+      DeprTableLine@1000 : Record 5643;
+
+    BEGIN
+    END.
+  }
+}
+

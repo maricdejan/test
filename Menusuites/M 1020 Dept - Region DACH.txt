@@ -1,0 +1,1251 @@
+OBJECT MenuSuite 1020 Dept - Region DACH
+{
+  OBJECT-PROPERTIES
+  {
+    Date=14.08.09;
+    Time=12:00:00;
+    Version List=NAVDACH6.00.01;
+  }
+  PROPERTIES
+  {
+  }
+  MENUNODES
+  {
+    {                ;[{AD837DA9-676E-4361-9F06-8C564AC3A7D2}] ;NextNodeID=[{F4B7F9E4-D8B8-4EBE-A6E2-90E05122B398}] }
+    { MenuItem       ;[{FB62F8A9-EAE6-4D6E-8307-3EE39A6A8504}] ;Name=Place of Dispatchers;
+                                                                CaptionML=[DEU=Sitz des Versenders;
+                                                                           ENU=Place of Dispatchers];
+                                                                MemberOfMenu=[{19A352FE-D90D-424E-B85F-CF3B8E98CF0E}];
+                                                                RunObjectType=Page;
+                                                                RunObjectID=11000;
+                                                                ParentNodeID=[{1D38F50D-C78A-4B60-B218-61C795599889}];
+                                                                Visible=Yes;
+                                                                NextNodeID=[{65C77724-D0CF-476B-A92C-1C32DF010FD9}];
+                                                                DepartmentCategory=Lists }
+    {                ;[{FC922B7E-20C4-4D37-8F2A-5E48E7923C59}] ;NextNodeID=[{FB62F8A9-EAE6-4D6E-8307-3EE39A6A8504}] }
+    { MenuItem       ;[{65C77724-D0CF-476B-A92C-1C32DF010FD9}] ;Name=Place of Receivers;
+                                                                CaptionML=[DEU=Sitz des EmpfÑngers;
+                                                                           ENU=Place of Receivers];
+                                                                MemberOfMenu=[{19A352FE-D90D-424E-B85F-CF3B8E98CF0E}];
+                                                                RunObjectType=Page;
+                                                                RunObjectID=11001;
+                                                                ParentNodeID=[{1D38F50D-C78A-4B60-B218-61C795599889}];
+                                                                Visible=Yes;
+                                                                NextNodeID=[{C2E940C8-9685-43DB-8BAF-319FD1A9630F}];
+                                                                DepartmentCategory=Lists }
+    {                ;[{C2E940C8-9685-43DB-8BAF-319FD1A9630F}] ;NextNodeID=[{F03D6424-7D89-4E19-BFCF-5C2435B6B70D}] }
+    { MenuItem       ;[{F03D6424-7D89-4E19-BFCF-5C2435B6B70D}] ;Name=Report Selection - Intrastat;
+                                                                CaptionML=[DEU=Berichtsauswahl;
+                                                                           ENU=Report Selection];
+                                                                MemberOfMenu=[{19A352FE-D90D-424E-B85F-CF3B8E98CF0E}];
+                                                                RunObjectType=Page;
+                                                                RunObjectID=26100;
+                                                                ParentNodeID=[{1D38F50D-C78A-4B60-B218-61C795599889}];
+                                                                Visible=Yes;
+                                                                NextNodeID=[{00000000-0000-0000-0000-000000000000}];
+                                                                DepartmentCategory=Tasks }
+    { MenuItem       ;[{8F7CD37C-15EE-4A52-ADFB-131DAA05C4C9}] ;Name=Report Selections VAT;
+                                                                CaptionML=[DEU=Berichtsauswahl - MwSt.;
+                                                                           ENU=Report Selections VAT];
+                                                                MemberOfMenu=[{19A352FE-D90D-424E-B85F-CF3B8E98CF0E}];
+                                                                RunObjectType=Page;
+                                                                RunObjectID=26101;
+                                                                ParentNodeID=[{92C5CFFF-40CA-474B-8FA0-1597202D3433}];
+                                                                Visible=Yes;
+                                                                NextNodeID=[{00000000-0000-0000-0000-000000000000}];
+                                                                DepartmentCategory=Tasks }
+    { MenuItem       ;[{06E5A214-491B-4EC8-BFFE-1A99534972A2}] ;Name=VAT - VIES Declaration XML;
+                                                                CaptionML=[DEU=Zusammenfassende Meldung XML;
+                                                                           ENU=VAT - VIES Declaration XML];
+                                                                MemberOfMenu=[{F8D2429D-034B-4C58-9B5E-81BE962DB1BC}];
+                                                                RunObjectType=Report;
+                                                                RunObjectID=11108;
+                                                                ParentNodeID=[{3405BBB0-6500-4904-ABCB-E48AAE1A9942}];
+                                                                Visible=Yes;
+                                                                NextNodeID=[{46ABA44B-DE9F-4A57-87AC-27A779810A0B}];
+                                                                DepartmentCategory=Reports and Analysis }
+    {                ;[{4458848A-1E78-4B9A-8CD0-9980D3193C73}] ;NextNodeID=[{85D95F70-855C-4E83-82E5-49CF4FC72417}] }
+    { MenuItem       ;[{85D95F70-855C-4E83-82E5-49CF4FC72417}] ;Name=Provisional Trial Balance;
+                                                                CaptionML=[DEU=VorlÑufige Rohbilanz;
+                                                                           ENU=Provisional Trial Balance];
+                                                                MemberOfMenu=[{F8D2429D-034B-4C58-9B5E-81BE962DB1BC}];
+                                                                RunObjectType=Report;
+                                                                RunObjectID=11500;
+                                                                ParentNodeID=[{4D1A3284-B7E4-4977-B65B-2F362B8C8F47}];
+                                                                Visible=Yes;
+                                                                NextNodeID=[{F54E0498-DEEF-4A88-956D-8610281E3F79}];
+                                                                DepartmentCategory=Reports and Analysis }
+    { MenuItem       ;[{89B3C99C-AAE3-453B-A4A9-96E67C653E8A}] ;Name=Inventory Value;
+                                                                CaptionML=[DEU=Lagerwert;
+                                                                           ENU=Inventory Value];
+                                                                MemberOfMenu=[{4444D15F-6F71-4058-A823-C35BD171B04A}];
+                                                                RunObjectType=Report;
+                                                                RunObjectID=11517;
+                                                                ParentNodeID=[{6F095F98-A9E6-4451-AFF7-D09F85146865}];
+                                                                Visible=Yes;
+                                                                NextNodeID=[{00000000-0000-0000-0000-000000000000}];
+                                                                Deleted=No;
+                                                                DepartmentCategory=Reports and Analysis }
+    {                ;[{77436D6A-1E3C-4204-BE24-1336D0C178B3}] ;NextNodeID=[{6E639B61-474B-4E61-A48B-9CED33503837}] }
+    { MenuItem       ;[{6E639B61-474B-4E61-A48B-9CED33503837}] ;Name=G/L Setup Information;
+                                                                CaptionML=[DEU=Fibu Einr.-Informationen;
+                                                                           ENU=G/L Setup Information];
+                                                                MemberOfMenu=[{F8D2429D-034B-4C58-9B5E-81BE962DB1BC}];
+                                                                RunObjectType=Report;
+                                                                RunObjectID=11514;
+                                                                ParentNodeID=[{BE55AC55-529B-4D2C-9B9C-8CEF2EE313F4}];
+                                                                Visible=Yes;
+                                                                NextNodeID=[{12CAC30C-AC20-4E5A-8DA6-7ED6D99D2137}];
+                                                                DepartmentCategory=Reports and Analysis }
+    { MenuItem       ;[{12CAC30C-AC20-4E5A-8DA6-7ED6D99D2137}] ;Name=Access Permission;
+                                                                CaptionML=[DEU=Zugriffsrecht;
+                                                                           ENU=Access Permission];
+                                                                MemberOfMenu=[{F8D2429D-034B-4C58-9B5E-81BE962DB1BC}];
+                                                                RunObjectType=Report;
+                                                                RunObjectID=11516;
+                                                                ParentNodeID=[{BE55AC55-529B-4D2C-9B9C-8CEF2EE313F4}];
+                                                                Visible=Yes;
+                                                                NextNodeID=[{00000000-0000-0000-0000-000000000000}];
+                                                                DepartmentCategory=Reports and Analysis }
+    {                ;[{8EEDEF88-5351-45FB-B6B4-F4471FE5B6B3}] ;NextNodeID=[{B97E152D-B6A9-4503-8153-ABC0C9E15279}] }
+    { MenuItem       ;[{B97E152D-B6A9-4503-8153-ABC0C9E15279}] ;Name=Item ABC Analysis;
+                                                                CaptionML=[DEU=Artikel-ABC-Analyse;
+                                                                           ENU=Item ABC Analysis];
+                                                                MemberOfMenu=[{2DC8C4FE-7346-4124-8C20-383346384C03}];
+                                                                RunObjectType=Report;
+                                                                RunObjectID=11503;
+                                                                ParentNodeID=[{01CCE9A9-331D-42ED-BE34-1FAF394EE08E}];
+                                                                Visible=Yes;
+                                                                NextNodeID=[{00000000-0000-0000-0000-000000000000}];
+                                                                DepartmentCategory=Reports and Analysis }
+    {                ;[{8CDF5463-09BA-4A09-95E1-19BCDDE1C0C4}] ;NextNodeID=[{14880533-B88D-4B22-BD32-FA8DF6B82A33}] }
+    { MenuItem       ;[{14880533-B88D-4B22-BD32-FA8DF6B82A33}] ;Name=Item ABC Analysis;
+                                                                CaptionML=[DEU=Artikel-ABC-Analyse;
+                                                                           ENU=Item ABC Analysis];
+                                                                MemberOfMenu=[{03134937-C76A-4D80-A8B2-FF6458E180EB}];
+                                                                RunObjectType=Report;
+                                                                RunObjectID=11503;
+                                                                ParentNodeID=[{7F81E9BB-18C3-49C3-85C3-61A5EF825D2E}];
+                                                                Visible=Yes;
+                                                                NextNodeID=[{00000000-0000-0000-0000-000000000000}];
+                                                                Deleted=No;
+                                                                DepartmentCategory=Reports and Analysis }
+    {                ;[{323269EF-5912-4289-B847-1FA3AF09BEA9}] ;NextNodeID=[{38288276-59F0-43C0-AB3A-C1B3F626730F}] }
+    { MenuItem       ;[{38288276-59F0-43C0-AB3A-C1B3F626730F}] ;Name=Vendor Payments List;
+                                                                CaptionML=[DEU=Kreditorenzahlungen - Liste;
+                                                                           ENU=Vendor Payments List];
+                                                                MemberOfMenu=[{03134937-C76A-4D80-A8B2-FF6458E180EB}];
+                                                                RunObjectType=Report;
+                                                                RunObjectID=11507;
+                                                                ParentNodeID=[{8525F328-F55F-4647-8931-A225BD147F2A}];
+                                                                Visible=Yes;
+                                                                NextNodeID=[{00000000-0000-0000-0000-000000000000}];
+                                                                DepartmentCategory=Reports and Analysis }
+    {                ;[{58B75400-ADF5-4857-A7C5-C52AFF51370D}] ;NextNodeID=[{DFCC261C-2218-4E01-BEE9-AA0960BF15A7}] }
+    { MenuItem       ;[{E2DCD87D-3909-4B41-9FAB-65CDCC9BAE4D}] ;Name=Report5005130;
+                                                                CaptionML=[DEU=Archivierte Rahmenauftragsversionen lîschen...;
+                                                                           ENU=Delete Archived Blanket Sales Order Versions...];
+                                                                MemberOfMenu=[{19A352FE-D90D-424E-B85F-CF3B8E98CF0E}];
+                                                                RunObjectType=Report;
+                                                                RunObjectID=5005130;
+                                                                ParentNodeID=[{637F7895-E36D-4539-B9C5-5D5630AC0926}];
+                                                                Visible=Yes;
+                                                                NextNodeID=[{E70D2E3F-BAED-4AFB-8D60-47631779C72D}];
+                                                                DepartmentCategory=Tasks }
+    {                ;[{3EB49C8F-D3ED-4773-A59A-95396FB176C9}] ;NextNodeID=[{9428E54D-913A-4DC0-B9A7-C2FE9E4A3BD7}] }
+    { MenuItem       ;[{9428E54D-913A-4DC0-B9A7-C2FE9E4A3BD7}] ;Name=Delete Archived Blanket Purcha;
+                                                                CaptionML=[DEU=Archivierte Rahmenbestellungsversionen lîschen...;
+                                                                           ENU=Delete Archived Blanket Purchase Order Versions...];
+                                                                MemberOfMenu=[{19A352FE-D90D-424E-B85F-CF3B8E98CF0E}];
+                                                                RunObjectType=Report;
+                                                                RunObjectID=5005230;
+                                                                ParentNodeID=[{1AE7ACCC-E9A2-4BE6-AA07-78AC5AC1811D}];
+                                                                Visible=Yes;
+                                                                NextNodeID=[{00000000-0000-0000-0000-000000000000}];
+                                                                DepartmentCategory=Tasks }
+    {                ;[{12BC41EE-5F10-4B3D-8808-919A6E294520}] ;NextNodeID=[{E2DCD87D-3909-4B41-9FAB-65CDCC9BAE4D}] }
+    { MenuItem       ;[{77F8DA99-7666-4692-B32E-3BDBCE579334}] ;Name=Place of Dispatchers;
+                                                                CaptionML=[DEU=Sitz des Versenders;
+                                                                           ENU=Place of Dispatchers];
+                                                                MemberOfMenu=[{F8D2429D-034B-4C58-9B5E-81BE962DB1BC}];
+                                                                RunObjectType=Page;
+                                                                RunObjectID=11000;
+                                                                ParentNodeID=[{FAC2D0C4-099F-4B15-A473-5DBCB2491CB1}];
+                                                                Visible=Yes;
+                                                                NextNodeID=[{2F192630-57EA-41B3-B68B-CB8A7E88A77E}];
+                                                                DepartmentCategory=Lists }
+    {                ;[{10976FE9-9946-41F7-8004-863534FDA18C}] ;NextNodeID=[{77F8DA99-7666-4692-B32E-3BDBCE579334}] }
+    { MenuItem       ;[{2F192630-57EA-41B3-B68B-CB8A7E88A77E}] ;Name=Place of Receivers;
+                                                                CaptionML=[DEU=Sitz des EmpfÑngers;
+                                                                           ENU=Place of Receivers];
+                                                                MemberOfMenu=[{F8D2429D-034B-4C58-9B5E-81BE962DB1BC}];
+                                                                RunObjectType=Page;
+                                                                RunObjectID=11001;
+                                                                ParentNodeID=[{FAC2D0C4-099F-4B15-A473-5DBCB2491CB1}];
+                                                                Visible=Yes;
+                                                                NextNodeID=[{C4C18CD4-86BE-4F1C-9C74-251776C94296}];
+                                                                DepartmentCategory=Lists }
+    {                ;[{6C8818AF-3B44-4940-ACD5-21B1F24518B2}] ;NextNodeID=[{C9258E99-B2A9-4B18-B381-A9D3087419C1}] }
+    { MenuItem       ;[{C9258E99-B2A9-4B18-B381-A9D3087419C1}] ;Name=GDPdU Definition Groups;
+                                                                CaptionML=[DEU=GDPdU Definitionsgruppen;
+                                                                           ENU=GDPdU Definition Groups];
+                                                                MemberOfMenu=[{19A352FE-D90D-424E-B85F-CF3B8E98CF0E}];
+                                                                RunObjectType=Page;
+                                                                RunObjectID=11002;
+                                                                ParentNodeID=[{268A03F1-0377-4E65-8710-9979CD1FA1F8}];
+                                                                Visible=Yes;
+                                                                NextNodeID=[{5AFCBDD8-9AE8-48FB-A530-C100E078BCDA}];
+                                                                DepartmentCategory=Lists }
+    {                ;[{8FC2B853-B4B4-4AAA-BE9D-025F0F658A5B}] ;NextNodeID=[{BC35C7E6-7AC0-45B9-A205-7475EC0839A7}] }
+    { MenuItem       ;[{BC35C7E6-7AC0-45B9-A205-7475EC0839A7}] ;Name=GDPdU Definition Groups;
+                                                                CaptionML=[DEU=GDPdU Definitionsgruppen;
+                                                                           ENU=GDPdU Definition Groups];
+                                                                MemberOfMenu=[{F8D2429D-034B-4C58-9B5E-81BE962DB1BC}];
+                                                                RunObjectType=Page;
+                                                                RunObjectID=11002;
+                                                                ParentNodeID=[{054DB4DA-3681-4DAA-9F4B-9F470C5F862B}];
+                                                                Visible=Yes;
+                                                                NextNodeID=[{00000000-0000-0000-0000-000000000000}];
+                                                                DepartmentCategory=Lists }
+    {                ;[{C4C18CD4-86BE-4F1C-9C74-251776C94296}] ;NextNodeID=[{31191184-5B41-4911-8808-F6C9C16C6633}] }
+    { MenuItem       ;[{31191184-5B41-4911-8808-F6C9C16C6633}] ;Name=Report Selection - Intrastat;
+                                                                CaptionML=[DEU=Berichtsauswahl;
+                                                                           ENU=Report Selection];
+                                                                MemberOfMenu=[{F8D2429D-034B-4C58-9B5E-81BE962DB1BC}];
+                                                                RunObjectType=Page;
+                                                                RunObjectID=26100;
+                                                                ParentNodeID=[{FAC2D0C4-099F-4B15-A473-5DBCB2491CB1}];
+                                                                Visible=Yes;
+                                                                NextNodeID=[{00000000-0000-0000-0000-000000000000}];
+                                                                DepartmentCategory=Tasks }
+    { MenuItem       ;[{020F3B91-04FA-436A-988E-37CE5D234796}] ;Name=Intrastat - Item List;
+                                                                CaptionML=[DEU=Intrastat - Warenkatalog;
+                                                                           ENU=Intrastat - Item List];
+                                                                MemberOfMenu=[{F8D2429D-034B-4C58-9B5E-81BE962DB1BC}];
+                                                                RunObjectType=Report;
+                                                                RunObjectID=11001;
+                                                                ParentNodeID=[{881997E2-34F4-4523-AEEE-DA87419DF9F6}];
+                                                                Visible=Yes;
+                                                                NextNodeID=[{25410294-6D51-4AC3-9CAA-F363CF271C57}];
+                                                                DepartmentCategory=Reports and Analysis }
+    { MenuItem       ;[{F54E0498-DEEF-4A88-956D-8610281E3F79}] ;Name=G/L Total-Balance;
+                                                                CaptionML=[DEU=Sachkonto - Summen Saldenliste;
+                                                                           ENU=G/L Total-Balance];
+                                                                MemberOfMenu=[{F8D2429D-034B-4C58-9B5E-81BE962DB1BC}];
+                                                                RunObjectType=Report;
+                                                                RunObjectID=11002;
+                                                                ParentNodeID=[{4D1A3284-B7E4-4977-B65B-2F362B8C8F47}];
+                                                                Visible=Yes;
+                                                                NextNodeID=[{00000000-0000-0000-0000-000000000000}];
+                                                                DepartmentCategory=Reports and Analysis }
+    {                ;[{2D2855D7-7960-4B98-824B-5530D7A651A8}] ;NextNodeID=[{71BC9BE2-3B48-430F-9F15-D6D3E58DE459}] }
+    { MenuItem       ;[{32FE0512-6F4A-4DD6-8F02-EB1E51F5A235}] ;Name=Customer Total-Balance;
+                                                                CaptionML=[DEU=Debitor - Summen Saldenliste;
+                                                                           ENU=Customer Total-Balance];
+                                                                MemberOfMenu=[{F8D2429D-034B-4C58-9B5E-81BE962DB1BC}];
+                                                                RunObjectType=Report;
+                                                                RunObjectID=11003;
+                                                                ParentNodeID=[{6938AB07-2029-49F6-8871-C152729F1F0C}];
+                                                                Visible=Yes;
+                                                                NextNodeID=[{6102F544-63A7-46FE-8671-3AAA0998A17E}];
+                                                                DepartmentCategory=Reports and Analysis }
+    {                ;[{11724FF4-8569-4D68-ACB4-4352370E1A6F}] ;NextNodeID=[{32FE0512-6F4A-4DD6-8F02-EB1E51F5A235}] }
+    { MenuItem       ;[{6BCD1707-6C5D-48AF-984C-DEA44FA1325E}] ;Name=Vendor Total-Balance;
+                                                                CaptionML=[DEU=Kreditor - Summen Saldenliste;
+                                                                           ENU=Vendor Total-Balance];
+                                                                MemberOfMenu=[{03134937-C76A-4D80-A8B2-FF6458E180EB}];
+                                                                RunObjectType=Report;
+                                                                RunObjectID=11004;
+                                                                ParentNodeID=[{96CA1BC8-508F-4B92-BBB7-E9FCB8B1D306}];
+                                                                Visible=Yes;
+                                                                NextNodeID=[{1347F312-F5C9-4672-889D-6047849B5B53}];
+                                                                DepartmentCategory=Reports and Analysis }
+    {                ;[{C6B55E20-B417-42DD-B590-F2EA9D6C09A8}] ;NextNodeID=[{6BCD1707-6C5D-48AF-984C-DEA44FA1325E}] }
+    { MenuItem       ;[{A0BCEC9E-0095-427A-B322-50E779ECF40C}] ;Name=Vendor Total-Balance;
+                                                                CaptionML=[DEU=Kreditor - Summen Saldenliste;
+                                                                           ENU=Vendor Total-Balance];
+                                                                MemberOfMenu=[{F8D2429D-034B-4C58-9B5E-81BE962DB1BC}];
+                                                                RunObjectType=Report;
+                                                                RunObjectID=11004;
+                                                                ParentNodeID=[{51060E6F-D188-4B08-B76E-B3F17B5E8BE2}];
+                                                                Visible=Yes;
+                                                                NextNodeID=[{26962432-A601-4F6C-9824-F5B26C086B66}];
+                                                                DepartmentCategory=Reports and Analysis }
+    {                ;[{1B9CF16D-6590-4379-8113-46E102204104}] ;NextNodeID=[{A0BCEC9E-0095-427A-B322-50E779ECF40C}] }
+    { MenuItem       ;[{9B75E932-2435-404C-9FFB-794B579D6E69}] ;Name=VAT Statement Germany;
+                                                                CaptionML=[DEU=MwSt.-Abrechnung Meldung;
+                                                                           ENU=VAT Statement Germany];
+                                                                MemberOfMenu=[{F8D2429D-034B-4C58-9B5E-81BE962DB1BC}];
+                                                                RunObjectType=Report;
+                                                                RunObjectID=11005;
+                                                                ParentNodeID=[{816DEE3F-9922-409E-B3A5-37FDCBBFE1B5}];
+                                                                Visible=Yes;
+                                                                NextNodeID=[{996FAABB-5F19-4855-9EDA-2D6FCBB023F1}];
+                                                                DepartmentCategory=Reports and Analysis }
+    {                ;[{D9EA6198-93A2-44FD-91E1-5713CBAAA81B}] ;NextNodeID=[{9B75E932-2435-404C-9FFB-794B579D6E69}] }
+    { MenuItem       ;[{26962432-A601-4F6C-9824-F5B26C086B66}] ;Name=Vendor Detailed Aging;
+                                                                CaptionML=[DEU=Kreditor - FÑllige Posten;
+                                                                           ENU=Vendor Detailed Aging];
+                                                                MemberOfMenu=[{F8D2429D-034B-4C58-9B5E-81BE962DB1BC}];
+                                                                RunObjectType=Report;
+                                                                RunObjectID=11006;
+                                                                ParentNodeID=[{51060E6F-D188-4B08-B76E-B3F17B5E8BE2}];
+                                                                Visible=Yes;
+                                                                NextNodeID=[{9B983E95-542A-4650-A030-50A450A37781}];
+                                                                DepartmentCategory=Reports and Analysis }
+    { MenuItem       ;[{CE789112-2A5C-4A18-A5FC-15C519B06BE9}] ;Name=Vendor Detailed Aging;
+                                                                CaptionML=[DEU=Kreditor - FÑllige Posten;
+                                                                           ENU=Vendor Detailed Aging];
+                                                                MemberOfMenu=[{03134937-C76A-4D80-A8B2-FF6458E180EB}];
+                                                                RunObjectType=Report;
+                                                                RunObjectID=11006;
+                                                                ParentNodeID=[{96CA1BC8-508F-4B92-BBB7-E9FCB8B1D306}];
+                                                                Visible=Yes;
+                                                                NextNodeID=[{D3C3D2AE-A0A8-4707-B41B-26F018AF768E}];
+                                                                DepartmentCategory=Reports and Analysis }
+    {                ;[{E1313F1C-D122-43A6-A429-84ACC9B658E6}] ;NextNodeID=[{CE789112-2A5C-4A18-A5FC-15C519B06BE9}] }
+    {                ;[{D7D691B0-E62F-490A-ADBE-1BADCB88D441}] ;NextNodeID=[{46606D75-C43F-44F5-9D0C-7632CE2DD31E}] }
+    { MenuItem       ;[{46606D75-C43F-44F5-9D0C-7632CE2DD31E}] ;Name=VAT-Vies Declaration Tax - DE;
+                                                                CaptionML=[DEU=Zusammenf. Meldung - Formular;
+                                                                           ENU=VAT-Vies Declaration Tax - DE];
+                                                                MemberOfMenu=[{F8D2429D-034B-4C58-9B5E-81BE962DB1BC}];
+                                                                RunObjectType=Report;
+                                                                RunObjectID=11007;
+                                                                ParentNodeID=[{816DEE3F-9922-409E-B3A5-37FDCBBFE1B5}];
+                                                                Visible=Yes;
+                                                                NextNodeID=[{6F1C7D34-46A7-43E9-8238-A0C24D2BF276}];
+                                                                DepartmentCategory=Reports and Analysis }
+    { MenuItem       ;[{9739898A-8DE8-4132-8DDE-5593776E89A3}] ;Name=Intrastat - Form DE;
+                                                                CaptionML=[DEU=Intrastat - Formular DE;
+                                                                           ENU=Intrastat - Form DE];
+                                                                MemberOfMenu=[{F8D2429D-034B-4C58-9B5E-81BE962DB1BC}];
+                                                                RunObjectType=Report;
+                                                                RunObjectID=11012;
+                                                                ParentNodeID=[{881997E2-34F4-4523-AEEE-DA87419DF9F6}];
+                                                                Visible=Yes;
+                                                                NextNodeID=[{020F3B91-04FA-436A-988E-37CE5D234796}];
+                                                                DepartmentCategory=Reports and Analysis }
+    { MenuItem       ;[{17AAC4B6-27E9-4F5D-923A-4B63468BA91B}] ;Name=Intrastat - Checklist DE;
+                                                                CaptionML=[DEU=Intrastat - PrÅfung DE;
+                                                                           ENU=Intrastat - Checklist DE];
+                                                                MemberOfMenu=[{F8D2429D-034B-4C58-9B5E-81BE962DB1BC}];
+                                                                RunObjectType=Report;
+                                                                RunObjectID=11013;
+                                                                ParentNodeID=[{881997E2-34F4-4523-AEEE-DA87419DF9F6}];
+                                                                Visible=Yes;
+                                                                NextNodeID=[{2D2855D7-7960-4B98-824B-5530D7A651A8}];
+                                                                DepartmentCategory=Reports and Analysis }
+    {                ;[{08C8A480-9A90-4517-8FAB-E8435D1A7C7D}] ;NextNodeID=[{9BAB2056-B403-43A6-A7CD-FB88215CF166}] }
+    { MenuItem       ;[{71BC9BE2-3B48-430F-9F15-D6D3E58DE459}] ;Name=Intrastat - Checklist AT;
+                                                                CaptionML=[DEU=Intrastat - Formular AT;
+                                                                           ENU=Intrastat - Form AT];
+                                                                MemberOfMenu=[{F8D2429D-034B-4C58-9B5E-81BE962DB1BC}];
+                                                                RunObjectType=Report;
+                                                                RunObjectID=11104;
+                                                                ParentNodeID=[{881997E2-34F4-4523-AEEE-DA87419DF9F6}];
+                                                                Visible=Yes;
+                                                                NextNodeID=[{9739898A-8DE8-4132-8DDE-5593776E89A3}];
+                                                                DepartmentCategory=Reports and Analysis }
+    { MenuItem       ;[{9BAB2056-B403-43A6-A7CD-FB88215CF166}] ;Name=Intrastat - Checklist AT;
+                                                                CaptionML=[DEU=Intrastat - PrÅfung AT;
+                                                                           ENU=Intrastat - Checklist AT];
+                                                                MemberOfMenu=[{F8D2429D-034B-4C58-9B5E-81BE962DB1BC}];
+                                                                RunObjectType=Report;
+                                                                RunObjectID=11105;
+                                                                ParentNodeID=[{881997E2-34F4-4523-AEEE-DA87419DF9F6}];
+                                                                Visible=Yes;
+                                                                NextNodeID=[{17AAC4B6-27E9-4F5D-923A-4B63468BA91B}];
+                                                                DepartmentCategory=Reports and Analysis }
+    { MenuItem       ;[{6F1C7D34-46A7-43E9-8238-A0C24D2BF276}] ;Name=VAT - VIES Declaration XML;
+                                                                CaptionML=[DEU=Zusammenfassende Meldung XML;
+                                                                           ENU=VAT - VIES Declaration XML];
+                                                                MemberOfMenu=[{F8D2429D-034B-4C58-9B5E-81BE962DB1BC}];
+                                                                RunObjectType=Report;
+                                                                RunObjectID=11108;
+                                                                ParentNodeID=[{816DEE3F-9922-409E-B3A5-37FDCBBFE1B5}];
+                                                                Visible=Yes;
+                                                                NextNodeID=[{98049953-C2B2-44AB-A6EA-197D620C9D96}];
+                                                                DepartmentCategory=Reports and Analysis }
+    { MenuItem       ;[{996FAABB-5F19-4855-9EDA-2D6FCBB023F1}] ;Name=VAT Statement AT;
+                                                                CaptionML=[DEU=MwSt.-Abrechnung ôsterreich;
+                                                                           ENU=VAT Statement Austria];
+                                                                MemberOfMenu=[{F8D2429D-034B-4C58-9B5E-81BE962DB1BC}];
+                                                                RunObjectType=Report;
+                                                                RunObjectID=11110;
+                                                                ParentNodeID=[{816DEE3F-9922-409E-B3A5-37FDCBBFE1B5}];
+                                                                Visible=Yes;
+                                                                NextNodeID=[{D7D691B0-E62F-490A-ADBE-1BADCB88D441}];
+                                                                DepartmentCategory=Reports and Analysis }
+    { MenuItem       ;[{89E2CE29-0636-48EC-BDDD-1E88F2055A8D}] ;Name=Vendor Payments List;
+                                                                CaptionML=[DEU=Kreditorenzahlungen - Liste;
+                                                                           ENU=Vendor Payments List];
+                                                                MemberOfMenu=[{F8D2429D-034B-4C58-9B5E-81BE962DB1BC}];
+                                                                RunObjectType=Report;
+                                                                RunObjectID=11507;
+                                                                ParentNodeID=[{51060E6F-D188-4B08-B76E-B3F17B5E8BE2}];
+                                                                Visible=Yes;
+                                                                NextNodeID=[{4EEBE5A0-E47B-4848-B9B8-354FC6098180}];
+                                                                DepartmentCategory=Reports and Analysis }
+    {                ;[{872E91B1-9892-4ADD-8D77-4324D9F598B0}] ;NextNodeID=[{89E2CE29-0636-48EC-BDDD-1E88F2055A8D}] }
+    { MenuItem       ;[{D95C26D2-C385-481B-940B-0C623C90AA5D}] ;Name=Vendor Payments List;
+                                                                CaptionML=[DEU=Kreditorenzahlungen - Liste;
+                                                                           ENU=Vendor Payments List];
+                                                                MemberOfMenu=[{03134937-C76A-4D80-A8B2-FF6458E180EB}];
+                                                                RunObjectType=Report;
+                                                                RunObjectID=11507;
+                                                                ParentNodeID=[{96CA1BC8-508F-4B92-BBB7-E9FCB8B1D306}];
+                                                                Visible=Yes;
+                                                                NextNodeID=[{E1313F1C-D122-43A6-A429-84ACC9B658E6}];
+                                                                DepartmentCategory=Reports and Analysis }
+    {                ;[{B1243121-2002-4957-A174-2DC631FF0F5E}] ;NextNodeID=[{D95C26D2-C385-481B-940B-0C623C90AA5D}] }
+    { MenuItem       ;[{99BD876E-F0AB-4002-A154-D28F1CFAECA4}] ;Name=Inventory Value;
+                                                                CaptionML=[DEU=Lagerwert;
+                                                                           ENU=Inventory Value];
+                                                                MemberOfMenu=[{03134937-C76A-4D80-A8B2-FF6458E180EB}];
+                                                                RunObjectType=Report;
+                                                                RunObjectID=11517;
+                                                                ParentNodeID=[{7F81E9BB-18C3-49C3-85C3-61A5EF825D2E}];
+                                                                Visible=Yes;
+                                                                NextNodeID=[{3C5D734A-5B39-4C3C-A6B3-D4B738A4DA68}];
+                                                                DepartmentCategory=Reports and Analysis }
+    {                ;[{32684431-1734-4928-9EE7-D6ABA93E77EB}] ;NextNodeID=[{99BD876E-F0AB-4002-A154-D28F1CFAECA4}] }
+    { MenuItem       ;[{51523DCD-2B89-4521-845A-994DE52098DC}] ;Name=Inventory Value;
+                                                                CaptionML=[DEU=Lagerwert;
+                                                                           ENU=Inventory Value];
+                                                                MemberOfMenu=[{F8D2429D-034B-4C58-9B5E-81BE962DB1BC}];
+                                                                RunObjectType=Report;
+                                                                RunObjectID=11517;
+                                                                ParentNodeID=[{895A9409-5CA3-4994-9C4A-39129E7FC88D}];
+                                                                Visible=Yes;
+                                                                NextNodeID=[{0EEC9CD3-34DE-4A74-91FB-A4BE01948E66}];
+                                                                DepartmentCategory=Reports and Analysis }
+    {                ;[{D3BD1EAD-CFEF-42A9-B7FE-544D45E38B36}] ;NextNodeID=[{363D07D4-34BD-4D96-87D5-1CF91E83DA64}] }
+    {                ;[{0A1E4188-05F3-4A2B-BF29-7EFE7E72FFFD}] ;NextNodeID=[{966B0DB1-598C-4B15-9FA6-2B7E2CBC3396}] }
+    { MenuItem       ;[{F4B7F9E4-D8B8-4EBE-A6E2-90E05122B398}] ;Name=VAT-Vies Declaration Tax - DE;
+                                                                CaptionML=[DEU=Zusammenf. Meldung - Formular;
+                                                                           ENU=VAT-Vies Declaration Tax - DE];
+                                                                MemberOfMenu=[{F8D2429D-034B-4C58-9B5E-81BE962DB1BC}];
+                                                                RunObjectType=Report;
+                                                                RunObjectID=11007;
+                                                                ParentNodeID=[{3405BBB0-6500-4904-ABCB-E48AAE1A9942}];
+                                                                Visible=Yes;
+                                                                NextNodeID=[{06E5A214-491B-4EC8-BFFE-1A99534972A2}];
+                                                                DepartmentCategory=Reports and Analysis }
+    {                ;[{966B0DB1-598C-4B15-9FA6-2B7E2CBC3396}] ;NextNodeID=[{51523DCD-2B89-4521-845A-994DE52098DC}] }
+    { MenuItem       ;[{0EEC9CD3-34DE-4A74-91FB-A4BE01948E66}] ;Name=Inventory Valuation - Cost Spe;
+                                                                CaptionML=[DEU=Lagerbew.-Einst.-Pr.-Ermittl.;
+                                                                           ENU=Invt. Valuation - Cost Spec.];
+                                                                RunObjectType=Report;
+                                                                RunObjectID=5801;
+                                                                Visible=Yes;
+                                                                DepartmentCategory=Reports and Analysis }
+    { MenuItem       ;[{96BC4C66-D17A-46FD-B67B-A01742B11B53}] ;Name=Item Age Composition - Value;
+                                                                CaptionML=[DEU=Artikellagerzeit - Wert;
+                                                                           ENU=Item Age Composition - Value];
+                                                                RunObjectType=Report;
+                                                                RunObjectID=5808;
+                                                                Visible=Yes;
+                                                                DepartmentCategory=Reports and Analysis }
+    { MenuItem       ;[{396B5FEF-4628-47C7-9786-495C52F0947C}] ;Name=Item Register - Value;
+                                                                CaptionML=[DEU=Artikeljournal - Wert;
+                                                                           ENU=Item Register - Value];
+                                                                RunObjectType=Report;
+                                                                RunObjectID=5805;
+                                                                Visible=Yes;
+                                                                DepartmentCategory=Reports and Analysis }
+    {                ;[{F13AED47-D02D-44AF-ADE1-A2DDE5F65CE0}] ;NextNodeID=[{89B3C99C-AAE3-453B-A4A9-96E67C653E8A}] }
+    { MenuItem       ;[{5C3B4983-EFE0-4468-982B-4A0BF283EB6C}] ;Name=Report11011;
+                                                                CaptionML=[DEU=Anlagenspiegel mit Umbuchung;
+                                                                           ENU=Book Value 03];
+                                                                MemberOfMenu=[{F8D2429D-034B-4C58-9B5E-81BE962DB1BC}];
+                                                                RunObjectType=Report;
+                                                                RunObjectID=11011;
+                                                                ParentNodeID=[{CCE353D2-F1CE-445D-9A57-D54F71F0FC57}];
+                                                                Visible=Yes;
+                                                                NextNodeID=[{9958A52F-0E8C-483D-8361-F504CB3FB4D3}];
+                                                                DepartmentCategory=Reports and Analysis }
+    {                ;[{2AE27377-AB66-471F-8A76-73781D461FF9}] ;NextNodeID=[{5C3B4983-EFE0-4468-982B-4A0BF283EB6C}] }
+    { MenuItem       ;[{08E62C63-9D50-480A-9179-7304B03EBC85}] ;Name=Delivery Reminder;
+                                                                CaptionML=[DEU=Lieferanmahnung;
+                                                                           ENU=Delivery Reminder];
+                                                                MemberOfMenu=[{03134937-C76A-4D80-A8B2-FF6458E180EB}];
+                                                                RunObjectType=Page;
+                                                                RunObjectID=5005272;
+                                                                ParentNodeID=[{A2FAEA0C-91E4-40EF-8294-F1A0484E58FE}];
+                                                                Visible=Yes;
+                                                                NextNodeID=[{3CFC6D78-647D-4D96-94CE-221147E6D0E7}];
+                                                                DepartmentCategory=Lists }
+    {                ;[{B96514C1-E8B2-4CC6-B4B1-1F1CE6AEF083}] ;NextNodeID=[{08E62C63-9D50-480A-9179-7304B03EBC85}] }
+    { MenuItem       ;[{16FFD784-7068-46A5-8507-A2AC82F40A59}] ;Name=Issued Delivery Reminder;
+                                                                CaptionML=[DEU=Reg. Lieferanmahnung;
+                                                                           ENU=Issued Delivery Reminder];
+                                                                MemberOfMenu=[{03134937-C76A-4D80-A8B2-FF6458E180EB}];
+                                                                RunObjectType=Page;
+                                                                RunObjectID=5005275;
+                                                                ParentNodeID=[{03A19110-BF9E-48F3-B599-F11FC8F64B32}];
+                                                                Visible=Yes;
+                                                                NextNodeID=[{A116B86D-A4C2-4053-A314-E81640DD3998}];
+                                                                DepartmentCategory=History }
+    {                ;[{DEDF2C36-82DF-4FF6-99AE-132C7FEF2A9A}] ;NextNodeID=[{16FFD784-7068-46A5-8507-A2AC82F40A59}] }
+    {                ;[{035B4B15-E221-4D1D-9A90-1AEB900FF883}] ;NextNodeID=[{E3EF914B-CD52-4500-83A8-3142FA0EA97D}] }
+    { MenuItem       ;[{E3EF914B-CD52-4500-83A8-3142FA0EA97D}] ;Name=Delivery Reminder Terms;
+                                                                CaptionML=[DEU=Lieferanmahnungsmethodencode;
+                                                                           ENU=Delivery Reminder Terms];
+                                                                MemberOfMenu=[{03134937-C76A-4D80-A8B2-FF6458E180EB}];
+                                                                RunObjectType=Page;
+                                                                RunObjectID=5005279;
+                                                                ParentNodeID=[{387B2D8D-4249-4D63-BE9C-850416EA6E81}];
+                                                                Visible=Yes;
+                                                                NextNodeID=[{88286E04-7EA7-42ED-BD96-8B155EAB4235}];
+                                                                DepartmentCategory=Lists }
+    { MenuItem       ;[{8E2DF665-94B6-4FAE-8101-0E84F4746782}] ;Name=Delivery Reminder Terms;
+                                                                CaptionML=[DEU=Lieferanmahnungsmethodencode;
+                                                                           ENU=Delivery Reminder Terms];
+                                                                MemberOfMenu=[{19A352FE-D90D-424E-B85F-CF3B8E98CF0E}];
+                                                                RunObjectType=Page;
+                                                                RunObjectID=5005279;
+                                                                ParentNodeID=[{07AC2AD3-B743-4471-9026-733D0597C600}];
+                                                                Visible=Yes;
+                                                                NextNodeID=[{33353E35-E16E-4232-9E8D-039AD12B49EB}];
+                                                                DepartmentCategory=Lists }
+    {                ;[{D2FE6BC6-7984-4591-A01F-E9953A08091D}] ;NextNodeID=[{8E2DF665-94B6-4FAE-8101-0E84F4746782}] }
+    {                ;[{32A1AC9B-4544-4FCA-98D9-FA2F0B06C7BF}] ;NextNodeID=[{24D2709D-49AD-4A27-B358-CEFBD1BAF1F7}] }
+    { MenuItem       ;[{24D2709D-49AD-4A27-B358-CEFBD1BAF1F7}] ;Name=Phys. Inventory Order;
+                                                                CaptionML=[DEU=Inventurauftrag;
+                                                                           ENU=Phys. Inventory Order];
+                                                                MemberOfMenu=[{8D5D65D8-68A2-4A84-9BCE-3742CEDA47BF}];
+                                                                RunObjectType=Page;
+                                                                RunObjectID=5005351;
+                                                                ParentNodeID=[{E0AA5D47-8A99-4F51-AB33-2749A3791A59}];
+                                                                Visible=Yes;
+                                                                NextNodeID=[{90AB7627-BDEB-4FFF-90D6-50D286CC2573}];
+                                                                DepartmentCategory=Lists }
+    { MenuGroup      ;[{AA15D26E-C2BB-470B-96C0-B04D95996C02}] ;Name=New Group;
+                                                                CaptionML=[DEU=LiquiditÑt;
+                                                                           ENU=Liquidity];
+                                                                MemberOfMenu=[{F8D2429D-034B-4C58-9B5E-81BE962DB1BC}];
+                                                                ParentNodeID=[{F8D2429D-034B-4C58-9B5E-81BE962DB1BC}];
+                                                                Visible=Yes;
+                                                                NextNodeID=[{C87075E0-8655-4172-A582-517A26D81202}];
+                                                                FirstChild=[{E44A1A8C-F5CB-4B0A-96EE-3B4A02E1F5BB}];
+                                                                IsDepartmentPage=Yes }
+    {                ;[{F5437B9C-0D44-4614-AB7D-87F12D50220E}] ;NextNodeID=[{AA15D26E-C2BB-470B-96C0-B04D95996C02}] }
+    { MenuItem       ;[{DE33C7BC-E1BA-4646-B683-72BA9D28449C}] ;Name=Liquidity Journal;
+                                                                CaptionML=[DEU=LiquiditÑts Buch.-Blatt;
+                                                                           ENU=Liquidity Journal];
+                                                                MemberOfMenu=[{F8D2429D-034B-4C58-9B5E-81BE962DB1BC}];
+                                                                RunObjectType=Page;
+                                                                RunObjectID=5055251;
+                                                                ParentNodeID=[{AA15D26E-C2BB-470B-96C0-B04D95996C02}];
+                                                                Visible=Yes;
+                                                                NextNodeID=[{C33356B8-5C55-4D10-876A-F883A4AA1D7C}];
+                                                                DepartmentCategory=Tasks }
+    { MenuGroup      ;[{E29FAFFA-855C-4482-9B85-24C5FB7689E1}] ;Name=New Group;
+                                                                CaptionML=[DEU=Einrichtung;
+                                                                           ENU=Setup];
+                                                                MemberOfMenu=[{F8D2429D-034B-4C58-9B5E-81BE962DB1BC}];
+                                                                ParentNodeID=[{AA15D26E-C2BB-470B-96C0-B04D95996C02}];
+                                                                Visible=Yes;
+                                                                NextNodeID=[{00000000-0000-0000-0000-000000000000}];
+                                                                FirstChild=[{E1BB8483-0F3A-420C-B2F9-257BA42D2072}];
+                                                                IsDepartmentPage=No }
+    { MenuGroup      ;[{35E227E4-94C2-4C7A-B063-8CE9FDFFEF48}] ;Name=New Group;
+                                                                CaptionML=[DEU=LiquiditÑt;
+                                                                           ENU=Liquidity];
+                                                                MemberOfMenu=[{F8D2429D-034B-4C58-9B5E-81BE962DB1BC}];
+                                                                ParentNodeID=[{E58D3A70-4058-41B4-B455-A4B10C1FAA66}];
+                                                                Visible=Yes;
+                                                                NextNodeID=[{00000000-0000-0000-0000-000000000000}];
+                                                                FirstChild=[{466A1D34-A80C-4FC3-88D9-99F34ABEFAE7}] }
+    { MenuGroup      ;[{C33356B8-5C55-4D10-876A-F883A4AA1D7C}] ;Name=New Group;
+                                                                CaptionML=[DEU=Berichte;
+                                                                           ENU=Reports];
+                                                                MemberOfMenu=[{F8D2429D-034B-4C58-9B5E-81BE962DB1BC}];
+                                                                ParentNodeID=[{AA15D26E-C2BB-470B-96C0-B04D95996C02}];
+                                                                Visible=Yes;
+                                                                NextNodeID=[{F5E9257E-99C8-4F1F-A567-BC2D52BBE44E}];
+                                                                FirstChild=[{6C09B2B2-5123-4C05-9FC2-F7A48BABE833}];
+                                                                IsDepartmentPage=No }
+    { MenuGroup      ;[{F5E9257E-99C8-4F1F-A567-BC2D52BBE44E}] ;Name=New Group;
+                                                                CaptionML=[DEU=Historie;
+                                                                           ENU=History];
+                                                                MemberOfMenu=[{F8D2429D-034B-4C58-9B5E-81BE962DB1BC}];
+                                                                ParentNodeID=[{AA15D26E-C2BB-470B-96C0-B04D95996C02}];
+                                                                Visible=Yes;
+                                                                NextNodeID=[{E29FAFFA-855C-4482-9B85-24C5FB7689E1}];
+                                                                FirstChild=[{B4FA0D51-6B0E-430D-A06C-EB2365592990}];
+                                                                IsDepartmentPage=No }
+    { MenuItem       ;[{3F2C1BC7-43CB-4631-AE5A-4FE5EEA2E79F}] ;Name=Liq. Journal Templates;
+                                                                CaptionML=[DEU=LiquiditÑts Buch.-Blattvorlagen;
+                                                                           ENU=Liquidity Journal Templates];
+                                                                MemberOfMenu=[{F8D2429D-034B-4C58-9B5E-81BE962DB1BC}];
+                                                                RunObjectType=Page;
+                                                                RunObjectID=5055252;
+                                                                ParentNodeID=[{E29FAFFA-855C-4482-9B85-24C5FB7689E1}];
+                                                                Visible=Yes;
+                                                                NextNodeID=[{00000000-0000-0000-0000-000000000000}];
+                                                                DepartmentCategory=Administration }
+    { MenuItem       ;[{466A1D34-A80C-4FC3-88D9-99F34ABEFAE7}] ;Name=Recurr. Liquidity Journal;
+                                                                CaptionML=[DEU=Wiederkehrende Buch.-BlÑtter;
+                                                                           ENU=Recurring Journals];
+                                                                MemberOfMenu=[{F8D2429D-034B-4C58-9B5E-81BE962DB1BC}];
+                                                                RunObjectType=Page;
+                                                                RunObjectID=5055255;
+                                                                ParentNodeID=[{35E227E4-94C2-4C7A-B063-8CE9FDFFEF48}];
+                                                                Visible=Yes;
+                                                                NextNodeID=[{36557CEE-26FC-45F5-B58D-59145998C9A2}];
+                                                                DepartmentCategory=Tasks }
+    { MenuItem       ;[{E1BB8483-0F3A-420C-B2F9-257BA42D2072}] ;Name=Liquidity Setup;
+                                                                CaptionML=[DEU=LiquiditÑt Einrichtung;
+                                                                           ENU=Liquidity Setup];
+                                                                MemberOfMenu=[{F8D2429D-034B-4C58-9B5E-81BE962DB1BC}];
+                                                                RunObjectType=Page;
+                                                                RunObjectID=5055256;
+                                                                ParentNodeID=[{E29FAFFA-855C-4482-9B85-24C5FB7689E1}];
+                                                                Visible=Yes;
+                                                                NextNodeID=[{D1DE4E9F-7C51-4E02-A699-7B0DC02476DB}];
+                                                                DepartmentCategory=Administration }
+    { MenuItem       ;[{E44A1A8C-F5CB-4B0A-96EE-3B4A02E1F5BB}] ;Name=Liquidity Card;
+                                                                CaptionML=[DEU=LiquiditÑt;
+                                                                           ENU=Liquidity];
+                                                                MemberOfMenu=[{F8D2429D-034B-4C58-9B5E-81BE962DB1BC}];
+                                                                RunObjectType=Page;
+                                                                RunObjectID=5055259;
+                                                                ParentNodeID=[{AA15D26E-C2BB-470B-96C0-B04D95996C02}];
+                                                                Visible=Yes;
+                                                                NextNodeID=[{EA4DA184-D811-4E30-A21D-1F40447BB265}];
+                                                                DepartmentCategory=Lists }
+    { MenuItem       ;[{D1DE4E9F-7C51-4E02-A699-7B0DC02476DB}] ;Name=Chart of Liquidity Accounts;
+                                                                CaptionML=[DEU=LiquiditÑtskontenplan;
+                                                                           ENU=Chart of Liquidity Accounts];
+                                                                MemberOfMenu=[{F8D2429D-034B-4C58-9B5E-81BE962DB1BC}];
+                                                                RunObjectType=Page;
+                                                                RunObjectID=5055261;
+                                                                ParentNodeID=[{E29FAFFA-855C-4482-9B85-24C5FB7689E1}];
+                                                                Visible=Yes;
+                                                                NextNodeID=[{5784B94D-5F47-48BA-B9EB-015960B9F920}];
+                                                                DepartmentCategory=Administration }
+    { MenuItem       ;[{B4FA0D51-6B0E-430D-A06C-EB2365592990}] ;Name=Liquidity Register;
+                                                                CaptionML=[DEU=Journal;
+                                                                           ENU=Register];
+                                                                MemberOfMenu=[{F8D2429D-034B-4C58-9B5E-81BE962DB1BC}];
+                                                                RunObjectType=Page;
+                                                                RunObjectID=5055262;
+                                                                ParentNodeID=[{F5E9257E-99C8-4F1F-A567-BC2D52BBE44E}];
+                                                                Visible=Yes;
+                                                                NextNodeID=[{2D586A40-D3F6-4F5F-AA35-782732745D29}];
+                                                                DepartmentCategory=History }
+    { MenuItem       ;[{AF7DDB91-9283-4619-BB73-556397FE01F9}] ;Name=Neutral Expenses;
+                                                                CaptionML=[DEU=Neutrale Ausgaben;
+                                                                           ENU=Neutral Expenses];
+                                                                MemberOfMenu=[{F8D2429D-034B-4C58-9B5E-81BE962DB1BC}];
+                                                                RunObjectType=Page;
+                                                                RunObjectID=5055266;
+                                                                ParentNodeID=[{AA15D26E-C2BB-470B-96C0-B04D95996C02}];
+                                                                Visible=Yes;
+                                                                NextNodeID=[{991DE047-199E-4297-A710-39AE549747A1}];
+                                                                DepartmentCategory=Lists }
+    { MenuItem       ;[{EA4DA184-D811-4E30-A21D-1F40447BB265}] ;Name=Neutral Revenues;
+                                                                CaptionML=[DEU=Neutrale Einnahmen;
+                                                                           ENU=Neutral Revenues];
+                                                                MemberOfMenu=[{F8D2429D-034B-4C58-9B5E-81BE962DB1BC}];
+                                                                RunObjectType=Page;
+                                                                RunObjectID=5055267;
+                                                                ParentNodeID=[{AA15D26E-C2BB-470B-96C0-B04D95996C02}];
+                                                                Visible=Yes;
+                                                                NextNodeID=[{AF7DDB91-9283-4619-BB73-556397FE01F9}];
+                                                                DepartmentCategory=Lists }
+    { MenuItem       ;[{991DE047-199E-4297-A710-39AE549747A1}] ;Name=Liq. Account Schedule;
+                                                                CaptionML=[DEU=LiquiditÑtskontenschema;
+                                                                           ENU=Liq. Account Schedule];
+                                                                MemberOfMenu=[{F8D2429D-034B-4C58-9B5E-81BE962DB1BC}];
+                                                                RunObjectType=Page;
+                                                                RunObjectID=5055271;
+                                                                ParentNodeID=[{AA15D26E-C2BB-470B-96C0-B04D95996C02}];
+                                                                Visible=Yes;
+                                                                NextNodeID=[{17376CC6-C5C4-4DDB-8708-3EBC93880782}];
+                                                                DepartmentCategory=Tasks }
+    { MenuItem       ;[{708AB874-B7E3-4C4F-967A-89C1B8C64D65}] ;Name=Report Selection - Liquidity;
+                                                                CaptionML=[DEU=Berichtsauswahl - LiquiditÑt;
+                                                                           ENU=Liquidity Report Selections];
+                                                                MemberOfMenu=[{F8D2429D-034B-4C58-9B5E-81BE962DB1BC}];
+                                                                RunObjectType=Page;
+                                                                RunObjectID=5055275;
+                                                                ParentNodeID=[{E29FAFFA-855C-4482-9B85-24C5FB7689E1}];
+                                                                Visible=Yes;
+                                                                NextNodeID=[{3F2C1BC7-43CB-4631-AE5A-4FE5EEA2E79F}];
+                                                                DepartmentCategory=Administration }
+    { MenuItem       ;[{770DCE32-4515-4714-93B9-D17BEDFC2F00}] ;Name=Document Inquiry;
+                                                                CaptionML=[DEU=Belegrecherche;
+                                                                           ENU=Document Inquiry];
+                                                                MemberOfMenu=[{F8D2429D-034B-4C58-9B5E-81BE962DB1BC}];
+                                                                RunObjectType=Page;
+                                                                RunObjectID=5055279;
+                                                                ParentNodeID=[{F5E9257E-99C8-4F1F-A567-BC2D52BBE44E}];
+                                                                Visible=Yes;
+                                                                NextNodeID=[{00000000-0000-0000-0000-000000000000}];
+                                                                DepartmentCategory=History }
+    { MenuItem       ;[{17376CC6-C5C4-4DDB-8708-3EBC93880782}] ;Name=Liq. Analysis by Dimensions;
+                                                                CaptionML=[DEU=Liq.-Analyse nach Dimensionen;
+                                                                           ENU=Liq. Analysis by Dimensions];
+                                                                MemberOfMenu=[{F8D2429D-034B-4C58-9B5E-81BE962DB1BC}];
+                                                                RunObjectType=Page;
+                                                                RunObjectID=5055285;
+                                                                ParentNodeID=[{AA15D26E-C2BB-470B-96C0-B04D95996C02}];
+                                                                Visible=Yes;
+                                                                NextNodeID=[{DE33C7BC-E1BA-4646-B683-72BA9D28449C}];
+                                                                DepartmentCategory=Tasks }
+    { MenuItem       ;[{5784B94D-5F47-48BA-B9EB-015960B9F920}] ;Name=Liquidity Analysis View Card;
+                                                                CaptionML=[DEU=Analyseansichten;
+                                                                           ENU=Analysis Views];
+                                                                MemberOfMenu=[{F8D2429D-034B-4C58-9B5E-81BE962DB1BC}];
+                                                                RunObjectType=Page;
+                                                                RunObjectID=5055287;
+                                                                ParentNodeID=[{E29FAFFA-855C-4482-9B85-24C5FB7689E1}];
+                                                                Visible=Yes;
+                                                                NextNodeID=[{708AB874-B7E3-4C4F-967A-89C1B8C64D65}];
+                                                                DepartmentCategory=Administration }
+    { MenuItem       ;[{6C09B2B2-5123-4C05-9FC2-F7A48BABE833}] ;Name=Liquidity Journal - Test;
+                                                                CaptionML=[DEU=LiquiditÑts Buch.-Blatt - Test;
+                                                                           ENU=Liquidity Journal - Test];
+                                                                MemberOfMenu=[{F8D2429D-034B-4C58-9B5E-81BE962DB1BC}];
+                                                                RunObjectType=Report;
+                                                                RunObjectID=5055252;
+                                                                ParentNodeID=[{C33356B8-5C55-4D10-876A-F883A4AA1D7C}];
+                                                                Visible=Yes;
+                                                                NextNodeID=[{E0E35D41-9B80-41B5-9548-F2D34F3F8831}];
+                                                                DepartmentCategory=Reports and Analysis }
+    { MenuItem       ;[{E0E35D41-9B80-41B5-9548-F2D34F3F8831}] ;Name=Liq. Account Schedule;
+                                                                CaptionML=[DEU=LiquiditÑtskontenschema;
+                                                                           ENU=Liq. Account Schedule];
+                                                                MemberOfMenu=[{F8D2429D-034B-4C58-9B5E-81BE962DB1BC}];
+                                                                RunObjectType=Report;
+                                                                RunObjectID=5055253;
+                                                                ParentNodeID=[{C33356B8-5C55-4D10-876A-F883A4AA1D7C}];
+                                                                Visible=Yes;
+                                                                NextNodeID=[{F66BF0EE-B509-4B11-A670-A8EE8DB5012F}];
+                                                                DepartmentCategory=Reports and Analysis }
+    { MenuItem       ;[{F66BF0EE-B509-4B11-A670-A8EE8DB5012F}] ;Name=Liquidity Register;
+                                                                CaptionML=[DEU=LiquiditÑtsjournal;
+                                                                           ENU=Liquidity Register];
+                                                                MemberOfMenu=[{F8D2429D-034B-4C58-9B5E-81BE962DB1BC}];
+                                                                RunObjectType=Report;
+                                                                RunObjectID=5055254;
+                                                                ParentNodeID=[{C33356B8-5C55-4D10-876A-F883A4AA1D7C}];
+                                                                Visible=Yes;
+                                                                NextNodeID=[{0EB7A149-6481-4487-95DB-80D2B3E48278}];
+                                                                DepartmentCategory=Reports and Analysis }
+    { MenuItem       ;[{0EB7A149-6481-4487-95DB-80D2B3E48278}] ;Name=Liquidity Date List;
+                                                                CaptionML=[DEU=LiquiditÑtsterminÅbersicht;
+                                                                           ENU=Liquidity Date List];
+                                                                MemberOfMenu=[{F8D2429D-034B-4C58-9B5E-81BE962DB1BC}];
+                                                                RunObjectType=Report;
+                                                                RunObjectID=5055256;
+                                                                ParentNodeID=[{C33356B8-5C55-4D10-876A-F883A4AA1D7C}];
+                                                                Visible=Yes;
+                                                                NextNodeID=[{63E04F93-F382-4959-A549-7FF0D861858A}];
+                                                                DepartmentCategory=Reports and Analysis }
+    { MenuItem       ;[{63E04F93-F382-4959-A549-7FF0D861858A}] ;Name=Liquidity Development;
+                                                                CaptionML=[DEU=LiquiditÑtsentwicklung;
+                                                                           ENU=Liquidity Development];
+                                                                MemberOfMenu=[{F8D2429D-034B-4C58-9B5E-81BE962DB1BC}];
+                                                                RunObjectType=Report;
+                                                                RunObjectID=5055257;
+                                                                ParentNodeID=[{C33356B8-5C55-4D10-876A-F883A4AA1D7C}];
+                                                                Visible=Yes;
+                                                                NextNodeID=[{01F7EFA7-8F1B-4829-862D-E5004246C8DF}];
+                                                                DepartmentCategory=Reports and Analysis }
+    { MenuItem       ;[{01F7EFA7-8F1B-4829-862D-E5004246C8DF}] ;Name=Customer - Method of Payment;
+                                                                CaptionML=[DEU=Debitor - ZahlungsmodalitÑt;
+                                                                           ENU=Customer - Method of Payment];
+                                                                MemberOfMenu=[{F8D2429D-034B-4C58-9B5E-81BE962DB1BC}];
+                                                                RunObjectType=Report;
+                                                                RunObjectID=5055259;
+                                                                ParentNodeID=[{C33356B8-5C55-4D10-876A-F883A4AA1D7C}];
+                                                                Visible=Yes;
+                                                                NextNodeID=[{ED9FBBA3-5D8F-4FA1-ACC6-C46A03EBCA97}];
+                                                                DepartmentCategory=Reports and Analysis }
+    { MenuItem       ;[{ED9FBBA3-5D8F-4FA1-ACC6-C46A03EBCA97}] ;Name=Vendor - Method of Payment;
+                                                                CaptionML=[DEU=Kreditor - ZahlungsmodalitÑt;
+                                                                           ENU=Vendor - Method of Payment];
+                                                                MemberOfMenu=[{F8D2429D-034B-4C58-9B5E-81BE962DB1BC}];
+                                                                RunObjectType=Report;
+                                                                RunObjectID=5055260;
+                                                                ParentNodeID=[{C33356B8-5C55-4D10-876A-F883A4AA1D7C}];
+                                                                Visible=Yes;
+                                                                NextNodeID=[{C5593B8C-E140-4D23-B5E4-4C3BC0EC5AC9}];
+                                                                DepartmentCategory=Reports and Analysis }
+    { MenuItem       ;[{C5593B8C-E140-4D23-B5E4-4C3BC0EC5AC9}] ;Name=Liquidity Dimensions - Total;
+                                                                CaptionML=[DEU=LiquiditÑt Dimensionen -  Gesamt;
+                                                                           ENU=Liquidity Dimensions - Total];
+                                                                MemberOfMenu=[{F8D2429D-034B-4C58-9B5E-81BE962DB1BC}];
+                                                                RunObjectType=Report;
+                                                                RunObjectID=5055261;
+                                                                ParentNodeID=[{C33356B8-5C55-4D10-876A-F883A4AA1D7C}];
+                                                                Visible=Yes;
+                                                                NextNodeID=[{22B566FD-234F-443B-BB01-19DDF2C8BD8A}];
+                                                                DepartmentCategory=Reports and Analysis }
+    { MenuItem       ;[{22B566FD-234F-443B-BB01-19DDF2C8BD8A}] ;Name=Liquidity Dimensions - Detail;
+                                                                CaptionML=[DEU=LiquiditÑt Dimensionen - Detail;
+                                                                           ENU=Liquidity Dimensions - Detail];
+                                                                MemberOfMenu=[{F8D2429D-034B-4C58-9B5E-81BE962DB1BC}];
+                                                                RunObjectType=Report;
+                                                                RunObjectID=5055262;
+                                                                ParentNodeID=[{C33356B8-5C55-4D10-876A-F883A4AA1D7C}];
+                                                                Visible=Yes;
+                                                                NextNodeID=[{00000000-0000-0000-0000-000000000000}];
+                                                                DepartmentCategory=Reports and Analysis }
+    { MenuItem       ;[{36557CEE-26FC-45F5-B58D-59145998C9A2}] ;Name=Update Liq. Analysis Views;
+                                                                CaptionML=[DEU=Analyseansichten aktualisieren;
+                                                                           ENU=Update Analysis Views];
+                                                                MemberOfMenu=[{F8D2429D-034B-4C58-9B5E-81BE962DB1BC}];
+                                                                RunObjectType=Report;
+                                                                RunObjectID=5055263;
+                                                                ParentNodeID=[{35E227E4-94C2-4C7A-B063-8CE9FDFFEF48}];
+                                                                Visible=Yes;
+                                                                NextNodeID=[{466A1D34-A80C-4FC3-88D9-99F34ABEFAE7}];
+                                                                DepartmentCategory=Reports and Analysis }
+    { MenuItem       ;[{2D586A40-D3F6-4F5F-AA35-782732745D29}] ;Name=Navigate;
+                                                                CaptionML=[DEU=Navigate;
+                                                                           ENU=Navigate];
+                                                                MemberOfMenu=[{F8D2429D-034B-4C58-9B5E-81BE962DB1BC}];
+                                                                RunObjectType=Page;
+                                                                RunObjectID=344;
+                                                                ParentNodeID=[{F5E9257E-99C8-4F1F-A567-BC2D52BBE44E}];
+                                                                Visible=Yes;
+                                                                NextNodeID=[{770DCE32-4515-4714-93B9-D17BEDFC2F00}];
+                                                                DepartmentCategory=History }
+    {                ;[{268A03F1-0377-4E65-8710-9979CD1FA1F8}] ;NextNodeID=[{28D7555D-00B3-4D98-BBAB-1C989C5C6B9E}] }
+    { MenuGroup      ;[{28D7555D-00B3-4D98-BBAB-1C989C5C6B9E}] ;Name=New Group;
+                                                                CaptionML=[DEU=LiquiditÑt;
+                                                                           ENU=Liquidity];
+                                                                MemberOfMenu=[{19A352FE-D90D-424E-B85F-CF3B8E98CF0E}];
+                                                                ParentNodeID=[{E860012C-D37B-47C4-AC68-42316F9D9139}];
+                                                                Visible=Yes;
+                                                                NextNodeID=[{00000000-0000-0000-0000-000000000000}];
+                                                                FirstChild=[{61A5EF82-D575-4036-BFB5-F9F09791D766}] }
+    { MenuItem       ;[{592BA1A8-BB47-4AEB-A573-148CCF76A062}] ;Name=Liquidity Journal Templates;
+                                                                CaptionML=[DEU=LiquiditÑts Buch.-Blattvorlagen;
+                                                                           ENU=Liquidity Journal Templates];
+                                                                MemberOfMenu=[{19A352FE-D90D-424E-B85F-CF3B8E98CF0E}];
+                                                                RunObjectType=Page;
+                                                                RunObjectID=5055252;
+                                                                ParentNodeID=[{28D7555D-00B3-4D98-BBAB-1C989C5C6B9E}];
+                                                                Visible=Yes;
+                                                                NextNodeID=[{00000000-0000-0000-0000-000000000000}];
+                                                                DepartmentCategory=Lists }
+    { MenuItem       ;[{61A5EF82-D575-4036-BFB5-F9F09791D766}] ;Name=Liquidity Setup;
+                                                                CaptionML=[DEU=LiquiditÑt Einrichtung;
+                                                                           ENU=Liquidity Setup];
+                                                                MemberOfMenu=[{19A352FE-D90D-424E-B85F-CF3B8E98CF0E}];
+                                                                RunObjectType=Page;
+                                                                RunObjectID=5055256;
+                                                                ParentNodeID=[{28D7555D-00B3-4D98-BBAB-1C989C5C6B9E}];
+                                                                Visible=Yes;
+                                                                NextNodeID=[{47756EB8-071B-4B94-9521-8E15F81BF0A0}];
+                                                                DepartmentCategory=Tasks }
+    { MenuItem       ;[{47756EB8-071B-4B94-9521-8E15F81BF0A0}] ;Name=Chart of Liquidity Accounts;
+                                                                CaptionML=[DEU=LiquiditÑtskontenplan;
+                                                                           ENU=Chart of Liquidity Accounts];
+                                                                MemberOfMenu=[{19A352FE-D90D-424E-B85F-CF3B8E98CF0E}];
+                                                                RunObjectType=Page;
+                                                                RunObjectID=5055261;
+                                                                ParentNodeID=[{28D7555D-00B3-4D98-BBAB-1C989C5C6B9E}];
+                                                                Visible=Yes;
+                                                                NextNodeID=[{1D9DF7B1-CD51-43DE-ABC2-723B9103FA56}];
+                                                                DepartmentCategory=Lists }
+    { MenuItem       ;[{894C7C33-C1BD-4CC5-B82B-7C4946C9FF54}] ;Name=Liquidity Report Selection;
+                                                                CaptionML=[DEU=Berichtsauswahl - LiquiditÑt;
+                                                                           ENU=Liquidity Report Selection];
+                                                                MemberOfMenu=[{19A352FE-D90D-424E-B85F-CF3B8E98CF0E}];
+                                                                RunObjectType=Page;
+                                                                RunObjectID=5055275;
+                                                                ParentNodeID=[{28D7555D-00B3-4D98-BBAB-1C989C5C6B9E}];
+                                                                Visible=Yes;
+                                                                NextNodeID=[{592BA1A8-BB47-4AEB-A573-148CCF76A062}];
+                                                                DepartmentCategory=Tasks }
+    { MenuItem       ;[{1D9DF7B1-CD51-43DE-ABC2-723B9103FA56}] ;Name=Analysis View;
+                                                                CaptionML=[DEU=Analyseansicht;
+                                                                           ENU=Analysis View];
+                                                                MemberOfMenu=[{19A352FE-D90D-424E-B85F-CF3B8E98CF0E}];
+                                                                RunObjectType=Page;
+                                                                RunObjectID=5055287;
+                                                                ParentNodeID=[{28D7555D-00B3-4D98-BBAB-1C989C5C6B9E}];
+                                                                Visible=Yes;
+                                                                NextNodeID=[{894C7C33-C1BD-4CC5-B82B-7C4946C9FF54}];
+                                                                DepartmentCategory=Lists }
+    {                ;[{44DDCF11-3977-474D-9DD5-F89FB2C419E7}] ;NextNodeID=[{80C4C35B-5415-45B4-83C9-500EEC888366}] }
+    {                ;[{4B39FF20-275F-439E-968A-D8D588ADE11F}] ;NextNodeID=[{65E2DFB3-0C1B-4357-AF34-9D8C2F8695BF}] }
+    { MenuItem       ;[{7C025D7E-8D1E-44A5-B20A-385DE6F74102}] ;Name=Delete Empty Liq. Registers;
+                                                                CaptionML=[DEU=Leere Liq.-Journale lîschen;
+                                                                           ENU=Delete Empty Liq. Registers];
+                                                                MemberOfMenu=[{19A352FE-D90D-424E-B85F-CF3B8E98CF0E}];
+                                                                RunObjectType=Report;
+                                                                RunObjectID=5055255;
+                                                                ParentNodeID=[{8EDB580A-9401-4087-A4C9-C99853CCF9D7}];
+                                                                Visible=Yes;
+                                                                NextNodeID=[{EFB855D9-2241-49DF-8D21-9806C1D15253}];
+                                                                DepartmentCategory=Tasks }
+    { MenuItem       ;[{65E2DFB3-0C1B-4357-AF34-9D8C2F8695BF}] ;Name=Delivery Reminder - Test;
+                                                                CaptionML=[DEU=Lieferanmahnung - Test;
+                                                                           ENU=Delivery Reminder - Test];
+                                                                MemberOfMenu=[{03134937-C76A-4D80-A8B2-FF6458E180EB}];
+                                                                RunObjectType=Report;
+                                                                RunObjectID=5005272;
+                                                                ParentNodeID=[{245E742D-A53E-4F2E-97BC-31763A464428}];
+                                                                Visible=Yes;
+                                                                NextNodeID=[{404E62A3-BD1E-4CEA-A90D-D9D6A91F2229}];
+                                                                DepartmentCategory=Reports and Analysis }
+    { MenuItem       ;[{06F5FE90-74F5-49B3-8781-AC53F6A867F9}] ;Name=Issued Delivery Reminder;
+                                                                CaptionML=[DEU=Lieferanmahnung;
+                                                                           ENU=Delivery Reminder];
+                                                                MemberOfMenu=[{03134937-C76A-4D80-A8B2-FF6458E180EB}];
+                                                                RunObjectType=Report;
+                                                                RunObjectID=5005273;
+                                                                ParentNodeID=[{245E742D-A53E-4F2E-97BC-31763A464428}];
+                                                                Visible=Yes;
+                                                                NextNodeID=[{9D55AE1F-2FDF-498A-A28E-1AD88C786725}];
+                                                                DepartmentCategory=Reports and Analysis }
+    {                ;[{E75275F0-0770-442C-81E5-DA4205BCAC21}] ;NextNodeID=[{06F5FE90-74F5-49B3-8781-AC53F6A867F9}] }
+    { MenuItem       ;[{363D07D4-34BD-4D96-87D5-1CF91E83DA64}] ;Name=Phys. Invt. Order Diff. List;
+                                                                CaptionML=[DEU=Inventur Auftrag Diff. Liste;
+                                                                           ENU=Phys. Invt. Order Diff. List];
+                                                                MemberOfMenu=[{F8D2429D-034B-4C58-9B5E-81BE962DB1BC}];
+                                                                RunObjectType=Report;
+                                                                RunObjectID=5005350;
+                                                                ParentNodeID=[{895A9409-5CA3-4994-9C4A-39129E7FC88D}];
+                                                                Visible=Yes;
+                                                                NextNodeID=[{D4CAA2E8-E13F-46EF-AA67-3BE253D93E15}];
+                                                                DepartmentCategory=Reports and Analysis }
+    { MenuItem       ;[{90AB7627-BDEB-4FFF-90D6-50D286CC2573}] ;Name=Phys. Inventory Recording;
+                                                                CaptionML=[DEU=Inventurerfassung;
+                                                                           ENU=Phys. Inventory Recording];
+                                                                MemberOfMenu=[{8D5D65D8-68A2-4A84-9BCE-3742CEDA47BF}];
+                                                                RunObjectType=Page;
+                                                                RunObjectID=5005355;
+                                                                ParentNodeID=[{E0AA5D47-8A99-4F51-AB33-2749A3791A59}];
+                                                                Visible=Yes;
+                                                                NextNodeID=[{00000000-0000-0000-0000-000000000000}];
+                                                                DepartmentCategory=Lists }
+    { MenuItem       ;[{D4CAA2E8-E13F-46EF-AA67-3BE253D93E15}] ;Name=Posted Phys. Invt. Order Diff.;
+                                                                CaptionML=[DEU=Geb. Inventur Auftr. Differenz;
+                                                                           ENU=Posted Phys. Invt. Order Diff.];
+                                                                MemberOfMenu=[{F8D2429D-034B-4C58-9B5E-81BE962DB1BC}];
+                                                                RunObjectType=Report;
+                                                                RunObjectID=5005351;
+                                                                ParentNodeID=[{895A9409-5CA3-4994-9C4A-39129E7FC88D}];
+                                                                Visible=Yes;
+                                                                NextNodeID=[{8D754DC2-A712-41B8-98C1-5528F769505D}];
+                                                                DepartmentCategory=Reports and Analysis }
+    { MenuItem       ;[{8D754DC2-A712-41B8-98C1-5528F769505D}] ;Name=Phys. Invt. Order - Test;
+                                                                CaptionML=[DEU=Inventur Auftrag - Test;
+                                                                           ENU=Phys. Invt. Order - Test];
+                                                                MemberOfMenu=[{F8D2429D-034B-4C58-9B5E-81BE962DB1BC}];
+                                                                RunObjectType=Report;
+                                                                RunObjectID=5005352;
+                                                                ParentNodeID=[{895A9409-5CA3-4994-9C4A-39129E7FC88D}];
+                                                                Visible=Yes;
+                                                                NextNodeID=[{12E064C1-6E9C-41F7-AE8E-447531B0C785}];
+                                                                DepartmentCategory=Reports and Analysis }
+    { MenuItem       ;[{12E064C1-6E9C-41F7-AE8E-447531B0C785}] ;Name=Phys. Invt. Recording;
+                                                                CaptionML=[DEU=Inventurerfassung;
+                                                                           ENU=Phys. Invt. Recording];
+                                                                MemberOfMenu=[{F8D2429D-034B-4C58-9B5E-81BE962DB1BC}];
+                                                                RunObjectType=Report;
+                                                                RunObjectID=5005353;
+                                                                ParentNodeID=[{895A9409-5CA3-4994-9C4A-39129E7FC88D}];
+                                                                Visible=Yes;
+                                                                NextNodeID=[{DB59B1C0-087E-442B-A5E6-D30FD8F7860C}];
+                                                                DepartmentCategory=Reports and Analysis }
+    { MenuItem       ;[{DB59B1C0-087E-442B-A5E6-D30FD8F7860C}] ;Name=Posted Phys. Invt. Recording;
+                                                                CaptionML=[DEU=Geb. Inventurerfassung;
+                                                                           ENU=Posted Phys. Invt. Recording];
+                                                                MemberOfMenu=[{F8D2429D-034B-4C58-9B5E-81BE962DB1BC}];
+                                                                RunObjectType=Report;
+                                                                RunObjectID=5005354;
+                                                                ParentNodeID=[{895A9409-5CA3-4994-9C4A-39129E7FC88D}];
+                                                                Visible=Yes;
+                                                                NextNodeID=[{00000000-0000-0000-0000-000000000000}];
+                                                                DepartmentCategory=Reports and Analysis }
+    { MenuItem       ;[{382E9AC6-AB83-44A5-B3F7-A1A863528305}] ;Name=Report Selection - Comf. Purch;
+                                                                CaptionML=[DEU=Berichtsauswahl - Komfort EK;
+                                                                           ENU=Report Selection - Comf. Purch];
+                                                                MemberOfMenu=[{19A352FE-D90D-424E-B85F-CF3B8E98CF0E}];
+                                                                RunObjectType=Page;
+                                                                RunObjectID=5005391;
+                                                                ParentNodeID=[{07AC2AD3-B743-4471-9026-733D0597C600}];
+                                                                Visible=Yes;
+                                                                NextNodeID=[{BA6DAAA8-7369-4653-B604-6A31684DDBB5}];
+                                                                DepartmentCategory=Tasks }
+    {                ;[{33353E35-E16E-4232-9E8D-039AD12B49EB}] ;NextNodeID=[{382E9AC6-AB83-44A5-B3F7-A1A863528305}] }
+    { MenuItem       ;[{40660A65-5D39-4A71-B927-338C4655B086}] ;Name=Report Selection - Comf. Invt.;
+                                                                CaptionML=[DEU=Berichtsauswahlen - Komf. Inv.;
+                                                                           ENU=Report Selection - Comf. Invt.];
+                                                                MemberOfMenu=[{19A352FE-D90D-424E-B85F-CF3B8E98CF0E}];
+                                                                RunObjectType=Page;
+                                                                RunObjectID=5005392;
+                                                                ParentNodeID=[{C6562A74-D464-4AD0-B071-571FDBD88EFE}];
+                                                                Visible=Yes;
+                                                                NextNodeID=[{FC79AC31-AC4F-48F3-B8F3-563805AAC7BE}];
+                                                                DepartmentCategory=Tasks }
+    {                ;[{7CEA59FF-A695-44FD-A274-BF6178760FD7}] ;NextNodeID=[{40660A65-5D39-4A71-B927-338C4655B086}] }
+    { MenuItem       ;[{46ABA44B-DE9F-4A57-87AC-27A779810A0B}] ;Name=Sales VAT Advance Notification;
+                                                                CaptionML=[DEU=Umsatzsteuervoranmeldung;
+                                                                           ENU=Sales VAT Advance Notification];
+                                                                MemberOfMenu=[{F8D2429D-034B-4C58-9B5E-81BE962DB1BC}];
+                                                                RunObjectType=Page;
+                                                                RunObjectID=11017;
+                                                                ParentNodeID=[{3405BBB0-6500-4904-ABCB-E48AAE1A9942}];
+                                                                Visible=Yes;
+                                                                NextNodeID=[{F2596877-E625-46EC-B6AB-2989FC1AF3AC}];
+                                                                DepartmentCategory=Lists }
+    { MenuItem       ;[{8202F27D-B049-457E-86B5-57E17A7C47AC}] ;Name=Fixed Assets - List AT;
+                                                                CaptionML=[DEU=öbersicht AT;
+                                                                           ENU=List AT];
+                                                                MemberOfMenu=[{F8D2429D-034B-4C58-9B5E-81BE962DB1BC}];
+                                                                RunObjectType=Report;
+                                                                RunObjectID=11100;
+                                                                ParentNodeID=[{CCE353D2-F1CE-445D-9A57-D54F71F0FC57}];
+                                                                Visible=Yes;
+                                                                NextNodeID=[{79B67BCD-B44D-4364-A441-099CFEBC274B}];
+                                                                DepartmentCategory=Reports and Analysis }
+    {                ;[{1D305E4E-51BF-4EB7-B4F1-1C5BF9F6BBEB}] ;NextNodeID=[{8202F27D-B049-457E-86B5-57E17A7C47AC}] }
+    { MenuGroup      ;[{949AB0CE-9C58-41B3-83EE-4897237C04CA}] ;Name=New Group;
+                                                                CaptionML=[DEU=EBPP;
+                                                                           ENU=EBPP];
+                                                                MemberOfMenu=[{2DC8C4FE-7346-4124-8C20-383346384C03}];
+                                                                ParentNodeID=[{2DC8C4FE-7346-4124-8C20-383346384C03}];
+                                                                Visible=Yes;
+                                                                NextNodeID=[{DD163044-3896-46AB-A86F-053F1AF47905}];
+                                                                FirstChild=[{3D093CF6-A39B-4389-BC9A-D01CD5A6201D}] }
+    {                ;[{7F0B1093-76F1-4A34-ADCB-CD03B43F74F2}] ;NextNodeID=[{949AB0CE-9C58-41B3-83EE-4897237C04CA}] }
+    { MenuItem       ;[{3D093CF6-A39B-4389-BC9A-D01CD5A6201D}] ;Name=EBPP Journal List;
+                                                                CaptionML=[DEU=EBPP-Buch.-Blattliste;
+                                                                           ENU=EBPP Journal List];
+                                                                MemberOfMenu=[{2DC8C4FE-7346-4124-8C20-383346384C03}];
+                                                                RunObjectType=Page;
+                                                                RunObjectID=3010505;
+                                                                ParentNodeID=[{949AB0CE-9C58-41B3-83EE-4897237C04CA}];
+                                                                Visible=Yes;
+                                                                NextNodeID=[{3FB68689-2B0F-4ED6-9151-16C2B073141B}];
+                                                                DepartmentCategory=Lists }
+    { MenuItem       ;[{3FB68689-2B0F-4ED6-9151-16C2B073141B}] ;Name=EBPP Cust. Info. List;
+                                                                CaptionML=[DEU=EBPP-Debitorinformationsliste;
+                                                                           ENU=EBPP Cust. Info. List];
+                                                                MemberOfMenu=[{2DC8C4FE-7346-4124-8C20-383346384C03}];
+                                                                RunObjectType=Page;
+                                                                RunObjectID=3010510;
+                                                                ParentNodeID=[{949AB0CE-9C58-41B3-83EE-4897237C04CA}];
+                                                                Visible=Yes;
+                                                                NextNodeID=[{91D950F1-08AD-4740-AFE4-9DFB93F6532B}];
+                                                                DepartmentCategory=Lists }
+    { MenuGroup      ;[{91D950F1-08AD-4740-AFE4-9DFB93F6532B}] ;Name=New Group;
+                                                                CaptionML=[DEU=Periodische AktivitÑten;
+                                                                           ENU=Periodic Activities];
+                                                                MemberOfMenu=[{2DC8C4FE-7346-4124-8C20-383346384C03}];
+                                                                ParentNodeID=[{949AB0CE-9C58-41B3-83EE-4897237C04CA}];
+                                                                Visible=Yes;
+                                                                NextNodeID=[{DDB89D23-2603-4CF0-856B-09B4A902C190}];
+                                                                FirstChild=[{15AA7773-ABBC-4834-B698-B6FDB0BFDB5B}];
+                                                                IsDepartmentPage=No }
+    { MenuGroup      ;[{DDB89D23-2603-4CF0-856B-09B4A902C190}] ;Name=New Group;
+                                                                CaptionML=[DEU=Historie;
+                                                                           ENU=History];
+                                                                MemberOfMenu=[{2DC8C4FE-7346-4124-8C20-383346384C03}];
+                                                                ParentNodeID=[{949AB0CE-9C58-41B3-83EE-4897237C04CA}];
+                                                                Visible=Yes;
+                                                                NextNodeID=[{0A2D6873-ADE2-4481-8F45-1F564E8DDA94}];
+                                                                FirstChild=[{60C4DAE5-47E8-4A80-845E-9C149A1E25AE}];
+                                                                IsDepartmentPage=No }
+    { MenuGroup      ;[{0A2D6873-ADE2-4481-8F45-1F564E8DDA94}] ;Name=New Group;
+                                                                CaptionML=[DEU=Einrichtung;
+                                                                           ENU=Setup];
+                                                                MemberOfMenu=[{2DC8C4FE-7346-4124-8C20-383346384C03}];
+                                                                ParentNodeID=[{949AB0CE-9C58-41B3-83EE-4897237C04CA}];
+                                                                Visible=Yes;
+                                                                NextNodeID=[{00000000-0000-0000-0000-000000000000}];
+                                                                FirstChild=[{5906F15B-8A21-42D1-95C6-D4B11617A85D}];
+                                                                IsDepartmentPage=No }
+    { MenuItem       ;[{5906F15B-8A21-42D1-95C6-D4B11617A85D}] ;Name=EBPP Setup Card;
+                                                                CaptionML=[DEU=EBPP-Einrichtung;
+                                                                           ENU=EBPP Setup];
+                                                                MemberOfMenu=[{2DC8C4FE-7346-4124-8C20-383346384C03}];
+                                                                RunObjectType=Page;
+                                                                RunObjectID=3010502;
+                                                                ParentNodeID=[{0A2D6873-ADE2-4481-8F45-1F564E8DDA94}];
+                                                                Visible=Yes;
+                                                                NextNodeID=[{00000000-0000-0000-0000-000000000000}];
+                                                                DepartmentCategory=Lists }
+    { MenuItem       ;[{60C4DAE5-47E8-4A80-845E-9C149A1E25AE}] ;Name=EBPP Journal Archive List;
+                                                                CaptionML=[DEU=EBPP-Buch.-Blatt-Archivliste;
+                                                                           ENU=EBPP Journal Archive List];
+                                                                MemberOfMenu=[{2DC8C4FE-7346-4124-8C20-383346384C03}];
+                                                                RunObjectType=Page;
+                                                                RunObjectID=3010517;
+                                                                ParentNodeID=[{DDB89D23-2603-4CF0-856B-09B4A902C190}];
+                                                                Visible=Yes;
+                                                                NextNodeID=[{00000000-0000-0000-0000-000000000000}];
+                                                                DepartmentCategory=Lists }
+    { MenuItem       ;[{15AA7773-ABBC-4834-B698-B6FDB0BFDB5B}] ;Name=EBPP Cust. Info. Import List;
+                                                                CaptionML=[DEU=Importliste fÅr EBPP-Debitorinformationen;
+                                                                           ENU=EBPP Cust. Info. Import List];
+                                                                MemberOfMenu=[{2DC8C4FE-7346-4124-8C20-383346384C03}];
+                                                                RunObjectType=Page;
+                                                                RunObjectID=3010508;
+                                                                ParentNodeID=[{91D950F1-08AD-4740-AFE4-9DFB93F6532B}];
+                                                                Visible=Yes;
+                                                                NextNodeID=[{00000000-0000-0000-0000-000000000000}];
+                                                                DepartmentCategory=Lists }
+    { MenuItem       ;[{3D82CFAE-C135-4B8C-8279-6987A8A2FDA4}] ;Name=Electronic VAT Declaration Set;
+                                                                CaptionML=[DEU=Elektronische UmsatzsteuererklÑrung - Einrichtung;
+                                                                           ENU=Electronic VAT Decl. Setup];
+                                                                MemberOfMenu=[{19A352FE-D90D-424E-B85F-CF3B8E98CF0E}];
+                                                                RunObjectType=Page;
+                                                                RunObjectID=11019;
+                                                                ParentNodeID=[{0179BFD5-90F4-4EC1-A29D-3C0A571F8EB2}];
+                                                                Visible=Yes;
+                                                                NextNodeID=[{5881C68C-F1F7-47BA-8ED5-02D8149B2599}];
+                                                                DepartmentCategory=Tasks }
+    {                ;[{1A0A54D7-011C-4470-AF74-DF4EDE44B5CD}] ;NextNodeID=[{3D82CFAE-C135-4B8C-8279-6987A8A2FDA4}] }
+    { MenuItem       ;[{46FD5FA5-A74B-4C31-9938-355CC6BF1A90}] ;Name=Electronic VAT Decl. Setup;
+                                                                CaptionML=[DEU=Elektronische UmsatzsteuererklÑrung - Einrichtung;
+                                                                           ENU=Electronic VAT Decl. Setup];
+                                                                MemberOfMenu=[{19A352FE-D90D-424E-B85F-CF3B8E98CF0E}];
+                                                                RunObjectType=Page;
+                                                                RunObjectID=11019;
+                                                                ParentNodeID=[{E860012C-D37B-47C4-AC68-42316F9D9139}];
+                                                                Visible=Yes;
+                                                                NextNodeID=[{01134F4F-B359-48D5-835D-8CA80D989FA6}];
+                                                                DepartmentCategory=Tasks }
+    {                ;[{302703F1-E2C8-4F5B-A3E3-FC5A200263B0}] ;NextNodeID=[{46FD5FA5-A74B-4C31-9938-355CC6BF1A90}] }
+    { MenuItem       ;[{6A3C6CBF-8353-43A0-ADD1-4E5E1B2DB1BF}] ;Name=GDPdU Export;
+                                                                CaptionML=[DEU=GDPdU Export;
+                                                                           ENU=GDPdU Export];
+                                                                MemberOfMenu=[{F8D2429D-034B-4C58-9B5E-81BE962DB1BC}];
+                                                                RunObjectType=Report;
+                                                                RunObjectID=11015;
+                                                                ParentNodeID=[{3FAA73AE-D95A-4055-8331-F6407CEA8034}];
+                                                                Visible=Yes;
+                                                                NextNodeID=[{9DB27C21-181C-4F69-B321-6C04C8834AF7}];
+                                                                DepartmentCategory=Tasks }
+    { MenuItem       ;[{9DB27C21-181C-4F69-B321-6C04C8834AF7}] ;Name=Paragraph 131 Export;
+                                                                CaptionML=[DEU=Paragraph 131 Export;
+                                                                           ENU=Paragraph 131 Export];
+                                                                MemberOfMenu=[{F8D2429D-034B-4C58-9B5E-81BE962DB1BC}];
+                                                                RunObjectType=Report;
+                                                                RunObjectID=11109;
+                                                                ParentNodeID=[{3FAA73AE-D95A-4055-8331-F6407CEA8034}];
+                                                                Visible=Yes;
+                                                                NextNodeID=[{00000000-0000-0000-0000-000000000000}];
+                                                                DepartmentCategory=Tasks }
+    { MenuItem       ;[{749DD96C-E3A9-4236-8092-3D7864D4EAA5}] ;Name=Blanket Sales Order Archive;
+                                                                CaptionML=[DEU=Rahmenauftragsarchive;
+                                                                           ENU=Blanket Sales Order Archives];
+                                                                MemberOfMenu=[{2DC8C4FE-7346-4124-8C20-383346384C03}];
+                                                                RunObjectType=Page;
+                                                                RunObjectID=35580;
+                                                                ParentNodeID=[{DD163044-3896-46AB-A86F-053F1AF47905}];
+                                                                Visible=Yes;
+                                                                NextNodeID=[{654317C6-4130-4E26-B013-73D8C16BAB70}];
+                                                                DepartmentCategory=History }
+    {                ;[{5788616B-00B1-4E3A-8A5B-232D47799565}] ;NextNodeID=[{749DD96C-E3A9-4236-8092-3D7864D4EAA5}] }
+    { MenuItem       ;[{77592B59-44B1-4AAE-9E21-F6C1A5879B81}] ;Name=Blanket Purchase Order Archive;
+                                                                CaptionML=[DEU=Rahmenbestellungsarchive;
+                                                                           ENU=Blanket Purchase Order Archives];
+                                                                MemberOfMenu=[{03134937-C76A-4D80-A8B2-FF6458E180EB}];
+                                                                RunObjectType=Page;
+                                                                RunObjectID=35581;
+                                                                ParentNodeID=[{03A19110-BF9E-48F3-B599-F11FC8F64B32}];
+                                                                Visible=Yes;
+                                                                NextNodeID=[{E827460C-199A-4F8C-A8D8-579B75F4D295}];
+                                                                DepartmentCategory=History }
+    {                ;[{1D4B3171-FC28-423E-AB4C-24F6BB049A82}] ;NextNodeID=[{7C025D7E-8D1E-44A5-B20A-385DE6F74102}] }
+    { MenuItem       ;[{48C336CB-1561-4EA4-B6A8-7C7FC67C80CD}] ;Name=Posted Phys. Invt. Order;
+                                                                CaptionML=[DEU=Geb. Inventurauftrag;
+                                                                           ENU=Posted Phys. Invt. Order];
+                                                                MemberOfMenu=[{8D5D65D8-68A2-4A84-9BCE-3742CEDA47BF}];
+                                                                RunObjectType=Page;
+                                                                RunObjectID=5005359;
+                                                                ParentNodeID=[{945C6E88-24BF-41ED-A543-A004AC72B04F}];
+                                                                Visible=Yes;
+                                                                NextNodeID=[{0C030C76-46C1-4F05-8EFD-C62DE1251805}];
+                                                                DepartmentCategory=History }
+    { MenuItem       ;[{0C030C76-46C1-4F05-8EFD-C62DE1251805}] ;Name=Posted Phys. Invt. Recording;
+                                                                CaptionML=[DEU=Geb. Inventurerfassung;
+                                                                           ENU=Posted Phys. Invt. Recording];
+                                                                MemberOfMenu=[{8D5D65D8-68A2-4A84-9BCE-3742CEDA47BF}];
+                                                                RunObjectType=Page;
+                                                                RunObjectID=5005363;
+                                                                ParentNodeID=[{945C6E88-24BF-41ED-A543-A004AC72B04F}];
+                                                                Visible=Yes;
+                                                                NextNodeID=[{00000000-0000-0000-0000-000000000000}];
+                                                                DepartmentCategory=History }
+    { MenuItem       ;[{98049953-C2B2-44AB-A6EA-197D620C9D96}] ;Name=Crossborder Services;
+                                                                CaptionML=[DEU=GrenzÅberschreitende Services;
+                                                                           ENU=Crossborder Services];
+                                                                MemberOfMenu=[{F8D2429D-034B-4C58-9B5E-81BE962DB1BC}];
+                                                                RunObjectType=Report;
+                                                                RunObjectID=11111;
+                                                                ParentNodeID=[{816DEE3F-9922-409E-B3A5-37FDCBBFE1B5}];
+                                                                Visible=Yes;
+                                                                NextNodeID=[{00000000-0000-0000-0000-000000000000}];
+                                                                DepartmentCategory=Reports and Analysis }
+    { MenuItem       ;[{F2596877-E625-46EC-B6AB-2989FC1AF3AC}] ;Name=Crossborder Services;
+                                                                CaptionML=[DEU=GrenzÅberschreitende Services;
+                                                                           ENU=Crossborder Services];
+                                                                MemberOfMenu=[{F8D2429D-034B-4C58-9B5E-81BE962DB1BC}];
+                                                                RunObjectType=Report;
+                                                                RunObjectID=11111;
+                                                                ParentNodeID=[{65FA8D2E-BC92-41D1-AEDD-8AAA46384FC5}];
+                                                                Visible=Yes;
+                                                                NextNodeID=[{00000000-0000-0000-0000-000000000000}];
+                                                                DepartmentCategory=Reports and Analysis }
+    { MenuItem       ;[{0EFD1761-879C-42E7-858A-10172B968190}] ;Name=Update VAT Statement Template;
+                                                                CaptionML=[DEU=MwSt.-Abrechnungsvorlage aktualisieren;
+                                                                           ENU=Update VAT Statement Template];
+                                                                MemberOfMenu=[{19A352FE-D90D-424E-B85F-CF3B8E98CF0E}];
+                                                                RunObjectType=Report;
+                                                                RunObjectID=11112;
+                                                                ParentNodeID=[{268A03F1-0377-4E65-8710-9979CD1FA1F8}];
+                                                                Visible=Yes;
+                                                                NextNodeID=[{00000000-0000-0000-0000-000000000000}];
+                                                                DepartmentCategory=Reports and Analysis }
+    { MenuItem       ;[{BD64DA1F-F5F0-4A91-A772-CFFEB82644D2}] ;Name=Currencies;
+                                                                CaptionML=[DEU=WÑhrungen;
+                                                                           ENU=Currencies];
+                                                                MemberOfMenu=[{19A352FE-D90D-424E-B85F-CF3B8E98CF0E}];
+                                                                RunObjectType=Page;
+                                                                RunObjectID=5;
+                                                                ParentNodeID=[{268A03F1-0377-4E65-8710-9979CD1FA1F8}];
+                                                                Visible=Yes;
+                                                                NextNodeID=[{2FF8B762-9CB6-408E-9DE2-5F4EC104E155}];
+                                                                DepartmentCategory=Lists }
+    { MenuItem       ;[{2FF8B762-9CB6-408E-9DE2-5F4EC104E155}] ;Name=GDPdU Definition Groups;
+                                                                CaptionML=[DEU=GDPdU Definitionsgruppen;
+                                                                           ENU=GDPdU Definition Groups];
+                                                                MemberOfMenu=[{19A352FE-D90D-424E-B85F-CF3B8E98CF0E}];
+                                                                RunObjectType=Page;
+                                                                RunObjectID=11002;
+                                                                ParentNodeID=[{268A03F1-0377-4E65-8710-9979CD1FA1F8}];
+                                                                Visible=Yes;
+                                                                NextNodeID=[{0EFD1761-879C-42E7-858A-10172B968190}];
+                                                                DepartmentCategory=Lists }
+    {                ;[{BA6DAAA8-7369-4653-B604-6A31684DDBB5}] ;NextNodeID=[{B54FCFC6-42CB-45B2-8F33-59FED17EBFBA}] }
+    {                ;[{33F72295-4D37-46DE-8813-4A9BCDCA3EAE}] ;NextNodeID=[{8F7CD37C-15EE-4A52-ADFB-131DAA05C4C9}] }
+    {                ;[{831F6BAC-BC3F-4C93-B9A1-0C2E45ABEFC4}] ;NextNodeID=[{35E227E4-94C2-4C7A-B063-8CE9FDFFEF48}] }
+    {                ;[{7BC138AC-F8D0-41DC-AAA8-31B292DF07D1}] ;NextNodeID=[{3D82CFAE-C135-4B8C-8279-6987A8A2FDA4}] }
+    {                ;[{D9FC4F42-7C16-42E9-9B2B-C54560F35B05}] ;NextNodeID=[{6A3C6CBF-8353-43A0-ADD1-4E5E1B2DB1BF}] }
+    {                ;[{94A3A2B3-5154-4CC0-A56A-2A424D200E46}] ;NextNodeID=[{77592B59-44B1-4AAE-9E21-F6C1A5879B81}] }
+    {                ;[{1D0B6CCD-63F6-46B9-9FD2-9C1EE61739FB}] ;NextNodeID=[{48C336CB-1561-4EA4-B6A8-7C7FC67C80CD}] }
+    {                ;[{7DD34383-97B7-4B4A-B92A-F389D8EF73E0}] ;NextNodeID=[{BD64DA1F-F5F0-4A91-A772-CFFEB82644D2}] }
+    {                ;[{3969DB7F-2BAA-44AA-AA38-FD6880041DB1}] ;NextNodeID=[{16FFD784-7068-46A5-8507-A2AC82F40A59}] }
+    { MenuItem       ;[{654317C6-4130-4E26-B013-73D8C16BAB70}] ;Name=Sales Return Order Archives;
+                                                                CaptionML=[DEU=Archive fÅr Verkaufsreklamationen;
+                                                                           ENU=Sales Return Order Archives];
+                                                                RunObjectType=Page;
+                                                                RunObjectID=6629;
+                                                                Visible=Yes;
+                                                                DepartmentCategory=History }
+    {                ;[{63F4C83D-BC78-429D-A791-8B1F594EADC9}] ;NextNodeID=[{77592B59-44B1-4AAE-9E21-F6C1A5879B81}] }
+  }
+}

@@ -1,0 +1,65 @@
+OBJECT Table 11012 Transmission Log Entry
+{
+  OBJECT-PROPERTIES
+  {
+    Date=31.05.05;
+    Time=12:00:00;
+    Version List=NAVDACH4.00.01;
+  }
+  PROPERTIES
+  {
+    CaptionML=[DEU=öbertragungsprotokollposten;
+               ENU=Transmission Log Entry];
+  }
+  FIELDS
+  {
+    { 1   ;   ;Entry No.           ;Integer       ;CaptionML=[DEU=Lfd. Nr.;
+                                                              ENU=Entry No.] }
+    { 2   ;   ;Sales VAT Adv. Notif. No.;Code20   ;TableRelation="Sales VAT Advance Notification";
+                                                   CaptionML=[DEU=USt.-Voranmeldungsnr.;
+                                                              ENU=Sales VAT Adv. Notif. No.] }
+    { 3   ;   ;Transmission Date   ;Date          ;CaptionML=[DEU=öbertragungsdatum;
+                                                              ENU=Transmission Date] }
+    { 4   ;   ;User ID             ;Code20        ;CaptionML=[DEU=Benutzer ID;
+                                                              ENU=User ID] }
+    { 5   ;   ;Return Code         ;Code20        ;CaptionML=[DEU=RÅckgabecode;
+                                                              ENU=Return Code] }
+    { 6   ;   ;Return Text         ;Text250       ;CaptionML=[DEU=RÅckgabetext;
+                                                              ENU=Return Text];
+                                                   Editable=No }
+    { 7   ;   ;Transmission successful;Boolean    ;CaptionML=[DEU=öbertragung erfolgreich;
+                                                              ENU=Transmission successful] }
+    { 8   ;   ;XML Response Document;BLOB         ;CaptionML=[DEU=XML Antwortdokument;
+                                                              ENU=XML Response Document] }
+  }
+  KEYS
+  {
+    {    ;Entry No.                               ;Clustered=Yes }
+    {    ;Sales VAT Adv. Notif. No.                }
+  }
+  FIELDGROUPS
+  {
+  }
+  CODE
+  {
+
+    PROCEDURE Show@114000();
+    VAR
+      SalesVATAdvNotif@1140000 : Record 11011;
+      XMLSubDoc@1140001 : Automation "{F5078F18-C551-11D3-89B9-0000F81FE221} 3.0:{F5078F32-C551-11D3-89B9-0000F81FE221}:'Microsoft XML, v3.0'.DOMDocument30";
+      XMLInStream@1140002 : InStream;
+    BEGIN
+      IF ISCLEAR(XMLSubDoc) THEN
+        CREATE(XMLSubDoc);
+      CALCFIELDS("XML Response Document");
+      "XML Response Document".CREATEINSTREAM(XMLInStream);
+      XMLSubDoc.load(XMLInStream);
+      SalesVATAdvNotif.GET("Sales VAT Adv. Notif. No.");
+      SalesVATAdvNotif.ShowXMLDocument(XMLSubDoc);
+    END;
+
+    BEGIN
+    END.
+  }
+}
+

@@ -1,0 +1,176 @@
+OBJECT Table 271 Bank Account Ledger Entry
+{
+  OBJECT-PROPERTIES
+  {
+    Date=05.11.08;
+    Time=12:00:00;
+    Version List=NAVW16.00;
+  }
+  PROPERTIES
+  {
+    CaptionML=[DEU=Bankposten;
+               ENU=Bank Account Ledger Entry];
+    LookupFormID=Form372;
+    DrillDownFormID=Form372;
+  }
+  FIELDS
+  {
+    { 1   ;   ;Entry No.           ;Integer       ;CaptionML=[DEU=Lfd. Nr.;
+                                                              ENU=Entry No.] }
+    { 3   ;   ;Bank Account No.    ;Code20        ;TableRelation="Bank Account";
+                                                   CaptionML=[DEU=Bankkontonummer;
+                                                              ENU=Bank Account No.] }
+    { 4   ;   ;Posting Date        ;Date          ;CaptionML=[DEU=Buchungsdatum;
+                                                              ENU=Posting Date] }
+    { 5   ;   ;Document Type       ;Option        ;CaptionML=[DEU=Belegart;
+                                                              ENU=Document Type];
+                                                   OptionCaptionML=[DEU=" ,Zahlung,Rechnung,Gutschrift,Zinsrechnung,Mahnung,Erstattung";
+                                                                    ENU=" ,Payment,Invoice,Credit Memo,Finance Charge Memo,Reminder,Refund"];
+                                                   OptionString=[ ,Payment,Invoice,Credit Memo,Finance Charge Memo,Reminder,Refund] }
+    { 6   ;   ;Document No.        ;Code20        ;CaptionML=[DEU=Belegnr.;
+                                                              ENU=Document No.] }
+    { 7   ;   ;Description         ;Text50        ;CaptionML=[DEU=Beschreibung;
+                                                              ENU=Description] }
+    { 11  ;   ;Currency Code       ;Code10        ;TableRelation=Currency;
+                                                   CaptionML=[DEU=W„hrungscode;
+                                                              ENU=Currency Code] }
+    { 13  ;   ;Amount              ;Decimal       ;CaptionML=[DEU=Betrag;
+                                                              ENU=Amount];
+                                                   AutoFormatType=1;
+                                                   AutoFormatExpr="Currency Code" }
+    { 14  ;   ;Remaining Amount    ;Decimal       ;CaptionML=[DEU=Restbetrag;
+                                                              ENU=Remaining Amount];
+                                                   AutoFormatType=1;
+                                                   AutoFormatExpr="Currency Code" }
+    { 17  ;   ;Amount (LCY)        ;Decimal       ;CaptionML=[DEU=Betrag (MW);
+                                                              ENU=Amount (LCY)];
+                                                   AutoFormatType=1 }
+    { 22  ;   ;Bank Acc. Posting Group;Code10     ;TableRelation="Bank Account Posting Group";
+                                                   CaptionML=[DEU=Bankkontobuchungsgruppe;
+                                                              ENU=Bank Acc. Posting Group] }
+    { 23  ;   ;Global Dimension 1 Code;Code20     ;TableRelation="Dimension Value".Code WHERE (Global Dimension No.=CONST(1));
+                                                   CaptionML=[DEU=Globaler Dimensionscode 1;
+                                                              ENU=Global Dimension 1 Code];
+                                                   CaptionClass='1,1,1' }
+    { 24  ;   ;Global Dimension 2 Code;Code20     ;TableRelation="Dimension Value".Code WHERE (Global Dimension No.=CONST(2));
+                                                   CaptionML=[DEU=Globaler Dimensionscode 2;
+                                                              ENU=Global Dimension 2 Code];
+                                                   CaptionClass='1,1,2' }
+    { 25  ;   ;Our Contact Code    ;Code10        ;TableRelation=Salesperson/Purchaser;
+                                                   CaptionML=[DEU=Unser Kontaktcode;
+                                                              ENU=Our Contact Code] }
+    { 27  ;   ;User ID             ;Code20        ;TableRelation=User;
+                                                   OnLookup=VAR
+                                                              LoginMgt@1000 : Codeunit 418;
+                                                            BEGIN
+                                                              LoginMgt.LookupUserID("User ID");
+                                                            END;
+
+                                                   TestTableRelation=No;
+                                                   CaptionML=[DEU=Benutzer-ID;
+                                                              ENU=User ID] }
+    { 28  ;   ;Source Code         ;Code10        ;TableRelation="Source Code";
+                                                   CaptionML=[DEU=Herkunftscode;
+                                                              ENU=Source Code] }
+    { 36  ;   ;Open                ;Boolean       ;CaptionML=[DEU=Offen;
+                                                              ENU=Open] }
+    { 43  ;   ;Positive            ;Boolean       ;CaptionML=[DEU=Positiv;
+                                                              ENU=Positive] }
+    { 44  ;   ;Closed by Entry No. ;Integer       ;TableRelation="Bank Account Ledger Entry";
+                                                   CaptionML=[DEU=Geschlossen von Lfd. Nr.;
+                                                              ENU=Closed by Entry No.] }
+    { 45  ;   ;Closed at Date      ;Date          ;CaptionML=[DEU=Geschlossen am;
+                                                              ENU=Closed at Date] }
+    { 49  ;   ;Journal Batch Name  ;Code10        ;CaptionML=[DEU=Buch.-Blattname;
+                                                              ENU=Journal Batch Name] }
+    { 50  ;   ;Reason Code         ;Code10        ;TableRelation="Reason Code";
+                                                   CaptionML=[DEU=Ursachencode;
+                                                              ENU=Reason Code] }
+    { 51  ;   ;Bal. Account Type   ;Option        ;CaptionML=[DEU=Gegenkontoart;
+                                                              ENU=Bal. Account Type];
+                                                   OptionCaptionML=[DEU=Sachkonto,Debitor,Kreditor,Bankkonto,Anlage;
+                                                                    ENU=G/L Account,Customer,Vendor,Bank Account,Fixed Asset];
+                                                   OptionString=G/L Account,Customer,Vendor,Bank Account,Fixed Asset }
+    { 52  ;   ;Bal. Account No.    ;Code20        ;TableRelation=IF (Bal. Account Type=CONST(G/L Account)) "G/L Account"
+                                                                 ELSE IF (Bal. Account Type=CONST(Customer)) Customer
+                                                                 ELSE IF (Bal. Account Type=CONST(Vendor)) Vendor
+                                                                 ELSE IF (Bal. Account Type=CONST(Bank Account)) "Bank Account"
+                                                                 ELSE IF (Bal. Account Type=CONST(Fixed Asset)) "Fixed Asset";
+                                                   CaptionML=[DEU=Gegenkontonr.;
+                                                              ENU=Bal. Account No.] }
+    { 53  ;   ;Transaction No.     ;Integer       ;CaptionML=[DEU=Transaktionsnr.;
+                                                              ENU=Transaction No.] }
+    { 55  ;   ;Statement Status    ;Option        ;CaptionML=[DEU=Auszugsstatus;
+                                                              ENU=Statement Status];
+                                                   OptionCaptionML=[DEU=Offen,Bankpostenausgleich,Scheckpostenausgleich,Geschlossen;
+                                                                    ENU=Open,Bank Acc. Entry Applied,Check Entry Applied,Closed];
+                                                   OptionString=Open,Bank Acc. Entry Applied,Check Entry Applied,Closed }
+    { 56  ;   ;Statement No.       ;Code20        ;TableRelation="Bank Acc. Reconciliation Line"."Statement No." WHERE (Bank Account No.=FIELD(Bank Account No.));
+                                                   TestTableRelation=No;
+                                                   CaptionML=[DEU=Auszugsnr.;
+                                                              ENU=Statement No.] }
+    { 57  ;   ;Statement Line No.  ;Integer       ;TableRelation="Bank Acc. Reconciliation Line"."Statement Line No." WHERE (Bank Account No.=FIELD(Bank Account No.),
+                                                                                                                             Statement No.=FIELD(Statement No.));
+                                                   TestTableRelation=No;
+                                                   CaptionML=[DEU=Auszugszeilennr.;
+                                                              ENU=Statement Line No.] }
+    { 58  ;   ;Debit Amount        ;Decimal       ;CaptionML=[DEU=Sollbetrag;
+                                                              ENU=Debit Amount];
+                                                   BlankZero=Yes;
+                                                   AutoFormatType=1;
+                                                   AutoFormatExpr="Currency Code" }
+    { 59  ;   ;Credit Amount       ;Decimal       ;CaptionML=[DEU=Habenbetrag;
+                                                              ENU=Credit Amount];
+                                                   BlankZero=Yes;
+                                                   AutoFormatType=1;
+                                                   AutoFormatExpr="Currency Code" }
+    { 60  ;   ;Debit Amount (LCY)  ;Decimal       ;CaptionML=[DEU=Sollbetrag (MW);
+                                                              ENU=Debit Amount (LCY)];
+                                                   BlankZero=Yes;
+                                                   AutoFormatType=1 }
+    { 61  ;   ;Credit Amount (LCY) ;Decimal       ;CaptionML=[DEU=Habenbetrag (MW);
+                                                              ENU=Credit Amount (LCY)];
+                                                   BlankZero=Yes;
+                                                   AutoFormatType=1 }
+    { 62  ;   ;Document Date       ;Date          ;CaptionML=[DEU=Belegdatum;
+                                                              ENU=Document Date];
+                                                   ClosingDates=Yes }
+    { 63  ;   ;External Document No.;Code20       ;CaptionML=[DEU=Externe Belegnummer;
+                                                              ENU=External Document No.] }
+    { 64  ;   ;Reversed            ;Boolean       ;CaptionML=[DEU=Storniert;
+                                                              ENU=Reversed] }
+    { 65  ;   ;Reversed by Entry No.;Integer      ;TableRelation="Bank Account Ledger Entry";
+                                                   CaptionML=[DEU=Storniert durch Lfd. Nr.;
+                                                              ENU=Reversed by Entry No.];
+                                                   BlankZero=Yes }
+    { 66  ;   ;Reversed Entry No.  ;Integer       ;TableRelation="Bank Account Ledger Entry";
+                                                   CaptionML=[DEU=Stornierter Posten Lfd. Nr.;
+                                                              ENU=Reversed Entry No.];
+                                                   BlankZero=Yes }
+  }
+  KEYS
+  {
+    {    ;Entry No.                               ;Clustered=Yes }
+    {    ;Bank Account No.,Posting Date           ;SumIndexFields=Amount,Amount (LCY),Debit Amount,Credit Amount,Debit Amount (LCY),Credit Amount (LCY) }
+    {    ;Bank Account No.,Open                    }
+    {    ;Document Type,Bank Account No.,Posting Date;
+                                                   SumIndexFields=Amount;
+                                                   MaintainSQLIndex=No }
+    {    ;Document No.,Posting Date                }
+    {    ;Transaction No.                          }
+    { No ;Bank Account No.,Global Dimension 1 Code,Global Dimension 2 Code,Posting Date;
+                                                   SumIndexFields=Amount,Amount (LCY),Debit Amount,Credit Amount,Debit Amount (LCY),Credit Amount (LCY);
+                                                   KeyGroups=Bank(Dim) }
+  }
+  FIELDGROUPS
+  {
+    { 1   ;DropDown            ;Entry No.,Description,Bank Account No.,Posting Date,Document Type,Document No. }
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

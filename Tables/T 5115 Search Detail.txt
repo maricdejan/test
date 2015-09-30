@@ -1,0 +1,73 @@
+OBJECT Table 5115 Search Detail
+{
+  OBJECT-PROPERTIES
+  {
+    Date=05.11.08;
+    Time=12:00:00;
+    Version List=NAVW16.00;
+  }
+  PROPERTIES
+  {
+    OnInsert=BEGIN
+               SearchManagement.CheckLine(Rec);
+             END;
+
+    OnModify=BEGIN
+               SearchManagement.CheckLine(Rec);
+             END;
+
+    CaptionML=[DEU=Suche Detail;
+               ENU=Search Detail];
+  }
+  FIELDS
+  {
+    { 1   ;   ;Line No.            ;Integer       ;CaptionML=[DEU=Zeilennr.;
+                                                              ENU=Line No.];
+                                                   NotBlank=Yes }
+    { 2   ;   ;Logical Operator    ;Option        ;CaptionML=[DEU=Logische VerknÅpfung;
+                                                              ENU=Logical Operator];
+                                                   OptionCaptionML=[DEU=AND,OR;
+                                                                    ENU=AND,OR];
+                                                   OptionString=AND,OR }
+    { 3   ;   ;Exclude             ;Boolean       ;CaptionML=[DEU=Ausschlie·en;
+                                                              ENU=Exclude] }
+    { 4   ;   ;Word(s)             ;Text250       ;CaptionML=[DEU=Begriff(e);
+                                                              ENU=Word(s)] }
+    { 5   ;   ;Match Case          ;Boolean       ;CaptionML=[DEU=Gro·-/Kleinschreibung beachten;
+                                                              ENU=Match Case] }
+  }
+  KEYS
+  {
+    {    ;Line No.                                ;Clustered=Yes }
+  }
+  FIELDGROUPS
+  {
+  }
+  CODE
+  {
+    VAR
+      SearchDetailTemp@1000 : TEMPORARY Record 5115;
+      SearchManagement@1001 : Codeunit 5067;
+
+    PROCEDURE RecomposeQuery@1() Query@1000 : Text[1024];
+    BEGIN
+      SearchDetailTemp := Rec;
+      Query := '';
+      IF FIND('-') THEN BEGIN
+        REPEAT
+          Query := Query + ' ' + SearchManagement.ComposeQueryLine(Rec);
+          Query := DELCHR(Query,'<',' ');
+        UNTIL NEXT = 0;
+        Query := DELCHR(Query,'<',' ');
+        IF (STRPOS(Query,'& ') = 1) OR (STRPOS(Query,'| ') = 1) THEN
+          Query := COPYSTR(Query,3,STRLEN(Query)-2);
+      END ELSE
+        Query := '';
+      Rec := SearchDetailTemp;
+    END;
+
+    BEGIN
+    END.
+  }
+}
+

@@ -1,0 +1,86 @@
+OBJECT Table 9060 SB Owner Cue
+{
+  OBJECT-PROPERTIES
+  {
+    Date=05.11.08;
+    Time=12:00:00;
+    Version List=NAVW16.00;
+  }
+  PROPERTIES
+  {
+    CaptionML=[DEU=SB-Besitzerstapel;
+               ENU=SB Owner Cue];
+  }
+  FIELDS
+  {
+    { 1   ;   ;Primary Key         ;Code10        ;CaptionML=[DEU=PrimÑrschlÅssel;
+                                                              ENU=Primary Key] }
+    { 2   ;   ;Released Sales Quotes;Integer      ;FieldClass=FlowField;
+                                                   CalcFormula=Count("Sales Header" WHERE (Document Type=CONST(Quote),
+                                                                                           Status=FILTER(Released)));
+                                                   CaptionML=[DEU=Freigegebene Verkaufsangebote;
+                                                              ENU=Released Sales Quotes] }
+    { 3   ;   ;Open Sales Orders   ;Integer       ;FieldClass=FlowField;
+                                                   CalcFormula=Count("Sales Header" WHERE (Document Type=CONST(Order),
+                                                                                           Status=FILTER(Open)));
+                                                   CaptionML=[DEU=Offene VerkaufsauftrÑge;
+                                                              ENU=Open Sales Orders] }
+    { 4   ;   ;Released Sales Orders;Integer      ;FieldClass=FlowField;
+                                                   CalcFormula=Count("Sales Header" WHERE (Document Type=CONST(Order),
+                                                                                           Status=FILTER(Released)));
+                                                   CaptionML=[DEU=Freigegebene VerkaufsauftrÑge;
+                                                              ENU=Released Sales Orders] }
+    { 5   ;   ;Released Purchase Orders;Integer   ;FieldClass=FlowField;
+                                                   CalcFormula=Count("Purchase Header" WHERE (Document Type=CONST(Order),
+                                                                                              Status=FILTER(Released)));
+                                                   CaptionML=[DEU=Freigegebene Bestellungen;
+                                                              ENU=Released Purchase Orders] }
+    { 6   ;   ;Overdue Sales Invoices;Integer     ;FieldClass=FlowField;
+                                                   CalcFormula=Count("Cust. Ledger Entry" WHERE (Document Type=FILTER(Invoice|Credit Memo),
+                                                                                                 Due Date=FIELD(Overdue Date Filter),
+                                                                                                 Open=CONST(Yes)));
+                                                   CaptionML=[DEU=öberfÑllige Verkaufsrechnungen;
+                                                              ENU=Overdue Sales Invoices] }
+    { 7   ;   ;SOs Shipped Not Invoiced;Integer   ;FieldClass=FlowField;
+                                                   CalcFormula=Count("Sales Header" WHERE (Document Type=CONST(Order),
+                                                                                           Completely Shipped=CONST(Yes),
+                                                                                           Invoice=CONST(No)));
+                                                   CaptionML=[DEU=VerkaufsauftrÑge - Nicht fakt. Lieferungen;
+                                                              ENU=SOs Shipped Not Invoiced] }
+    { 8   ;   ;Customers - Blocked ;Integer       ;FieldClass=FlowField;
+                                                   CalcFormula=Count(Customer WHERE (Blocked=FILTER(<>' ')));
+                                                   CaptionML=[DEU=Debitoren - Gesperrt;
+                                                              ENU=Customers - Blocked] }
+    { 9   ;   ;Purchase Invoices Due Today;Integer;FieldClass=FlowField;
+                                                   CalcFormula=Count("Vendor Ledger Entry" WHERE (Document Type=FILTER(Invoice|Credit Memo),
+                                                                                                  Due Date=FIELD(Due Date Filter),
+                                                                                                  Open=CONST(Yes)));
+                                                   CaptionML=[DEU=Heute fÑllige Einkaufsrechnungen;
+                                                              ENU=Purchase Invoices Due Today] }
+    { 10  ;   ;Vendors - Payment on Hold;Integer  ;FieldClass=FlowField;
+                                                   CalcFormula=Count(Vendor WHERE (Blocked=FILTER(Payment)));
+                                                   CaptionML=[DEU=Kreditoren - Zahlung abwarten;
+                                                              ENU=Vendors - Payment on Hold] }
+    { 20  ;   ;Due Date Filter     ;Date          ;FieldClass=FlowFilter;
+                                                   CaptionML=[DEU=FÑlligkeitsdatumsfilter;
+                                                              ENU=Due Date Filter];
+                                                   Editable=No }
+    { 21  ;   ;Overdue Date Filter ;Date          ;FieldClass=FlowFilter;
+                                                   CaptionML=[DEU=öberfÑlligkeits-Datumsfilter;
+                                                              ENU=Overdue Date Filter] }
+  }
+  KEYS
+  {
+    {    ;Primary Key                             ;Clustered=Yes }
+  }
+  FIELDGROUPS
+  {
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

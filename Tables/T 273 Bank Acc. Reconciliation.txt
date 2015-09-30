@@ -1,0 +1,122 @@
+OBJECT Table 273 Bank Acc. Reconciliation
+{
+  OBJECT-PROPERTIES
+  {
+    Date=14.08.09;
+    Time=12:00:00;
+    Version List=NAVW16.00.01;
+  }
+  PROPERTIES
+  {
+    DataCaptionFields=Bank Account No.,Statement No.;
+    OnInsert=BEGIN
+               TESTFIELD("Bank Account No.");
+               TESTFIELD("Statement No.");
+               BankAccRecon.RESET;
+               BankAccRecon.SETRANGE("Bank Account No.","Bank Account No.");
+               IF PostedBankAccStmt.GET("Bank Account No.","Statement No.") THEN
+                 ERROR(Text000,"Statement No.");
+             END;
+
+    OnDelete=BEGIN
+               BankAccReconLine.RESET;
+               BankAccReconLine.SETRANGE("Bank Account No.","Bank Account No.");
+               BankAccReconLine.SETRANGE("Statement No.","Statement No.");
+               BankAccReconLine.DELETEALL(TRUE);
+             END;
+
+    OnRename=BEGIN
+               ERROR(Text001,TABLECAPTION);
+             END;
+
+    CaptionML=[DEU=Bankkontoabstimmung;
+               ENU=Bank Acc. Reconciliation];
+    LookupFormID=Form388;
+  }
+  FIELDS
+  {
+    { 1   ;   ;Bank Account No.    ;Code20        ;TableRelation="Bank Account";
+                                                   OnValidate=BEGIN
+                                                                IF "Statement No." = '' THEN BEGIN
+                                                                  BankAcc.LOCKTABLE;
+                                                                  BankAcc.GET("Bank Account No.");
+                                                                  "Statement No." := INCSTR(BankAcc."Last Statement No.");
+                                                                  "Balance Last Statement" := BankAcc."Balance Last Statement";
+                                                                  BankAcc."Last Statement No." := "Statement No.";
+                                                                  BankAcc.MODIFY;
+                                                                END;
+                                                              END;
+
+                                                   CaptionML=[DEU=Bankkontonummer;
+                                                              ENU=Bank Account No.];
+                                                   NotBlank=Yes }
+    { 2   ;   ;Statement No.       ;Code20        ;OnValidate=BEGIN
+                                                                TESTFIELD("Bank Account No.");
+                                                                BankAcc.LOCKTABLE;
+                                                                BankAcc.GET("Bank Account No.");
+                                                                BankAcc."Last Statement No." := "Statement No.";
+                                                                BankAcc.MODIFY;
+                                                              END;
+
+                                                   CaptionML=[DEU=Auszugsnr.;
+                                                              ENU=Statement No.];
+                                                   NotBlank=Yes }
+    { 3   ;   ;Statement Ending Balance;Decimal   ;CaptionML=[DEU=Auszug Schluss-Saldo;
+                                                              ENU=Statement Ending Balance];
+                                                   AutoFormatType=1;
+                                                   AutoFormatExpr=GetCurrencyCode }
+    { 4   ;   ;Statement Date      ;Date          ;CaptionML=[DEU=Auszugsdatum;
+                                                              ENU=Statement Date] }
+    { 5   ;   ;Balance Last Statement;Decimal     ;OnValidate=BEGIN
+                                                                BankAcc.GET("Bank Account No.");
+                                                                IF "Balance Last Statement" <> BankAcc."Balance Last Statement" THEN
+                                                                  IF NOT
+                                                                     CONFIRM(
+                                                                       Text002,FALSE,
+                                                                       FIELDCAPTION("Balance Last Statement"),BankAcc.FIELDCAPTION("Balance Last Statement"),
+                                                                       BankAcc.TABLECAPTION)
+                                                                  THEN
+                                                                    "Balance Last Statement" := xRec."Balance Last Statement";
+                                                              END;
+
+                                                   CaptionML=[DEU=Saldo letzter Auszug;
+                                                              ENU=Balance Last Statement];
+                                                   AutoFormatType=1;
+                                                   AutoFormatExpr=GetCurrencyCode }
+  }
+  KEYS
+  {
+    {    ;Bank Account No.,Statement No.          ;Clustered=Yes }
+  }
+  FIELDGROUPS
+  {
+  }
+  CODE
+  {
+    VAR
+      Text000@1000 : TextConst 'DEU=Auszug %1 ist bereits vorhanden.;ENU=Statement %1 already exists.';
+      Text001@1001 : TextConst 'DEU=Sie k”nnen eine %1 nicht umbenennen.;ENU=You cannot rename a %1.';
+      Text002@1002 : TextConst 'DEU=%1 unterscheidet sich von %2 auf dem %3. M”chten Sie den Wert „ndern?;ENU=%1 is different from %2 on the %3. Do you want to change the value?';
+      BankAcc@1003 : Record 270;
+      BankAccRecon@1004 : Record 273;
+      BankAccReconLine@1005 : Record 274;
+      PostedBankAccStmt@1006 : Record 275;
+
+    PROCEDURE GetCurrencyCode@1() : Code[10];
+    VAR
+      BankAcc2@1000 : Record 270;
+    BEGIN
+      IF ("Bank Account No." = BankAcc2."No.") THEN
+        EXIT(BankAcc2."Currency Code")
+      ELSE
+        IF BankAcc2.GET("Bank Account No.") THEN
+          EXIT(BankAcc2."Currency Code")
+        ELSE
+          EXIT('');
+    END;
+
+    BEGIN
+    END.
+  }
+}
+

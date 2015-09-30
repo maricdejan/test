@@ -1,0 +1,520 @@
+OBJECT Table 1001 Job Task
+{
+  OBJECT-PROPERTIES
+  {
+    Date=14.08.09;
+    Time=12:00:00;
+    Version List=NAVW16.00.01;
+  }
+  PROPERTIES
+  {
+    OnInsert=VAR
+               Job@1000 : Record 167;
+               Cust@1001 : Record 18;
+             BEGIN
+               LOCKTABLE;
+               Job.GET("Job No.");
+               IF Job.Blocked = Job.Blocked::All THEN
+                 Job.TestBlocked;
+               Job.TESTFIELD("Bill-to Customer No.");
+               Cust.GET(Job."Bill-to Customer No.");
+
+               InitWIPFields;
+               "Schedule (Total Cost)" := 0;
+               "Schedule (Total Price)" := 0;
+               "Usage (Total Cost)" := 0;
+               "Usage (Total Price)" := 0;
+               "Contract (Total Cost)" := 0;
+               "Contract (Total Price)" := 0;
+               "Contract (Invoiced Price)" := 0;
+               "Contract (Invoiced Cost)" := 0;
+
+               DimMgt.InsertJobTaskDim("Job No.","Job Task No.","Global Dimension 1 Code","Global Dimension 2 Code");
+             END;
+
+    OnDelete=VAR
+               JobPlanningLine@1000 : Record 1003;
+               JobTaskDim@1001 : Record 1002;
+             BEGIN
+               IF JobLedgEntriesExist THEN
+                 ERROR(Text000,TABLECAPTION);
+
+               JobPlanningLine.SETCURRENTKEY("Job No.","Job Task No.");
+               JobPlanningLine.SETRANGE("Job No.","Job No.");
+               JobPlanningLine.SETRANGE("Job Task No.","Job Task No.");
+               JobPlanningLine.DELETEALL(TRUE);
+
+               JobTaskDim.SETRANGE("Job No.","Job No.");
+               JobTaskDim.SETRANGE("Job Task No.","Job Task No.");
+               IF NOT JobTaskDim.ISEMPTY THEN
+                 JobTaskDim.DELETEALL;
+             END;
+
+    CaptionML=[DEU=Projektaufgabe;
+               ENU=Job Task];
+    LookupFormID=Form1004;
+    DrillDownFormID=Form1004;
+  }
+  FIELDS
+  {
+    { 1   ;   ;Job No.             ;Code20        ;TableRelation=Job;
+                                                   CaptionML=[DEU=Projektnr.;
+                                                              ENU=Job No.];
+                                                   NotBlank=Yes;
+                                                   Editable=No }
+    { 2   ;   ;Job Task No.        ;Code20        ;OnValidate=VAR
+                                                                Job@1000 : Record 167;
+                                                                Cust@1001 : Record 18;
+                                                              BEGIN
+                                                                IF "Job Task No." = '' THEN
+                                                                  EXIT;
+                                                                Job.GET("Job No.");
+                                                                Job.TESTFIELD("Bill-to Customer No.");
+                                                                Cust.GET(Job."Bill-to Customer No.");
+                                                                "Job Posting Group" := Job."Job Posting Group";
+                                                              END;
+
+                                                   CaptionML=[DEU=Projektaufgabennr.;
+                                                              ENU=Job Task No.];
+                                                   NotBlank=Yes }
+    { 3   ;   ;Description         ;Text50        ;CaptionML=[DEU=Beschreibung;
+                                                              ENU=Description] }
+    { 4   ;   ;Job Task Type       ;Option        ;OnValidate=BEGIN
+                                                                IF (xRec."Job Task Type" = "Job Task Type"::Posting) AND
+                                                                   ("Job Task Type" <> "Job Task Type"::Posting)
+                                                                THEN
+                                                                  IF JobLedgEntriesExist OR JobPlanningLinesExist THEN
+                                                                    ERROR(Text001,FIELDCAPTION("Job Task Type"),TABLECAPTION);
+
+                                                                IF "Job Task Type" <> "Job Task Type"::Posting THEN
+                                                                  "Job Posting Group" := '';
+
+                                                                Totaling := '';
+                                                              END;
+
+                                                   CaptionML=[DEU=Projektaufgabenart;
+                                                              ENU=Job Task Type];
+                                                   OptionCaptionML=[DEU=Konto,öberschrift,Summe,Von-Summe,Bis-Summe;
+                                                                    ENU=Posting,Heading,Total,Begin-Total,End-Total];
+                                                   OptionString=Posting,Heading,Total,Begin-Total,End-Total }
+    { 6   ;   ;WIP-Total           ;Option        ;CaptionML=[DEU=WIP-Summe;
+                                                              ENU=WIP-Total];
+                                                   OptionCaptionML=[DEU=" ,Summe,Geschlossen";
+                                                                    ENU=" ,Total,Closed"];
+                                                   OptionString=[ ,Total,Closed] }
+    { 7   ;   ;Job Posting Group   ;Code10        ;TableRelation="Job Posting Group";
+                                                   OnValidate=BEGIN
+                                                                IF "Job Posting Group" <> '' THEN
+                                                                  TESTFIELD("Job Task Type","Job Task Type"::Posting);
+                                                              END;
+
+                                                   CaptionML=[DEU=Projektbuchungsgruppe;
+                                                              ENU=Job Posting Group] }
+    { 8   ;   ;WIP Method Used     ;Option        ;CaptionML=[DEU=Verwendete WIP-Methode;
+                                                              ENU=WIP Method Used];
+                                                   OptionCaptionML=[DEU=" ,Einstandswert,Verkaufswert,Vertriebskosten,Prozentsatz der Fertigung,bei Abschluss";
+                                                                    ENU=" ,Cost Value,Sales Value,Cost of Sales,Percentage of Completion,Completed Contract"];
+                                                   OptionString=[ ,Cost Value,Sales Value,Cost of Sales,Percentage of Completion,Completed Contract];
+                                                   Editable=No }
+    { 10  ;   ;Schedule (Total Cost);Decimal      ;FieldClass=FlowField;
+                                                   CalcFormula=Sum("Job Planning Line"."Total Cost (LCY)" WHERE (Job No.=FIELD(Job No.),
+                                                                                                                 Job Task No.=FIELD(Job Task No.),
+                                                                                                                 Job Task No.=FIELD(FILTER(Totaling)),
+                                                                                                                 Schedule Line=CONST(Yes),
+                                                                                                                 Planning Date=FIELD(Planning Date Filter)));
+                                                   CaptionML=[DEU=Plan (Einstandsbetrag);
+                                                              ENU=Schedule (Total Cost)];
+                                                   BlankZero=Yes;
+                                                   Editable=No;
+                                                   AutoFormatType=1 }
+    { 11  ;   ;Schedule (Total Price);Decimal     ;FieldClass=FlowField;
+                                                   CalcFormula=Sum("Job Planning Line"."Line Amount (LCY)" WHERE (Job No.=FIELD(Job No.),
+                                                                                                                  Job Task No.=FIELD(Job Task No.),
+                                                                                                                  Job Task No.=FIELD(FILTER(Totaling)),
+                                                                                                                  Schedule Line=CONST(Yes),
+                                                                                                                  Planning Date=FIELD(Planning Date Filter)));
+                                                   CaptionML=[DEU=Plan (Verkaufspreis);
+                                                              ENU=Schedule (Total Price)];
+                                                   BlankZero=Yes;
+                                                   Editable=No;
+                                                   AutoFormatType=1 }
+    { 12  ;   ;Usage (Total Cost)  ;Decimal       ;FieldClass=FlowField;
+                                                   CalcFormula=Sum("Job Ledger Entry"."Total Cost (LCY)" WHERE (Job No.=FIELD(Job No.),
+                                                                                                                Job Task No.=FIELD(Job Task No.),
+                                                                                                                Job Task No.=FIELD(FILTER(Totaling)),
+                                                                                                                Entry Type=CONST(Usage),
+                                                                                                                Posting Date=FIELD(Posting Date Filter)));
+                                                   CaptionML=[DEU=Verbrauch (Einstandsbetrag);
+                                                              ENU=Usage (Total Cost)];
+                                                   BlankZero=Yes;
+                                                   Editable=No;
+                                                   AutoFormatType=1 }
+    { 13  ;   ;Usage (Total Price) ;Decimal       ;FieldClass=FlowField;
+                                                   CalcFormula=Sum("Job Ledger Entry"."Line Amount (LCY)" WHERE (Job No.=FIELD(Job No.),
+                                                                                                                 Job Task No.=FIELD(Job Task No.),
+                                                                                                                 Job Task No.=FIELD(FILTER(Totaling)),
+                                                                                                                 Entry Type=CONST(Usage),
+                                                                                                                 Posting Date=FIELD(Posting Date Filter)));
+                                                   CaptionML=[DEU=Verbrauch (Verkaufspreis);
+                                                              ENU=Usage (Total Price)];
+                                                   BlankZero=Yes;
+                                                   Editable=No;
+                                                   AutoFormatType=1 }
+    { 14  ;   ;Contract (Total Cost);Decimal      ;FieldClass=FlowField;
+                                                   CalcFormula=Sum("Job Planning Line"."Total Cost (LCY)" WHERE (Job No.=FIELD(Job No.),
+                                                                                                                 Job Task No.=FIELD(Job Task No.),
+                                                                                                                 Job Task No.=FIELD(FILTER(Totaling)),
+                                                                                                                 Contract Line=CONST(Yes),
+                                                                                                                 Planning Date=FIELD(Planning Date Filter)));
+                                                   CaptionML=[DEU=Vertrag (Einstandsbetrag);
+                                                              ENU=Contract (Total Cost)];
+                                                   BlankZero=Yes;
+                                                   Editable=No;
+                                                   AutoFormatType=1 }
+    { 15  ;   ;Contract (Total Price);Decimal     ;FieldClass=FlowField;
+                                                   CalcFormula=Sum("Job Planning Line"."Line Amount (LCY)" WHERE (Job No.=FIELD(Job No.),
+                                                                                                                  Job Task No.=FIELD(Job Task No.),
+                                                                                                                  Job Task No.=FIELD(FILTER(Totaling)),
+                                                                                                                  Contract Line=CONST(Yes),
+                                                                                                                  Planning Date=FIELD(Planning Date Filter)));
+                                                   CaptionML=[DEU=Vertrag (Verkaufspreis);
+                                                              ENU=Contract (Total Price)];
+                                                   BlankZero=Yes;
+                                                   Editable=No;
+                                                   AutoFormatType=1 }
+    { 16  ;   ;Contract (Invoiced Price);Decimal  ;FieldClass=FlowField;
+                                                   CalcFormula=-Sum("Job Ledger Entry"."Line Amount (LCY)" WHERE (Job No.=FIELD(Job No.),
+                                                                                                                  Job Task No.=FIELD(Job Task No.),
+                                                                                                                  Job Task No.=FIELD(FILTER(Totaling)),
+                                                                                                                  Entry Type=CONST(Sale),
+                                                                                                                  Posting Date=FIELD(Posting Date Filter)));
+                                                   CaptionML=[DEU=Vertrag (fakturierter Preis);
+                                                              ENU=Contract (Invoiced Price)];
+                                                   BlankZero=Yes;
+                                                   Editable=No;
+                                                   AutoFormatType=1 }
+    { 17  ;   ;Contract (Invoiced Cost);Decimal   ;FieldClass=FlowField;
+                                                   CalcFormula=-Sum("Job Ledger Entry"."Total Cost (LCY)" WHERE (Job No.=FIELD(Job No.),
+                                                                                                                 Job Task No.=FIELD(Job Task No.),
+                                                                                                                 Job Task No.=FIELD(FILTER(Totaling)),
+                                                                                                                 Entry Type=CONST(Sale),
+                                                                                                                 Posting Date=FIELD(Posting Date Filter)));
+                                                   CaptionML=[DEU=Vertrag (fakturierte Kosten);
+                                                              ENU=Contract (Invoiced Cost)];
+                                                   BlankZero=Yes;
+                                                   Editable=No;
+                                                   AutoFormatType=1 }
+    { 19  ;   ;Posting Date Filter ;Date          ;FieldClass=FlowFilter;
+                                                   CaptionML=[DEU=Buchungsdatumsfilter;
+                                                              ENU=Posting Date Filter] }
+    { 20  ;   ;Planning Date Filter;Date          ;FieldClass=FlowFilter;
+                                                   CaptionML=[DEU=Planungsdatumsfilter;
+                                                              ENU=Planning Date Filter] }
+    { 21  ;   ;Totaling            ;Text250       ;TableRelation="Job Task"."Job Task No." WHERE (Job No.=FIELD(Job No.));
+                                                   OnValidate=BEGIN
+                                                                IF NOT ("Job Task Type" IN ["Job Task Type"::Total,"Job Task Type"::"End-Total"]) THEN
+                                                                  FIELDERROR("Job Task Type");
+                                                                CALCFIELDS(
+                                                                  "Schedule (Total Cost)",
+                                                                  "Schedule (Total Price)",
+                                                                  "Usage (Total Cost)",
+                                                                  "Usage (Total Price)",
+                                                                  "Contract (Total Cost)",
+                                                                  "Contract (Total Price)",
+                                                                  "Contract (Invoiced Price)",
+                                                                  "Contract (Invoiced Cost)");
+                                                              END;
+
+                                                   ValidateTableRelation=No;
+                                                   TestTableRelation=No;
+                                                   CaptionML=[DEU=ZusammenzÑhlung;
+                                                              ENU=Totaling] }
+    { 22  ;   ;New Page            ;Boolean       ;CaptionML=[DEU=Neue Seite;
+                                                              ENU=New Page] }
+    { 23  ;   ;No. of Blank Lines  ;Integer       ;CaptionML=[DEU=Leerzeilen;
+                                                              ENU=No. of Blank Lines];
+                                                   MinValue=0;
+                                                   BlankZero=Yes }
+    { 24  ;   ;Indentation         ;Integer       ;CaptionML=[DEU=EinrÅckung;
+                                                              ENU=Indentation];
+                                                   MinValue=0 }
+    { 25  ;   ;WIP Posting Date    ;Date          ;CaptionML=[DEU=WIP-Buchungsdatum;
+                                                              ENU=WIP Posting Date];
+                                                   Editable=No }
+    { 26  ;   ;WIP %               ;Decimal       ;CaptionML=[DEU=WIP %;
+                                                              ENU=WIP %];
+                                                   BlankZero=Yes;
+                                                   Editable=No;
+                                                   AutoFormatType=2 }
+    { 27  ;   ;WIP Account         ;Code20        ;TableRelation="G/L Account";
+                                                   CaptionML=[DEU=Unf.-Arbeit-Konto;
+                                                              ENU=WIP Account];
+                                                   Editable=No }
+    { 28  ;   ;WIP Balance Account ;Code20        ;TableRelation="G/L Account";
+                                                   CaptionML=[DEU=WIP-Gegenkonto;
+                                                              ENU=WIP Balance Account];
+                                                   Editable=No }
+    { 29  ;   ;WIP Amount          ;Decimal       ;CaptionML=[DEU=WIP-Betrag;
+                                                              ENU=WIP Amount];
+                                                   BlankZero=Yes;
+                                                   Editable=No;
+                                                   AutoFormatType=1 }
+    { 31  ;   ;Invoiced Sales Amount;Decimal      ;CaptionML=[DEU=Fakturierter Verkaufsbetrag;
+                                                              ENU=Invoiced Sales Amount];
+                                                   BlankZero=Yes;
+                                                   Editable=No;
+                                                   AutoFormatType=1 }
+    { 32  ;   ;Invoiced Sales Account;Code20      ;TableRelation="G/L Account";
+                                                   CaptionML=[DEU=Konto fakturierte VerkÑufe;
+                                                              ENU=Invoiced Sales Account];
+                                                   Editable=No }
+    { 33  ;   ;Invoiced Sales Bal. Account;Code20 ;TableRelation="G/L Account";
+                                                   CaptionML=[DEU=Gegenkonto fakt. VerkÑufe;
+                                                              ENU=Invoiced Sales Bal. Account];
+                                                   Editable=No }
+    { 34  ;   ;Recognized Sales Amount;Decimal    ;CaptionML=[DEU=Betrag deklarierte VerkÑufe;
+                                                              ENU=Recognized Sales Amount];
+                                                   BlankZero=Yes;
+                                                   Editable=No }
+    { 35  ;   ;Recognized Sales Account;Code20    ;TableRelation="G/L Account";
+                                                   CaptionML=[DEU=Konto deklarierte VerkÑufe;
+                                                              ENU=Recognized Sales Account];
+                                                   Editable=No }
+    { 36  ;   ;Recognized Sales Bal. Account;Code20;
+                                                   TableRelation="G/L Account";
+                                                   CaptionML=[DEU=Gegenkto. fakturierte VerkÑufe;
+                                                              ENU=Recognized Sales Bal. Account];
+                                                   Editable=No }
+    { 37  ;   ;Recognized Costs Amount;Decimal    ;CaptionML=[DEU=Betrag deklarierte Kosten;
+                                                              ENU=Recognized Costs Amount];
+                                                   BlankZero=Yes;
+                                                   Editable=No }
+    { 38  ;   ;Recognized Costs Account;Code20    ;TableRelation="G/L Account";
+                                                   CaptionML=[DEU=Konto deklarierte Kosten;
+                                                              ENU=Recognized Costs Account];
+                                                   Editable=No }
+    { 39  ;   ;Recognized Costs Bal. Account;Code20;
+                                                   TableRelation="G/L Account";
+                                                   CaptionML=[DEU=Gegenkonto deklarierte Kosten;
+                                                              ENU=Recognized Costs Bal. Account];
+                                                   Editable=No }
+    { 40  ;   ;WIP Schedule (Total Cost);Decimal  ;CaptionML=[DEU=WIP-Plan (Einstandsbetrag);
+                                                              ENU=WIP Schedule (Total Cost)];
+                                                   BlankZero=Yes;
+                                                   Editable=No;
+                                                   AutoFormatType=1 }
+    { 41  ;   ;WIP Schedule (Total Price);Decimal ;CaptionML=[DEU=WIP-Plan (Verkaufspreis);
+                                                              ENU=WIP Schedule (Total Price)];
+                                                   BlankZero=Yes;
+                                                   Editable=No;
+                                                   AutoFormatType=1 }
+    { 42  ;   ;WIP Usage (Total Cost);Decimal     ;CaptionML=[DEU=WIP-Verbrauch (Einstandsbetrag);
+                                                              ENU=WIP Usage (Total Cost)];
+                                                   BlankZero=Yes;
+                                                   Editable=No;
+                                                   AutoFormatType=1 }
+    { 43  ;   ;WIP Usage (Total Price);Decimal    ;CaptionML=[DEU=WIP-Verbrauch (Verkaufspreis);
+                                                              ENU=WIP Usage (Total Price)];
+                                                   BlankZero=Yes;
+                                                   Editable=No;
+                                                   AutoFormatType=1 }
+    { 44  ;   ;WIP Contract (Total Cost);Decimal  ;CaptionML=[DEU=WIP-Vertrag (Einstandsbetr.);
+                                                              ENU=WIP Contract (Total Cost)];
+                                                   BlankZero=Yes;
+                                                   Editable=No;
+                                                   AutoFormatType=1 }
+    { 45  ;   ;WIP Contract (Total Price);Decimal ;CaptionML=[DEU=WIP-Vertr. (Einstandsbetrag);
+                                                              ENU=WIP Contract (Total Price)];
+                                                   BlankZero=Yes;
+                                                   Editable=No;
+                                                   AutoFormatType=1 }
+    { 46  ;   ;WIP (Invoiced Price);Decimal       ;CaptionML=[DEU=WIP (Preis fakturiert);
+                                                              ENU=WIP (Invoiced Price)];
+                                                   BlankZero=Yes;
+                                                   Editable=No;
+                                                   AutoFormatType=1 }
+    { 47  ;   ;WIP (Invoiced Cost) ;Decimal       ;CaptionML=[DEU=WIP (Einstandsbetrag fakturiert);
+                                                              ENU=WIP (Invoiced Cost)];
+                                                   BlankZero=Yes;
+                                                   Editable=No;
+                                                   AutoFormatType=1 }
+    { 48  ;   ;WIP Posting Date Filter;Text250    ;CaptionML=[DEU=WIP-Buchungsdatumsfilter;
+                                                              ENU=WIP Posting Date Filter];
+                                                   Editable=No }
+    { 49  ;   ;WIP Planning Date Filter;Text250   ;CaptionML=[DEU=WIP-Planungsdatumsfilter;
+                                                              ENU=WIP Planning Date Filter];
+                                                   Editable=No }
+    { 50  ;   ;WIP Sales Account   ;Code20        ;TableRelation="G/L Account";
+                                                   CaptionML=[DEU=Umsatz n. abgs. Arb.;
+                                                              ENU=WIP Sales Account];
+                                                   Editable=No }
+    { 51  ;   ;WIP Sales Balance Account;Code20   ;TableRelation="G/L Account";
+                                                   CaptionML=[DEU=WIP-Verkaufsgegenkonto;
+                                                              ENU=WIP Sales Balance Account];
+                                                   Editable=No }
+    { 52  ;   ;WIP Costs Account   ;Code20        ;TableRelation="G/L Account";
+                                                   CaptionML=[DEU=Konto f. Kosten n. abgs. Arb.;
+                                                              ENU=WIP Costs Account];
+                                                   Editable=No }
+    { 53  ;   ;WIP Costs Balance Account;Code20   ;TableRelation="G/L Account";
+                                                   CaptionML=[DEU=WIP-Kostengegenkonto;
+                                                              ENU=WIP Costs Balance Account];
+                                                   Editable=No }
+    { 54  ;   ;Cost Completion %   ;Decimal       ;CaptionML=[DEU=Kosten Abschluss %;
+                                                              ENU=Cost Completion %];
+                                                   BlankZero=Yes;
+                                                   Editable=No;
+                                                   AutoFormatType=2 }
+    { 55  ;   ;Invoiced %          ;Decimal       ;CaptionML=[DEU=Fakturiert %;
+                                                              ENU=Invoiced %];
+                                                   BlankZero=Yes;
+                                                   Editable=No;
+                                                   AutoFormatType=2 }
+    { 60  ;   ;Global Dimension 1 Code;Code20     ;TableRelation="Dimension Value".Code WHERE (Global Dimension No.=CONST(1));
+                                                   OnValidate=BEGIN
+                                                                ValidateShortcutDimCode(1,"Global Dimension 1 Code");
+                                                              END;
+
+                                                   CaptionML=[DEU=Globaler Dimensionscode 1;
+                                                              ENU=Global Dimension 1 Code];
+                                                   CaptionClass='1,1,1' }
+    { 61  ;   ;Global Dimension 2 Code;Code20     ;TableRelation="Dimension Value".Code WHERE (Global Dimension No.=CONST(2));
+                                                   OnValidate=BEGIN
+                                                                ValidateShortcutDimCode(2,"Global Dimension 2 Code");
+                                                              END;
+
+                                                   CaptionML=[DEU=Globaler Dimensionscode 2;
+                                                              ENU=Global Dimension 2 Code];
+                                                   CaptionClass='1,1,2' }
+    { 62  ;   ;Outstanding Orders  ;Decimal       ;FieldClass=FlowField;
+                                                   CalcFormula=Sum("Purchase Line"."Outstanding Amount (LCY)" WHERE (Document Type=CONST(Order),
+                                                                                                                     Job No.=FIELD(Job No.),
+                                                                                                                     Job Task No.=FIELD(Job Task No.),
+                                                                                                                     Job Task No.=FIELD(FILTER(Totaling))));
+                                                   CaptionML=[DEU=Auftragsbestand;
+                                                              ENU=Outstanding Orders] }
+    { 63  ;   ;Amt. Rcd. Not Invoiced;Decimal     ;FieldClass=FlowField;
+                                                   CalcFormula=Sum("Purchase Line"."Amt. Rcd. Not Invoiced (LCY)" WHERE (Document Type=CONST(Order),
+                                                                                                                         Job No.=FIELD(Job No.),
+                                                                                                                         Job Task No.=FIELD(Job Task No.),
+                                                                                                                         Job Task No.=FIELD(FILTER(Totaling))));
+                                                   CaptionML=[DEU=Nicht fakt. Lieferbetrag;
+                                                              ENU=Amt. Rcd. Not Invoiced] }
+  }
+  KEYS
+  {
+    {    ;Job No.,Job Task No.                    ;Clustered=Yes }
+    {    ;Job Task No.                             }
+  }
+  FIELDGROUPS
+  {
+    { 1   ;DropDown            ;Job Task No.,Description,Job Task Type   }
+  }
+  CODE
+  {
+    VAR
+      Text000@1000 : TextConst 'DEU=%1 kann nicht gelîscht werden, weil mindestens ein Posten verknÅpft ist.;ENU=You cannot delete %1 because one or more entries are associated.';
+      Text001@1002 : TextConst 'DEU=%1'' kann nicht geÑndert werden, da mindestens ein Posten mit dieser ''%2'' verknÅpft ist.;ENU=You cannot change %1 because one or more entries are associated with this %2.';
+      DimMgt@1001 : Codeunit 408;
+
+    LOCAL PROCEDURE JobLedgEntriesExist@2() : Boolean;
+    VAR
+      JobLedgEntry@1001 : Record 169;
+    BEGIN
+      JobLedgEntry.SETCURRENTKEY("Job No.","Job Task No.");
+      JobLedgEntry.SETRANGE("Job No.","Job No.");
+      JobLedgEntry.SETRANGE("Job Task No.","Job Task No.");
+      EXIT(JobLedgEntry.FIND('-'))
+    END;
+
+    PROCEDURE JobPlanningLinesExist@5() : Boolean;
+    VAR
+      JobPlanningLine@1000 : Record 1003;
+    BEGIN
+      JobPlanningLine.SETCURRENTKEY("Job No.","Job Task No.");
+      JobPlanningLine.SETRANGE("Job No.","Job No.");
+      JobPlanningLine.SETRANGE("Job Task No.","Job Task No.");
+      EXIT(JobPlanningLine.FIND('-'))
+    END;
+
+    PROCEDURE Caption@3() : Text[250];
+    VAR
+      Job@1000 : Record 167;
+    BEGIN
+      IF NOT Job.GET("Job No.") THEN
+        EXIT('');
+      EXIT(STRSUBSTNO('%1 %2 %3 %4',
+          Job."No.",
+          Job.Description,
+          "Job Task No.",
+          Description));
+    END;
+
+    PROCEDURE Caption2@4() : Text[250];
+    VAR
+      Job@1000 : Record 167;
+    BEGIN
+      IF NOT Job.GET("Job No.") THEN
+        EXIT('');
+      EXIT(STRSUBSTNO('%1 %2',
+          Job."No.",
+          Job.Description))
+    END;
+
+    PROCEDURE InitWIPFields@13();
+    BEGIN
+      "WIP Posting Date" := 0D;
+      "WIP %" := 0;
+      "WIP Account" := '';
+      "WIP Balance Account" := '';
+      "Invoiced Sales Account" := '';
+      "Invoiced Sales Bal. Account" := '';
+      "WIP Amount" := 0;
+      "Invoiced Sales Amount" := 0;
+      "WIP Method Used" := 0;
+      "WIP Schedule (Total Cost)" := 0;
+      "WIP Schedule (Total Price)" := 0;
+      "WIP Usage (Total Cost)" := 0;
+      "WIP Usage (Total Price)" := 0;
+      "WIP Contract (Total Cost)" := 0;
+      "WIP Contract (Total Price)" := 0;
+      "WIP (Invoiced Price)" := 0;
+      "WIP (Invoiced Cost)" := 0;
+      "WIP Posting Date Filter" := '';
+      "WIP Planning Date Filter" := '';
+      "Recognized Sales Amount" := 0;
+      "Recognized Sales Account" := '';
+      "Recognized Sales Bal. Account" := '';
+      "Recognized Costs Amount" := 0;
+      "Recognized Costs Account" := '';
+      "Recognized Costs Bal. Account" := '';
+      "WIP Sales Account" := '';
+      "WIP Sales Balance Account" := '';
+      "WIP Costs Account" := '';
+      "WIP Costs Balance Account" := '';
+      "Cost Completion %" := 0;
+      "Invoiced %" := 0;
+    END;
+
+    PROCEDURE ValidateShortcutDimCode@29(FieldNumber@1000 : Integer;ShortcutDimCode@1001 : Code[20]);
+    VAR
+      JobTask2@1002 : Record 1001;
+    BEGIN
+      DimMgt.ValidateDimValueCode(FieldNumber,ShortcutDimCode);
+      IF JobTask2.GET("Job No.","Job Task No.") THEN BEGIN
+        DimMgt.SaveJobTaskDim("Job No.","Job Task No.",FieldNumber,ShortcutDimCode);
+        MODIFY;
+      END ELSE
+        DimMgt.SaveJobTaskTempDim(FieldNumber,ShortcutDimCode);
+    END;
+
+    PROCEDURE ClearTempDim@1();
+    BEGIN
+      DimMgt.DeleteJobTaskTempDim;
+    END;
+
+    BEGIN
+    END.
+  }
+}
+

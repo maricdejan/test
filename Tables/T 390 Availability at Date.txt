@@ -1,0 +1,41 @@
+OBJECT Table 390 Availability at Date
+{
+  OBJECT-PROPERTIES
+  {
+    Date=05.11.08;
+    Time=12:00:00;
+    Version List=NAVW16.00;
+  }
+  PROPERTIES
+  {
+    CaptionML=[DEU=VerfÅgbarkeit bis Datum;
+               ENU=Availability at Date];
+  }
+  FIELDS
+  {
+    { 1   ;   ;Period Start        ;Date          ;CaptionML=[DEU=Periodenanfang;
+                                                              ENU=Period Start] }
+    { 2   ;   ;Scheduled Receipt   ;Decimal       ;CaptionML=[DEU=Geplanter Zugang;
+                                                              ENU=Scheduled Receipt];
+                                                   DecimalPlaces=0:5 }
+    { 3   ;   ;Gross Requirement   ;Decimal       ;CaptionML=[DEU=Bruttobedarf;
+                                                              ENU=Gross Requirement];
+                                                   DecimalPlaces=0:5 }
+    { 4   ;   ;Period End          ;Date          ;CaptionML=[DEU=Periodenende;
+                                                              ENU=Period End] }
+  }
+  KEYS
+  {
+    {    ;Period Start                            ;Clustered=Yes }
+  }
+  FIELDGROUPS
+  {
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

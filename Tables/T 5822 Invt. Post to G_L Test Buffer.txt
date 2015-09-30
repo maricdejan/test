@@ -1,0 +1,88 @@
+OBJECT Table 5822 Invt. Post to G/L Test Buffer
+{
+  OBJECT-PROPERTIES
+  {
+    Date=05.11.08;
+    Time=12:00:00;
+    Version List=NAVW16.00;
+  }
+  PROPERTIES
+  {
+    CaptionML=[DEU=Testpuffer fÅr Lagerbuchung auf Sachposten;
+               ENU=Invt. Post to G/L Test Buffer];
+  }
+  FIELDS
+  {
+    { 1   ;   ;Line No.            ;Integer       ;CaptionML=[DEU=Zeilennr.;
+                                                              ENU=Line No.] }
+    { 2   ;   ;Account No.         ;Code20        ;TableRelation="G/L Account";
+                                                   CaptionML=[DEU=Kontonr.;
+                                                              ENU=Account No.] }
+    { 3   ;   ;Posting Date        ;Date          ;CaptionML=[DEU=Buchungsdatum;
+                                                              ENU=Posting Date];
+                                                   ClosingDates=Yes }
+    { 4   ;   ;Document No.        ;Code20        ;CaptionML=[DEU=Belegnr.;
+                                                              ENU=Document No.] }
+    { 5   ;   ;Description         ;Text50        ;CaptionML=[DEU=Beschreibung;
+                                                              ENU=Description] }
+    { 6   ;   ;Amount              ;Decimal       ;CaptionML=[DEU=Betrag;
+                                                              ENU=Amount];
+                                                   AutoFormatType=1 }
+    { 8   ;   ;Source Code         ;Code10        ;TableRelation="Source Code";
+                                                   CaptionML=[DEU=Herkunftscode;
+                                                              ENU=Source Code];
+                                                   Editable=No }
+    { 9   ;   ;System-Created Entry;Boolean       ;CaptionML=[DEU=Systembuchung;
+                                                              ENU=System-Created Entry];
+                                                   Editable=No }
+    { 10  ;   ;Gen. Bus. Posting Group;Code10     ;TableRelation="Gen. Business Posting Group";
+                                                   CaptionML=[DEU=GeschÑftsbuchungsgruppe;
+                                                              ENU=Gen. Bus. Posting Group] }
+    { 11  ;   ;Gen. Prod. Posting Group;Code10    ;TableRelation="Gen. Product Posting Group";
+                                                   CaptionML=[DEU=Produktbuchungsgruppe;
+                                                              ENU=Gen. Prod. Posting Group] }
+    { 13  ;   ;Additional-Currency Posting;Option ;CaptionML=[DEU=Buchung (BW);
+                                                              ENU=Additional-Currency Posting];
+                                                   OptionCaptionML=[DEU=Kein,Nur Betrag,Nur Betrag (BW);
+                                                                    ENU=None,Amount Only,Additional-Currency Amount Only];
+                                                   OptionString=None,Amount Only,Additional-Currency Amount Only;
+                                                   Editable=No }
+    { 14  ;   ;Source Currency Code;Code10        ;TableRelation=Currency;
+                                                   CaptionML=[DEU=Urspr.-WÑhrungscode;
+                                                              ENU=Source Currency Code];
+                                                   Editable=No }
+    { 15  ;   ;Source Currency Amount;Decimal     ;CaptionML=[DEU=Urspr.-WÑhrung Betrag;
+                                                              ENU=Source Currency Amount];
+                                                   Editable=No;
+                                                   AutoFormatType=1 }
+    { 16  ;   ;Value Entry No.     ;Integer       ;TableRelation="Value Entry";
+                                                   CaptionML=[DEU=Wertposten Lfd. Nr.;
+                                                              ENU=Value Entry No.];
+                                                   Editable=No }
+    { 17  ;   ;Location Code       ;Code10        ;TableRelation=Location;
+                                                   CaptionML=[DEU=Lagerortcode;
+                                                              ENU=Location Code] }
+    { 18  ;   ;Invt. Posting Group Code;Code10    ;TableRelation="Inventory Posting Group";
+                                                   CaptionML=[DEU=Lagerbuchungsgruppencode;
+                                                              ENU=Invt. Posting Group Code] }
+    { 19  ;   ;Inventory Account Type;Option      ;CaptionML=[DEU=Lagerkontoart;
+                                                              ENU=Inventory Account Type];
+                                                   OptionCaptionML=[DEU=Lagerbestand (Interim),Lagerzugang (Interim),Lagerbestand,Aktiviert Lager,Lagerkorrektur,Direkte Kosten verrechnet,Gemeinkosten verrechnet,Einkaufsabweichung,LAGERVERBR,LAGERVERBR (Interim),Materialabweichung,KapazitÑtsabweichung,Fremdarbeitskostenabweichung,Kap. Gemeinkostenabw.,Prod. Gemeinkostenabw.;
+                                                                    ENU=Inventory (Interim),Invt. Accrual (Interim),Inventory,WIP Inventory,Inventory Adjmt.,Direct Cost Applied,Overhead Applied,Purchase Variance,COGS,COGS (Interim),Material Variance,Capacity Variance,Subcontracted Variance,Cap. Overhead Variance,Mfg. Overhead Variance];
+                                                   OptionString=Inventory (Interim),Invt. Accrual (Interim),Inventory,WIP Inventory,Inventory Adjmt.,Direct Cost Applied,Overhead Applied,Purchase Variance,COGS,COGS (Interim),Material Variance,Capacity Variance,Subcontracted Variance,Cap. Overhead Variance,Mfg. Overhead Variance }
+  }
+  KEYS
+  {
+    {    ;Line No.                                ;Clustered=Yes }
+  }
+  FIELDGROUPS
+  {
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

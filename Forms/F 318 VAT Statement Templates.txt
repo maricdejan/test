@@ -1,0 +1,82 @@
+OBJECT Form 318 VAT Statement Templates
+{
+  OBJECT-PROPERTIES
+  {
+    Date=07.03.02;
+    Time=12:00:00;
+    Version List=NAVW13.10,NAVDACH4.00;
+  }
+  PROPERTIES
+  {
+    Width=9900;
+    Height=6710;
+    CaptionML=[DEU=MwSt.-Abrechnung Vorlagen;
+               ENU=VAT Statement Templates];
+    TableBoxID=1;
+    SourceTable=Table255;
+  }
+  CONTROLS
+  {
+    { 1   ;TableBox     ;220  ;220  ;9460 ;5500 ;HorzGlue=Both;
+                                                 VertGlue=Both }
+    { 2   ;TextBox      ;0    ;0    ;1650 ;0    ;ParentControl=1;
+                                                 InColumn=Yes;
+                                                 SourceExpr=Name }
+    { 3   ;Label        ;0    ;0    ;0    ;0    ;ParentControl=2;
+                                                 InColumnHeading=Yes }
+    { 4   ;TextBox      ;0    ;0    ;4400 ;0    ;HorzGlue=Both;
+                                                 ParentControl=1;
+                                                 InColumn=Yes;
+                                                 SourceExpr=Description }
+    { 5   ;Label        ;0    ;0    ;0    ;0    ;ParentControl=4;
+                                                 InColumnHeading=Yes }
+    { 1140000;TextBox   ;5953 ;440  ;1650 ;440  ;Visible=No;
+                                                 ParentControl=1;
+                                                 InColumn=Yes;
+                                                 SourceExpr="VAT Statement Report ID";
+                                                 LookupFormID=Objects }
+    { 1140001;Label     ;0    ;0    ;0    ;0    ;ParentControl=1140000;
+                                                 InColumnHeading=Yes }
+    { 1140002;TextBox   ;7603 ;440  ;4400 ;440  ;Visible=No;
+                                                 ParentControl=1;
+                                                 InColumn=Yes;
+                                                 SourceExpr="VAT Statement Report Name" }
+    { 1140003;Label     ;0    ;0    ;0    ;0    ;ParentControl=1140002;
+                                                 InColumnHeading=Yes }
+    { 6   ;CommandButton;220  ;5940 ;2200 ;550  ;HorzGlue=Right;
+                                                 VertGlue=Bottom;
+                                                 Default=Yes;
+                                                 PushAction=LookupOK;
+                                                 InvalidActionAppearance=Hide }
+    { 7   ;CommandButton;2640 ;5940 ;2200 ;550  ;HorzGlue=Right;
+                                                 VertGlue=Bottom;
+                                                 Cancel=Yes;
+                                                 PushAction=LookupCancel;
+                                                 InvalidActionAppearance=Hide }
+    { 8   ;CommandButton;7480 ;5940 ;2200 ;550  ;HorzGlue=Right;
+                                                 VertGlue=Bottom;
+                                                 PushAction=FormHelp }
+    { 9   ;MenuButton   ;5060 ;5940 ;2200 ;550  ;HorzGlue=Right;
+                                                 VertGlue=Bottom;
+                                                 CaptionML=[DEU=&Vorlage;
+                                                            ENU=Te&mplate];
+                                                 Menu=MENUITEMS
+                                                 {
+                                                   { ID=10;
+                                                     PushAction=RunObject;
+                                                     CaptionML=[DEU=Abrechnungsnamen;
+                                                                ENU=Statement Names];
+                                                     RunObject=Form 320;
+                                                     RunFormLinkType=OnUpdate;
+                                                     RunFormLink=Statement Template Name=FIELD(Name) }
+                                                 }
+                                                  }
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

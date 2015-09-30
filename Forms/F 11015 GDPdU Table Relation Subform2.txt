@@ -1,0 +1,86 @@
+OBJECT Form 11015 GDPdU Table Relation Subform2
+{
+  OBJECT-PROPERTIES
+  {
+    Date=13.02.07;
+    Time=12:00:00;
+    Version List=NAVDACH5.00;
+  }
+  PROPERTIES
+  {
+    Width=9790;
+    Height=4180;
+    CaptionML=[DEU=GDPdU Tabellenrel. Subform2;
+               ENU=GDPdU Table Relation Subform2];
+    TableBoxID=1140000;
+    SourceTable=Table11006;
+    DelayedInsert=Yes;
+    PopulateAllFields=Yes;
+    SourceTableTemporary=Yes;
+  }
+  CONTROLS
+  {
+    { 1140000;TableBox  ;0    ;0    ;9790 ;4180 ;HorzGlue=Both;
+                                                 VertGlue=Both }
+    { 1140001;TextBox   ;0    ;0    ;1550 ;0    ;ParentControl=1140000;
+                                                 InColumn=Yes;
+                                                 SourceExpr="From Field No.";
+                                                 LookupFormID=GDPdU Field List }
+    { 1140002;Label     ;0    ;0    ;0    ;0    ;ParentControl=1140001;
+                                                 InColumnHeading=Yes }
+    { 1140003;TextBox   ;0    ;0    ;2750 ;0    ;HorzGlue=Both;
+                                                 ParentControl=1140000;
+                                                 InColumn=Yes;
+                                                 Lookup=No;
+                                                 DrillDown=No;
+                                                 SourceExpr="From Field Name" }
+    { 1140004;Label     ;0    ;0    ;0    ;0    ;ParentControl=1140003;
+                                                 InColumnHeading=Yes }
+    { 1140005;TextBox   ;0    ;0    ;1550 ;0    ;ParentControl=1140000;
+                                                 InColumn=Yes;
+                                                 SourceExpr="To Field No." }
+    { 1140006;Label     ;0    ;0    ;0    ;0    ;ParentControl=1140005;
+                                                 InColumnHeading=Yes }
+    { 1140007;TextBox   ;0    ;0    ;2750 ;0    ;ParentControl=1140000;
+                                                 InColumn=Yes;
+                                                 Lookup=No;
+                                                 DrillDown=No;
+                                                 SourceExpr="To Field Name" }
+    { 1140008;Label     ;0    ;0    ;0    ;0    ;ParentControl=1140007;
+                                                 InColumnHeading=Yes }
+  }
+  CODE
+  {
+
+    PROCEDURE SetTableRel@1140000(VAR TabRel@1140000 : Record 11006);
+    BEGIN
+      DELETEALL;
+
+      IF TabRel.FINDSET THEN
+        REPEAT
+          Rec := TabRel;
+          INSERT;
+        UNTIL TabRel.NEXT = 0;
+    END;
+
+    PROCEDURE GetTableRel@1140001(VAR TabRel@1140000 : Record 11006);
+    BEGIN
+      TabRel.DELETEALL;
+
+      IF FINDSET THEN
+        REPEAT
+          TabRel := Rec;
+          TabRel.INSERT;
+        UNTIL NEXT = 0;
+    END;
+
+    PROCEDURE UpdateForm@1140002();
+    BEGIN
+      CurrForm.UPDATE(FALSE);
+    END;
+
+    BEGIN
+    END.
+  }
+}
+

@@ -1,0 +1,139 @@
+OBJECT Table 281 Phys. Inventory Ledger Entry
+{
+  OBJECT-PROPERTIES
+  {
+    Date=05.11.08;
+    Time=12:00:00;
+    Version List=NAVW16.00;
+  }
+  PROPERTIES
+  {
+    CaptionML=[DEU=Inventurposten;
+               ENU=Phys. Inventory Ledger Entry];
+    LookupFormID=Form390;
+    DrillDownFormID=Form390;
+  }
+  FIELDS
+  {
+    { 1   ;   ;Entry No.           ;Integer       ;CaptionML=[DEU=Lfd. Nr.;
+                                                              ENU=Entry No.] }
+    { 2   ;   ;Item No.            ;Code20        ;TableRelation=Item;
+                                                   CaptionML=[DEU=Artikelnr.;
+                                                              ENU=Item No.] }
+    { 3   ;   ;Posting Date        ;Date          ;CaptionML=[DEU=Buchungsdatum;
+                                                              ENU=Posting Date] }
+    { 4   ;   ;Entry Type          ;Option        ;CaptionML=[DEU=Postenart;
+                                                              ENU=Entry Type];
+                                                   OptionCaptionML=[DEU=Einkauf,Verkauf,Zugang,Abgang,Umlagerung,Verbrauch,Istmeldung;
+                                                                    ENU=Purchase,Sale,Positive Adjmt.,Negative Adjmt.,Transfer,Consumption,Output];
+                                                   OptionString=Purchase,Sale,Positive Adjmt.,Negative Adjmt.,Transfer,Consumption,Output }
+    { 6   ;   ;Document No.        ;Code20        ;CaptionML=[DEU=Belegnr.;
+                                                              ENU=Document No.] }
+    { 7   ;   ;Description         ;Text50        ;CaptionML=[DEU=Beschreibung;
+                                                              ENU=Description] }
+    { 8   ;   ;Location Code       ;Code10        ;TableRelation=Location;
+                                                   CaptionML=[DEU=Lagerortcode;
+                                                              ENU=Location Code] }
+    { 9   ;   ;Inventory Posting Group;Code10     ;TableRelation="Inventory Posting Group";
+                                                   CaptionML=[DEU=Lagerbuchungsgruppe;
+                                                              ENU=Inventory Posting Group] }
+    { 12  ;   ;Quantity            ;Decimal       ;CaptionML=[DEU=Menge;
+                                                              ENU=Quantity];
+                                                   DecimalPlaces=0:5 }
+    { 15  ;   ;Unit Amount         ;Decimal       ;CaptionML=[DEU=StÅckpreis;
+                                                              ENU=Unit Amount];
+                                                   AutoFormatType=2 }
+    { 16  ;   ;Unit Cost           ;Decimal       ;CaptionML=[DEU=Einstandspreis;
+                                                              ENU=Unit Cost];
+                                                   AutoFormatType=2 }
+    { 17  ;   ;Amount              ;Decimal       ;CaptionML=[DEU=Betrag;
+                                                              ENU=Amount];
+                                                   AutoFormatType=1 }
+    { 22  ;   ;Salespers./Purch. Code;Code10      ;TableRelation=Salesperson/Purchaser;
+                                                   CaptionML=[DEU=Verk.-/EinkÑufercode;
+                                                              ENU=Salespers./Purch. Code] }
+    { 24  ;   ;User ID             ;Code20        ;TableRelation=User;
+                                                   OnLookup=VAR
+                                                              LoginMgt@1000 : Codeunit 418;
+                                                            BEGIN
+                                                              LoginMgt.LookupUserID("User ID");
+                                                            END;
+
+                                                   TestTableRelation=No;
+                                                   CaptionML=[DEU=Benutzer-ID;
+                                                              ENU=User ID] }
+    { 25  ;   ;Source Code         ;Code10        ;TableRelation="Source Code";
+                                                   CaptionML=[DEU=Herkunftscode;
+                                                              ENU=Source Code] }
+    { 33  ;   ;Global Dimension 1 Code;Code20     ;TableRelation="Dimension Value".Code WHERE (Global Dimension No.=CONST(1));
+                                                   CaptionML=[DEU=Globaler Dimensionscode 1;
+                                                              ENU=Global Dimension 1 Code];
+                                                   CaptionClass='1,1,1' }
+    { 34  ;   ;Global Dimension 2 Code;Code20     ;TableRelation="Dimension Value".Code WHERE (Global Dimension No.=CONST(2));
+                                                   CaptionML=[DEU=Globaler Dimensionscode 2;
+                                                              ENU=Global Dimension 2 Code];
+                                                   CaptionClass='1,1,2' }
+    { 45  ;   ;Journal Batch Name  ;Code10        ;CaptionML=[DEU=Buch.-Blattname;
+                                                              ENU=Journal Batch Name] }
+    { 46  ;   ;Reason Code         ;Code10        ;TableRelation="Reason Code";
+                                                   CaptionML=[DEU=Ursachencode;
+                                                              ENU=Reason Code] }
+    { 54  ;   ;Qty. (Calculated)   ;Decimal       ;CaptionML=[DEU=Menge (berechnet);
+                                                              ENU=Qty. (Calculated)];
+                                                   DecimalPlaces=0:5 }
+    { 55  ;   ;Qty. (Phys. Inventory);Decimal     ;CaptionML=[DEU=Inventurmenge;
+                                                              ENU=Qty. (Phys. Inventory)];
+                                                   DecimalPlaces=0:5 }
+    { 56  ;   ;Last Item Ledger Entry No.;Integer ;TableRelation="Item Ledger Entry";
+                                                   TestTableRelation=No;
+                                                   CaptionML=[DEU=Letzte Artikelposten Lfd. Nr.;
+                                                              ENU=Last Item Ledger Entry No.] }
+    { 60  ;   ;Document Date       ;Date          ;CaptionML=[DEU=Belegdatum;
+                                                              ENU=Document Date] }
+    { 61  ;   ;External Document No.;Code20       ;CaptionML=[DEU=Externe Belegnummer;
+                                                              ENU=External Document No.] }
+    { 64  ;   ;No. Series          ;Code10        ;TableRelation="No. Series";
+                                                   CaptionML=[DEU=Nummernserie;
+                                                              ENU=No. Series] }
+    { 5402;   ;Variant Code        ;Code10        ;TableRelation="Item Variant".Code WHERE (Item No.=FIELD(Item No.));
+                                                   CaptionML=[DEU=Variantencode;
+                                                              ENU=Variant Code] }
+    { 5407;   ;Unit of Measure Code;Code10        ;TableRelation="Item Unit of Measure".Code WHERE (Item No.=FIELD(Item No.));
+                                                   TestTableRelation=No;
+                                                   CaptionML=[DEU=Einheitencode;
+                                                              ENU=Unit of Measure Code] }
+    { 7380;   ;Phys Invt Counting Period Code;Code10;
+                                                   TableRelation="Phys. Invt. Counting Period";
+                                                   CaptionML=[DEU=InventurhÑufigkeitscode;
+                                                              ENU=Phys Invt Counting Period Code];
+                                                   Editable=No }
+    { 7381;   ;Phys Invt Counting Period Type;Option;
+                                                   CaptionML=[DEU=InventurhÑufigk.-Codeherkunft;
+                                                              ENU=Phys Invt Counting Period Type];
+                                                   OptionCaptionML=[DEU=" ,Artikel,Lagerhaltungsdaten";
+                                                                    ENU=" ,Item,SKU"];
+                                                   OptionString=[ ,Item,SKU];
+                                                   Editable=No }
+  }
+  KEYS
+  {
+    {    ;Entry No.                               ;Clustered=Yes }
+    {    ;Item No.,Variant Code,Location Code,Posting Date;
+                                                   SumIndexFields=Quantity }
+    {    ;Item No.,Variant Code,Global Dimension 1 Code,Global Dimension 2 Code,Location Code,Posting Date;
+                                                   SumIndexFields=Quantity;
+                                                   KeyGroups=Item(Dim) }
+    {    ;Document No.,Posting Date                }
+  }
+  FIELDGROUPS
+  {
+    { 1   ;DropDown            ;Entry No.,Item No.,Posting Date,Entry Type,Document No. }
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

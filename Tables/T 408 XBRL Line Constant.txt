@@ -1,0 +1,52 @@
+OBJECT Table 408 XBRL Line Constant
+{
+  OBJECT-PROPERTIES
+  {
+    Date=05.11.08;
+    Time=12:00:00;
+    Version List=NAVW16.00;
+  }
+  PROPERTIES
+  {
+    OnInsert=BEGIN
+               TESTFIELD("XBRL Taxonomy Name");
+             END;
+
+    CaptionML=[DEU=XBRL-Zeilenkonstante;
+               ENU=XBRL Line Constant];
+  }
+  FIELDS
+  {
+    { 1   ;   ;XBRL Taxonomy Name  ;Code20        ;TableRelation="XBRL Taxonomy";
+                                                   CaptionML=[DEU=XBRL-Taxonomiename;
+                                                              ENU=XBRL Taxonomy Name] }
+    { 2   ;   ;XBRL Taxonomy Line No.;Integer     ;TableRelation="XBRL Taxonomy Line"."Line No." WHERE (XBRL Taxonomy Name=FIELD(XBRL Taxonomy Name));
+                                                   CaptionML=[DEU=XBRL-Taxonomiezeilennr.;
+                                                              ENU=XBRL Taxonomy Line No.] }
+    { 3   ;   ;Line No.            ;Integer       ;CaptionML=[DEU=Zeilennr.;
+                                                              ENU=Line No.] }
+    { 4   ;   ;Starting Date       ;Date          ;CaptionML=[DEU=Startdatum;
+                                                              ENU=Starting Date] }
+    { 5   ;   ;Constant Amount     ;Decimal       ;CaptionML=[DEU=Konstanter Betrag;
+                                                              ENU=Constant Amount] }
+    { 6   ;   ;Label Language Filter;Text10       ;FieldClass=FlowFilter;
+                                                   CaptionML=[DEU=Beschriftungssprachenfilter;
+                                                              ENU=Label Language Filter] }
+  }
+  KEYS
+  {
+    {    ;XBRL Taxonomy Name,XBRL Taxonomy Line No.,Line No.;
+                                                   Clustered=Yes }
+    {    ;XBRL Taxonomy Name,XBRL Taxonomy Line No.,Starting Date }
+  }
+  FIELDGROUPS
+  {
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

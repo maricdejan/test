@@ -1,0 +1,44 @@
+OBJECT Table 5068 Salutation
+{
+  OBJECT-PROPERTIES
+  {
+    Date=05.11.08;
+    Time=12:00:00;
+    Version List=NAVW16.00;
+  }
+  PROPERTIES
+  {
+    OnDelete=VAR
+               SalutationFormula@1000 : Record 5069;
+             BEGIN
+               SalutationFormula.SETRANGE("Salutation Code",Code);
+               SalutationFormula.DELETEALL;
+             END;
+
+    CaptionML=[DEU=Anrede;
+               ENU=Salutation];
+    LookupFormID=Form5153;
+  }
+  FIELDS
+  {
+    { 1   ;   ;Code                ;Code10        ;CaptionML=[DEU=Code;
+                                                              ENU=Code];
+                                                   NotBlank=Yes }
+    { 2   ;   ;Description         ;Text30        ;CaptionML=[DEU=Beschreibung;
+                                                              ENU=Description] }
+  }
+  KEYS
+  {
+    {    ;Code                                    ;Clustered=Yes }
+  }
+  FIELDGROUPS
+  {
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

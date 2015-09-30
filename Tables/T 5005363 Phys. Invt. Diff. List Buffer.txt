@@ -1,0 +1,61 @@
+OBJECT Table 5005363 Phys. Invt. Diff. List Buffer
+{
+  OBJECT-PROPERTIES
+  {
+    Date=01.10.04;
+    Time=12:00:00;
+    Version List=NAVDACH4.00;
+  }
+  PROPERTIES
+  {
+    CaptionML=[DEU=Inventurdiff.-šbers.-Puffer;
+               ENU=Phys. Invt. Diff. List Buffer];
+  }
+  FIELDS
+  {
+    { 1   ;   ;Line No.            ;Integer       ;CaptionML=[DEU=Lfd. Nr.;
+                                                              ENU=Line No.] }
+    { 10  ;   ;Exp. Serial No.     ;Code20        ;CaptionML=[DEU=Erw. Seriennr.;
+                                                              ENU=Exp. Serial No.] }
+    { 11  ;   ;Exp. Lot No.        ;Code20        ;CaptionML=[DEU=Erw. Chargennr.;
+                                                              ENU=Exp. Lot No.] }
+    { 12  ;   ;Exp. Qty. (Base)    ;Decimal       ;CaptionML=[DEU=Erw. Menge (Basis);
+                                                              ENU=Exp. Qty. (Base)];
+                                                   DecimalPlaces=0:5 }
+    { 20  ;   ;Rec. No.            ;Integer       ;CaptionML=[DEU=Erfassung Nr.;
+                                                              ENU=Rec. No.] }
+    { 21  ;   ;Rec. Line No.       ;Integer       ;CaptionML=[DEU=Erfassung Zeilennr.;
+                                                              ENU=Rec. Line No.] }
+    { 22  ;   ;Rec. Serial No.     ;Code20        ;CaptionML=[DEU=Erfassung Seriennr.;
+                                                              ENU=Rec. Serial No.] }
+    { 23  ;   ;Rec. Lot No.        ;Code20        ;CaptionML=[DEU=Erfassung Chargennr.;
+                                                              ENU=Rec. Lot No.] }
+    { 24  ;   ;Rec. Qty. (Base)    ;Decimal       ;CaptionML=[DEU=Erfassung Menge (Basis);
+                                                              ENU=Rec. Qty. (Base)];
+                                                   DecimalPlaces=0:5 }
+    { 30  ;   ;Track. Serial No.   ;Code20        ;CaptionML=[DEU=Verfolg. Seriennr.;
+                                                              ENU=Track. Serial No.] }
+    { 31  ;   ;Track. Lot No.      ;Code20        ;CaptionML=[DEU=Verfolg. Chargennr.;
+                                                              ENU=Track. Lot No.] }
+    { 32  ;   ;Track. Qty. Neg. (Base);Decimal    ;CaptionML=[DEU=Verfolg. Neg. Menge (Basis);
+                                                              ENU=Track. Qty. Neg. (Base)];
+                                                   DecimalPlaces=0:5 }
+    { 33  ;   ;Track. Qty. Pos. (Base);Decimal    ;CaptionML=[DEU=Verfolg. Pos. Menge (Basis);
+                                                              ENU=Track. Qty. Pos. (Base)];
+                                                   DecimalPlaces=0:5 }
+  }
+  KEYS
+  {
+    {    ;Line No.                                ;Clustered=Yes }
+  }
+  FIELDGROUPS
+  {
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

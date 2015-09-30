@@ -1,0 +1,85 @@
+OBJECT Table 5005359 Posted Phys. Invt. Track. Line
+{
+  OBJECT-PROPERTIES
+  {
+    Date=01.10.04;
+    Time=12:00:00;
+    Version List=NAVDACH4.00;
+  }
+  PROPERTIES
+  {
+    CaptionML=[DEU=Geb. Inventurverfolgungszeile;
+               ENU=Posted Phys. Invt. Track. Line];
+    LookupFormID=Form5005369;
+    DrillDownFormID=Form5005369;
+  }
+  FIELDS
+  {
+    { 1   ;   ;Item Tracking No.   ;Integer       ;CaptionML=[DEU=Artikelverfolgungsnr.;
+                                                              ENU=Item Tracking No.] }
+    { 2   ;   ;Line No.            ;Integer       ;CaptionML=[DEU=Zeilennr.;
+                                                              ENU=Line No.] }
+    { 3   ;   ;Document No.        ;Code20        ;CaptionML=[DEU=Belegnr.;
+                                                              ENU=Document No.] }
+    { 11  ;   ;Item No.            ;Code20        ;TableRelation=Item;
+                                                   CaptionML=[DEU=Artikelnr.;
+                                                              ENU=Item No.];
+                                                   Editable=No }
+    { 12  ;   ;Description         ;Text50        ;CaptionML=[DEU=Beschreibung;
+                                                              ENU=Description] }
+    { 13  ;   ;Location Code       ;Code10        ;TableRelation=Location;
+                                                   CaptionML=[DEU=Lagerortcode;
+                                                              ENU=Location Code];
+                                                   Editable=No }
+    { 14  ;   ;Quantity            ;Decimal       ;InitValue=1;
+                                                   CaptionML=[DEU=Menge;
+                                                              ENU=Quantity];
+                                                   DecimalPlaces=0:5 }
+    { 15  ;   ;Serial No.          ;Code20        ;TableRelation="Serial No. Information"."Serial No." WHERE (Item No.=FIELD(Item No.),
+                                                                                                              Variant Code=FIELD(Variant Code));
+                                                   ValidateTableRelation=No;
+                                                   TestTableRelation=No;
+                                                   CaptionML=[DEU=Seriennr.;
+                                                              ENU=Serial No.] }
+    { 18  ;   ;Positive            ;Boolean       ;CaptionML=[DEU=Positiv;
+                                                              ENU=Positive];
+                                                   Editable=No }
+    { 19  ;   ;Warranty Date       ;Date          ;CaptionML=[DEU=Garantiedatum;
+                                                              ENU=Warranty Date] }
+    { 20  ;   ;Expiration Date     ;Date          ;CaptionML=[DEU=Ablaufdatum;
+                                                              ENU=Expiration Date] }
+    { 5400;   ;Lot No.             ;Code20        ;TableRelation="Lot No. Information"."Lot No." WHERE (Item No.=FIELD(Item No.),
+                                                                                                        Variant Code=FIELD(Variant Code));
+                                                   ValidateTableRelation=No;
+                                                   TestTableRelation=No;
+                                                   CaptionML=[DEU=Chargennr.;
+                                                              ENU=Lot No.] }
+    { 5401;   ;Variant Code        ;Code10        ;CaptionML=[DEU=Variantencode;
+                                                              ENU=Variant Code];
+                                                   Editable=No }
+    { 5402;   ;Bin Code            ;Code20        ;TableRelation=Bin.Code WHERE (Location Code=FIELD(Location Code));
+                                                   CaptionML=[DEU=Lagerplatzcode;
+                                                              ENU=Bin Code];
+                                                   Editable=No }
+    { 5005350;;Entry Type          ;Option        ;CaptionML=[DEU=Postenart;
+                                                              ENU=Entry Type];
+                                                   OptionCaptionML=[DEU=" ,Zugang,Abgang";
+                                                                    ENU=" ,Positive Adjmt.,Negative Adjmt."];
+                                                   OptionString=[ ,Positive Adjmt.,Negative Adjmt.] }
+  }
+  KEYS
+  {
+    {    ;Document No.,Item Tracking No.,Line No. ;SumIndexFields=Quantity;
+                                                   Clustered=Yes }
+  }
+  FIELDGROUPS
+  {
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

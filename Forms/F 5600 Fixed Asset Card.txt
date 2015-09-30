@@ -1,0 +1,344 @@
+OBJECT Form 5600 Fixed Asset Card
+{
+  OBJECT-PROPERTIES
+  {
+    Date=07.08.06;
+    Time=12:00:00;
+    Version List=NAVW14.00.03,NAVDACH4.00;
+  }
+  PROPERTIES
+  {
+    Width=16500;
+    Height=7700;
+    CaptionML=[DEU=Anlagenkarte;
+               ENU=Fixed Asset Card];
+    SourceTable=Table5600;
+    UpdateOnActivate=Yes;
+    OnAfterGetRecord=BEGIN
+                       SETRANGE("No.");
+                     END;
+
+  }
+  CONTROLS
+  {
+    { 1   ;TabControl   ;220  ;220  ;16060;3850 ;HorzGlue=Both;
+                                                 PageNamesML=[DEU=Allgemein,Buchen,Wartung;
+                                                              ENU=General,Posting,Maintenance] }
+    { 2   ;TextBox      ;3850 ;990  ;2750 ;440  ;ParentControl=1;
+                                                 InPage=0;
+                                                 SourceExpr="No.";
+                                                 OnAssistEdit=BEGIN
+                                                                IF AssistEdit(xRec) THEN
+                                                                  CurrForm.UPDATE;
+                                                              END;
+                                                               }
+    { 3   ;Label        ;440  ;990  ;3300 ;440  ;ParentControl=2 }
+    { 55  ;PictureBox   ;6710 ;990  ;440  ;440  ;Focusable=No;
+                                                 ParentControl=1;
+                                                 InPage=0;
+                                                 ShowCaption=No;
+                                                 Border=No;
+                                                 BitmapPos=Center;
+                                                 BitmapList=7,6;
+                                                 SourceExpr=Comment }
+    { 56  ;CommandButton;6710 ;990  ;440  ;440  ;ParentControl=1;
+                                                 InPage=0;
+                                                 ShowCaption=No;
+                                                 BackTransparent=Yes;
+                                                 PushAction=RunObject;
+                                                 ToolTipML=[DEU=Bemerkung;
+                                                            ENU=Comment];
+                                                 RunObject=Form 124;
+                                                 RunFormLinkType=OnUpdate;
+                                                 RunFormLink=Table Name=CONST(Fixed Asset),
+                                                             No.=FIELD(No.) }
+    { 4   ;TextBox      ;3850 ;1650 ;5500 ;440  ;ParentControl=1;
+                                                 InPage=0;
+                                                 SourceExpr=Description }
+    { 5   ;Label        ;440  ;1650 ;3300 ;440  ;ParentControl=4 }
+    { 18  ;TextBox      ;12980;990  ;2750 ;440  ;ParentControl=1;
+                                                 InPage=0;
+                                                 SourceExpr="Search Description" }
+    { 19  ;Label        ;9570 ;990  ;3300 ;440  ;ParentControl=18 }
+    { 30  ;CheckBox     ;12980;2860 ;440  ;440  ;ParentControl=1;
+                                                 InPage=0;
+                                                 ShowCaption=No;
+                                                 SourceExpr=Blocked }
+    { 31  ;Label        ;9570 ;2860 ;3300 ;440  ;ParentControl=30 }
+    { 32  ;TextBox      ;12980;3410 ;1650 ;440  ;ParentControl=1;
+                                                 InPage=0;
+                                                 SourceExpr="Last Date Modified" }
+    { 33  ;Label        ;9570 ;3410 ;3300 ;440  ;ParentControl=32 }
+    { 63  ;TextBox      ;12980;1650 ;2750 ;440  ;ParentControl=1;
+                                                 InPage=0;
+                                                 SourceExpr="Responsible Employee" }
+    { 64  ;Label        ;9570 ;1650 ;3300 ;440  ;ParentControl=63 }
+    { 65  ;CheckBox     ;12980;2310 ;440  ;440  ;ParentControl=1;
+                                                 InPage=0;
+                                                 ShowCaption=No;
+                                                 SourceExpr=Inactive }
+    { 66  ;Label        ;9570 ;2310 ;3300 ;440  ;ParentControl=65 }
+    { 26  ;TextBox      ;3850 ;2200 ;5500 ;440  ;ParentControl=1;
+                                                 InPage=0;
+                                                 SourceExpr="Serial No." }
+    { 27  ;Label        ;440  ;2200 ;3300 ;440  ;ParentControl=26 }
+    { 20  ;TextBox      ;3850 ;3410 ;2750 ;440  ;Editable=No;
+                                                 ParentControl=1;
+                                                 InPage=0;
+                                                 NextControl=18;
+                                                 SourceExpr="Component of Main Asset" }
+    { 21  ;Label        ;440  ;3410 ;3300 ;440  ;ParentControl=20 }
+    { 22  ;TextBox      ;3850 ;2860 ;2750 ;440  ;ParentControl=1;
+                                                 InPage=0;
+                                                 SourceExpr="Main Asset/Component" }
+    { 23  ;Label        ;440  ;2860 ;3300 ;440  ;ParentControl=22 }
+    { 43  ;TextBox      ;3850 ;990  ;2750 ;440  ;ParentControl=1;
+                                                 InPage=1;
+                                                 SourceExpr="FA Class Code" }
+    { 44  ;Label        ;440  ;990  ;3300 ;440  ;ParentControl=43 }
+    { 45  ;TextBox      ;3850 ;1540 ;2750 ;440  ;ParentControl=1;
+                                                 InPage=1;
+                                                 SourceExpr="FA Subclass Code" }
+    { 49  ;Label        ;440  ;1540 ;3300 ;440  ;ParentControl=45 }
+    { 52  ;TextBox      ;3850 ;2090 ;2750 ;440  ;ParentControl=1;
+                                                 InPage=1;
+                                                 SourceExpr="FA Location Code" }
+    { 53  ;Label        ;440  ;2090 ;3300 ;440  ;ParentControl=52 }
+    { 16  ;CheckBox     ;3850 ;2640 ;440  ;440  ;ParentControl=1;
+                                                 InPage=1;
+                                                 ShowCaption=No;
+                                                 SourceExpr="Budgeted Asset" }
+    { 17  ;Label        ;440  ;2640 ;3300 ;440  ;ParentControl=16 }
+    { 1160000;TextBox   ;10890;990  ;1700 ;440  ;ParentControl=1;
+                                                 InPage=1;
+                                                 SourceExpr="Start of Use Date" }
+    { 1160001;Label     ;7480 ;990  ;3300 ;440  ;ParentControl=1160000 }
+    { 1160002;TextBox   ;10890;1540 ;2750 ;440  ;ParentControl=1;
+                                                 InPage=1;
+                                                 SourceExpr="BWR Depr. Book Code" }
+    { 1160003;Label     ;7480 ;1540 ;3300 ;440  ;ParentControl=1160002 }
+    { 1160004;TextBox   ;10890;2090 ;1700 ;440  ;ParentControl=1;
+                                                 InPage=1;
+                                                 SourceExpr="Prem Depr. %" }
+    { 1160005;Label     ;7480 ;2090 ;3300 ;440  ;ParentControl=1160004 }
+    { 1160006;TextBox   ;10890;2640 ;2750 ;440  ;ParentControl=1;
+                                                 InPage=1;
+                                                 SourceExpr="Prem. Depr. Amount" }
+    { 1160007;Label     ;7480 ;2640 ;3300 ;440  ;ParentControl=1160006 }
+    { 10  ;TextBox      ;3850 ;990  ;2750 ;440  ;ParentControl=1;
+                                                 InPage=2;
+                                                 SourceExpr="Vendor No." }
+    { 11  ;Label        ;440  ;990  ;3300 ;440  ;ParentControl=10 }
+    { 12  ;TextBox      ;3850 ;1540 ;2750 ;440  ;ParentControl=1;
+                                                 InPage=2;
+                                                 SourceExpr="Maintenance Vendor No." }
+    { 13  ;Label        ;440  ;1540 ;3300 ;440  ;ParentControl=12 }
+    { 14  ;CheckBox     ;3850 ;2200 ;440  ;440  ;ParentControl=1;
+                                                 InPage=2;
+                                                 ShowCaption=No;
+                                                 SourceExpr="Under Maintenance" }
+    { 15  ;Label        ;440  ;2200 ;3300 ;440  ;ParentControl=14 }
+    { 24  ;TextBox      ;3850 ;2750 ;1650 ;440  ;ParentControl=1;
+                                                 InPage=2;
+                                                 SourceExpr="Next Service Date" }
+    { 25  ;Label        ;440  ;2750 ;3300 ;440  ;ParentControl=24 }
+    { 28  ;CheckBox     ;12980;1650 ;440  ;440  ;ParentControl=1;
+                                                 InPage=2;
+                                                 ShowCaption=No;
+                                                 SourceExpr=Insured }
+    { 34  ;Label        ;9570 ;1650 ;3300 ;440  ;ParentControl=28 }
+    { 37  ;TextBox      ;12980;990  ;1650 ;440  ;ParentControl=1;
+                                                 InPage=2;
+                                                 SourceExpr="Warranty Date" }
+    { 38  ;Label        ;9570 ;990  ;3300 ;440  ;ParentControl=37 }
+    { 46  ;CommandButton;14080;6930 ;2200 ;550  ;HorzGlue=Right;
+                                                 VertGlue=Bottom;
+                                                 PushAction=FormHelp }
+    { 47  ;MenuButton   ;9240 ;6930 ;2200 ;550  ;HorzGlue=Right;
+                                                 VertGlue=Bottom;
+                                                 CaptionML=[DEU=A&nlage;
+                                                            ENU=Fixed &Asset];
+                                                 Menu=MENUITEMS
+                                                 {
+                                                   { ID=48;
+                                                     PushAction=LookupTable;
+                                                     ShortCutKey=F5;
+                                                     CaptionML=[DEU=öbersicht;
+                                                                ENU=List] }
+                                                   { ID=51;
+                                                     PushAction=RunObject;
+                                                     CaptionML=[DEU=AfA-&BÅcher;
+                                                                ENU=Depreciation &Books];
+                                                     RunObject=Form 5619;
+                                                     RunFormLinkType=OnUpdate;
+                                                     RunFormLink=FA No.=FIELD(No.) }
+                                                   { ID=7;
+                                                     PushAction=RunObject;
+                                                     ShortCutKey=Ctrl+F5;
+                                                     CaptionML=[DEU=&Posten;
+                                                                ENU=Ledger E&ntries];
+                                                     RunObject=Form 5604;
+                                                     RunFormLinkType=OnUpdate;
+                                                     RunFormView=SORTING(FA No.);
+                                                     RunFormLink=FA No.=FIELD(No.) }
+                                                   { ID=8;
+                                                     PushAction=RunObject;
+                                                     CaptionML=[DEU=S&tornoposten;
+                                                                ENU=Error Ledger Entries];
+                                                     RunObject=Form 5605;
+                                                     RunFormLinkType=OnUpdate;
+                                                     RunFormView=SORTING(Canceled from FA No.);
+                                                     RunFormLink=Canceled from FA No.=FIELD(No.) }
+                                                   { ID=9;
+                                                     PushAction=RunObject;
+                                                     CaptionML=[DEU=Wartu&ngsposten;
+                                                                ENU=Main&tenance Ledger Entries];
+                                                     RunObject=Form 5641;
+                                                     RunFormLinkType=OnUpdate;
+                                                     RunFormView=SORTING(FA No.);
+                                                     RunFormLink=FA No.=FIELD(No.) }
+                                                   { ID=50;
+                                                     PushAction=RunObject;
+                                                     CaptionML=[DEU=Be&merkungen;
+                                                                ENU=Co&mments];
+                                                     RunObject=Form 124;
+                                                     RunFormLinkType=OnUpdate;
+                                                     RunFormLink=Table Name=CONST(Fixed Asset),
+                                                                 No.=FIELD(No.) }
+                                                   { ID=84;
+                                                     PushAction=RunObject;
+                                                     ShortCutKey=Shift+Ctrl+D;
+                                                     CaptionML=[DEU=Dimensionen;
+                                                                ENU=Dimensions];
+                                                     RunObject=Form 540;
+                                                     RunFormLinkType=OnUpdate;
+                                                     RunFormLink=Table ID=CONST(5600),
+                                                                 No.=FIELD(No.) }
+                                                   { ID=36;
+                                                     PushAction=RunObject;
+                                                     CaptionML=[DEU=Bi&ld;
+                                                                ENU=Picture];
+                                                     RunObject=Form 5620;
+                                                     RunFormLinkType=OnUpdate;
+                                                     RunFormLink=No.=FIELD(No.) }
+                                                   { ID=35;
+                                                     PushAction=RunObject;
+                                                     CaptionML=[DEU=&Wartungsregistrierung;
+                                                                ENU=Maintenance &Registration];
+                                                     RunObject=Form 5625;
+                                                     RunFormLinkType=OnUpdate;
+                                                     RunFormLink=FA No.=FIELD(No.) }
+                                                   { ID=29;
+                                                     PushAction=RunObject;
+                                                     CaptionML=[DEU=Unt&eranlagen;
+                                                                ENU=M&ain Asset Components];
+                                                     RunObject=Form 5658;
+                                                     RunFormLinkType=OnUpdate;
+                                                     RunFormLink=Main Asset No.=FIELD(No.) }
+                                                   { ID=57;
+                                                     Ellipsis=Yes;
+                                                     CaptionML=[DEU=Anlage k&opieren;
+                                                                ENU=C&opy Fixed Asset];
+                                                     OnPush=VAR
+                                                              CopyFA@1000 : Report 5685;
+                                                            BEGIN
+                                                              CopyFA.SetFANo("No.");
+                                                              CopyFA.RUNMODAL;
+                                                            END;
+                                                             }
+                                                   { ID=39;
+                                                     PushAction=RunObject;
+                                                     MenuItemType=Separator;
+                                                     CaptionML=[DEU="";
+                                                                ENU=""] }
+                                                   { ID=40;
+                                                     PushAction=RunObject;
+                                                     ShortCutKey=F9;
+                                                     CaptionML=[DEU=Statistik;
+                                                                ENU=Statistics];
+                                                     RunObject=Form 5602;
+                                                     RunFormLinkType=OnUpdate;
+                                                     RunFormLink=FA No.=FIELD(No.) }
+                                                   { ID=41;
+                                                     PushAction=RunObject;
+                                                     CaptionML=[DEU=Hauptanlagenstat&istik;
+                                                                ENU=Ma&in Asset Statistics];
+                                                     RunObject=Form 5603;
+                                                     RunFormLinkType=OnUpdate;
+                                                     RunFormLink=FA No.=FIELD(No.) }
+                                                   { ID=42;
+                                                     PushAction=RunObject;
+                                                     CaptionML=[DEU=Anlagenbu&chungsgruppen öbers.;
+                                                                ENU=FA Posting Types Overview];
+                                                     RunObject=Form 5662 }
+                                                   { ID=68;
+                                                     PushAction=RunObject;
+                                                     CaptionML=[DEU=Versicherte S&umme;
+                                                                ENU=Total Value Ins&ured];
+                                                     RunObject=Form 5649;
+                                                     RunFormLinkType=OnUpdate;
+                                                     RunFormLink=No.=FIELD(No.) }
+                                                 }
+                                                  }
+    { 6   ;SubForm      ;220  ;4290 ;16060;2420 ;Name=DepreciationBook;
+                                                 HorzGlue=Both;
+                                                 VertGlue=Both;
+                                                 Border=No;
+                                                 SubFormID=Form5666;
+                                                 SubFormLink=FA No.=FIELD(No.) }
+    { 54  ;MenuButton   ;11660;6930 ;2200 ;550  ;HorzGlue=Right;
+                                                 VertGlue=Bottom;
+                                                 CaptionML=[DEU=AfA-Bu&ch;
+                                                            ENU=&Depr. Book];
+                                                 Menu=MENUITEMS
+                                                 {
+                                                   { ID=58;
+                                                     CaptionML=[DEU=&Posten;
+                                                                ENU=Ledger E&ntries];
+                                                     OnPush=BEGIN
+                                                              CurrForm.DepreciationBook.FORM.ShowFALedgEntries;
+                                                            END;
+                                                             }
+                                                   { ID=59;
+                                                     CaptionML=[DEU=S&tornoposten;
+                                                                ENU=Error Ledger Entries];
+                                                     OnPush=BEGIN
+                                                              CurrForm.DepreciationBook.FORM.ShowFAErrorLedgEntries;
+                                                            END;
+                                                             }
+                                                   { ID=60;
+                                                     CaptionML=[DEU=Wartungsposten;
+                                                                ENU=Maintenance Ledger Entries];
+                                                     OnPush=BEGIN
+                                                              CurrForm.DepreciationBook.FORM.ShowMaintenanceLedgEntries;
+                                                            END;
+                                                             }
+                                                   { ID=61;
+                                                     MenuItemType=Separator;
+                                                     CaptionML=[DEU="";
+                                                                ENU=""] }
+                                                   { ID=62;
+                                                     CaptionML=[DEU=Statistik;
+                                                                ENU=Statistics];
+                                                     OnPush=BEGIN
+                                                              CurrForm.DepreciationBook.FORM.ShowStatistics;
+                                                            END;
+                                                             }
+                                                   { ID=67;
+                                                     CaptionML=[DEU=Hauptanlagenstat&istik;
+                                                                ENU=Main &Asset Statistics];
+                                                     OnPush=BEGIN
+                                                              CurrForm.DepreciationBook.FORM.ShowMainAssetStatistics;
+                                                            END;
+                                                             }
+                                                 }
+                                                  }
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

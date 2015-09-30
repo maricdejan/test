@@ -1,0 +1,63 @@
+OBJECT Table 44 Sales Comment Line
+{
+  OBJECT-PROPERTIES
+  {
+    Date=05.11.08;
+    Time=12:00:00;
+    Version List=NAVW16.00;
+  }
+  PROPERTIES
+  {
+    CaptionML=[DEU=Verkaufsbemerkungszeile;
+               ENU=Sales Comment Line];
+    LookupFormID=Form69;
+    DrillDownFormID=Form69;
+  }
+  FIELDS
+  {
+    { 1   ;   ;Document Type       ;Option        ;CaptionML=[DEU=Belegart;
+                                                              ENU=Document Type];
+                                                   OptionCaptionML=[DEU=Angebot,Auftrag,Rechnung,Gutschrift,Rahmenauftrag,Reklamation,Lieferung,Geb. Rechnung,Geb. Gutschrift,Geb. RÅcksendung;
+                                                                    ENU=Quote,Order,Invoice,Credit Memo,Blanket Order,Return Order,Shipment,Posted Invoice,Posted Credit Memo,Posted Return Receipt];
+                                                   OptionString=Quote,Order,Invoice,Credit Memo,Blanket Order,Return Order,Shipment,Posted Invoice,Posted Credit Memo,Posted Return Receipt }
+    { 2   ;   ;No.                 ;Code20        ;CaptionML=[DEU=Nr.;
+                                                              ENU=No.] }
+    { 3   ;   ;Line No.            ;Integer       ;CaptionML=[DEU=Zeilennr.;
+                                                              ENU=Line No.] }
+    { 4   ;   ;Date                ;Date          ;CaptionML=[DEU=Datum;
+                                                              ENU=Date] }
+    { 5   ;   ;Code                ;Code10        ;CaptionML=[DEU=Code;
+                                                              ENU=Code] }
+    { 6   ;   ;Comment             ;Text80        ;CaptionML=[DEU=Bemerkung;
+                                                              ENU=Comment] }
+    { 7   ;   ;Document Line No.   ;Integer       ;CaptionML=[DEU=Belegzeilennr.;
+                                                              ENU=Document Line No.] }
+  }
+  KEYS
+  {
+    {    ;Document Type,No.,Document Line No.,Line No.;
+                                                   Clustered=Yes }
+  }
+  FIELDGROUPS
+  {
+  }
+  CODE
+  {
+
+    PROCEDURE SetUpNewLine@1();
+    VAR
+      SalesCommentLine@1000 : Record 44;
+    BEGIN
+      SalesCommentLine.SETRANGE("Document Type","Document Type");
+      SalesCommentLine.SETRANGE("No.","No.");
+      SalesCommentLine.SETRANGE("Document Line No.","Document Line No.");
+      SalesCommentLine.SETRANGE(Date,WORKDATE);
+      IF NOT SalesCommentLine.FIND('-') THEN
+        Date := WORKDATE;
+    END;
+
+    BEGIN
+    END.
+  }
+}
+

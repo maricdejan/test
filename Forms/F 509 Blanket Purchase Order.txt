@@ -1,0 +1,700 @@
+OBJECT Form 509 Blanket Purchase Order
+{
+  OBJECT-PROPERTIES
+  {
+    Date=14.08.09;
+    Time=12:00:00;
+    Version List=NAVW16.00.01,NAVDACH4.00.01;
+  }
+  PROPERTIES
+  {
+    Width=16500;
+    Height=11440;
+    CaptionML=[DEU=Rahmenbestellung;
+               ENU=Blanket Purchase Order];
+    SourceTable=Table38;
+    UpdateOnActivate=Yes;
+    SourceTableView=WHERE(Document Type=FILTER(Blanket Order));
+    OnOpenForm=BEGIN
+                 IF UserMgt.GetPurchasesFilter <> '' THEN BEGIN
+                   FILTERGROUP(2);
+                   SETRANGE("Responsibility Center",UserMgt.GetPurchasesFilter);
+                   FILTERGROUP(0);
+                 END;
+               END;
+
+    OnFindRecord=BEGIN
+                   IF FIND(Which) THEN
+                     EXIT(TRUE)
+                   ELSE BEGIN
+                     SETRANGE("No.");
+                     EXIT(FIND(Which));
+                   END;
+                 END;
+
+    OnAfterGetRecord=BEGIN
+                       SETRANGE("Document Type");
+                     END;
+
+    OnNewRecord=BEGIN
+                  "Responsibility Center" := UserMgt.GetPurchasesFilter;
+                END;
+
+    OnDeleteRecord=BEGIN
+                     CurrForm.SAVERECORD;
+                     EXIT(ConfirmDeletion);
+                   END;
+
+  }
+  CONTROLS
+  {
+    { 1   ;TabControl   ;220  ;220  ;16060;6710 ;HorzGlue=Both;
+                                                 PageNamesML=[DEU=Allgemein,Fakturierung,Lieferung,Au·enhandel;
+                                                              ENU=General,Invoicing,Shipping,Foreign Trade] }
+    { 2   ;TextBox      ;3850 ;990  ;2750 ;440  ;ParentControl=1;
+                                                 InPage=0;
+                                                 SourceExpr="No.";
+                                                 OnAssistEdit=BEGIN
+                                                                IF AssistEdit(xRec) THEN
+                                                                  CurrForm.UPDATE;
+                                                              END;
+                                                               }
+    { 3   ;Label        ;440  ;990  ;3300 ;440  ;ParentControl=2;
+                                                 InPage=0 }
+    { 84  ;PictureBox   ;6710 ;990  ;440  ;440  ;Focusable=No;
+                                                 ParentControl=1;
+                                                 InPage=0;
+                                                 ShowCaption=No;
+                                                 Border=No;
+                                                 BitmapPos=Center;
+                                                 BitmapList=7,6;
+                                                 SourceExpr=Comment }
+    { 95  ;CommandButton;6710 ;990  ;440  ;440  ;ParentControl=1;
+                                                 InPage=0;
+                                                 ShowCaption=No;
+                                                 BackTransparent=Yes;
+                                                 PushAction=RunObject;
+                                                 ToolTipML=[DEU=Bemerkung;
+                                                            ENU=Comment];
+                                                 RunObject=Form 66;
+                                                 RunFormLinkType=OnUpdate;
+                                                 RunFormLink=Document Type=CONST(Blanket Order),
+                                                             No.=FIELD(No.),
+                                                             Document Line No.=CONST(0) }
+    { 4   ;TextBox      ;3850 ;1650 ;2750 ;440  ;ParentControl=1;
+                                                 InPage=0;
+                                                 SourceExpr="Buy-from Vendor No.";
+                                                 OnAfterValidate=BEGIN
+                                                                   CurrForm.UPDATE;
+                                                                 END;
+                                                                  }
+    { 5   ;Label        ;440  ;1650 ;3300 ;440  ;ParentControl=4;
+                                                 InPage=0 }
+    { 6   ;TextBox      ;3850 ;2750 ;5500 ;440  ;ParentControl=1;
+                                                 InPage=0;
+                                                 SourceExpr="Buy-from Vendor Name" }
+    { 7   ;Label        ;440  ;2750 ;3300 ;440  ;ParentControl=6;
+                                                 InPage=0 }
+    { 89  ;TextBox      ;3850 ;3300 ;5500 ;440  ;ParentControl=1;
+                                                 InPage=0;
+                                                 SourceExpr="Buy-from Address" }
+    { 90  ;Label        ;440  ;3300 ;3300 ;440  ;ParentControl=89;
+                                                 InPage=0 }
+    { 91  ;TextBox      ;3850 ;3850 ;5500 ;440  ;ParentControl=1;
+                                                 InPage=0;
+                                                 SourceExpr="Buy-from Address 2" }
+    { 92  ;Label        ;440  ;3850 ;3300 ;440  ;ParentControl=91;
+                                                 InPage=0 }
+    { 93  ;TextBox      ;6710 ;4400 ;2640 ;440  ;ParentControl=1;
+                                                 InPage=0;
+                                                 NextControl=8;
+                                                 SourceExpr="Buy-from City" }
+    { 8   ;TextBox      ;3850 ;5060 ;5500 ;440  ;ParentControl=1;
+                                                 InPage=0;
+                                                 SourceExpr="Buy-from Contact" }
+    { 9   ;Label        ;440  ;5060 ;3300 ;440  ;ParentControl=8;
+                                                 InPage=0 }
+    { 14  ;TextBox      ;12980;990  ;1650 ;440  ;ParentControl=1;
+                                                 InPage=0;
+                                                 SourceExpr="Order Date" }
+    { 15  ;Label        ;9570 ;990  ;3300 ;440  ;ParentControl=14;
+                                                 InPage=0 }
+    { 76  ;TextBox      ;3850 ;4400 ;2750 ;440  ;ParentControl=1;
+                                                 InPage=0;
+                                                 NextControl=93;
+                                                 SourceExpr="Buy-from Post Code" }
+    { 94  ;Label        ;440  ;4400 ;3300 ;440  ;ParentControl=76;
+                                                 CaptionML=[DEU=Eink. von PLZ-Code/Ort;
+                                                            ENU=Buy-from Post Code/City] }
+    { 49  ;TextBox      ;12980;1540 ;1650 ;440  ;ParentControl=1;
+                                                 InPage=0;
+                                                 NextControl=60;
+                                                 SourceExpr="Document Date" }
+    { 99  ;Label        ;9570 ;1540 ;3300 ;440  ;ParentControl=49 }
+    { 16  ;TextBox      ;12980;2200 ;2750 ;440  ;ParentControl=1;
+                                                 InPage=0;
+                                                 SourceExpr="Vendor Order No." }
+    { 17  ;Label        ;9570 ;2200 ;3300 ;440  ;ParentControl=16 }
+    { 18  ;TextBox      ;12980;2750 ;2750 ;440  ;ParentControl=1;
+                                                 InPage=0;
+                                                 SourceExpr="Vendor Shipment No." }
+    { 19  ;Label        ;9570 ;2750 ;3300 ;440  ;ParentControl=18 }
+    { 96  ;TextBox      ;12980;3410 ;2750 ;440  ;ParentControl=1;
+                                                 InPage=0;
+                                                 SourceExpr="Order Address Code" }
+    { 98  ;Label        ;9570 ;3410 ;3300 ;440  ;ParentControl=96 }
+    { 10  ;TextBox      ;12980;3960 ;2750 ;440  ;ParentControl=1;
+                                                 InPage=0;
+                                                 SourceExpr="Purchaser Code";
+                                                 OnAfterValidate=BEGIN
+                                                                   CurrForm.PurchLines.FORM.UpdateForm(TRUE);
+                                                                 END;
+                                                                  }
+    { 11  ;Label        ;9570 ;3960 ;3300 ;440  ;ParentControl=10 }
+    { 122 ;TextBox      ;12980;5060 ;2750 ;440  ;ParentControl=1;
+                                                 InPage=0;
+                                                 SourceExpr="Responsibility Center" }
+    { 123 ;Label        ;9570 ;5060 ;3300 ;440  ;ParentControl=122 }
+    { 124 ;TextBox      ;12980;6270 ;2750 ;440  ;ParentControl=1;
+                                                 InPage=0;
+                                                 SourceExpr=Status }
+    { 125 ;Label        ;9570 ;6270 ;3300 ;440  ;ParentControl=124 }
+    { 128 ;TextBox      ;3850 ;2200 ;2750 ;440  ;ParentControl=1;
+                                                 InPage=0;
+                                                 NextControl=14;
+                                                 SourceExpr="Buy-from Contact No." }
+    { 129 ;Label        ;440  ;2200 ;3300 ;440  ;ParentControl=128 }
+    { 72  ;TextBox      ;12980;5610 ;2750 ;440  ;ParentControl=1;
+                                                 InPage=0;
+                                                 SourceExpr="Assigned User ID" }
+    { 142 ;Label        ;9570 ;5610 ;3300 ;440  ;ParentControl=72 }
+    { 1140000;TextBox   ;3850 ;5720 ;1700 ;440  ;ParentControl=1;
+                                                 InPage=0;
+                                                 NextControl=14;
+                                                 SourceExpr="No. of Archived Versions" }
+    { 1140001;Label     ;440  ;5720 ;3300 ;440  ;ParentControl=1140000 }
+    { 1102601000;TextBox;12980;4510 ;2750 ;440  ;ParentControl=1;
+                                                 InPage=0;
+                                                 SourceExpr="Campaign No." }
+    { 1102601001;Label  ;9570 ;4510 ;3300 ;440  ;ParentControl=1102601000 }
+    { 22  ;TextBox      ;3850 ;990  ;2750 ;440  ;ParentControl=1;
+                                                 InPage=1;
+                                                 SourceExpr="Pay-to Vendor No.";
+                                                 OnAfterValidate=BEGIN
+                                                                   CurrForm.UPDATE;
+                                                                 END;
+                                                                  }
+    { 23  ;Label        ;440  ;990  ;3300 ;440  ;ParentControl=22;
+                                                 InPage=1 }
+    { 24  ;TextBox      ;3850 ;2090 ;5500 ;440  ;ParentControl=1;
+                                                 InPage=1;
+                                                 SourceExpr="Pay-to Name" }
+    { 25  ;Label        ;440  ;2090 ;3300 ;440  ;ParentControl=24;
+                                                 InPage=1 }
+    { 26  ;TextBox      ;3850 ;2640 ;5500 ;440  ;ParentControl=1;
+                                                 InPage=1;
+                                                 SourceExpr="Pay-to Address" }
+    { 27  ;Label        ;440  ;2640 ;3300 ;440  ;ParentControl=26;
+                                                 InPage=1 }
+    { 28  ;TextBox      ;3850 ;3190 ;5500 ;440  ;ParentControl=1;
+                                                 InPage=1;
+                                                 SourceExpr="Pay-to Address 2" }
+    { 29  ;Label        ;440  ;3190 ;3300 ;440  ;ParentControl=28;
+                                                 InPage=1 }
+    { 30  ;TextBox      ;6710 ;3740 ;2640 ;440  ;ParentControl=1;
+                                                 InPage=1;
+                                                 NextControl=32;
+                                                 SourceExpr="Pay-to City" }
+    { 32  ;TextBox      ;3850 ;4400 ;5500 ;440  ;ParentControl=1;
+                                                 InPage=1;
+                                                 SourceExpr="Pay-to Contact" }
+    { 33  ;Label        ;440  ;4400 ;3300 ;440  ;ParentControl=32;
+                                                 InPage=1 }
+    { 34  ;TextBox      ;12980;2200 ;2750 ;440  ;ParentControl=1;
+                                                 InPage=1;
+                                                 SourceExpr="Payment Terms Code" }
+    { 35  ;Label        ;9570 ;2200 ;3300 ;440  ;ParentControl=34;
+                                                 InPage=1 }
+    { 36  ;TextBox      ;12980;2750 ;1650 ;440  ;ParentControl=1;
+                                                 InPage=1;
+                                                 SourceExpr="Due Date" }
+    { 37  ;Label        ;9570 ;2750 ;3300 ;440  ;ParentControl=36;
+                                                 InPage=1 }
+    { 38  ;TextBox      ;12980;3300 ;2750 ;440  ;ParentControl=1;
+                                                 InPage=1;
+                                                 SourceExpr="Payment Discount %" }
+    { 39  ;Label        ;9570 ;3300 ;3300 ;440  ;ParentControl=38;
+                                                 InPage=1 }
+    { 40  ;TextBox      ;12980;3850 ;1650 ;440  ;ParentControl=1;
+                                                 InPage=1;
+                                                 SourceExpr="Pmt. Discount Date" }
+    { 41  ;Label        ;9570 ;3850 ;3300 ;440  ;ParentControl=40;
+                                                 InPage=1 }
+    { 100 ;TextBox      ;12980;990  ;2750 ;440  ;ParentControl=1;
+                                                 InPage=1;
+                                                 SourceExpr="Shortcut Dimension 1 Code";
+                                                 OnAfterValidate=BEGIN
+                                                                   CurrForm.PurchLines.FORM.UpdateForm(TRUE);
+                                                                 END;
+                                                                  }
+    { 101 ;Label        ;9570 ;990  ;3300 ;440  ;ParentControl=100 }
+    { 102 ;TextBox      ;12980;1540 ;2750 ;440  ;ParentControl=1;
+                                                 InPage=1;
+                                                 SourceExpr="Shortcut Dimension 2 Code";
+                                                 OnAfterValidate=BEGIN
+                                                                   CurrForm.PurchLines.FORM.UpdateForm(TRUE);
+                                                                 END;
+                                                                  }
+    { 103 ;Label        ;9570 ;1540 ;3300 ;440  ;ParentControl=102 }
+    { 106 ;TextBox      ;12980;4950 ;2750 ;440  ;ParentControl=1;
+                                                 InPage=1;
+                                                 SourceExpr="On Hold" }
+    { 107 ;Label        ;9570 ;4950 ;3300 ;440  ;ParentControl=106 }
+    { 97  ;TextBox      ;3850 ;3740 ;2750 ;440  ;ParentControl=1;
+                                                 InPage=1;
+                                                 NextControl=30;
+                                                 SourceExpr="Pay-to Post Code" }
+    { 108 ;Label        ;440  ;3740 ;3300 ;440  ;ParentControl=97;
+                                                 CaptionML=[DEU=Zahlung an PLZ-Code/Ort;
+                                                            ENU=Pay-to Post Code/City] }
+    { 78  ;TextBox      ;12980;4400 ;2750 ;440  ;ParentControl=1;
+                                                 InPage=1;
+                                                 SourceExpr="Payment Method Code" }
+    { 79  ;Label        ;9570 ;4400 ;3300 ;440  ;ParentControl=78 }
+    { 66  ;CheckBox     ;12980;5500 ;440  ;440  ;ParentControl=1;
+                                                 InPage=1;
+                                                 ShowCaption=No;
+                                                 SourceExpr="Prices Including VAT";
+                                                 OnAfterValidate=BEGIN
+                                                                   CurrForm.UPDATE;
+                                                                 END;
+                                                                  }
+    { 119 ;Label        ;9570 ;5500 ;3300 ;440  ;ParentControl=66 }
+    { 130 ;TextBox      ;3850 ;1540 ;2750 ;440  ;ParentControl=1;
+                                                 InPage=1;
+                                                 SourceExpr="Pay-to Contact No." }
+    { 131 ;Label        ;440  ;1540 ;3300 ;440  ;ParentControl=130 }
+    { 136 ;TextBox      ;12980;6050 ;2750 ;440  ;ParentControl=1;
+                                                 InPage=1;
+                                                 SourceExpr="VAT Bus. Posting Group" }
+    { 137 ;Label        ;9570 ;6050 ;3300 ;440  ;ParentControl=136 }
+    { 42  ;TextBox      ;3850 ;990  ;5500 ;440  ;ParentControl=1;
+                                                 InPage=2;
+                                                 SourceExpr="Ship-to Name" }
+    { 43  ;Label        ;440  ;990  ;3300 ;440  ;ParentControl=42;
+                                                 InPage=2 }
+    { 44  ;TextBox      ;3850 ;1540 ;5500 ;440  ;ParentControl=1;
+                                                 InPage=2;
+                                                 SourceExpr="Ship-to Address" }
+    { 45  ;Label        ;440  ;1540 ;3300 ;440  ;ParentControl=44;
+                                                 InPage=2 }
+    { 46  ;TextBox      ;3850 ;2090 ;5500 ;440  ;ParentControl=1;
+                                                 InPage=2;
+                                                 SourceExpr="Ship-to Address 2" }
+    { 47  ;Label        ;440  ;2090 ;3300 ;440  ;ParentControl=46;
+                                                 InPage=2 }
+    { 48  ;TextBox      ;6710 ;2640 ;2640 ;440  ;ParentControl=1;
+                                                 InPage=2;
+                                                 NextControl=50;
+                                                 SourceExpr="Ship-to City" }
+    { 50  ;TextBox      ;3850 ;3300 ;5500 ;440  ;ParentControl=1;
+                                                 InPage=2;
+                                                 SourceExpr="Ship-to Contact" }
+    { 51  ;Label        ;440  ;3300 ;3300 ;440  ;ParentControl=50;
+                                                 InPage=2 }
+    { 52  ;TextBox      ;12980;1650 ;2750 ;440  ;ParentControl=1;
+                                                 InPage=2;
+                                                 SourceExpr="Shipment Method Code" }
+    { 53  ;Label        ;9570 ;1650 ;3300 ;440  ;ParentControl=52;
+                                                 InPage=2 }
+    { 54  ;TextBox      ;12980;2200 ;1650 ;440  ;ParentControl=1;
+                                                 InPage=2;
+                                                 SourceExpr="Expected Receipt Date" }
+    { 55  ;Label        ;9570 ;2200 ;3300 ;440  ;ParentControl=54;
+                                                 InPage=2 }
+    { 104 ;TextBox      ;12980;990  ;2750 ;440  ;ParentControl=1;
+                                                 InPage=2;
+                                                 SourceExpr="Location Code" }
+    { 105 ;Label        ;9570 ;990  ;3300 ;440  ;ParentControl=104 }
+    { 109 ;TextBox      ;3850 ;2640 ;2750 ;440  ;ParentControl=1;
+                                                 InPage=2;
+                                                 NextControl=48;
+                                                 SourceExpr="Ship-to Post Code" }
+    { 110 ;Label        ;440  ;2640 ;3300 ;440  ;ParentControl=109;
+                                                 CaptionML=[DEU=Lief. an PLZ-Code/Ort;
+                                                            ENU=Ship-to Post Code/City] }
+    { 56  ;TextBox      ;3850 ;1650 ;2750 ;440  ;ParentControl=1;
+                                                 InPage=3;
+                                                 SourceExpr="Transaction Type" }
+    { 57  ;Label        ;440  ;1650 ;3300 ;440  ;ParentControl=56;
+                                                 InPage=3 }
+    { 58  ;TextBox      ;3850 ;2750 ;2750 ;440  ;ParentControl=1;
+                                                 InPage=3;
+                                                 SourceExpr="Transport Method" }
+    { 59  ;Label        ;440  ;2750 ;3300 ;440  ;ParentControl=58;
+                                                 InPage=3 }
+    { 111 ;TextBox      ;3850 ;3300 ;2750 ;440  ;ParentControl=1;
+                                                 InPage=3;
+                                                 SourceExpr="Entry Point" }
+    { 112 ;Label        ;440  ;3300 ;3300 ;440  ;ParentControl=111 }
+    { 113 ;TextBox      ;3850 ;3850 ;2750 ;440  ;ParentControl=1;
+                                                 InPage=3;
+                                                 SourceExpr=Area }
+    { 114 ;Label        ;440  ;3850 ;3300 ;440  ;ParentControl=113 }
+    { 115 ;TextBox      ;3850 ;2200 ;2750 ;440  ;ParentControl=1;
+                                                 InPage=3;
+                                                 SourceExpr="Transaction Specification" }
+    { 116 ;Label        ;440  ;2200 ;3300 ;440  ;ParentControl=115 }
+    { 12  ;TextBox      ;3850 ;990  ;2750 ;440  ;ParentControl=1;
+                                                 InPage=3;
+                                                 SourceExpr="Currency Code";
+                                                 OnAssistEdit=BEGIN
+                                                                CLEAR(ChangeExchangeRate);
+                                                                ChangeExchangeRate.SetParameter("Currency Code","Currency Factor",WORKDATE);
+                                                                IF ChangeExchangeRate.RUNMODAL = ACTION::OK THEN BEGIN
+                                                                  VALIDATE("Currency Factor",ChangeExchangeRate.GetParameter);
+                                                                  CurrForm.UPDATE;
+                                                                END;
+                                                                CLEAR(ChangeExchangeRate);
+                                                              END;
+
+                                                 OnAfterValidate=BEGIN
+                                                                   CurrForm.PurchLines.FORM.UpdateForm(TRUE);
+                                                                 END;
+                                                                  }
+    { 13  ;Label        ;440  ;990  ;3300 ;440  ;ParentControl=12 }
+    { 60  ;SubForm      ;220  ;7150 ;16060;3300 ;Name=PurchLines;
+                                                 HorzGlue=Both;
+                                                 VertGlue=Both;
+                                                 Border=No;
+                                                 SubFormID=Form510;
+                                                 SubFormLink=Document No.=FIELD(No.) }
+    { 61  ;MenuButton   ;1980 ;10670;2200 ;550  ;HorzGlue=Right;
+                                                 VertGlue=Bottom;
+                                                 CaptionML=[DEU=Bes&tellung;
+                                                            ENU=O&rder];
+                                                 Menu=MENUITEMS
+                                                 {
+                                                   { ID=62;
+                                                     PushAction=LookupTable;
+                                                     ShortCutKey=F5;
+                                                     CaptionML=[DEU=öbersicht;
+                                                                ENU=List] }
+                                                   { ID=63;
+                                                     ShortCutKey=F9;
+                                                     CaptionML=[DEU=Statistik;
+                                                                ENU=Statistics];
+                                                     OnPush=BEGIN
+                                                              CalcInvDiscForHeader;
+                                                              COMMIT;
+                                                              FORM.RUNMODAL(FORM::"Purchase Order Statistics",Rec);
+                                                            END;
+                                                             }
+                                                   { ID=64;
+                                                     PushAction=RunObject;
+                                                     ShortCutKey=Shift+F5;
+                                                     CaptionML=[DEU=Karte;
+                                                                ENU=Card];
+                                                     RunObject=Form 26;
+                                                     RunFormLinkType=OnUpdate;
+                                                     RunFormLink=No.=FIELD(Buy-from Vendor No.) }
+                                                   { ID=65;
+                                                     PushAction=RunObject;
+                                                     CaptionML=[DEU=Be&merkungen;
+                                                                ENU=Co&mments];
+                                                     RunObject=Form 66;
+                                                     RunFormLinkType=OnUpdate;
+                                                     RunFormLink=Document Type=CONST(Blanket Order),
+                                                                 No.=FIELD(No.),
+                                                                 Document Line No.=CONST(0) }
+                                                   { ID=120;
+                                                     CaptionML=[DEU=Dimensionen;
+                                                                ENU=Dimensions];
+                                                     OnPush=BEGIN
+                                                              Rec.ShowDocDim;
+                                                            END;
+                                                             }
+                                                   { ID=138;
+                                                     CaptionML=[DEU=Genehmigungen;
+                                                                ENU=Approvals];
+                                                     OnPush=VAR
+                                                              ApprovalEntries@1000 : Form 658;
+                                                            BEGIN
+                                                              ApprovalEntries.Setfilters(DATABASE::"Purchase Header","Document Type","No.");
+                                                              ApprovalEntries.RUN;
+                                                            END;
+                                                             }
+                                                 }
+                                                  }
+    { 68  ;MenuButton   ;6820 ;10670;2200 ;550  ;HorzGlue=Right;
+                                                 VertGlue=Bottom;
+                                                 CaptionML=[DEU=F&unktion;
+                                                            ENU=F&unctions];
+                                                 Menu=MENUITEMS
+                                                 {
+                                                   { ID=69;
+                                                     CaptionML=[DEU=&Rechnungsrab. berechnen;
+                                                                ENU=Calculate &Invoice Discount];
+                                                     OnPush=BEGIN
+                                                              ApproveCalcInvDisc;
+                                                            END;
+                                                             }
+                                                   { ID=133;
+                                                     MenuItemType=Separator }
+                                                   { ID=71;
+                                                     CaptionML=[DEU=St&Åckliste entfalten;
+                                                                ENU=E&xplode BOM];
+                                                     OnPush=BEGIN
+                                                              CurrForm.PurchLines.FORM.ExplodeBOM;
+                                                            END;
+                                                             }
+                                                   { ID=31;
+                                                     CaptionML=[DEU=Textbausteine &einfÅgen;
+                                                                ENU=Insert &Ext. Texts];
+                                                     OnPush=BEGIN
+                                                              CurrForm.PurchLines.FORM.InsertExtendedText(TRUE);
+                                                            END;
+                                                             }
+                                                   { ID=134;
+                                                     MenuItemType=Separator }
+                                                   { ID=70;
+                                                     Ellipsis=Yes;
+                                                     CaptionML=[DEU=Beleg &kopieren;
+                                                                ENU=Copy Document];
+                                                     OnPush=BEGIN
+                                                              CopyPurchDoc.SetPurchHeader(Rec);
+                                                              CopyPurchDoc.RUNMODAL;
+                                                              CLEAR(CopyPurchDoc);
+                                                            END;
+                                                             }
+                                                   { ID=1140002;
+                                                     CaptionML=[DEU=Beleg ar&chivieren;
+                                                                ENU=Archi&ve Document];
+                                                     OnPush=BEGIN
+                                                              ArchiveManagement.ArchivePurchDocument(Rec);
+                                                              CurrForm.UPDATE(FALSE);
+                                                            END;
+                                                             }
+                                                   { ID=135;
+                                                     MenuItemType=Separator }
+                                                   { ID=140;
+                                                     CaptionML=[DEU=&Genehmigungsanforderung senden;
+                                                                ENU=Send A&pproval Request];
+                                                     OnPush=VAR
+                                                              ApprovalMgt@1000 : Codeunit 439;
+                                                            BEGIN
+                                                              IF ApprovalMgt.SendPurchaseApprovalRequest(Rec) THEN;
+                                                            END;
+                                                             }
+                                                   { ID=141;
+                                                     CaptionML=[DEU=&Genehmigungsanforderung stornieren;
+                                                                ENU=Cancel Approval Re&quest];
+                                                     OnPush=VAR
+                                                              ApprovalMgt@1000 : Codeunit 439;
+                                                            BEGIN
+                                                              IF ApprovalMgt.CancelPurchaseApprovalRequest(Rec,TRUE,TRUE) THEN;
+                                                            END;
+                                                             }
+                                                   { ID=139;
+                                                     MenuItemType=Separator }
+                                                   { ID=126;
+                                                     ShortCutKey=Ctrl+F11;
+                                                     CaptionML=[DEU=&Freigeben;
+                                                                ENU=Re&lease];
+                                                     OnPush=VAR
+                                                              ReleasePurchDoc@1000 : Codeunit 415;
+                                                            BEGIN
+                                                              ReleasePurchDoc.PerformManualRelease(Rec);
+                                                            END;
+                                                             }
+                                                   { ID=127;
+                                                     CaptionML=[DEU=Stat&us zurÅcksetzen;
+                                                                ENU=Re&open];
+                                                     OnPush=VAR
+                                                              ReleasePurchDoc@1001 : Codeunit 415;
+                                                            BEGIN
+                                                              ReleasePurchDoc.PerformManualReopen(Rec);
+                                                            END;
+                                                             }
+                                                 }
+                                                  }
+    { 82  ;CommandButton;11660;10670;2200 ;550  ;HorzGlue=Right;
+                                                 VertGlue=Bottom;
+                                                 Ellipsis=Yes;
+                                                 CaptionML=[DEU=D&rucken;
+                                                            ENU=&Print];
+                                                 OnPush=BEGIN
+                                                          DocPrint.PrintPurchHeader(Rec);
+                                                        END;
+                                                         }
+    { 83  ;CommandButton;14080;10670;2200 ;550  ;HorzGlue=Right;
+                                                 VertGlue=Bottom;
+                                                 PushAction=FormHelp }
+    { 77  ;CommandButton;9240 ;10670;2200 ;550  ;HorzGlue=Right;
+                                                 VertGlue=Bottom;
+                                                 CaptionML=[DEU=Bestellung er&st.;
+                                                            ENU=Make &Order];
+                                                 OnPush=VAR
+                                                          SalesHeader@1000 : Record 36;
+                                                          ApprovalMgt@1001 : Codeunit 439;
+                                                        BEGIN
+                                                          IF ApprovalMgt.PrePostApprovalCheck(SalesHeader,Rec) THEN
+                                                            CODEUNIT.RUN(CODEUNIT::"Blnkt Purch Ord. to Ord. (Y/N)",Rec);
+                                                        END;
+                                                         }
+    { 20  ;MenuButton   ;4400 ;10670;2200 ;550  ;HorzGlue=Right;
+                                                 VertGlue=Bottom;
+                                                 CaptionML=[DEU=&Zeile;
+                                                            ENU=&Line];
+                                                 Menu=MENUITEMS
+                                                 {
+                                                   { ID=67;
+                                                     CaptionML=[DEU=ArtikelverfÅgbarkeit nach;
+                                                                ENU=Item Availability by] }
+                                                   { ID=73;
+                                                     MenuLevel=1;
+                                                     CaptionML=[DEU=Periode;
+                                                                ENU=Period];
+                                                     OnPush=BEGIN
+                                                              CurrForm.PurchLines.FORM.ItemAvailability(0);
+                                                            END;
+                                                             }
+                                                   { ID=74;
+                                                     MenuLevel=1;
+                                                     CaptionML=[DEU=Variante;
+                                                                ENU=Variant];
+                                                     OnPush=BEGIN
+                                                              CurrForm.PurchLines.FORM.ItemAvailability(1);
+                                                            END;
+                                                             }
+                                                   { ID=21;
+                                                     MenuLevel=1;
+                                                     CaptionML=[DEU=Lagerort;
+                                                                ENU=Location];
+                                                     OnPush=BEGIN
+                                                              CurrForm.PurchLines.FORM.ItemAvailability(2);
+                                                            END;
+                                                             }
+                                                   { ID=80;
+                                                     CaptionML=[DEU=Nicht gebuchte Zeilen;
+                                                                ENU=Unposted Lines] }
+                                                   { ID=85;
+                                                     MenuLevel=1;
+                                                     CaptionML=[DEU=Bestellungen;
+                                                                ENU=Orders];
+                                                     OnPush=BEGIN
+                                                              CurrForm.PurchLines.FORM.ShowOrders;
+                                                            END;
+                                                             }
+                                                   { ID=86;
+                                                     MenuLevel=1;
+                                                     CaptionML=[DEU=Rechnungen;
+                                                                ENU=Invoices];
+                                                     OnPush=BEGIN
+                                                              CurrForm.PurchLines.FORM.ShowInvoices;
+                                                            END;
+                                                             }
+                                                   { ID=75;
+                                                     MenuLevel=1;
+                                                     CaptionML=[DEU=Reklamationen;
+                                                                ENU=Return Orders];
+                                                     OnPush=BEGIN
+                                                              CurrForm.PurchLines.FORM.ShowReturnOrders;
+                                                            END;
+                                                             }
+                                                   { ID=87;
+                                                     MenuLevel=1;
+                                                     CaptionML=[DEU=Gutschriften;
+                                                                ENU=Credit Memos];
+                                                     OnPush=BEGIN
+                                                              CurrForm.PurchLines.FORM.ShowCreditMemos;
+                                                            END;
+                                                             }
+                                                   { ID=81;
+                                                     CaptionML=[DEU=Gebuchte Zeilen;
+                                                                ENU=Posted Lines] }
+                                                   { ID=88;
+                                                     MenuLevel=1;
+                                                     CaptionML=[DEU=Lieferungen;
+                                                                ENU=Receipts];
+                                                     OnPush=BEGIN
+                                                              CurrForm.PurchLines.FORM.ShowPostedReceipts;
+                                                            END;
+                                                             }
+                                                   { ID=117;
+                                                     MenuLevel=1;
+                                                     CaptionML=[DEU=Rechnungen;
+                                                                ENU=Invoices];
+                                                     OnPush=BEGIN
+                                                              CurrForm.PurchLines.FORM.ShowPostedInvoices;
+                                                            END;
+                                                             }
+                                                   { ID=132;
+                                                     MenuLevel=1;
+                                                     CaptionML=[DEU=RÅck&sendungen;
+                                                                ENU=Return Receipts];
+                                                     OnPush=BEGIN
+                                                              CurrForm.PurchLines.FORM.ShowPostedReturnReceipts;
+                                                            END;
+                                                             }
+                                                   { ID=118;
+                                                     MenuLevel=1;
+                                                     CaptionML=[DEU=Gutschriften;
+                                                                ENU=Credit Memos];
+                                                     OnPush=BEGIN
+                                                              CurrForm.PurchLines.FORM.ShowPostedCreditMemos;
+                                                            END;
+                                                             }
+                                                   { ID=121;
+                                                     ShortCutKey=Shift+Ctrl+D;
+                                                     CaptionML=[DEU=Dimensionen;
+                                                                ENU=Dimensions];
+                                                     OnPush=BEGIN
+                                                              CurrForm.PurchLines.FORM.ShowDimensions;
+                                                            END;
+                                                             }
+                                                   { ID=143;
+                                                     CaptionML=[DEU=Be&merkungen;
+                                                                ENU=Co&mments];
+                                                     OnPush=BEGIN
+                                                              CurrForm.PurchLines.FORM.ShowLineComments;
+                                                            END;
+                                                             }
+                                                   { ID=1140003;
+                                                     MenuItemType=Separator }
+                                                   { ID=1140004;
+                                                     CaptionML=[DEU=&Belegzeilenverfolgung;
+                                                                ENU=Document &Line Tracking];
+                                                     OnPush=BEGIN
+                                                              CurrForm.PurchLines.FORM.ShowDocumentLineTracking;
+                                                            END;
+                                                             }
+                                                 }
+                                                  }
+  }
+  CODE
+  {
+    VAR
+      CurrentPurchLine@1000 : Record 39;
+      PurchLine@1001 : Record 39;
+      PurchRcptLine@1002 : Record 121;
+      PurchInvLine@1003 : Record 123;
+      ReturnShptLine@1010 : Record 6651;
+      PurchCrMemoLine@1004 : Record 125;
+      CopyPurchDoc@1005 : Report 492;
+      DocPrint@1006 : Codeunit 229;
+      PurchSetup@1007 : Record 312;
+      ChangeExchangeRate@1008 : Form 511;
+      UserMgt@1009 : Codeunit 5700;
+      ArchiveManagement@1140000 : Codeunit 5063;
+
+    PROCEDURE ApproveCalcInvDisc@1();
+    BEGIN
+      CurrForm.PurchLines.FORM.ApproveCalcInvDisc;
+    END;
+
+    BEGIN
+    END.
+  }
+}
+

@@ -1,0 +1,156 @@
+OBJECT Page 5005358 Posted Phys. Invt. Order
+{
+  OBJECT-PROPERTIES
+  {
+    Date=05.11.08;
+    Time=12:00:00;
+    Version List=NAVDACH6.00;
+  }
+  PROPERTIES
+  {
+    CaptionML=[DEU=Gebuchter Inventurauftrag;
+               ENU=Posted Phys. Invt. Order];
+    InsertAllowed=No;
+    SourceTable=Table5005354;
+    PageType=Document;
+    ActionList=ACTIONS
+    {
+      { 1900000003;0 ;ActionContainer;
+                      ActionContainerType=RelatedInformation }
+      { 1140024 ;1   ;ActionGroup;
+                      CaptionML=[DEU=Auf&trag;
+                                 ENU=O&rder] }
+      { 1140026 ;2   ;Action    ;
+                      ShortCutKey=F7;
+                      CaptionML=[DEU=Statistik;
+                                 ENU=Statistics];
+                      RunObject=Page 5005373;
+                      RunFormLink=No.=FIELD(No.);
+                      Promoted=Yes;
+                      Image=Statistics;
+                      PromotedCategory=Process }
+      { 1140027 ;2   ;Action    ;
+                      CaptionML=[DEU=Be&merkungen;
+                                 ENU=Co&mments];
+                      RunObject=Page 5005366;
+                      RunFormLink=Document Type=CONST(Posted Order),
+                                  Order No.=FIELD(No.),
+                                  Recording No.=CONST(0);
+                      Image=ViewComments }
+      { 1140028 ;2   ;Action    ;
+                      CaptionML=[DEU=&Erfassungen;
+                                 ENU=&Recordings];
+                      RunObject=Page 5005363;
+                      RunFormView=SORTING(Order No.,Recording No.);
+                      RunFormLink=Order No.=FIELD(No.) }
+      { 1140029 ;2   ;Action    ;
+                      CaptionML=[DEU=Dimensionen;
+                                 ENU=Dimensions];
+                      RunObject=Page 547;
+                      RunFormLink=Table ID=CONST(5005354),
+                                  Document No.=FIELD(No.),
+                                  Line No.=CONST(0);
+                      Image=Dimensions }
+      { 1900000004;0 ;ActionContainer;
+                      ActionContainerType=ActionItems }
+      { 1140030 ;1   ;Action    ;
+                      Ellipsis=Yes;
+                      CaptionML=[DEU=D&rucken;
+                                 ENU=&Print];
+                      Promoted=Yes;
+                      Image=Print;
+                      PromotedCategory=Process;
+                      OnAction=VAR
+                                 DocPrint@1001 : Codeunit 229;
+                               BEGIN
+                                 PrintDocumentComfort.PostedPhysInvtOrderPrint(Rec,TRUE);
+                               END;
+                                }
+      { 1140039 ;1   ;Action    ;
+                      CaptionML=[DEU=&Navigate;
+                                 ENU=&Navigate];
+                      Promoted=Yes;
+                      Image=Navigate;
+                      PromotedCategory=Process;
+                      OnAction=BEGIN
+                                 Navigate;
+                               END;
+                                }
+      { 1900000006;0 ;ActionContainer;
+                      ActionContainerType=Reports }
+      { 1903725706;1 ;Action    ;
+                      CaptionML=[DEU=Geb. Inventurauftr.-Diff.;
+                                 ENU=Posted Phys. Invt. Order Diff.];
+                      RunObject=Report 5005351;
+                      Promoted=No;
+                      PromotedCategory=Report }
+    }
+  }
+  CONTROLS
+  {
+    { 1900000001;0;Container;
+                ContainerType=ContentArea }
+
+    { 1140000;1;Group     ;
+                CaptionML=[DEU=Allgemein;
+                           ENU=General] }
+
+    { 1140001;2;Field     ;
+                SourceExpr="No.";
+                Editable=FALSE }
+
+    { 1140021;2;Field     ;
+                SourceExpr=Description;
+                Editable=FALSE }
+
+    { 1140015;2;Field     ;
+                SourceExpr="Location Code";
+                Importance=Promoted;
+                Editable=FALSE }
+
+    { 1140003;2;Field     ;
+                SourceExpr="Person Responsible";
+                Editable=FALSE }
+
+    { 1140005;2;Field     ;
+                SourceExpr="No. Finished Recordings";
+                Editable=FALSE }
+
+    { 1140007;2;Field     ;
+                SourceExpr="Order Date";
+                Editable=FALSE }
+
+    { 1140009;2;Field     ;
+                SourceExpr="Posting Date";
+                Editable=FALSE }
+
+    { 1140019;2;Field     ;
+                SourceExpr="Pre-Assigned No.";
+                Editable=FALSE }
+
+    { 1140011;2;Field     ;
+                SourceExpr="Shortcut Dimension 1 Code";
+                Editable=FALSE }
+
+    { 1140013;2;Field     ;
+                SourceExpr="Shortcut Dimension 2 Code";
+                Editable=FALSE }
+
+    { 1140031;1;Part      ;
+                Name=OrderLines;
+                SubFormView=SORTING(Document No.,Line No.);
+                SubFormLink=Document No.=FIELD(No.);
+                PagePartID=Page5005360 }
+
+  }
+  CODE
+  {
+    VAR
+      CalcPhysInvtOrderLines@1140000 : Report 5005350;
+      PrintDocumentComfort@1140001 : Codeunit 5005396;
+
+    BEGIN
+    END.
+  }
+}
+

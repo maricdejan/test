@@ -1,0 +1,46 @@
+OBJECT Table 5074 Delivery Sorter
+{
+  OBJECT-PROPERTIES
+  {
+    Date=05.11.08;
+    Time=12:00:00;
+    Version List=NAVW16.00;
+  }
+  PROPERTIES
+  {
+    CaptionML=[DEU=Versandsortierung;
+               ENU=Delivery Sorter];
+  }
+  FIELDS
+  {
+    { 1   ;   ;No.                 ;Integer       ;CaptionML=[DEU=Nr.;
+                                                              ENU=No.] }
+    { 2   ;   ;Attachment No.      ;Integer       ;TableRelation=Attachment;
+                                                   CaptionML=[DEU=Dateianhangsnr.;
+                                                              ENU=Attachment No.] }
+    { 3   ;   ;Correspondence Type ;Option        ;CaptionML=[DEU=Korrespondenzart;
+                                                              ENU=Correspondence Type];
+                                                   OptionCaptionML=[DEU=" ,Brief,E-Mail,Fax";
+                                                                    ENU=" ,Hard Copy,E-Mail,Fax"];
+                                                   OptionString=[ ,Hard Copy,E-Mail,Fax] }
+    { 4   ;   ;Subject             ;Text50        ;CaptionML=[DEU=Betreff;
+                                                              ENU=Subject] }
+    { 5   ;   ;Send Word Docs. as Attmt.;Boolean  ;CaptionML=[DEU=Word-Dokumente als Anh. senden;
+                                                              ENU=Send Word Docs. as Attmt.] }
+  }
+  KEYS
+  {
+    {    ;No.                                     ;Clustered=Yes }
+    {    ;Attachment No.,Correspondence Type,Subject,Send Word Docs. as Attmt. }
+  }
+  FIELDGROUPS
+  {
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

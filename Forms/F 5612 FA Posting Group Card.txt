@@ -1,0 +1,387 @@
+OBJECT Form 5612 FA Posting Group Card
+{
+  OBJECT-PROPERTIES
+  {
+    Date=08.06.01;
+    Time=12:00:00;
+    Version List=NAVW13.00;
+  }
+  PROPERTIES
+  {
+    Width=13420;
+    Height=6930;
+    CaptionML=[DEU=Anlagenbuchungsgruppenkarte;
+               ENU=FA Posting Group Card];
+    SourceTable=Table5606;
+    UpdateOnActivate=Yes;
+    OnAfterGetRecord=BEGIN
+                       SETRANGE(Code);
+                     END;
+
+  }
+  CONTROLS
+  {
+    { 1   ;TabControl   ;220  ;220  ;12980;5720 ;HorzGlue=Both;
+                                                 VertGlue=Both;
+                                                 PageNamesML=[DEU=Allgemein,Gegenkonto,Bruttoverkauf,Verteilung;
+                                                              ENU=General,Balancing Account,Gross Disposal,Allocation] }
+    { 2   ;TextBox      ;3850 ;990  ;2750 ;440  ;ParentControl=1;
+                                                 InPage=0;
+                                                 SourceExpr=Code }
+    { 3   ;Label        ;440  ;990  ;3300 ;440  ;ParentControl=2 }
+    { 4   ;TextBox      ;3850 ;1650 ;2750 ;440  ;ParentControl=1;
+                                                 InPage=0;
+                                                 SourceExpr="Acquisition Cost Account" }
+    { 5   ;Label        ;440  ;1650 ;3300 ;440  ;ParentControl=4 }
+    { 6   ;TextBox      ;3850 ;2200 ;2750 ;440  ;ParentControl=1;
+                                                 InPage=0;
+                                                 SourceExpr="Accum. Depreciation Account" }
+    { 7   ;Label        ;440  ;2200 ;3300 ;440  ;ParentControl=6 }
+    { 8   ;TextBox      ;3850 ;2860 ;2750 ;440  ;ParentControl=1;
+                                                 InPage=0;
+                                                 SourceExpr="Write-Down Account" }
+    { 9   ;Label        ;440  ;2860 ;3300 ;440  ;ParentControl=8 }
+    { 10  ;TextBox      ;3850 ;3410 ;2750 ;440  ;ParentControl=1;
+                                                 InPage=0;
+                                                 SourceExpr="Appreciation Account" }
+    { 11  ;Label        ;440  ;3410 ;3300 ;440  ;ParentControl=10 }
+    { 12  ;TextBox      ;3850 ;4070 ;2750 ;440  ;ParentControl=1;
+                                                 InPage=0;
+                                                 SourceExpr="Custom 1 Account" }
+    { 13  ;Label        ;440  ;4070 ;3300 ;440  ;ParentControl=12 }
+    { 14  ;TextBox      ;3850 ;4620 ;2750 ;440  ;ParentControl=1;
+                                                 InPage=0;
+                                                 SourceExpr="Custom 2 Account" }
+    { 15  ;Label        ;440  ;4620 ;3300 ;440  ;ParentControl=14 }
+    { 16  ;TextBox      ;10230;990  ;2750 ;440  ;ParentControl=1;
+                                                 InPage=0;
+                                                 SourceExpr="Acq. Cost Acc. on Disposal" }
+    { 17  ;Label        ;6820 ;990  ;3300 ;440  ;ParentControl=16 }
+    { 18  ;TextBox      ;10230;1540 ;2750 ;440  ;ParentControl=1;
+                                                 InPage=0;
+                                                 SourceExpr="Accum. Depr. Acc. on Disposal" }
+    { 19  ;Label        ;6820 ;1540 ;3300 ;440  ;ParentControl=18 }
+    { 20  ;TextBox      ;10230;2200 ;2750 ;440  ;ParentControl=1;
+                                                 InPage=0;
+                                                 SourceExpr="Write-Down Acc. on Disposal" }
+    { 21  ;Label        ;6820 ;2200 ;3300 ;440  ;ParentControl=20 }
+    { 22  ;TextBox      ;10230;2750 ;2750 ;440  ;ParentControl=1;
+                                                 InPage=0;
+                                                 SourceExpr="Appreciation Acc. on Disposal" }
+    { 23  ;Label        ;6820 ;2750 ;3300 ;440  ;ParentControl=22 }
+    { 24  ;TextBox      ;10230;3410 ;2750 ;440  ;ParentControl=1;
+                                                 InPage=0;
+                                                 SourceExpr="Custom 1 Account on Disposal" }
+    { 25  ;Label        ;6820 ;3410 ;3300 ;440  ;ParentControl=24 }
+    { 26  ;TextBox      ;10230;3960 ;2750 ;440  ;ParentControl=1;
+                                                 InPage=0;
+                                                 SourceExpr="Custom 2 Account on Disposal" }
+    { 27  ;Label        ;6820 ;3960 ;3300 ;440  ;ParentControl=26 }
+    { 28  ;TextBox      ;10230;4620 ;2750 ;440  ;ParentControl=1;
+                                                 InPage=0;
+                                                 SourceExpr="Gains Acc. on Disposal" }
+    { 29  ;Label        ;6820 ;4620 ;3300 ;440  ;ParentControl=28 }
+    { 30  ;TextBox      ;10230;5170 ;2750 ;440  ;ParentControl=1;
+                                                 InPage=0;
+                                                 SourceExpr="Losses Acc. on Disposal" }
+    { 31  ;Label        ;6820 ;5170 ;3300 ;440  ;ParentControl=30 }
+    { 58  ;TextBox      ;3850 ;5280 ;2750 ;440  ;ParentControl=1;
+                                                 InPage=0;
+                                                 SourceExpr="Maintenance Expense Account" }
+    { 59  ;Label        ;440  ;5280 ;3300 ;440  ;ParentControl=58 }
+    { 36  ;TextBox      ;3850 ;990  ;2750 ;440  ;ParentControl=1;
+                                                 InPage=1;
+                                                 SourceExpr="Acquisition Cost Bal. Acc." }
+    { 37  ;Label        ;440  ;990  ;3300 ;440  ;ParentControl=36 }
+    { 38  ;TextBox      ;3850 ;1540 ;2750 ;440  ;ParentControl=1;
+                                                 InPage=1;
+                                                 SourceExpr="Depreciation Expense Acc." }
+    { 39  ;Label        ;440  ;1540 ;3300 ;440  ;ParentControl=38 }
+    { 40  ;TextBox      ;3850 ;2200 ;2750 ;440  ;ParentControl=1;
+                                                 InPage=1;
+                                                 SourceExpr="Write-Down Expense Acc." }
+    { 41  ;Label        ;440  ;2200 ;3300 ;440  ;ParentControl=40 }
+    { 42  ;TextBox      ;3850 ;2750 ;2750 ;440  ;ParentControl=1;
+                                                 InPage=1;
+                                                 SourceExpr="Appreciation Bal. Account" }
+    { 43  ;Label        ;440  ;2750 ;3300 ;440  ;ParentControl=42 }
+    { 44  ;TextBox      ;3850 ;3410 ;2750 ;440  ;ParentControl=1;
+                                                 InPage=1;
+                                                 SourceExpr="Custom 1 Expense Acc." }
+    { 45  ;Label        ;440  ;3410 ;3300 ;440  ;ParentControl=44 }
+    { 46  ;TextBox      ;3850 ;3960 ;2750 ;440  ;ParentControl=1;
+                                                 InPage=1;
+                                                 SourceExpr="Custom 2 Expense Acc." }
+    { 47  ;Label        ;440  ;3960 ;3300 ;440  ;ParentControl=46 }
+    { 48  ;TextBox      ;3850 ;4620 ;2750 ;440  ;ParentControl=1;
+                                                 InPage=1;
+                                                 SourceExpr="Sales Bal. Acc." }
+    { 49  ;Label        ;440  ;4620 ;3300 ;440  ;ParentControl=48 }
+    { 50  ;TextBox      ;10230;990  ;2750 ;440  ;ParentControl=1;
+                                                 InPage=1;
+                                                 SourceExpr="Write-Down Bal. Acc. on Disp." }
+    { 51  ;Label        ;6820 ;990  ;3300 ;440  ;ParentControl=50 }
+    { 52  ;TextBox      ;10230;1540 ;2750 ;440  ;ParentControl=1;
+                                                 InPage=1;
+                                                 SourceExpr="Apprec. Bal. Acc. on Disp." }
+    { 53  ;Label        ;6820 ;1540 ;3300 ;440  ;ParentControl=52 }
+    { 54  ;TextBox      ;10230;2200 ;2750 ;440  ;ParentControl=1;
+                                                 InPage=1;
+                                                 SourceExpr="Custom 1 Bal. Acc. on Disposal" }
+    { 55  ;Label        ;6820 ;2200 ;3300 ;440  ;ParentControl=54 }
+    { 56  ;TextBox      ;10230;2750 ;2750 ;440  ;ParentControl=1;
+                                                 InPage=1;
+                                                 SourceExpr="Custom 2 Bal. Acc. on Disposal" }
+    { 57  ;Label        ;6820 ;2750 ;3300 ;440  ;ParentControl=56 }
+    { 60  ;TextBox      ;3850 ;5280 ;2750 ;440  ;ParentControl=1;
+                                                 InPage=1;
+                                                 SourceExpr="Maintenance Bal. Acc." }
+    { 61  ;Label        ;440  ;5280 ;3300 ;440  ;ParentControl=60 }
+    { 123 ;TextBox      ;3850 ;3300 ;2750 ;440  ;ParentControl=1;
+                                                 InPage=2;
+                                                 SourceExpr="Book Val. Acc. on Disp. (Gain)" }
+    { 119 ;Label        ;660  ;3300 ;3080 ;440  ;ParentControl=123;
+                                                 CaptionML=[DEU=Gewinnkonto;
+                                                            ENU=Gain Account] }
+    { 124 ;TextBox      ;3850 ;2090 ;2750 ;440  ;ParentControl=1;
+                                                 InPage=2;
+                                                 SourceExpr="Sales Acc. on Disp. (Loss)" }
+    { 120 ;Label        ;660  ;2090 ;3080 ;440  ;ParentControl=124;
+                                                 CaptionML=[DEU=Verlustkonto;
+                                                            ENU=Loss Account] }
+    { 125 ;TextBox      ;3850 ;3850 ;2750 ;440  ;ParentControl=1;
+                                                 InPage=2;
+                                                 SourceExpr="Book Val. Acc. on Disp. (Loss)" }
+    { 121 ;Label        ;660  ;3850 ;3080 ;440  ;ParentControl=125;
+                                                 CaptionML=[DEU=Verlustkonto;
+                                                            ENU=Loss Account] }
+    { 126 ;TextBox      ;3850 ;1540 ;2750 ;440  ;ParentControl=1;
+                                                 InPage=2;
+                                                 SourceExpr="Sales Acc. on Disp. (Gain)" }
+    { 122 ;Label        ;660  ;1540 ;3080 ;440  ;ParentControl=126;
+                                                 CaptionML=[DEU=Gewinnkonto;
+                                                            ENU=Gain Account] }
+    { 68  ;Label        ;440  ;990  ;6160 ;440  ;ParentControl=1;
+                                                 InPage=2;
+                                                 LeaderDots=No;
+                                                 CaptionML=[DEU=Kto. Erl”se b. Verk.;
+                                                            ENU=Sales Acc. on Disposal] }
+    { 69  ;Label        ;440  ;2750 ;5940 ;440  ;ParentControl=1;
+                                                 InPage=2;
+                                                 LeaderDots=No;
+                                                 CaptionML=[DEU=Kto. Buchwert b. Verk.;
+                                                            ENU=Book Value Acc. on Disposal] }
+    { 100 ;TextBox      ;3850 ;1650 ;2750 ;440  ;ParentControl=1;
+                                                 InPage=3;
+                                                 CaptionML=[DEU=Anschaffungskosten;
+                                                            ENU=Acquisition Cost];
+                                                 SourceExpr="Allocated Acquisition Cost %" }
+    { 110 ;Label        ;440  ;1650 ;3300 ;440  ;ParentControl=100 }
+    { 101 ;TextBox      ;3850 ;2200 ;2750 ;440  ;ParentControl=1;
+                                                 InPage=3;
+                                                 CaptionML=[DEU=Normal-AfA;
+                                                            ENU=Depreciation];
+                                                 SourceExpr="Allocated Depreciation %" }
+    { 111 ;Label        ;440  ;2200 ;3300 ;440  ;ParentControl=101 }
+    { 102 ;Label        ;3850 ;990  ;2750 ;440  ;ParentControl=1;
+                                                 InPage=3;
+                                                 HorzAlign=Right;
+                                                 LeaderDots=No;
+                                                 CaptionML=[DEU=Verteilt %;
+                                                            ENU=Allocated %] }
+    { 103 ;TextBox      ;3850 ;2860 ;2750 ;440  ;ParentControl=1;
+                                                 InPage=3;
+                                                 CaptionML=[DEU=Erh”hte AfA;
+                                                            ENU=Write-Down];
+                                                 SourceExpr="Allocated Write-Down %" }
+    { 112 ;Label        ;440  ;2860 ;3300 ;440  ;ParentControl=103 }
+    { 104 ;TextBox      ;3850 ;3410 ;2750 ;440  ;ParentControl=1;
+                                                 InPage=3;
+                                                 CaptionML=[DEU=Zuschreibung;
+                                                            ENU=Appreciation];
+                                                 SourceExpr="Allocated Appreciation %" }
+    { 113 ;Label        ;440  ;3410 ;3300 ;440  ;ParentControl=104 }
+    { 105 ;TextBox      ;3850 ;4070 ;2750 ;440  ;ParentControl=1;
+                                                 InPage=3;
+                                                 CaptionML=[DEU=Sonder-AfA;
+                                                            ENU=Custom 1];
+                                                 SourceExpr="Allocated Custom 1 %" }
+    { 114 ;Label        ;440  ;4070 ;3300 ;440  ;ParentControl=105 }
+    { 106 ;TextBox      ;3850 ;4620 ;2750 ;440  ;ParentControl=1;
+                                                 InPage=3;
+                                                 CaptionML=[DEU=Benutzerdef. AfA;
+                                                            ENU=Custom 2];
+                                                 SourceExpr="Allocated Custom 2 %" }
+    { 115 ;Label        ;440  ;4620 ;3300 ;440  ;ParentControl=106 }
+    { 107 ;TextBox      ;3850 ;5280 ;2750 ;440  ;ParentControl=1;
+                                                 InPage=3;
+                                                 CaptionML=[DEU=Wartung;
+                                                            ENU=Maintenance];
+                                                 SourceExpr="Allocated Maintenance %" }
+    { 116 ;Label        ;440  ;5280 ;3300 ;440  ;ParentControl=107 }
+    { 108 ;TextBox      ;10230;1650 ;2750 ;440  ;ParentControl=1;
+                                                 InPage=3;
+                                                 CaptionML=[DEU=Gewinn;
+                                                            ENU=Gain];
+                                                 SourceExpr="Allocated Gain %" }
+    { 117 ;Label        ;6820 ;1650 ;3300 ;440  ;ParentControl=108 }
+    { 109 ;TextBox      ;10230;2200 ;2750 ;440  ;ParentControl=1;
+                                                 InPage=3;
+                                                 CaptionML=[DEU=Verlust;
+                                                            ENU=Loss];
+                                                 SourceExpr="Allocated Loss %" }
+    { 118 ;Label        ;6820 ;2200 ;3300 ;440  ;ParentControl=109 }
+    { 127 ;Label        ;10230;990  ;2750 ;440  ;ParentControl=1;
+                                                 InPage=3;
+                                                 HorzAlign=Right;
+                                                 LeaderDots=No;
+                                                 CaptionML=[DEU=Verteilt %;
+                                                            ENU=Allocated %] }
+    { 32  ;TextBox      ;10230;2750 ;2750 ;440  ;ParentControl=1;
+                                                 InPage=3;
+                                                 CaptionML=[DEU=Buchwert (Gewinn);
+                                                            ENU=Book Value (Gain)];
+                                                 SourceExpr="Allocated Book Value % (Gain)" }
+    { 33  ;Label        ;6820 ;2750 ;3300 ;440  ;ParentControl=32 }
+    { 34  ;TextBox      ;10230;3300 ;2750 ;440  ;ParentControl=1;
+                                                 InPage=3;
+                                                 CaptionML=[DEU=Buchwert (Verlust);
+                                                            ENU=Book Value (Loss)];
+                                                 SourceExpr="Allocated Book Value % (Loss)" }
+    { 35  ;Label        ;6820 ;3300 ;3300 ;440  ;ParentControl=34 }
+    { 62  ;CommandButton;11000;6160 ;2200 ;550  ;HorzGlue=Right;
+                                                 VertGlue=Bottom;
+                                                 PushAction=FormHelp }
+    { 63  ;MenuButton   ;8580 ;6160 ;2200 ;550  ;HorzGlue=Right;
+                                                 VertGlue=Bottom;
+                                                 CaptionML=[DEU=B&uchungsgruppe;
+                                                            ENU=P&osting Gr.];
+                                                 Menu=MENUITEMS
+                                                 {
+                                                   { ID=64;
+                                                     PushAction=LookupTable;
+                                                     ShortCutKey=F5;
+                                                     CaptionML=[DEU=šbersicht;
+                                                                ENU=List] }
+                                                   { ID=84;
+                                                     CaptionML=[DEU=Verteilungen;
+                                                                ENU=Allocations] }
+                                                   { ID=65;
+                                                     PushAction=RunObject;
+                                                     MenuLevel=1;
+                                                     CaptionML=[DEU=Anschaffung;
+                                                                ENU=Acquisition];
+                                                     RunObject=Form 5623;
+                                                     RunFormLinkType=OnUpdate;
+                                                     RunFormLink=Code=FIELD(Code),
+                                                                 Allocation Type=CONST(Acquisition) }
+                                                   { ID=66;
+                                                     PushAction=RunObject;
+                                                     MenuLevel=1;
+                                                     CaptionML=[DEU=Normal-AfA;
+                                                                ENU=Depreciation];
+                                                     RunObject=Form 5623;
+                                                     RunFormLinkType=OnUpdate;
+                                                     RunFormLink=Code=FIELD(Code),
+                                                                 Allocation Type=CONST(Depreciation) }
+                                                   { ID=85;
+                                                     PushAction=RunObject;
+                                                     MenuLevel=1;
+                                                     CaptionML=[DEU=Erh”hte AfA;
+                                                                ENU=Write-Down];
+                                                     RunObject=Form 5623;
+                                                     RunFormLinkType=OnUpdate;
+                                                     RunFormLink=Code=FIELD(Code),
+                                                                 Allocation Type=CONST(Write-Down) }
+                                                   { ID=86;
+                                                     PushAction=RunObject;
+                                                     MenuLevel=1;
+                                                     CaptionML=[DEU=&Zuschreibung;
+                                                                ENU=Appr&eciation];
+                                                     RunObject=Form 5623;
+                                                     RunFormLinkType=OnUpdate;
+                                                     RunFormLink=Code=FIELD(Code),
+                                                                 Allocation Type=CONST(Appreciation) }
+                                                   { ID=87;
+                                                     PushAction=RunObject;
+                                                     MenuLevel=1;
+                                                     CaptionML=[DEU=Sonder-AfA;
+                                                                ENU=Custom 1];
+                                                     RunObject=Form 5623;
+                                                     RunFormLinkType=OnUpdate;
+                                                     RunFormLink=Code=FIELD(Code),
+                                                                 Allocation Type=CONST(Custom 1) }
+                                                   { ID=88;
+                                                     PushAction=RunObject;
+                                                     MenuLevel=1;
+                                                     CaptionML=[DEU=&Benutzerdef. 2;
+                                                                ENU=C&ustom 2];
+                                                     RunObject=Form 5623;
+                                                     RunFormLinkType=OnUpdate;
+                                                     RunFormLink=Code=FIELD(Code),
+                                                                 Allocation Type=CONST(Custom 2) }
+                                                   { ID=89;
+                                                     PushAction=RunObject;
+                                                     MenuLevel=1;
+                                                     CaptionML=[DEU=&Verkauf;
+                                                                ENU=Disp&osal];
+                                                     RunObject=Form 5623;
+                                                     RunFormLinkType=OnUpdate;
+                                                     RunFormLink=Code=FIELD(Code),
+                                                                 Allocation Type=CONST(Disposal) }
+                                                   { ID=90;
+                                                     PushAction=RunObject;
+                                                     MenuLevel=1;
+                                                     CaptionML=[DEU=Wartung;
+                                                                ENU=Maintenance];
+                                                     RunObject=Form 5623;
+                                                     RunFormLinkType=OnUpdate;
+                                                     RunFormLink=Code=FIELD(Code),
+                                                                 Allocation Type=CONST(Maintenance) }
+                                                   { ID=91;
+                                                     PushAction=RunObject;
+                                                     MenuLevel=1;
+                                                     CaptionML=[DEU=Gewinn;
+                                                                ENU=Gain];
+                                                     RunObject=Form 5623;
+                                                     RunFormLinkType=OnUpdate;
+                                                     RunFormLink=Code=FIELD(Code),
+                                                                 Allocation Type=CONST(Gain) }
+                                                   { ID=92;
+                                                     PushAction=RunObject;
+                                                     MenuLevel=1;
+                                                     CaptionML=[DEU=Ver&lust;
+                                                                ENU=Loss];
+                                                     RunObject=Form 5623;
+                                                     RunFormLinkType=OnUpdate;
+                                                     RunFormLink=Code=FIELD(Code),
+                                                                 Allocation Type=CONST(Loss) }
+                                                   { ID=93;
+                                                     PushAction=RunObject;
+                                                     MenuLevel=1;
+                                                     CaptionML=[DEU=B&uchwert (Gewinn);
+                                                                ENU=Book Value (Gain)];
+                                                     RunObject=Form 5623;
+                                                     RunFormLinkType=OnUpdate;
+                                                     RunFormLink=Code=FIELD(Code),
+                                                                 Allocation Type=CONST("Book Value (Gain)") }
+                                                   { ID=67;
+                                                     PushAction=RunObject;
+                                                     MenuLevel=1;
+                                                     CaptionML=[DEU=Bu&chwert (Verlust);
+                                                                ENU=Book &Value (Loss)];
+                                                     RunObject=Form 5623;
+                                                     RunFormLinkType=OnUpdate;
+                                                     RunFormLink=Code=FIELD(Code),
+                                                                 Allocation Type=CONST("Book Value (Loss)") }
+                                                 }
+                                                  }
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

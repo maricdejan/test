@@ -1,0 +1,155 @@
+OBJECT Table 5745 Transfer Shipment Line
+{
+  OBJECT-PROPERTIES
+  {
+    Date=05.11.08;
+    Time=12:00:00;
+    Version List=NAVW16.00;
+  }
+  PROPERTIES
+  {
+    OnDelete=BEGIN
+               DimMgt.DeletePostedDocDim(DATABASE::"Transfer Shipment Line","Document No.","Line No.");
+             END;
+
+    CaptionML=[DEU=Umlagerungsausgangszeile;
+               ENU=Transfer Shipment Line];
+    LookupFormID=Form5758;
+  }
+  FIELDS
+  {
+    { 1   ;   ;Document No.        ;Code20        ;CaptionML=[DEU=Belegnr.;
+                                                              ENU=Document No.] }
+    { 2   ;   ;Line No.            ;Integer       ;CaptionML=[DEU=Zeilennr.;
+                                                              ENU=Line No.] }
+    { 3   ;   ;Item No.            ;Code20        ;TableRelation=Item;
+                                                   CaptionML=[DEU=Artikelnr.;
+                                                              ENU=Item No.] }
+    { 4   ;   ;Quantity            ;Decimal       ;CaptionML=[DEU=Menge;
+                                                              ENU=Quantity];
+                                                   DecimalPlaces=0:5 }
+    { 5   ;   ;Unit of Measure     ;Text10        ;CaptionML=[DEU=Einheit;
+                                                              ENU=Unit of Measure] }
+    { 7   ;   ;Description         ;Text50        ;CaptionML=[DEU=Beschreibung;
+                                                              ENU=Description] }
+    { 8   ;   ;Shortcut Dimension 1 Code;Code20   ;TableRelation="Dimension Value".Code WHERE (Global Dimension No.=CONST(1));
+                                                   CaptionML=[DEU=Shortcutdimensionscode 1;
+                                                              ENU=Shortcut Dimension 1 Code];
+                                                   CaptionClass='1,2,1' }
+    { 9   ;   ;Shortcut Dimension 2 Code;Code20   ;TableRelation="Dimension Value".Code WHERE (Global Dimension No.=CONST(2));
+                                                   CaptionML=[DEU=Shortcutdimensionscode 2;
+                                                              ENU=Shortcut Dimension 2 Code];
+                                                   CaptionClass='1,2,2' }
+    { 10  ;   ;Gen. Prod. Posting Group;Code10    ;TableRelation="Gen. Product Posting Group";
+                                                   CaptionML=[DEU=Produktbuchungsgruppe;
+                                                              ENU=Gen. Prod. Posting Group] }
+    { 11  ;   ;Inventory Posting Group;Code10     ;TableRelation="Inventory Posting Group";
+                                                   CaptionML=[DEU=Lagerbuchungsgruppe;
+                                                              ENU=Inventory Posting Group] }
+    { 12  ;   ;Quantity (Base)     ;Decimal       ;CaptionML=[DEU=Menge (Basis);
+                                                              ENU=Quantity (Base)];
+                                                   DecimalPlaces=0:5 }
+    { 14  ;   ;Qty. per Unit of Measure;Decimal   ;InitValue=1;
+                                                   CaptionML=[DEU=Menge pro Einheit;
+                                                              ENU=Qty. per Unit of Measure];
+                                                   DecimalPlaces=0:5 }
+    { 15  ;   ;Unit of Measure Code;Code10        ;TableRelation="Item Unit of Measure".Code WHERE (Item No.=FIELD(Item No.));
+                                                   CaptionML=[DEU=Einheitencode;
+                                                              ENU=Unit of Measure Code] }
+    { 16  ;   ;Gross Weight        ;Decimal       ;CaptionML=[DEU=Bruttogewicht;
+                                                              ENU=Gross Weight];
+                                                   DecimalPlaces=0:5 }
+    { 17  ;   ;Net Weight          ;Decimal       ;CaptionML=[DEU=Nettogewicht;
+                                                              ENU=Net Weight];
+                                                   DecimalPlaces=0:5 }
+    { 18  ;   ;Unit Volume         ;Decimal       ;CaptionML=[DEU=Volumen;
+                                                              ENU=Unit Volume];
+                                                   DecimalPlaces=0:5 }
+    { 21  ;   ;Variant Code        ;Code10        ;TableRelation="Item Variant".Code WHERE (Item No.=FIELD(Item No.));
+                                                   CaptionML=[DEU=Variantencode;
+                                                              ENU=Variant Code] }
+    { 22  ;   ;Units per Parcel    ;Decimal       ;CaptionML=[DEU=Anzahl pro Paket;
+                                                              ENU=Units per Parcel];
+                                                   DecimalPlaces=0:5 }
+    { 23  ;   ;Description 2       ;Text50        ;CaptionML=[DEU=Beschreibung 2;
+                                                              ENU=Description 2] }
+    { 24  ;   ;Transfer Order No.  ;Code20        ;TableRelation="Transfer Header";
+                                                   ValidateTableRelation=No;
+                                                   TestTableRelation=No;
+                                                   CaptionML=[DEU=Umlagerungsauftragsnr.;
+                                                              ENU=Transfer Order No.] }
+    { 25  ;   ;Shipment Date       ;Date          ;CaptionML=[DEU=Warenausg.-Datum;
+                                                              ENU=Shipment Date] }
+    { 26  ;   ;Shipping Agent Code ;Code10        ;TableRelation="Shipping Agent";
+                                                   CaptionML=[DEU=Zustellercode;
+                                                              ENU=Shipping Agent Code] }
+    { 27  ;   ;Shipping Agent Service Code;Code10 ;TableRelation="Shipping Agent Services".Code WHERE (Shipping Agent Code=FIELD(Shipping Agent Code));
+                                                   CaptionML=[DEU=Zustellertransportartencode;
+                                                              ENU=Shipping Agent Service Code] }
+    { 28  ;   ;In-Transit Code     ;Code10        ;TableRelation=Location WHERE (Use As In-Transit=CONST(Yes));
+                                                   CaptionML=[DEU=In Transit Code;
+                                                              ENU=In-Transit Code];
+                                                   Editable=No }
+    { 29  ;   ;Transfer-from Code  ;Code10        ;TableRelation=Location WHERE (Use As In-Transit=CONST(No));
+                                                   CaptionML=[DEU=Umlag. von Code;
+                                                              ENU=Transfer-from Code];
+                                                   Editable=No }
+    { 30  ;   ;Transfer-to Code    ;Code10        ;TableRelation=Location WHERE (Use As In-Transit=CONST(No));
+                                                   CaptionML=[DEU=Umlag. nach Code;
+                                                              ENU=Transfer-to Code];
+                                                   Editable=No }
+    { 31  ;   ;Item Shpt. Entry No.;Integer       ;CaptionML=[DEU=Artikellief. Lfd. Nr.;
+                                                              ENU=Item Shpt. Entry No.] }
+    { 32  ;   ;Shipping Time       ;DateFormula   ;CaptionML=[DEU=Transportzeit;
+                                                              ENU=Shipping Time] }
+    { 5704;   ;Item Category Code  ;Code10        ;TableRelation="Item Category";
+                                                   CaptionML=[DEU=Artikelkategoriencode;
+                                                              ENU=Item Category Code] }
+    { 5707;   ;Product Group Code  ;Code10        ;TableRelation="Product Group".Code WHERE (Item Category Code=FIELD(Item Category Code));
+                                                   CaptionML=[DEU=Produktgruppencode;
+                                                              ENU=Product Group Code] }
+    { 7300;   ;Transfer-from Bin Code;Code20      ;TableRelation=Bin.Code WHERE (Location Code=FIELD(Transfer-from Code),
+                                                                                 Item Filter=FIELD(Item No.),
+                                                                                 Variant Filter=FIELD(Variant Code));
+                                                   CaptionML=[DEU=Umlag. von Lagerplatzcode;
+                                                              ENU=Transfer-from Bin Code] }
+  }
+  KEYS
+  {
+    {    ;Document No.,Line No.                   ;Clustered=Yes }
+    {    ;Transfer Order No.,Item No.,Shipment Date }
+  }
+  FIELDGROUPS
+  {
+  }
+  CODE
+  {
+    VAR
+      DimMgt@1001 : Codeunit 408;
+
+    PROCEDURE ShowDimensions@25();
+    VAR
+      PostedDocDim@1000 : Record 359;
+      PostedDocDimensions@1001 : Form 547;
+    BEGIN
+      TESTFIELD("Document No.");
+      TESTFIELD("Line No.");
+      PostedDocDim.SETRANGE("Table ID",DATABASE::"Transfer Shipment Line");
+      PostedDocDim.SETRANGE("Document No.","Document No.");
+      PostedDocDim.SETRANGE("Line No.","Line No.");
+      PostedDocDimensions.SETTABLEVIEW(PostedDocDim);
+      PostedDocDimensions.RUNMODAL;
+    END;
+
+    PROCEDURE ShowItemTrackingLines@3();
+    VAR
+      ItemTrackingMgt@1000 : Codeunit 6500;
+    BEGIN
+      ItemTrackingMgt.CallPostedItemTrackingForm(DATABASE::"Transfer Shipment Line",0,"Document No.",'',0,"Line No.");
+    END;
+
+    BEGIN
+    END.
+  }
+}
+

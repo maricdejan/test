@@ -1,0 +1,471 @@
+OBJECT Table 11002 GDPdU Definition Group
+{
+  OBJECT-PROPERTIES
+  {
+    Date=14.08.09;
+    Time=12:00:00;
+    Version List=NAVDACH6.00.01;
+  }
+  PROPERTIES
+  {
+    DataCaptionFields=Code,Description;
+    OnDelete=VAR
+               GDPdURecordDef@1140000 : Record 11003;
+             BEGIN
+               GDPdURecordDef.SETRANGE("Definition Group Code",Code);
+               GDPdURecordDef.DELETEALL(TRUE);
+             END;
+
+    CaptionML=[DEU=GDPdU Definitionsgruppe;
+               ENU=GDPdU Definition Group];
+    LookupFormID=Form11002;
+  }
+  FIELDS
+  {
+    { 1   ;   ;Code                ;Code10        ;CaptionML=[DEU=Code;
+                                                              ENU=Code];
+                                                   NotBlank=Yes }
+    { 2   ;   ;Description         ;Text50        ;CaptionML=[DEU=Beschreibung;
+                                                              ENU=Description] }
+    { 11002;  ;Wizard Step         ;Option        ;CaptionML=[DEU=Assistentenschritt;
+                                                              ENU=Wizard Step];
+                                                   OptionCaptionML=[DEU=" ,1,2,3,4,5,6";
+                                                                    ENU=" ,1,2,3,4,5,6"];
+                                                   OptionString=[ ,1,2,3,4,5,6];
+                                                   Editable=No }
+    { 11003;  ;Record Code         ;Code10        ;TableRelation="GDPdU Record Code";
+                                                   OnValidate=VAR
+                                                                GDPdURecordCode@1140000 : Record 11007;
+                                                              BEGIN
+                                                                IF GDPdURecordCode.GET("Record Code") AND (Description = '') THEN
+                                                                  "Record Description" := GDPdURecordCode.Description;
+                                                              END;
+
+                                                   CaptionML=[DEU=Datensatzcode;
+                                                              ENU=Record Code];
+                                                   NotBlank=Yes }
+    { 11004;  ;Record Description  ;Text50        ;CaptionML=[DEU=Datensatzbeschreibung;
+                                                              ENU=Record Description] }
+    { 11005;  ;Export Path         ;Text100       ;OnValidate=BEGIN
+                                                                RecDefTemp.VALIDATE("Export Path","Export Path");
+                                                              END;
+
+                                                   CaptionML=[DEU=Exportpfad;
+                                                              ENU=Export Path] }
+    { 11006;  ;Export File Name    ;Text250       ;CaptionML=[DEU=Exportdateiname;
+                                                              ENU=Export File Name] }
+    { 11007;  ;Table No.           ;Integer       ;TableRelation=AllObj."Object ID" WHERE (Object Type=CONST(Table));
+                                                   OnValidate=BEGIN
+                                                                CheckTableNo("Table No.");
+                                                                CALCFIELDS("Table Name");
+                                                                IF "Table No." <> xRec."Table No." THEN BEGIN
+                                                                  CLEAR("GDPdU Period Field No.");
+                                                                  CALCFIELDS("GDPdU Period Field Name");
+                                                                END;
+                                                              END;
+
+                                                   CaptionML=[DEU=Tabellennr.;
+                                                              ENU=Table No.];
+                                                   NotBlank=Yes;
+                                                   BlankZero=Yes }
+    { 11008;  ;Table Name          ;Text80        ;FieldClass=FlowField;
+                                                   CalcFormula=Lookup(AllObjWithCaption."Object Caption" WHERE (Object Type=CONST(Table),
+                                                                                                                Object ID=FIELD(Table No.)));
+                                                   CaptionML=[DEU=Tabellenname;
+                                                              ENU=Table Name];
+                                                   Editable=No }
+    { 11009;  ;Relation To Table No.;Integer      ;TableRelation="GDPdU Record Def. Table"."Table No." WHERE (Record Code=FIELD(Record Code));
+                                                   OnValidate=BEGIN
+                                                                CALCFIELDS("Relation To Table Name");
+                                                              END;
+
+                                                   CaptionML=[DEU=Relation zu Tabellennr.;
+                                                              ENU=Relation To Table No.];
+                                                   BlankZero=Yes }
+    { 11010;  ;Relation To Table Name;Text80      ;FieldClass=FlowField;
+                                                   CalcFormula=Lookup(AllObjWithCaption."Object Caption" WHERE (Object Type=CONST(Table),
+                                                                                                                Object ID=FIELD(Relation To Table No.)));
+                                                   CaptionML=[DEU=Relation zu Tabellenname;
+                                                              ENU=Relation To Table Name];
+                                                   Editable=No }
+    { 11011;  ;GDPdU Period Field No.;Integer     ;TableRelation=Field.No. WHERE (TableNo=FIELD(Table No.),
+                                                                                  Type=FILTER(Date),
+                                                                                  Class=CONST(Normal));
+                                                   OnValidate=BEGIN
+                                                                CALCFIELDS("GDPdU Period Field Name");
+                                                              END;
+
+                                                   OnLookup=VAR
+                                                              Field@1140000 : Record 2000000041;
+                                                            BEGIN
+                                                              TESTFIELD("Table No.");
+                                                              Field.SETRANGE(TableNo,"Table No.");
+                                                              Field.SETRANGE(Type,Field.Type::Date);
+                                                              Field.SETRANGE(Class,Field.Class::Normal);
+                                                              IF FORM.RUNMODAL(FORM::"GDPdU Field List",Field,Field."Field Caption") = ACTION::LookupOK THEN
+                                                                VALIDATE("GDPdU Period Field No.",Field."No.");
+                                                            END;
+
+                                                   CaptionML=[DEU=GDPdU Periodenfeldnr.;
+                                                              ENU=GDPdU Period Field No.];
+                                                   BlankZero=Yes }
+    { 11012;  ;GDPdU Period Field Name;Text80     ;FieldClass=FlowField;
+                                                   CalcFormula=Lookup(Field."Field Caption" WHERE (TableNo=FIELD(Table No.),
+                                                                                                   No.=FIELD(GDPdU Period Field No.)));
+                                                   CaptionML=[DEU=GDPdU Periodenfeldname;
+                                                              ENU=GDPdU Period Field Name];
+                                                   Editable=No }
+  }
+  KEYS
+  {
+    {    ;Code                                    ;Clustered=Yes }
+  }
+  FIELDGROUPS
+  {
+    { 1   ;DropDown            ;Code,Description                         }
+  }
+  CODE
+  {
+    VAR
+      RecDefTemp@1101100009 : TEMPORARY Record 11003;
+      RecDefTabTemp@1101100008 : TEMPORARY Record 11004;
+      FieldTemp@1101100007 : TEMPORARY Record 2000000041;
+      TableRelTemp@1101100006 : TEMPORARY Record 11006;
+      Text000@1101100014 : TextConst 'DEU=Die %1 besteht bereits. Bitte geben Sie einen anderen %2 an.;ENU=The %1 already exists. Please enter another %2.';
+      Text001@1101100013 : TextConst 'DEU=Sie mÅssen erst eine Tabelle auswÑhlen.;ENU=You must choose a table first.';
+      Text002@1101100012 : TextConst 'DEU=Sie mÅssen erst die Felder auswÑhlen, die exportiert werden sollen.;ENU=You must choose the fields for the export first.';
+      Text003@1101100011 : TextConst 'DEU=Sie mÅssen erst eine Tabellenrelation eintragen.;ENU=You must enter a table relation first.';
+      Text004@1101100010 : TextConst 'DEU=Sie haben die Tabelle %1 schon definiert. Bitte wÑhlen Sie eine neue Tabelle aus.;ENU=You have defined the table %1 already. Please choose another table.';
+      RelationToTableNo@1101100001 : Integer;
+
+    PROCEDURE CreateDefGroupFromDefGroup@1(VAR DefGroup@1000 : Record 11002);
+    VAR
+      Cont@1001 : Record 5050;
+      SalesPurchPerson@1002 : Record 13;
+      Team@1003 : Record 5083;
+      Campaign@1004 : Record 5071;
+      Opp@1005 : Record 5092;
+      SegHeader@1006 : Record 5076;
+    BEGIN
+      DELETEALL;
+      INIT;
+      Code := DefGroup.Code;
+
+      StartWizard;
+    END;
+
+    PROCEDURE StartWizard@37();
+    VAR
+      InteractionTmplSetup@1000 : Record 5122;
+    BEGIN
+      TESTFIELD(Code);
+      "Wizard Step" := "Wizard Step"::"1";
+      INSERT;
+      FORM.RUNMODAL(FORM::"GDPdU Create Record Definition",Rec);
+    END;
+
+    PROCEDURE PerformNextWizardStatus@31();
+    VAR
+      InteractTmpl@1000 : Record 5064;
+      Opp@1001 : Record 5092;
+    BEGIN
+      "Wizard Step" := "Wizard Step" + 1;
+      IF ("Wizard Step" = 7) THEN
+        "Wizard Step" := 3;
+    END;
+
+    PROCEDURE PerformPrevWizardStatus@36(AddTableSelection@1101100000 : Boolean);
+    BEGIN
+      "Wizard Step" := "Wizard Step" - 1;
+      IF ("Wizard Step" = 2) AND
+         AddTableSelection
+      THEN
+        "Wizard Step" := 6;
+    END;
+
+    PROCEDURE PerformPostStep@44();
+    BEGIN
+    END;
+
+    PROCEDURE CheckStatus@1140002() : Boolean;
+    VAR
+      GDPdURecordDef@1140000 : Record 11003;
+      GDPdURecDefFld@1140001 : Record 11005;
+      ok@1140002 : Boolean;
+    BEGIN
+      CASE "Wizard Step" OF
+        "Wizard Step"::"1":
+          BEGIN
+            TESTFIELD("Record Code");
+            TESTFIELD("Record Description");
+            TESTFIELD("Export Path");
+
+            IF GDPdURecordDef.GET(Code,"Record Code") THEN
+              ERROR(Text000,GDPdURecordDef.TABLECAPTION,GDPdURecordDef.FIELDCAPTION("Record Code"));
+
+            RecDefTemp."Definition Group Code" := Code;
+            RecDefTemp."Record Code" := "Record Code";
+            RecDefTemp.Description := "Record Description";
+            RecDefTemp."Export Path" := "Export Path";
+            IF NOT RecDefTemp.INSERT THEN
+              RecDefTemp.MODIFY;
+          END;
+        "Wizard Step"::"2","Wizard Step"::"5":
+          BEGIN
+            IF "Table No." = 0 THEN
+              ERROR(Text001);
+            TESTFIELD("Export File Name");
+            CheckTableNo("Table No.");
+            InsertRecDefTabTemp;
+          END;
+        "Wizard Step"::"3":
+          BEGIN
+            FilterField(FieldTemp,FALSE);
+            IF NOT FieldTemp.FIND('-') THEN
+              ERROR(Text002);
+          END;
+        "Wizard Step"::"4":
+          BEGIN
+            InsertData;
+            "Relation To Table No." := "Table No.";
+            "Table No." := 0;
+            "GDPdU Period Field No." := 0;
+            "Export File Name" := '';
+          END;
+        "Wizard Step"::"6":
+          BEGIN
+            FilterTableRel(TableRelTemp,FALSE);
+            IF NOT TableRelTemp.FINDFIRST THEN BEGIN
+              ok := FALSE;
+              IF RecDefTabTemp.FINDLAST THEN REPEAT
+                IF RecDefTabTemp."Table No." = "Table No." THEN BEGIN
+                  RecDefTabTemp.Indentation := 0;
+                  RecDefTabTemp."Relation To Table No." := 0;
+                  RecDefTabTemp.MODIFY;
+                  ok := TRUE;
+                END;
+                IF RecDefTabTemp.NEXT(-1) = 0 THEN
+                  ok := TRUE;
+              UNTIL ok = TRUE;
+            END;
+          END;
+      END;
+      EXIT(TRUE);
+    END;
+
+    PROCEDURE FinishWizard@29() : Boolean;
+    VAR
+      SegLine@1002 : Record 5077;
+      TempAttachment@1001 : Record 5062;
+      SegManagement@1000 : Codeunit 5051;
+    BEGIN
+      "Wizard Step" := "Wizard Step"::" ";
+      DeleteData
+    END;
+
+    LOCAL PROCEDURE CheckTableNo@1140005(TableNo@1140000 : Integer);
+    VAR
+      GDPdURecDefTable@1140001 : Record 11004;
+    BEGIN
+      GDPdURecDefTable.SETRANGE("Definition Group Code",Code);
+      GDPdURecDefTable.SETRANGE("Record Code","Record Code");
+      GDPdURecDefTable.SETRANGE("Table No.",TableNo);
+      IF GDPdURecDefTable.FIND('-') THEN BEGIN
+        GDPdURecDefTable.CALCFIELDS("Table Name");
+        ERROR(Text004,GDPdURecDefTable."Table Name");
+      END;
+    END;
+
+    LOCAL PROCEDURE GetNextLineNo@1140011() : Integer;
+    VAR
+      GDPdURecDefTable@1140000 : Record 11004;
+      NextLineNo@1140001 : Integer;
+    BEGIN
+      GDPdURecDefTable.SETRANGE("Definition Group Code",Code);
+      GDPdURecDefTable.SETRANGE("Record Code","Record Code");
+      IF GDPdURecDefTable.FIND('+') THEN
+        NextLineNo := GDPdURecDefTable."Line No." + 10000
+      ELSE
+        NextLineNo := 10000;
+      EXIT(NextLineNo);
+    END;
+
+    PROCEDURE FilterTableRel@1140006(VAR TabRel@1101100000 : Record 11006;FilterGroup2@1101100001 : Boolean);
+    BEGIN
+      IF FilterGroup2 THEN
+        TabRel.FILTERGROUP(2);
+      TabRel.SETRANGE("Definition Group Code",Code);
+      TabRel.SETRANGE("Record Code","Record Code");
+      TabRel.SETRANGE("From Table No.","Relation To Table No.");
+      TabRel.SETRANGE("To Table No.","Table No.");
+      IF FilterGroup2 THEN
+        TabRel.FILTERGROUP(0);
+    END;
+
+    PROCEDURE FilterField@1101100003(VAR Fld@1101100000 : Record 2000000041;FilterGroup2@1101100001 : Boolean);
+    BEGIN
+      IF FilterGroup2 THEN
+        Fld.FILTERGROUP(2);
+      Fld.SETRANGE(TableNo,"Table No.");
+      IF FilterGroup2 THEN
+        Fld.FILTERGROUP(0);
+    END;
+
+    LOCAL PROCEDURE InsertRecDefTabTemp@1140004();
+    BEGIN
+      DeleteRecDefTabTemp(TRUE);
+
+      RecDefTabTemp.INIT;
+      RecDefTabTemp."Definition Group Code" := Code;
+      RecDefTabTemp."Record Code" := "Record Code";
+      RecDefTabTemp."Line No." := GetNextLineNo;
+      RecDefTabTemp."Table No." := "Table No.";
+      RecDefTabTemp.Indentation := RecDefTabTemp."Line No." / 10000 - 1;
+      RecDefTabTemp."Relation To Table No." := "Relation To Table No.";
+      RecDefTabTemp."GDPdU Period Field No." := "GDPdU Period Field No.";
+      RecDefTabTemp."Export File Name" := "Export File Name";
+      RecDefTabTemp.INSERT;
+      RecDefTabTemp.CALCFIELDS("Table Name","Relation To Table Name","GDPdU Period Field Name");
+    END;
+
+    PROCEDURE GetField@1101100006(VAR Fld@1101100000 : Record 2000000041);
+    BEGIN
+      Fld.DELETEALL;
+
+      FilterField(FieldTemp,FALSE);
+      IF FieldTemp.FIND('-') THEN
+        REPEAT
+          Fld := FieldTemp;
+          Fld.INSERT;
+        UNTIL FieldTemp.NEXT = 0;
+
+      FieldTemp.RESET;
+      FieldTemp.DELETEALL;
+    END;
+
+    PROCEDURE SetField@1101100005(VAR Fld@1101100001 : Record 2000000041);
+    BEGIN
+      FieldTemp.RESET;
+      FieldTemp.DELETEALL;
+
+      IF Fld.FINDSET THEN
+        REPEAT
+          FieldTemp := Fld;
+          FieldTemp.INSERT;
+        UNTIL Fld.NEXT = 0;
+
+      Fld.DELETEALL;
+    END;
+
+    PROCEDURE GetTableRel@1101100002(VAR TabRel@1101100000 : Record 11006);
+    BEGIN
+      TabRel.DELETEALL;
+
+      FilterTableRel(TableRelTemp,FALSE);
+      IF TableRelTemp.FIND('-') THEN
+        REPEAT
+          TabRel := TableRelTemp;
+          TabRel.INSERT;
+        UNTIL TableRelTemp.NEXT = 0;
+
+      TableRelTemp.RESET;
+      TableRelTemp.DELETEALL;
+    END;
+
+    PROCEDURE SetTableRel@49(VAR TabRel@1101100000 : Record 11006);
+    BEGIN
+      TableRelTemp.RESET;
+      TableRelTemp.DELETEALL;
+
+      IF TabRel.FINDSET THEN
+        REPEAT
+          TableRelTemp := TabRel;
+          TableRelTemp.INSERT;
+        UNTIL TabRel.NEXT = 0;
+
+      TabRel.DELETEALL;
+    END;
+
+    LOCAL PROCEDURE InsertData@1140009();
+    VAR
+      GDPdURecordDef@1140000 : Record 11003;
+      GDPdURecDefTable@1140001 : Record 11004;
+      GDPdURecDefFld@1140002 : Record 11005;
+      GDPduTabRelation@1101100000 : Record 11006;
+      NextLineNo@1140003 : Integer;
+    BEGIN
+      IF NOT GDPdURecordDef.GET(Code,"Record Code") THEN BEGIN
+        RecDefTemp.FIND('-');
+        GDPdURecordDef.INIT;
+        GDPdURecordDef := RecDefTemp;
+        GDPdURecordDef.INSERT;
+      END;
+
+      RecDefTabTemp.RESET;
+      RecDefTabTemp.SETRANGE("Definition Group Code",Code);
+      RecDefTabTemp.SETRANGE("Record Code","Record Code");
+      RecDefTabTemp.FIND('-');
+      GDPdURecDefTable.INIT;
+      GDPdURecDefTable := RecDefTabTemp;
+      GDPdURecDefTable.INSERT;
+
+      FieldTemp.FIND('-');
+      REPEAT
+        NextLineNo := NextLineNo + 10000;
+        GDPdURecDefFld.INIT;
+        GDPdURecDefFld."Definition Group Code" := Code;
+        GDPdURecDefFld."Record Code" := "Record Code";
+        GDPdURecDefFld."Table No." := FieldTemp.TableNo;
+        GDPdURecDefFld."Line No." := NextLineNo;
+        GDPdURecDefFld."Field No." := FieldTemp."No.";
+        GDPdURecDefFld.INSERT;
+      UNTIL FieldTemp.NEXT = 0;
+
+      IF TableRelTemp.FIND('-') THEN
+        REPEAT
+          GDPduTabRelation := TableRelTemp;
+          GDPduTabRelation.INSERT;
+        UNTIL TableRelTemp.NEXT = 0;
+
+      DeleteData;
+    END;
+
+    PROCEDURE DeleteData@1140010();
+    BEGIN
+      DeleteFieldTemp(TRUE);
+      DeleteRecDefTabTemp(TRUE);
+      DeleteTableRelTemp(TRUE);
+    END;
+
+    LOCAL PROCEDURE DeleteFieldTemp@1101100007(FilterReset@1101100000 : Boolean);
+    BEGIN
+      IF FilterReset THEN
+        FieldTemp.RESET;
+      FieldTemp.DELETEALL;
+
+      CLEAR(FieldTemp);
+    END;
+
+    LOCAL PROCEDURE DeleteTableRelTemp@1101100004(FilterReset@1101100000 : Boolean);
+    BEGIN
+      IF FilterReset THEN
+        TableRelTemp.RESET;
+      TableRelTemp.DELETEALL;
+
+      CLEAR(TableRelTemp);
+    END;
+
+    LOCAL PROCEDURE DeleteRecDefTabTemp@1101100009(FilterReset@1101100000 : Boolean);
+    BEGIN
+      IF FilterReset THEN
+        RecDefTabTemp.RESET;
+      RecDefTabTemp.DELETEALL;
+
+      CLEAR(RecDefTabTemp);
+    END;
+
+    BEGIN
+    END.
+  }
+}
+

@@ -1,0 +1,40 @@
+OBJECT Table 99000832 Item Availability Line
+{
+  OBJECT-PROPERTIES
+  {
+    Date=05.11.08;
+    Time=12:00:00;
+    Version List=NAVW16.00;
+  }
+  PROPERTIES
+  {
+    CaptionML=[DEU=ArtikelverfÅgbarkeitszeile;
+               ENU=Item Availability Line];
+  }
+  FIELDS
+  {
+    { 1   ;   ;Table No.           ;Integer       ;CaptionML=[DEU=Tabellennr.;
+                                                              ENU=Table No.] }
+    { 2   ;   ;Name                ;Text30        ;CaptionML=[DEU=Name;
+                                                              ENU=Name] }
+    { 3   ;   ;Quantity            ;Decimal       ;CaptionML=[DEU=Menge;
+                                                              ENU=Quantity];
+                                                   DecimalPlaces=0:5 }
+    { 5   ;   ;QuerySource         ;Integer       ;CaptionML=[DEU=Abfragequelle;
+                                                              ENU=QuerySource] }
+  }
+  KEYS
+  {
+    {    ;Name,QuerySource                        ;Clustered=Yes }
+  }
+  FIELDGROUPS
+  {
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

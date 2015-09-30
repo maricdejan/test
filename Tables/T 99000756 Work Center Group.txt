@@ -1,0 +1,79 @@
+OBJECT Table 99000756 Work Center Group
+{
+  OBJECT-PROPERTIES
+  {
+    Date=05.11.08;
+    Time=12:00:00;
+    Version List=NAVW16.00;
+  }
+  PROPERTIES
+  {
+    DataCaptionFields=Code,Name;
+    CaptionML=[DEU=Abteilung;
+               ENU=Work Center Group];
+    LookupFormID=Form99000758;
+    DrillDownFormID=Form99000758;
+  }
+  FIELDS
+  {
+    { 1   ;   ;Code                ;Code10        ;CaptionML=[DEU=Code;
+                                                              ENU=Code];
+                                                   NotBlank=Yes }
+    { 2   ;   ;Name                ;Text30        ;CaptionML=[DEU=Name;
+                                                              ENU=Name] }
+    { 20  ;   ;Date Filter         ;Date          ;FieldClass=FlowFilter;
+                                                   CaptionML=[DEU=Datumsfilter;
+                                                              ENU=Date Filter] }
+    { 21  ;   ;Work Shift Filter   ;Code10        ;FieldClass=FlowFilter;
+                                                   TableRelation="Work Shift";
+                                                   CaptionML=[DEU=Schichtfilter;
+                                                              ENU=Work Shift Filter] }
+    { 22  ;   ;Capacity (Total)    ;Decimal       ;FieldClass=FlowField;
+                                                   CalcFormula=Sum("Calendar Entry"."Capacity (Total)" WHERE (Capacity Type=CONST(Work Center),
+                                                                                                              Work Center Group Code=FIELD(Code),
+                                                                                                              Work Shift Code=FIELD(Work Shift Filter),
+                                                                                                              Date=FIELD(Date Filter)));
+                                                   CaptionML=[DEU=Kapazit„t (Total);
+                                                              ENU=Capacity (Total)];
+                                                   DecimalPlaces=0:5;
+                                                   Editable=No }
+    { 23  ;   ;Capacity (Effective);Decimal       ;FieldClass=FlowField;
+                                                   CalcFormula=Sum("Calendar Entry"."Capacity (Effective)" WHERE (Capacity Type=CONST(Work Center),
+                                                                                                                  Work Center Group Code=FIELD(Code),
+                                                                                                                  Work Shift Code=FIELD(Work Shift Filter),
+                                                                                                                  Date=FIELD(Date Filter)));
+                                                   CaptionML=[DEU=Kapazit„t (effektiv);
+                                                              ENU=Capacity (Effective)];
+                                                   DecimalPlaces=0:5;
+                                                   Editable=No }
+    { 24  ;   ;Prod. Order Need (Qty.);Decimal    ;FieldClass=FlowField;
+                                                   CalcFormula=Sum("Prod. Order Capacity Need"."Allocated Time" WHERE (Status=FIELD(Prod. Order Status Filter),
+                                                                                                                       Work Center Group Code=FIELD(Code),
+                                                                                                                       Date=FIELD(Date Filter),
+                                                                                                                       Requested Only=CONST(No)));
+                                                   CaptionML=[DEU=FA-Zeitbedarf;
+                                                              ENU=Prod. Order Need (Qty.)];
+                                                   DecimalPlaces=0:5;
+                                                   Editable=No }
+    { 47  ;   ;Prod. Order Status Filter;Option   ;FieldClass=FlowFilter;
+                                                   CaptionML=[DEU=FA-Statusfilter;
+                                                              ENU=Prod. Order Status Filter];
+                                                   OptionCaptionML=[DEU=Simuliert,Geplant,Fest geplant,Freigegeben,Beendet;
+                                                                    ENU=Simulated,Planned,Firm Planned,Released,Finished];
+                                                   OptionString=Simulated,Planned,Firm Planned,Released,Finished }
+  }
+  KEYS
+  {
+    {    ;Code                                    ;Clustered=Yes }
+  }
+  FIELDGROUPS
+  {
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

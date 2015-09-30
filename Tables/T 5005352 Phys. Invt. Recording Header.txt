@@ -1,0 +1,140 @@
+OBJECT Table 5005352 Phys. Invt. Recording Header
+{
+  OBJECT-PROPERTIES
+  {
+    Date=05.11.08;
+    Time=12:00:00;
+    Version List=NAVDACH6.00;
+  }
+  PROPERTIES
+  {
+    DataCaptionFields=Order No.,Recording No.,Description;
+    OnInsert=BEGIN
+               TESTFIELD("Order No.");
+               PhysInvtOrderHeader.GET("Order No.");
+               PhysInvtOrderHeader.TESTFIELD(Status, PhysInvtOrderHeader.Status::Open);
+
+               IF "Recording No." = 0 THEN BEGIN
+                 LOCKTABLE;
+                 PhysInvtRecordingHeader.RESET;
+                 PhysInvtRecordingHeader.SETRANGE("Order No.", "Order No.");
+                 IF PhysInvtRecordingHeader.FIND('+') THEN
+                   "Recording No." := PhysInvtRecordingHeader."Recording No." +1
+                 ELSE
+                   "Recording No." := 1;
+               END;
+             END;
+
+    OnModify=BEGIN
+               TESTFIELD(Status,Status::Open);
+             END;
+
+    OnDelete=BEGIN
+               TESTFIELD(Status,Status::Open);
+
+               PhysInvtRecordingLine.RESET;
+               PhysInvtRecordingLine.SETRANGE("Order No.", "Order No.");
+               PhysInvtRecordingLine.SETRANGE("Recording No.", "Recording No.");
+               PhysInvtRecordingLine.DELETEALL(TRUE);
+
+               PhysInvtCommentLine.RESET;
+               PhysInvtCommentLine.SETRANGE("Document Type", PhysInvtCommentLine."Document Type"::Recording);
+               PhysInvtCommentLine.SETRANGE("Order No.", "Order No.");
+               PhysInvtCommentLine.SETRANGE("Recording No.", "Recording No.");
+               PhysInvtCommentLine.DELETEALL;
+             END;
+
+    OnRename=BEGIN
+               ERROR(Text1140000, TABLECAPTION);
+             END;
+
+    CaptionML=[DEU=Inventurerfassungskopf;
+               ENU=Phys. Invt. Recording Header];
+    LookupFormID=Form5005355;
+    DrillDownFormID=Form5005355;
+  }
+  FIELDS
+  {
+    { 1   ;   ;Order No.           ;Code20        ;TableRelation="Phys. Inventory Order Header";
+                                                   OnValidate=BEGIN
+                                                                IF (xRec."Order No." <> '') AND ("Order No." <> xRec."Order No.") THEN
+                                                                  ERROR(Text1140001, FIELDNAME("Order No."));
+                                                              END;
+
+                                                   CaptionML=[DEU=Auftragsnr.;
+                                                              ENU=Order No.] }
+    { 2   ;   ;Recording No.       ;Integer       ;CaptionML=[DEU=Erfassungsnr.;
+                                                              ENU=Recording No.];
+                                                   Editable=No }
+    { 10  ;   ;Description         ;Text50        ;CaptionML=[DEU=Beschreibung;
+                                                              ENU=Description] }
+    { 11  ;   ;Status              ;Option        ;CaptionML=[DEU=Status;
+                                                              ENU=Status];
+                                                   OptionCaptionML=[DEU=Offen,Beendet;
+                                                                    ENU=Open,Finished];
+                                                   OptionString=Open,Finished;
+                                                   Editable=No }
+    { 30  ;   ;Comment             ;Boolean       ;FieldClass=FlowField;
+                                                   CalcFormula=Exist("Phys. Inventory Comment Line" WHERE (Document Type=CONST(Recording),
+                                                                                                           Order No.=FIELD(Order No.),
+                                                                                                           Recording No.=FIELD(Recording No.)));
+                                                   CaptionML=[DEU=Bemerkung;
+                                                              ENU=Comment];
+                                                   Editable=No }
+    { 31  ;   ;Person Responsible  ;Code20        ;TableRelation=Employee;
+                                                   ValidateTableRelation=No;
+                                                   TestTableRelation=No;
+                                                   CaptionML=[DEU=Verantwortlich;
+                                                              ENU=Person Responsible] }
+    { 40  ;   ;Recording without order permit;Boolean;
+                                                   CaptionML=[DEU=Erfassung ohne Auftrag erlaubt;
+                                                              ENU=Recording without order permit] }
+    { 100 ;   ;Date Recorded       ;Date          ;CaptionML=[DEU=Erfassungsdatum;
+                                                              ENU=Date Recorded] }
+    { 101 ;   ;Time Recorded       ;Time          ;CaptionML=[DEU=Erfassungszeit;
+                                                              ENU=Time Recorded] }
+    { 102 ;   ;Person Recorded     ;Code20        ;TableRelation=Employee;
+                                                   ValidateTableRelation=No;
+                                                   TestTableRelation=No;
+                                                   CaptionML=[DEU=Erfasst von;
+                                                              ENU=Person Recorded] }
+    { 110 ;   ;Location Code       ;Code10        ;TableRelation=Location;
+                                                   CaptionML=[DEU=Lagerortcode;
+                                                              ENU=Location Code] }
+    { 111 ;   ;Bin Code            ;Code20        ;TableRelation=Bin.Code WHERE (Location Code=FIELD(Location Code));
+                                                   OnValidate=BEGIN
+                                                                IF "Bin Code" <> '' THEN BEGIN
+                                                                  TESTFIELD("Location Code");
+                                                                  Location.GET("Location Code");
+                                                                  Location.TESTFIELD("Bin Mandatory", TRUE);
+                                                                  Location.TESTFIELD("Directed Put-away and Pick",FALSE);
+                                                                END;
+                                                              END;
+
+                                                   CaptionML=[DEU=Lagerplatzcode;
+                                                              ENU=Bin Code] }
+  }
+  KEYS
+  {
+    {    ;Order No.,Recording No.                 ;Clustered=Yes }
+  }
+  FIELDGROUPS
+  {
+    { 1   ;DropDown            ;Order No.,Recording No.,Description      }
+  }
+  CODE
+  {
+    VAR
+      Text1140000@1140000 : TextConst 'DEU=Sie k”nnen einen %1 nicht umbenennen.;ENU=You cannot rename a %1.';
+      Text1140001@1140001 : TextConst 'DEU=Sie k”nnen %1 nicht „ndern.;ENU=You cannot change the %1.';
+      PhysInvtRecordingHeader@1140002 : Record 5005352;
+      PhysInvtRecordingLine@1140003 : Record 5005353;
+      PhysInvtOrderHeader@1140004 : Record 5005350;
+      PhysInvtCommentLine@1140005 : Record 5005358;
+      Location@1140006 : Record 14;
+
+    BEGIN
+    END.
+  }
+}
+

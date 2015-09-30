@@ -1,0 +1,116 @@
+OBJECT Table 5005357 Posted Phys. Invt. Rec. Line
+{
+  OBJECT-PROPERTIES
+  {
+    Date=01.10.04;
+    Time=12:00:00;
+    Version List=NAVDACH4.00;
+  }
+  PROPERTIES
+  {
+    CaptionML=[DEU=Geb. Inventurerfassungszeile;
+               ENU=Posted Phys. Invt. Rec. Line];
+    PasteIsValid=No;
+    LookupFormID=Form5005365;
+    DrillDownFormID=Form5005365;
+  }
+  FIELDS
+  {
+    { 1   ;   ;Order No.           ;Code20        ;TableRelation="Post. Phys. Invt. Order Header";
+                                                   CaptionML=[DEU=Auftragsnr.;
+                                                              ENU=Order No.] }
+    { 2   ;   ;Recording No.       ;Integer       ;TableRelation="Posted Phys. Invt. Rec. Header"."Recording No." WHERE (Order No.=FIELD(Order No.));
+                                                   CaptionML=[DEU=Erfassungsnr.;
+                                                              ENU=Recording No.] }
+    { 3   ;   ;Line No.            ;Integer       ;CaptionML=[DEU=Zeilennr.;
+                                                              ENU=Line No.] }
+    { 16  ;   ;Order Line No.      ;Integer       ;TableRelation="Phys. Inventory Order Line"."Line No." WHERE (Document No.=FIELD(Order No.));
+                                                   CaptionML=[DEU=Auftragszeilennr.;
+                                                              ENU=Order Line No.];
+                                                   Editable=No }
+    { 17  ;   ;Recorded without Order;Boolean     ;CaptionML=[DEU=Ohne Auftrag erfasst;
+                                                              ENU=Recorded without Order];
+                                                   Editable=No }
+    { 20  ;   ;Item No.            ;Code20        ;TableRelation=Item;
+                                                   OnValidate=VAR
+                                                                TempPhysInvtRecordingLine@1140000 : TEMPORARY Record 5005353;
+                                                              BEGIN
+                                                              END;
+
+                                                   CaptionML=[DEU=Artikelnr.;
+                                                              ENU=Item No.] }
+    { 21  ;   ;Variant Code        ;Code10        ;TableRelation="Item Variant".Code WHERE (Item No.=FIELD(Item No.));
+                                                   CaptionML=[DEU=Variantencode;
+                                                              ENU=Variant Code] }
+    { 22  ;   ;Location Code       ;Code10        ;TableRelation=Location;
+                                                   CaptionML=[DEU=Lagerortcode;
+                                                              ENU=Location Code] }
+    { 23  ;   ;Bin Code            ;Code20        ;TableRelation=Bin.Code WHERE (Location Code=FIELD(Location Code));
+                                                   CaptionML=[DEU=Lagerplatzcode;
+                                                              ENU=Bin Code] }
+    { 30  ;   ;Description         ;Text30        ;CaptionML=[DEU=Beschreibung;
+                                                              ENU=Description] }
+    { 31  ;   ;Description 2       ;Text30        ;CaptionML=[DEU=Beschreibung 2;
+                                                              ENU=Description 2] }
+    { 32  ;   ;Unit of Measure     ;Text10        ;CaptionML=[DEU=Einheit;
+                                                              ENU=Unit of Measure] }
+    { 40  ;   ;Unit of Measure Code;Code10        ;TableRelation="Item Unit of Measure".Code WHERE (Item No.=FIELD(Item No.));
+                                                   CaptionML=[DEU=Einheitencode;
+                                                              ENU=Unit of Measure Code] }
+    { 41  ;   ;Quantity            ;Decimal       ;CaptionML=[DEU=Menge;
+                                                              ENU=Quantity];
+                                                   DecimalPlaces=0:5 }
+    { 42  ;   ;Quantity (Base)     ;Decimal       ;CaptionML=[DEU=Menge (Basis);
+                                                              ENU=Quantity (Base)];
+                                                   DecimalPlaces=0:5 }
+    { 43  ;   ;Qty. per Unit of Measure;Decimal   ;InitValue=1;
+                                                   CaptionML=[DEU=Menge pro Einheit;
+                                                              ENU=Qty. per Unit of Measure];
+                                                   DecimalPlaces=0:5;
+                                                   Editable=No }
+    { 45  ;   ;Recorded            ;Boolean       ;CaptionML=[DEU=Erfasst;
+                                                              ENU=Recorded] }
+    { 53  ;   ;Use Tracking Lines  ;Boolean       ;CaptionML=[DEU=Verfolgungszeilen verwenden;
+                                                              ENU=Use Tracking Lines];
+                                                   Editable=No }
+    { 99  ;   ;Shelf/Bin No.       ;Code10        ;CaptionML=[DEU=Regalnr.;
+                                                              ENU=Shelf/Bin No.] }
+    { 100 ;   ;Date Recorded       ;Date          ;CaptionML=[DEU=Erfassungsdatum;
+                                                              ENU=Date Recorded] }
+    { 101 ;   ;Time Recorded       ;Time          ;CaptionML=[DEU=Erfassungszeit;
+                                                              ENU=Time Recorded] }
+    { 102 ;   ;Person Recorded     ;Code20        ;TableRelation=Employee;
+                                                   ValidateTableRelation=No;
+                                                   TestTableRelation=No;
+                                                   CaptionML=[DEU=Erfasst von;
+                                                              ENU=Person Recorded] }
+    { 130 ;   ;Serial No.          ;Code20        ;CaptionML=[DEU=Seriennr.;
+                                                              ENU=Serial No.] }
+    { 131 ;   ;Lot No.             ;Code20        ;CaptionML=[DEU=Chargennr.;
+                                                              ENU=Lot No.] }
+  }
+  KEYS
+  {
+    {    ;Order No.,Recording No.,Line No.        ;Clustered=Yes }
+    {    ;Order No.,Order Line No.                ;SumIndexFields=Quantity (Base) }
+  }
+  FIELDGROUPS
+  {
+  }
+  CODE
+  {
+
+    PROCEDURE EmptyLine@1140000() : Boolean;
+    BEGIN
+      EXIT(
+        ("Item No." = '') AND
+        ("Variant Code" = '') AND
+        ("Location Code" = '') AND
+        ("Bin Code" = '') );
+    END;
+
+    BEGIN
+    END.
+  }
+}
+

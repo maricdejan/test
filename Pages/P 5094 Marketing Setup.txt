@@ -1,0 +1,380 @@
+OBJECT Page 5094 Marketing Setup
+{
+  OBJECT-PROPERTIES
+  {
+    Date=11.12.10;
+    Time=12:00:00;
+    Version List=NAVW16.00.10;
+  }
+  PROPERTIES
+  {
+    CaptionML=[DEU=Marketing  Vertrieb Einr.;
+               ENU=Marketing Setup];
+    InsertAllowed=No;
+    DeleteAllowed=No;
+    SourceTable=Table5079;
+    PageType=Card;
+    OnInit=BEGIN
+             "Queue Folder NameEnable" := TRUE;
+             "Storage Folder NameEnable" := TRUE;
+             EMailLoggingProfileNameEnable := TRUE;
+             "Attachment Storage TypeEnable" := TRUE;
+             AttachmentStorageLocationEnabl := TRUE;
+           END;
+
+    OnOpenPage=BEGIN
+                 RESET;
+                 IF NOT GET THEN BEGIN
+                   INIT;
+                   INSERT;
+                 END;
+
+                 AttachmentStorageLocationEnabl := "Attachment Storage Type" = "Attachment Storage Type"::"Disk File";
+
+                 IF ISSERVICETIER THEN BEGIN
+                   "Attachment Storage TypeEnable" := FALSE;
+                   AttachmentStorageLocationEnabl := FALSE;
+                   EMailLoggingProfileNameEnable := FALSE;
+                   "Storage Folder NameEnable" := FALSE;
+                   "Queue Folder NameEnable" := FALSE;
+                 END;
+               END;
+
+    ActionList=ACTIONS
+    {
+      { 1900000003;0 ;ActionContainer;
+                      ActionContainerType=RelatedInformation }
+      { 100     ;1   ;ActionGroup;
+                      CaptionML=[DEU=&Einrichtung;
+                                 ENU=&Setup] }
+      { 101     ;2   ;Action    ;
+                      CaptionML=[DEU=Dublettensuchtext Einrichtung;
+                                 ENU=Duplicate Search String Setup];
+                      RunObject=Page 5138 }
+      { 1900000004;0 ;ActionContainer;
+                      ActionContainerType=ActionItems }
+      { 50      ;1   ;ActionGroup;
+                      CaptionML=[DEU=F&unktion;
+                                 ENU=F&unctions] }
+      { 51      ;2   ;Action    ;
+                      CaptionML=[DEU=E-Mail-Protokolleinr. lîschen;
+                                 ENU=Clear E-Mail Logging Setup];
+                      OnAction=VAR
+                                 EMailLogging@1102601000 : Codeunit 5064;
+                               BEGIN
+                                 EMailLogging.ClearEMailJounalingSetup(Rec);
+                               END;
+                                }
+      { 52      ;2   ;Action    ;
+                      CaptionML=[DEU=Integrations-IDs fÅr Connector for Microsoft Dynamics generieren;
+                                 ENU=Generate Integration IDs for Connector for Microsoft Dynamics];
+                      OnAction=VAR
+                                 IntegrationManagement@1000 : Codeunit 5150;
+                               BEGIN
+                                 TESTFIELD("Enable Connector");
+                                 IF CONFIRM(Text004,TRUE) THEN BEGIN
+                                   IntegrationManagement.SetupIntegrationTables;
+                                   MESSAGE(Text005);
+                                 END;
+                               END;
+                                }
+    }
+  }
+  CONTROLS
+  {
+    { 1900000001;0;Container;
+                ContainerType=ContentArea }
+
+    { 1   ;1   ;Group     ;
+                CaptionML=[DEU=Allgemein;
+                           ENU=General] }
+
+    { 2   ;2   ;Field     ;
+                SourceExpr="Attachment Storage Type";
+                Enabled="Attachment Storage TypeEnable";
+                OnValidate=BEGIN
+                             AttachmentStorageTypeOnAfterVa;
+                           END;
+                            }
+
+    { 4   ;2   ;Field     ;
+                SourceExpr="Attachment Storage Location";
+                Enabled=AttachmentStorageLocationEnabl;
+                OnValidate=BEGIN
+                             AttachmentStorageLocationOnAft;
+                           END;
+                            }
+
+    { 123 ;2   ;Field     ;
+                SourceExpr="Index Mode" }
+
+    { 1904626001;1;Group  ;
+                CaptionML=[DEU=öbernahme;
+                           ENU=Inheritance] }
+
+    { 6   ;2   ;Group     ;
+                CaptionML=[DEU=öbernahme von;
+                           ENU=Inherit] }
+
+    { 13  ;3   ;Field     ;
+                CaptionML=[DEU=VerkÑufercode;
+                           ENU=Salesperson Code];
+                SourceExpr="Inherit Salesperson Code" }
+
+    { 14  ;3   ;Field     ;
+                CaptionML=[DEU=Gebietscode;
+                           ENU=Territory Code];
+                SourceExpr="Inherit Territory Code" }
+
+    { 15  ;3   ;Field     ;
+                CaptionML=[DEU=LÑnder-/Regionscode;
+                           ENU=Country/Region Code];
+                SourceExpr="Inherit Country/Region Code" }
+
+    { 16  ;3   ;Field     ;
+                CaptionML=[DEU=Sprachcode;
+                           ENU=Language Code];
+                SourceExpr="Inherit Language Code" }
+
+    { 17  ;3   ;Field     ;
+                CaptionML=[DEU=Adressdetails;
+                           ENU=Address Details];
+                SourceExpr="Inherit Address Details" }
+
+    { 79  ;3   ;Field     ;
+                CaptionML=[DEU=Kommunikationsdetails;
+                           ENU=Communication Details];
+                SourceExpr="Inherit Communication Details" }
+
+    { 1902985101;1;Group  ;
+                CaptionML=[DEU=Standard;
+                           ENU=Defaults] }
+
+    { 80  ;2   ;Group     ;
+                CaptionML=[DEU=Standard;
+                           ENU=Default] }
+
+    { 30  ;3   ;Field     ;
+                CaptionML=[DEU=VerkÑufercode;
+                           ENU=Salesperson Code];
+                SourceExpr="Default Salesperson Code" }
+
+    { 28  ;3   ;Field     ;
+                CaptionML=[DEU=Gebietscode;
+                           ENU=Territory Code];
+                SourceExpr="Default Territory Code" }
+
+    { 26  ;3   ;Field     ;
+                CaptionML=[DEU=LÑnder-/Regionscode;
+                           ENU=Country/Region Code];
+                SourceExpr="Default Country/Region Code" }
+
+    { 24  ;3   ;Field     ;
+                CaptionML=[DEU=Sprachcode;
+                           ENU=Language Code];
+                SourceExpr="Default Language Code" }
+
+    { 102 ;3   ;Field     ;
+                CaptionML=[DEU=Korrespondenzart;
+                           ENU=Correspondence Type];
+                SourceExpr="Default Correspondence Type" }
+
+    { 22  ;3   ;Field     ;
+                CaptionML=[DEU=Unternehmensanredecode;
+                           ENU=Company Salutation Code];
+                SourceExpr="Def. Company Salutation Code" }
+
+    { 86  ;3   ;Field     ;
+                CaptionML=[DEU=Personenanredecode;
+                           ENU=Person Salutation Code];
+                SourceExpr="Default Person Salutation Code" }
+
+    { 20  ;3   ;Field     ;
+                CaptionML=[DEU=Verkaufsprozesscode;
+                           ENU=Sales Cycle Code];
+                SourceExpr="Default Sales Cycle Code" }
+
+    { 124 ;3   ;Field     ;
+                CaptionML=[DEU=Aufg.-Datumsberechnung;
+                           ENU=To-do Date Calculation];
+                SourceExpr="Default To-do Date Calculation" }
+
+    { 1906323901;1;Group  ;
+                CaptionML=[DEU=AktivitÑten;
+                           ENU=Interactions] }
+
+    { 55  ;2   ;Field     ;
+                SourceExpr="Mergefield Language ID";
+                LookupFormID=Windows Languages }
+
+    { 1903203501;1;Group  ;
+                CaptionML=[DEU=Synchronisation;
+                           ENU=Synchronization] }
+
+    { 83  ;2   ;Group     ;
+                CaptionML=[DEU=GeschÑftsbeziehungscode fÅr;
+                           ENU=Bus. Relation Code for] }
+
+    { 56  ;3   ;Field     ;
+                CaptionML=[DEU=Debitoren;
+                           ENU=Customers];
+                SourceExpr="Bus. Rel. Code for Customers" }
+
+    { 58  ;3   ;Field     ;
+                CaptionML=[DEU=Kreditoren;
+                           ENU=Vendors];
+                SourceExpr="Bus. Rel. Code for Vendors" }
+
+    { 60  ;3   ;Field     ;
+                CaptionML=[DEU=Bankkonten;
+                           ENU=Bank Accounts];
+                SourceExpr="Bus. Rel. Code for Bank Accs." }
+
+    { 33  ;3   ;Field     ;
+                SourceExpr="Enable Connector" }
+
+    { 1904569201;1;Group  ;
+                CaptionML=[DEU=Nummerierung;
+                           ENU=Numbering] }
+
+    { 62  ;2   ;Field     ;
+                SourceExpr="Contact Nos." }
+
+    { 64  ;2   ;Field     ;
+                SourceExpr="Campaign Nos." }
+
+    { 66  ;2   ;Field     ;
+                SourceExpr="Segment Nos." }
+
+    { 68  ;2   ;Field     ;
+                SourceExpr="To-do Nos." }
+
+    { 70  ;2   ;Field     ;
+                SourceExpr="Opportunity Nos." }
+
+    { 1903832701;1;Group  ;
+                CaptionML=[DEU=Dubletten;
+                           ENU=Duplicates] }
+
+    { 75  ;2   ;Field     ;
+                SourceExpr="Maintain Dupl. Search Strings" }
+
+    { 77  ;2   ;Field     ;
+                SourceExpr="Autosearch for Duplicates" }
+
+    { 73  ;2   ;Field     ;
+                SourceExpr="Search Hit %" }
+
+    { 1900887301;1;Group  ;
+                CaptionML=[DEU=E-Mail-Protokollierung;
+                           ENU=E-Mail Logging] }
+
+    { 114 ;2   ;Field     ;
+                SourceExpr="Time Interval (Sec.)" }
+
+    { 106 ;2   ;Field     ;
+                SourceExpr="E-Mail Logging Profile Name";
+                Enabled=EMailLoggingProfileNameEnable;
+                OnAssistEdit=VAR
+                               EMailLogging@1102601000 : Codeunit 5064;
+                             BEGIN
+                               CurrPage.SAVERECORD;
+                               EMailLogging.LookupProfile("E-Mail Logging Profile Name");
+                               MODIFY;
+                             END;
+                              }
+
+    { 104 ;2   ;Field     ;
+                SourceExpr="Queue Folder Name";
+                Enabled="Queue Folder NameEnable";
+                OnAssistEdit=VAR
+                               EMailLogging@1102601002 : Codeunit 5064;
+                               QueueStoreID@1102601001 : OutStream;
+                               QueueEntryID@1102601000 : OutStream;
+                             BEGIN
+                               CurrPage.SAVERECORD;
+                               CALCFIELDS("Queue Folder Store ID","Queue Folder Entry ID");
+                               "Queue Folder Store ID".CREATEOUTSTREAM(QueueStoreID);
+                               "Queue Folder Entry ID".CREATEOUTSTREAM(QueueEntryID);
+                               IF EMailLogging.LookupFolder(
+                                 "Queue Folder Name",QueueStoreID,QueueEntryID,TRUE,Text001+'\'+Text002+'\\'+Text003)
+                               THEN
+                                 MODIFY;
+                             END;
+                              }
+
+    { 19  ;2   ;Field     ;
+                SourceExpr="Storage Folder Name";
+                Enabled="Storage Folder NameEnable";
+                OnAssistEdit=VAR
+                               EMailLogging@1102601002 : Codeunit 5064;
+                               StorageStoreID@1102601001 : OutStream;
+                               StorageEntryID@1102601000 : OutStream;
+                             BEGIN
+                               CurrPage.SAVERECORD;
+                               CALCFIELDS("Storage Folder Store ID","Storage Folder Entry ID");
+                               "Storage Folder Store ID".CREATEOUTSTREAM(StorageStoreID);
+                               "Storage Folder Entry ID".CREATEOUTSTREAM(StorageEntryID);
+                               IF EMailLogging.LookupFolder("Storage Folder Name",StorageStoreID,StorageEntryID,FALSE,'') THEN
+                                 MODIFY;
+                             END;
+                              }
+
+    { 111 ;2   ;Field     ;
+                SourceExpr="E-Mail Logging User ID" }
+
+    { 1900000007;0;Container;
+                ContainerType=FactBoxArea }
+
+    { 1900383207;1;Part   ;
+                Visible=FALSE;
+                PartType=System;
+                SystemPartID=RecordLinks }
+
+    { 1905767507;1;Part   ;
+                Visible=FALSE;
+                PartType=System;
+                SystemPartID=Notes }
+
+  }
+  CODE
+  {
+    VAR
+      Text001@1000 : TextConst 'DEU=Wenn Sie diesen Ordner als Ablageordner auswÑhlen, werden alle Nachrichten im Ordner endgÅltig gelîscht, und die Nachrichten kînnen nicht wiederhergestellt werden.;ENU=If you select this folder as your Queue folder, you will delete all the messages in the folder, and your messages cannot be restored.';
+      Text002@1001 : TextConst 'DEU=Erstellen Sie einen Ablageordner au·erhalb Ihres Eingangs, um zu verhindern, dass Ihre Nachrichten gelîscht werden.;ENU=Create a queue folder outside your Inbox if you want to avoid deleting your messages.';
+      Text003@1002 : TextConst 'DEU=Mîchten Sie diesen Ordner trotzdem als Ablageordner auswÑhlen?;ENU=Do you want to select this folder as your Queue folder anyway?';
+      Text004@1003 : TextConst 'DEU=Sie sind im Begriff, Tabellen Integrationsdaten hinzuzufÅgen. Dieser Vorgang kann mehrere Minuten dauern. Mîchten Sie fortfahren?;ENU=You are about to add integration data to tables. This process may take several minutes. Do you want to continue?';
+      Text005@1004 : TextConst 'DEU=Die Integrationsdaten wurden den Tabellen hinzugefÅgt.;ENU=The integration data has been added to the tables.';
+      AttachmentStorageLocationEnabl@19012985 : Boolean INDATASET;
+      "Attachment Storage TypeEnable"@19069067 : Boolean INDATASET;
+      EMailLoggingProfileNameEnable@19058160 : Boolean INDATASET;
+      "Storage Folder NameEnable"@19043710 : Boolean INDATASET;
+      "Queue Folder NameEnable"@19001091 : Boolean INDATASET;
+
+    LOCAL PROCEDURE AttachmentStorageTypeOnAfterVa@19041025();
+    BEGIN
+      AttachmentStorageLocationEnabl := "Attachment Storage Type" = "Attachment Storage Type"::"Disk File";
+
+      IF ("Attachment Storage Type" = "Attachment Storage Type"::Embedded) OR
+         ("Attachment Storage Location" <> '')
+      THEN BEGIN
+        MODIFY;
+        COMMIT;
+        REPORT.RUN(REPORT::"Relocate Attachments");
+      END;
+    END;
+
+    LOCAL PROCEDURE AttachmentStorageLocationOnAft@19001696();
+    BEGIN
+      IF "Attachment Storage Location" <> '' THEN BEGIN
+        MODIFY;
+        COMMIT;
+        REPORT.RUN(REPORT::"Relocate Attachments");
+      END;
+    END;
+
+    BEGIN
+    END.
+  }
+}
+

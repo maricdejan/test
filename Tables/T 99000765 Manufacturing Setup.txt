@@ -1,0 +1,96 @@
+OBJECT Table 99000765 Manufacturing Setup
+{
+  OBJECT-PROPERTIES
+  {
+    Date=05.11.08;
+    Time=12:00:00;
+    Version List=NAVW16.00;
+  }
+  PROPERTIES
+  {
+    CaptionML=[DEU=Produktion Einrichtung;
+               ENU=Manufacturing Setup];
+    LookupFormID=Form99000768;
+  }
+  FIELDS
+  {
+    { 1   ;   ;Primary Key         ;Code10        ;CaptionML=[DEU=PrimÑrschlÅssel;
+                                                              ENU=Primary Key];
+                                                   Editable=No }
+    { 7   ;   ;Normal Starting Time;Time          ;CaptionML=[DEU=Arbeitszeitbeginn;
+                                                              ENU=Normal Starting Time] }
+    { 8   ;   ;Normal Ending Time  ;Time          ;CaptionML=[DEU=Arbeitszeitende;
+                                                              ENU=Normal Ending Time] }
+    { 9   ;   ;Doc. No. Is Prod. Order No.;Boolean;CaptionML=[DEU=Belegnr. ist FA-Nr.;
+                                                              ENU=Doc. No. Is Prod. Order No.] }
+    { 11  ;   ;Cost Incl. Setup    ;Boolean       ;CaptionML=[DEU=Kosten inkl. RÅsten;
+                                                              ENU=Cost Incl. Setup] }
+    { 12  ;   ;Dynamic Low-Level Code;Boolean     ;CaptionML=[DEU=Dyn. StÅckl.-Ebene berechnen;
+                                                              ENU=Dynamic Low-Level Code] }
+    { 18  ;   ;Planning Warning    ;Boolean       ;CaptionML=[DEU=Warnung bei Planung;
+                                                              ENU=Planning Warning] }
+    { 20  ;   ;Simulated Order Nos.;Code10        ;TableRelation="No. Series";
+                                                   CaptionML=[DEU=Simulierte FA-Nummern;
+                                                              ENU=Simulated Order Nos.] }
+    { 21  ;   ;Planned Order Nos.  ;Code10        ;TableRelation="No. Series";
+                                                   CaptionML=[DEU=Geplante FA-Nummern;
+                                                              ENU=Planned Order Nos.] }
+    { 22  ;   ;Firm Planned Order Nos.;Code10     ;TableRelation="No. Series";
+                                                   CaptionML=[DEU=Fest geplante FA-Nummern;
+                                                              ENU=Firm Planned Order Nos.] }
+    { 23  ;   ;Released Order Nos. ;Code10        ;TableRelation="No. Series";
+                                                   CaptionML=[DEU=Freigegebene FA-Nummern;
+                                                              ENU=Released Order Nos.] }
+    { 29  ;   ;Work Center Nos.    ;Code10        ;TableRelation="No. Series";
+                                                   CaptionML=[DEU=Arbeitsplatzgruppennummern;
+                                                              ENU=Work Center Nos.] }
+    { 30  ;   ;Machine Center Nos. ;Code10        ;TableRelation="No. Series";
+                                                   CaptionML=[DEU=Arbeitsplatznummern;
+                                                              ENU=Machine Center Nos.] }
+    { 31  ;   ;Production BOM Nos. ;Code10        ;TableRelation="No. Series";
+                                                   CaptionML=[DEU=Fert.-StÅcklistennummern;
+                                                              ENU=Production BOM Nos.] }
+    { 32  ;   ;Routing Nos.        ;Code10        ;TableRelation="No. Series";
+                                                   CaptionML=[DEU=Arbeitsplannummern;
+                                                              ENU=Routing Nos.] }
+    { 35  ;   ;Current Production Forecast;Code10 ;TableRelation="Production Forecast Name".Name;
+                                                   CaptionML=[DEU=Aktuelle Absatzplanung;
+                                                              ENU=Current Production Forecast] }
+    { 37  ;   ;Use Forecast on Locations;Boolean  ;CaptionML=[DEU=Absatzpl. pro Lagerort verw.;
+                                                              ENU=Use Forecast on Locations] }
+    { 38  ;   ;Combined MPS/MRP Calculation;Boolean;
+                                                   CaptionML=[DEU=Prod.-Prog.Pl./Nettobed. komb.;
+                                                              ENU=Combined MPS/MRP Calculation] }
+    { 39  ;   ;Components at Location;Code10      ;TableRelation=Location WHERE (Use As In-Transit=CONST(No));
+                                                   CaptionML=[DEU=Komponenten von Lagerort;
+                                                              ENU=Components at Location] }
+    { 40  ;   ;Dampener (Time)     ;DateFormula   ;CaptionML=[DEU=Toleranz (Zeit);
+                                                              ENU=Dampener (Time)] }
+    { 41  ;   ;Dampener (% of Lot Size);Decimal   ;CaptionML=[DEU=Toleranz (% der Losgrî·e);
+                                                              ENU=Dampener (% of Lot Size)];
+                                                   DecimalPlaces=1:1;
+                                                   MinValue=0 }
+    { 42  ;   ;Default Safety Lead Time;DateFormula;
+                                                   CaptionML=[DEU=Vorg. Sich.-Zuschl. Besch.-Zt.;
+                                                              ENU=Default Safety Lead Time] }
+    { 5500;   ;Preset Output Quantity;Option      ;CaptionML=[DEU=Vordef. fertig gest. Menge;
+                                                              ENU=Preset Output Quantity];
+                                                   OptionCaptionML=[DEU=Erw. Menge,Null bei allen ArbeitsgÑngen,Null bei letztem Arbeitsgang;
+                                                                    ENU=Expected Quantity,Zero on All Operations,Zero on Last Operation];
+                                                   OptionString=Expected Quantity,Zero on All Operations,Zero on Last Operation }
+  }
+  KEYS
+  {
+    {    ;Primary Key                             ;Clustered=Yes }
+  }
+  FIELDGROUPS
+  {
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

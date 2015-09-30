@@ -1,0 +1,489 @@
+OBJECT Table 270 Bank Account
+{
+  OBJECT-PROPERTIES
+  {
+    Date=05.11.08;
+    Time=12:00:00;
+    Version List=NAVW16.00;
+  }
+  PROPERTIES
+  {
+    Permissions=TableData 271=r;
+    DataCaptionFields=No.,Name;
+    OnInsert=BEGIN
+               IF "No." = '' THEN BEGIN
+                 GLSetup.GET;
+                 GLSetup.TESTFIELD("Bank Account Nos.");
+                 NoSeriesMgt.InitSeries(GLSetup."Bank Account Nos.",xRec."No. Series",0D,"No.","No. Series");
+               END;
+
+               IF NOT InsertFromContact THEN
+                 UpdateContFromBank.OnInsert(Rec);
+
+               DimMgt.UpdateDefaultDim(
+                 DATABASE::"Bank Account","No.",
+                 "Global Dimension 1 Code","Global Dimension 2 Code");
+             END;
+
+    OnModify=BEGIN
+               "Last Date Modified" := TODAY;
+
+               IF (Name <> xRec.Name) OR
+                  ("Search Name" <> xRec."Search Name") OR
+                  ("Name 2" <> xRec."Name 2") OR
+                  (Address <> xRec.Address) OR
+                  ("Address 2" <> xRec."Address 2") OR
+                  (City <> xRec.City) OR
+                  ("Phone No." <> xRec."Phone No.") OR
+                  ("Telex No." <> xRec."Telex No.") OR
+                  ("Territory Code" <> xRec."Territory Code") OR
+                  ("Currency Code" <> xRec."Currency Code") OR
+                  ("Language Code" <> xRec."Language Code") OR
+                  ("Our Contact Code" <> xRec."Our Contact Code") OR
+                  ("Country/Region Code" <> xRec."Country/Region Code") OR
+                  ("Fax No." <> xRec."Fax No.") OR
+                  ("Telex Answer Back" <> xRec."Telex Answer Back") OR
+                  ("Post Code" <> xRec."Post Code") OR
+                  (County <> xRec.County) OR
+                  ("E-Mail" <> xRec."E-Mail") OR
+                  ("Home Page" <> xRec."Home Page")
+               THEN BEGIN
+                 MODIFY;
+                 UpdateContFromBank.OnModify(Rec);
+               END;
+             END;
+
+    OnDelete=BEGIN
+               MoveEntries.MoveBankAccEntries(Rec);
+
+               CommentLine.SETRANGE("Table Name",CommentLine."Table Name"::"Bank Account");
+               CommentLine.SETRANGE("No.","No.");
+               CommentLine.DELETEALL;
+
+               UpdateContFromBank.OnDelete(Rec);
+
+               DimMgt.DeleteDefaultDim(DATABASE::"Bank Account","No.");
+             END;
+
+    OnRename=BEGIN
+               "Last Date Modified" := TODAY;
+             END;
+
+    CaptionML=[DEU=Bankkonto;
+               ENU=Bank Account];
+    LookupFormID=Form371;
+    DrillDownFormID=Form371;
+  }
+  FIELDS
+  {
+    { 1   ;   ;No.                 ;Code20        ;AltSearchField=Search Name;
+                                                   OnValidate=BEGIN
+                                                                IF "No." <> xRec."No." THEN BEGIN
+                                                                  GLSetup.GET;
+                                                                  NoSeriesMgt.TestManual(GLSetup."Bank Account Nos.");
+                                                                  "No. Series" := '';
+                                                                END;
+                                                              END;
+
+                                                   CaptionML=[DEU=Nr.;
+                                                              ENU=No.] }
+    { 2   ;   ;Name                ;Text50        ;OnValidate=BEGIN
+                                                                IF ("Search Name" = UPPERCASE(xRec.Name)) OR ("Search Name" = '') THEN
+                                                                  "Search Name" := Name;
+                                                              END;
+
+                                                   CaptionML=[DEU=Name;
+                                                              ENU=Name] }
+    { 3   ;   ;Search Name         ;Code50        ;CaptionML=[DEU=Suchbegriff;
+                                                              ENU=Search Name] }
+    { 4   ;   ;Name 2              ;Text50        ;CaptionML=[DEU=Name 2;
+                                                              ENU=Name 2] }
+    { 5   ;   ;Address             ;Text50        ;CaptionML=[DEU=Adresse;
+                                                              ENU=Address] }
+    { 6   ;   ;Address 2           ;Text50        ;CaptionML=[DEU=Adresse 2;
+                                                              ENU=Address 2] }
+    { 7   ;   ;City                ;Text30        ;OnValidate=BEGIN
+                                                                PostCode.ValidateCity(City,"Post Code");
+                                                              END;
+
+                                                   OnLookup=BEGIN
+                                                              PostCode.LookUpCity(City,"Post Code",TRUE);
+                                                            END;
+
+                                                   CaptionML=[DEU=Ort;
+                                                              ENU=City] }
+    { 8   ;   ;Contact             ;Text50        ;CaptionML=[DEU=Kontakt;
+                                                              ENU=Contact] }
+    { 9   ;   ;Phone No.           ;Text30        ;ExtendedDatatype=Phone No.;
+                                                   CaptionML=[DEU=Telefonnr.;
+                                                              ENU=Phone No.] }
+    { 10  ;   ;Telex No.           ;Text20        ;CaptionML=[DEU=Telexnr.;
+                                                              ENU=Telex No.] }
+    { 13  ;   ;Bank Account No.    ;Text30        ;CaptionML=[DEU=Bankkontonummer;
+                                                              ENU=Bank Account No.] }
+    { 14  ;   ;Transit No.         ;Text20        ;CaptionML=[DEU=Transitnr.;
+                                                              ENU=Transit No.] }
+    { 15  ;   ;Territory Code      ;Code10        ;TableRelation=Territory;
+                                                   CaptionML=[DEU=Gebietscode;
+                                                              ENU=Territory Code] }
+    { 16  ;   ;Global Dimension 1 Code;Code20     ;TableRelation="Dimension Value".Code WHERE (Global Dimension No.=CONST(1));
+                                                   OnValidate=BEGIN
+                                                                ValidateShortcutDimCode(1,"Global Dimension 1 Code");
+                                                              END;
+
+                                                   CaptionML=[DEU=Globaler Dimensionscode 1;
+                                                              ENU=Global Dimension 1 Code];
+                                                   CaptionClass='1,1,1' }
+    { 17  ;   ;Global Dimension 2 Code;Code20     ;TableRelation="Dimension Value".Code WHERE (Global Dimension No.=CONST(2));
+                                                   OnValidate=BEGIN
+                                                                ValidateShortcutDimCode(2,"Global Dimension 2 Code");
+                                                              END;
+
+                                                   CaptionML=[DEU=Globaler Dimensionscode 2;
+                                                              ENU=Global Dimension 2 Code];
+                                                   CaptionClass='1,1,2' }
+    { 18  ;   ;Chain Name          ;Code10        ;CaptionML=[DEU=Unternehmenskette;
+                                                              ENU=Chain Name] }
+    { 20  ;   ;Min. Balance        ;Decimal       ;CaptionML=[DEU=Mindestsaldo;
+                                                              ENU=Min. Balance];
+                                                   AutoFormatType=1;
+                                                   AutoFormatExpr="Currency Code" }
+    { 21  ;   ;Bank Acc. Posting Group;Code10     ;TableRelation="Bank Account Posting Group";
+                                                   CaptionML=[DEU=Bankkontobuchungsgruppe;
+                                                              ENU=Bank Acc. Posting Group] }
+    { 22  ;   ;Currency Code       ;Code10        ;TableRelation=Currency;
+                                                   OnValidate=BEGIN
+                                                                IF "Currency Code" = xRec."Currency Code" THEN
+                                                                  EXIT;
+
+                                                                BankAcc.RESET;
+                                                                BankAcc := Rec;
+                                                                BankAcc.CALCFIELDS(Balance,"Balance (LCY)");
+                                                                BankAcc.TESTFIELD(Balance,0);
+                                                                BankAcc.TESTFIELD("Balance (LCY)",0);
+
+                                                                IF NOT BankAccLedgEntry.SETCURRENTKEY("Bank Account No.",Open) THEN
+                                                                  BankAccLedgEntry.SETCURRENTKEY("Bank Account No.");
+                                                                BankAccLedgEntry.SETRANGE("Bank Account No.","No.");
+                                                                BankAccLedgEntry.SETRANGE(Open,TRUE);
+                                                                IF BankAccLedgEntry.FIND('+') THEN
+                                                                  ERROR(
+                                                                    Text000,
+                                                                    FIELDCAPTION("Currency Code"));
+                                                              END;
+
+                                                   CaptionML=[DEU=WÑhrungscode;
+                                                              ENU=Currency Code] }
+    { 24  ;   ;Language Code       ;Code10        ;TableRelation=Language;
+                                                   CaptionML=[DEU=Sprachcode;
+                                                              ENU=Language Code] }
+    { 26  ;   ;Statistics Group    ;Integer       ;CaptionML=[DEU=Statistikgruppe;
+                                                              ENU=Statistics Group] }
+    { 29  ;   ;Our Contact Code    ;Code10        ;TableRelation=Salesperson/Purchaser;
+                                                   CaptionML=[DEU=Unser Kontaktcode;
+                                                              ENU=Our Contact Code] }
+    { 35  ;   ;Country/Region Code ;Code10        ;TableRelation=Country/Region;
+                                                   CaptionML=[DEU=LÑnder-/Regionscode;
+                                                              ENU=Country/Region Code] }
+    { 37  ;   ;Amount              ;Decimal       ;CaptionML=[DEU=Betrag;
+                                                              ENU=Amount];
+                                                   AutoFormatType=1;
+                                                   AutoFormatExpr="Currency Code" }
+    { 38  ;   ;Comment             ;Boolean       ;FieldClass=FlowField;
+                                                   CalcFormula=Exist("Comment Line" WHERE (Table Name=CONST(Bank Account),
+                                                                                           No.=FIELD(No.)));
+                                                   CaptionML=[DEU=Bemerkung;
+                                                              ENU=Comment];
+                                                   Editable=No }
+    { 39  ;   ;Blocked             ;Boolean       ;CaptionML=[DEU=Gesperrt;
+                                                              ENU=Blocked] }
+    { 41  ;   ;Last Statement No.  ;Code20        ;CaptionML=[DEU=Letzte Kontoauszugsnr.;
+                                                              ENU=Last Statement No.] }
+    { 54  ;   ;Last Date Modified  ;Date          ;CaptionML=[DEU=Korrigiert am;
+                                                              ENU=Last Date Modified];
+                                                   Editable=No }
+    { 55  ;   ;Date Filter         ;Date          ;FieldClass=FlowFilter;
+                                                   CaptionML=[DEU=Datumsfilter;
+                                                              ENU=Date Filter] }
+    { 56  ;   ;Global Dimension 1 Filter;Code20   ;FieldClass=FlowFilter;
+                                                   TableRelation="Dimension Value".Code WHERE (Global Dimension No.=CONST(1));
+                                                   CaptionML=[DEU=Globaler Dimensionsfilter 1;
+                                                              ENU=Global Dimension 1 Filter];
+                                                   CaptionClass='1,3,1' }
+    { 57  ;   ;Global Dimension 2 Filter;Code20   ;FieldClass=FlowFilter;
+                                                   TableRelation="Dimension Value".Code WHERE (Global Dimension No.=CONST(2));
+                                                   CaptionML=[DEU=Globaler Dimensionsfilter 2;
+                                                              ENU=Global Dimension 2 Filter];
+                                                   CaptionClass='1,3,2' }
+    { 58  ;   ;Balance             ;Decimal       ;FieldClass=FlowField;
+                                                   CalcFormula=Sum("Bank Account Ledger Entry".Amount WHERE (Bank Account No.=FIELD(No.),
+                                                                                                             Global Dimension 1 Code=FIELD(Global Dimension 1 Filter),
+                                                                                                             Global Dimension 2 Code=FIELD(Global Dimension 2 Filter)));
+                                                   CaptionML=[DEU=Saldo;
+                                                              ENU=Balance];
+                                                   Editable=No;
+                                                   AutoFormatType=1;
+                                                   AutoFormatExpr="Currency Code" }
+    { 59  ;   ;Balance (LCY)       ;Decimal       ;FieldClass=FlowField;
+                                                   CalcFormula=Sum("Bank Account Ledger Entry"."Amount (LCY)" WHERE (Bank Account No.=FIELD(No.),
+                                                                                                                     Global Dimension 1 Code=FIELD(Global Dimension 1 Filter),
+                                                                                                                     Global Dimension 2 Code=FIELD(Global Dimension 2 Filter)));
+                                                   CaptionML=[DEU=Saldo (MW);
+                                                              ENU=Balance (LCY)];
+                                                   Editable=No;
+                                                   AutoFormatType=1 }
+    { 60  ;   ;Net Change          ;Decimal       ;FieldClass=FlowField;
+                                                   CalcFormula=Sum("Bank Account Ledger Entry".Amount WHERE (Bank Account No.=FIELD(No.),
+                                                                                                             Global Dimension 1 Code=FIELD(Global Dimension 1 Filter),
+                                                                                                             Global Dimension 2 Code=FIELD(Global Dimension 2 Filter),
+                                                                                                             Posting Date=FIELD(Date Filter)));
+                                                   CaptionML=[DEU=Bewegung;
+                                                              ENU=Net Change];
+                                                   Editable=No;
+                                                   AutoFormatType=1;
+                                                   AutoFormatExpr="Currency Code" }
+    { 61  ;   ;Net Change (LCY)    ;Decimal       ;FieldClass=FlowField;
+                                                   CalcFormula=Sum("Bank Account Ledger Entry"."Amount (LCY)" WHERE (Bank Account No.=FIELD(No.),
+                                                                                                                     Global Dimension 1 Code=FIELD(Global Dimension 1 Filter),
+                                                                                                                     Global Dimension 2 Code=FIELD(Global Dimension 2 Filter),
+                                                                                                                     Posting Date=FIELD(Date Filter)));
+                                                   CaptionML=[DEU=Bewegung (MW);
+                                                              ENU=Net Change (LCY)];
+                                                   Editable=No;
+                                                   AutoFormatType=1 }
+    { 84  ;   ;Fax No.             ;Text30        ;CaptionML=[DEU=Faxnr.;
+                                                              ENU=Fax No.] }
+    { 85  ;   ;Telex Answer Back   ;Text20        ;CaptionML=[DEU=Telex Namengeber;
+                                                              ENU=Telex Answer Back] }
+    { 89  ;   ;Picture             ;BLOB          ;CaptionML=[DEU=Bild;
+                                                              ENU=Picture];
+                                                   SubType=Bitmap }
+    { 91  ;   ;Post Code           ;Code20        ;TableRelation="Post Code";
+                                                   OnValidate=BEGIN
+                                                                PostCode.ValidatePostCode(City,"Post Code");
+                                                              END;
+
+                                                   OnLookup=BEGIN
+                                                              PostCode.LookUpPostCode(City,"Post Code",TRUE);
+                                                            END;
+
+                                                   ValidateTableRelation=No;
+                                                   TestTableRelation=No;
+                                                   CaptionML=[DEU=PLZ-Code;
+                                                              ENU=Post Code] }
+    { 92  ;   ;County              ;Text30        ;CaptionML=[DEU=Bundesregion;
+                                                              ENU=County] }
+    { 93  ;   ;Last Check No.      ;Code20        ;CaptionML=[DEU=Letzte Schecknummer;
+                                                              ENU=Last Check No.] }
+    { 94  ;   ;Balance Last Statement;Decimal     ;OnValidate=BEGIN
+                                                                IF NOT
+                                                                   CONFIRM(
+                                                                     Text001 +
+                                                                     Text002,FALSE,
+                                                                     FIELDCAPTION("Balance Last Statement"))
+                                                                THEN
+                                                                  "Balance Last Statement" := xRec."Balance Last Statement";
+                                                              END;
+
+                                                   CaptionML=[DEU=Saldo letzter Auszug;
+                                                              ENU=Balance Last Statement];
+                                                   AutoFormatType=1;
+                                                   AutoFormatExpr="Currency Code" }
+    { 95  ;   ;Balance at Date     ;Decimal       ;FieldClass=FlowField;
+                                                   CalcFormula=Sum("Bank Account Ledger Entry".Amount WHERE (Bank Account No.=FIELD(No.),
+                                                                                                             Global Dimension 1 Code=FIELD(Global Dimension 1 Filter),
+                                                                                                             Global Dimension 2 Code=FIELD(Global Dimension 2 Filter),
+                                                                                                             Posting Date=FIELD(UPPERLIMIT(Date Filter))));
+                                                   CaptionML=[DEU=Saldo bis Datum;
+                                                              ENU=Balance at Date];
+                                                   Editable=No;
+                                                   AutoFormatType=1;
+                                                   AutoFormatExpr="Currency Code" }
+    { 96  ;   ;Balance at Date (LCY);Decimal      ;FieldClass=FlowField;
+                                                   CalcFormula=Sum("Bank Account Ledger Entry"."Amount (LCY)" WHERE (Bank Account No.=FIELD(No.),
+                                                                                                                     Global Dimension 1 Code=FIELD(Global Dimension 1 Filter),
+                                                                                                                     Global Dimension 2 Code=FIELD(Global Dimension 2 Filter),
+                                                                                                                     Posting Date=FIELD(UPPERLIMIT(Date Filter))));
+                                                   CaptionML=[DEU=Saldo bis Datum (MW);
+                                                              ENU=Balance at Date (LCY)];
+                                                   Editable=No;
+                                                   AutoFormatType=1 }
+    { 97  ;   ;Debit Amount        ;Decimal       ;FieldClass=FlowField;
+                                                   CalcFormula=Sum("Bank Account Ledger Entry"."Debit Amount" WHERE (Bank Account No.=FIELD(No.),
+                                                                                                                     Global Dimension 1 Code=FIELD(Global Dimension 1 Filter),
+                                                                                                                     Global Dimension 2 Code=FIELD(Global Dimension 2 Filter),
+                                                                                                                     Posting Date=FIELD(Date Filter)));
+                                                   CaptionML=[DEU=Sollbetrag;
+                                                              ENU=Debit Amount];
+                                                   BlankZero=Yes;
+                                                   Editable=No;
+                                                   AutoFormatType=1;
+                                                   AutoFormatExpr="Currency Code" }
+    { 98  ;   ;Credit Amount       ;Decimal       ;FieldClass=FlowField;
+                                                   CalcFormula=Sum("Bank Account Ledger Entry"."Credit Amount" WHERE (Bank Account No.=FIELD(No.),
+                                                                                                                      Global Dimension 1 Code=FIELD(Global Dimension 1 Filter),
+                                                                                                                      Global Dimension 2 Code=FIELD(Global Dimension 2 Filter),
+                                                                                                                      Posting Date=FIELD(Date Filter)));
+                                                   CaptionML=[DEU=Habenbetrag;
+                                                              ENU=Credit Amount];
+                                                   BlankZero=Yes;
+                                                   Editable=No;
+                                                   AutoFormatType=1;
+                                                   AutoFormatExpr="Currency Code" }
+    { 99  ;   ;Debit Amount (LCY)  ;Decimal       ;FieldClass=FlowField;
+                                                   CalcFormula=Sum("Bank Account Ledger Entry"."Debit Amount (LCY)" WHERE (Bank Account No.=FIELD(No.),
+                                                                                                                           Global Dimension 1 Code=FIELD(Global Dimension 1 Filter),
+                                                                                                                           Global Dimension 2 Code=FIELD(Global Dimension 2 Filter),
+                                                                                                                           Posting Date=FIELD(Date Filter)));
+                                                   CaptionML=[DEU=Sollbetrag (MW);
+                                                              ENU=Debit Amount (LCY)];
+                                                   BlankZero=Yes;
+                                                   Editable=No;
+                                                   AutoFormatType=1 }
+    { 100 ;   ;Credit Amount (LCY) ;Decimal       ;FieldClass=FlowField;
+                                                   CalcFormula=Sum("Bank Account Ledger Entry"."Credit Amount (LCY)" WHERE (Bank Account No.=FIELD(No.),
+                                                                                                                            Global Dimension 1 Code=FIELD(Global Dimension 1 Filter),
+                                                                                                                            Global Dimension 2 Code=FIELD(Global Dimension 2 Filter),
+                                                                                                                            Posting Date=FIELD(Date Filter)));
+                                                   CaptionML=[DEU=Habenbetrag (MW);
+                                                              ENU=Credit Amount (LCY)];
+                                                   BlankZero=Yes;
+                                                   Editable=No;
+                                                   AutoFormatType=1 }
+    { 101 ;   ;Bank Branch No.     ;Text20        ;CaptionML=[DEU=BLZ;
+                                                              ENU=Bank Branch No.] }
+    { 102 ;   ;E-Mail              ;Text80        ;ExtendedDatatype=E-Mail;
+                                                   CaptionML=[DEU=E-Mail;
+                                                              ENU=E-Mail] }
+    { 103 ;   ;Home Page           ;Text80        ;ExtendedDatatype=URL;
+                                                   CaptionML=[DEU=Homepage;
+                                                              ENU=Home Page] }
+    { 107 ;   ;No. Series          ;Code10        ;TableRelation="No. Series";
+                                                   CaptionML=[DEU=Nummernserie;
+                                                              ENU=No. Series];
+                                                   Editable=No }
+    { 108 ;   ;Check Report ID     ;Integer       ;TableRelation=Object.ID WHERE (Type=CONST(Report));
+                                                   CaptionML=[DEU=Berichts-ID prÅfen;
+                                                              ENU=Check Report ID] }
+    { 109 ;   ;Check Report Name   ;Text80        ;FieldClass=FlowField;
+                                                   CalcFormula=Lookup(AllObjWithCaption."Object Name" WHERE (Object Type=CONST(Report),
+                                                                                                             Object ID=FIELD(Check Report ID)));
+                                                   CaptionML=[DEU=Berichtsnamen prÅfen;
+                                                              ENU=Check Report Name];
+                                                   Editable=No }
+    { 110 ;   ;IBAN                ;Code50        ;OnValidate=VAR
+                                                                CompanyInfo@1000 : Record 79;
+                                                              BEGIN
+                                                                CompanyInfo.CheckIBAN(IBAN);
+                                                              END;
+
+                                                   CaptionML=[DEU=IBAN;
+                                                              ENU=IBAN] }
+    { 111 ;   ;SWIFT Code          ;Code20        ;CaptionML=[DEU=SWIFT-Code;
+                                                              ENU=SWIFT Code] }
+  }
+  KEYS
+  {
+    {    ;No.                                     ;Clustered=Yes }
+    {    ;Search Name                              }
+    {    ;Bank Acc. Posting Group                  }
+    {    ;Currency Code                            }
+    {    ;Country/Region Code                      }
+  }
+  FIELDGROUPS
+  {
+    { 1   ;DropDown            ;No.,Name,Bank Account No.,Currency Code  }
+  }
+  CODE
+  {
+    VAR
+      Text000@1000 : TextConst 'DEU=Sie kînnen %1 nicht Ñndern, da offene Posten auf diesem Bankkonto vorhanden sind.;ENU=You cannot change %1 because there are one or more open ledger entries for this bank account.';
+      Text001@1001 : TextConst 'DEU=Es kann ein Auszug vorhanden sein, der %1 verwendet.\\;ENU=There may be a statement using the %1.\\';
+      Text002@1002 : TextConst 'DEU=Mîchten Sie %1 Ñndern?;ENU=Do you want to change %1?';
+      Text003@1003 : TextConst 'DEU=Mîchten Sie einen Kontakt fÅr %1 %2 erstellen?;ENU=Do you wish to create a contact for %1 %2?';
+      GLSetup@1004 : Record 98;
+      BankAcc@1005 : Record 270;
+      BankAccLedgEntry@1006 : Record 271;
+      CommentLine@1007 : Record 97;
+      PostCode@1008 : Record 225;
+      NoSeriesMgt@1009 : Codeunit 396;
+      MoveEntries@1010 : Codeunit 361;
+      UpdateContFromBank@1011 : Codeunit 5058;
+      DimMgt@1012 : Codeunit 408;
+      InsertFromContact@1013 : Boolean;
+      Text004@1014 : TextConst 'DEU=Bevor Sie Online Map verwenden kînnen, mÅssen Sie die Felder des Fensters ''Online Map-Einrichtung'' ausfÅllen.\Informationen hierzu finden Sie in der Hilfe zum Einrichten von Online Map.;ENU=Before you can use Online Map, you must fill in the Online Map Setup window.\See Setting Up Online Map in Help.';
+
+    PROCEDURE AssistEdit@2(OldBankAcc@1000 : Record 270) : Boolean;
+    BEGIN
+      WITH BankAcc DO BEGIN
+        BankAcc := Rec;
+        GLSetup.GET;
+        GLSetup.TESTFIELD("Bank Account Nos.");
+        IF NoSeriesMgt.SelectSeries(GLSetup."Bank Account Nos.",OldBankAcc."No. Series","No. Series") THEN BEGIN
+          GLSetup.GET;
+          GLSetup.TESTFIELD("Bank Account Nos.");
+          NoSeriesMgt.SetSeries("No.");
+          Rec := BankAcc;
+          EXIT(TRUE);
+        END;
+      END;
+    END;
+
+    PROCEDURE ValidateShortcutDimCode@29(FieldNumber@1000 : Integer;VAR ShortcutDimCode@1001 : Code[20]);
+    BEGIN
+      DimMgt.ValidateDimValueCode(FieldNumber,ShortcutDimCode);
+      DimMgt.SaveDefaultDim(DATABASE::"Bank Account","No.",FieldNumber,ShortcutDimCode);
+      MODIFY;
+    END;
+
+    PROCEDURE ShowContact@1();
+    VAR
+      ContBusRel@1000 : Record 5054;
+      Cont@1001 : Record 5050;
+    BEGIN
+      IF "No." = '' THEN
+        EXIT;
+
+      ContBusRel.SETCURRENTKEY("Link to Table","No.");
+      ContBusRel.SETRANGE("Link to Table",ContBusRel."Link to Table"::"Bank Account");
+      ContBusRel.SETRANGE("No.","No.");
+      IF NOT ContBusRel.FIND('-') THEN BEGIN
+        IF NOT CONFIRM(Text003,FALSE,TABLECAPTION,"No.") THEN
+          EXIT;
+        UpdateContFromBank.InsertNewContact(Rec,FALSE);
+        ContBusRel.FIND('-');
+      END;
+      COMMIT;
+
+      IF ISSERVICETIER THEN BEGIN
+        Cont.SETCURRENTKEY("Company Name","Company No.",Type,Name);
+        Cont.SETRANGE("Company No.",ContBusRel."Contact No.");
+        FORM.RUN(FORM::"Contact List",Cont);
+        EXIT;
+      END;
+
+      Cont.GET(ContBusRel."Contact No.");
+      FORM.RUN(FORM::"Contact Card",Cont);
+    END;
+
+    PROCEDURE SetInsertFromContact@3(FromContact@1000 : Boolean);
+    BEGIN
+      InsertFromContact := FromContact;
+    END;
+
+    PROCEDURE DisplayMap@7();
+    VAR
+      MapPoint@1001 : Record 800;
+      MapMgt@1000 : Codeunit 802;
+    BEGIN
+      IF MapPoint.FIND('-') THEN
+        MapMgt.MakeSelection(DATABASE::"Bank Account",GETPOSITION)
+      ELSE
+        MESSAGE(Text004);
+    END;
+
+    BEGIN
+    END.
+  }
+}
+

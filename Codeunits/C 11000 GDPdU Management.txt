@@ -1,0 +1,471 @@
+OBJECT Codeunit 11000 GDPdU Management
+{
+  OBJECT-PROPERTIES
+  {
+    Date=14.08.09;
+    Time=12:00:00;
+    Version List=NAVDACH6.00.01;
+  }
+  PROPERTIES
+  {
+    OnRun=BEGIN
+          END;
+
+  }
+  CODE
+  {
+    VAR
+      Text1140000@1140000 : TextConst 'DEU=Es bestehen Tabellenrelationen zu der Tabelle %1. Wenn Sie die Tabelle %2, werden diese gel”scht. M”chten Sie trotzdem fortsetzen?;ENU=There are table relations defined for the table %1. If you %2 the table the relation will be deleted. Do you still want do continue?';
+      Text1140001@1140001 : TextConst 'DEU=einrcken;ENU=indent';
+      Text1140002@1140002 : TextConst 'DEU=ausrcken;ENU=unindent';
+      Text1140003@1140003 : TextConst 'DEU=Tabellenrelationen gibt es nur zu eingerckten Tabellen.;ENU=Table relations only exist for indented tables.';
+
+    PROCEDURE FindGDPdURecDefField@1140000(DefGrpCode@1140000 : Code[10];RecordCode@1140001 : Code[10];TableNo@1140002 : Integer;FieldNo@1140003 : Integer) : Boolean;
+    VAR
+      GDPdURecDefField@1140004 : Record 11005;
+    BEGIN
+      GDPdURecDefField.SETRANGE("Definition Group Code",DefGrpCode);
+      GDPdURecDefField.SETRANGE("Record Code",RecordCode);
+      GDPdURecDefField.SETRANGE("Table No.",TableNo);
+      GDPdURecDefField.SETRANGE("Field No.",FieldNo);
+      IF GDPdURecDefField.FIND('-') THEN
+        EXIT(TRUE);
+    END;
+
+    PROCEDURE FindGDPdURecDefTable@1140001(DefGrpCode@1140000 : Code[10];RecordCode@1140001 : Code[10];TableNo@1140002 : Integer) : Boolean;
+    VAR
+      GDPdURecDefTable@1140003 : Record 11004;
+    BEGIN
+      GDPdURecDefTable.SETRANGE("Definition Group Code",DefGrpCode);
+      GDPdURecDefTable.SETRANGE("Record Code",RecordCode);
+      GDPdURecDefTable.SETRANGE("Table No.",TableNo);
+      IF GDPdURecDefTable.FIND('-') THEN
+        EXIT(TRUE);
+    END;
+
+    PROCEDURE InsertGDPdURecDefField@1140002(VAR Field@1140000 : Record 2000000041;VAR NewGDPdURecDefField@1140001 : Record 11005;DefGrpCode@1140002 : Code[10];RecordCode@1140003 : Code[10]);
+    VAR
+      GDPdURecDefField@1140004 : Record 11005;
+      NextLineNo@1140005 : Integer;
+    BEGIN
+      IF Field.FIND('-') THEN BEGIN
+        GDPdURecDefField.SETRANGE("Definition Group Code",DefGrpCode);
+        GDPdURecDefField.SETRANGE("Record Code",RecordCode);
+        GDPdURecDefField.SETRANGE("Table No.",Field.TableNo);
+        REPEAT
+          GDPdURecDefField.SETRANGE("Field No.",Field."No.");
+          IF NOT GDPdURecDefField.FIND('-') THEN BEGIN
+            NextLineNo := FindNextLineNo(NewGDPdURecDefField);
+            NewGDPdURecDefField.INIT;
+            NewGDPdURecDefField."Definition Group Code" := DefGrpCode;
+            NewGDPdURecDefField."Record Code" := RecordCode;
+            NewGDPdURecDefField."Table No." := Field.TableNo;
+            NewGDPdURecDefField."Field No." := Field."No.";
+            NewGDPdURecDefField."Line No." := NextLineNo;
+            NewGDPdURecDefField.INSERT;
+          END;
+        UNTIL Field.NEXT = 0;
+      END;
+    END;
+
+    LOCAL PROCEDURE FindNextLineNo@1140003(VAR GDPdURecDefField@1140000 : Record 11005) NextLineNo : Integer;
+    BEGIN
+      NextLineNo := GDPdURecDefField."Line No.";
+      IF GDPdURecDefField.FIND('>') THEN
+        NextLineNo := NextLineNo + (GDPdURecDefField."Line No." - NextLineNo) DIV 2
+      ELSE
+        NextLineNo := NextLineNo + 10000;
+    END;
+
+    PROCEDURE UpdateTableRelation@1140004(GDPdURecDefTable@1140000 : Record 11004);
+    VAR
+      TableRelationForm@1140001 : Form 11007;
+    BEGIN
+      WITH GDPdURecDefTable DO BEGIN
+        IF GDPdURecDefTable."Relation To Table No." = 0 THEN
+          ERROR(Text1140003);
+
+        FILTERGROUP(2);
+        SETRANGE("Definition Group Code","Definition Group Code");
+        SETRANGE("Record Code","Record Code");
+        SETRANGE("Table No.","Table No.");
+        FILTERGROUP(0);
+        CLEAR(TableRelationForm);
+        TableRelationForm.SETTABLEVIEW(GDPdURecDefTable);
+        TableRelationForm.RUNMODAL;
+      END;
+    END;
+
+    PROCEDURE SelectGDPdUFields@1140005(GDPdURecDefTable@1140000 : Record 11004);
+    VAR
+      GDPdURecDefField@1140001 : Record 11005;
+      FieldSelectionForm@1140002 : Form 11005;
+    BEGIN
+      WITH GDPdURecDefTable DO BEGIN
+        CLEAR(FieldSelectionForm);
+        FILTERGROUP(2);
+        GDPdURecDefField.SETRANGE("Definition Group Code","Definition Group Code");
+        GDPdURecDefField.SETRANGE("Record Code","Record Code");
+        GDPdURecDefField.SETRANGE("Table No.","Table No.");
+        FieldSelectionForm.SetGDPdUCode("Definition Group Code","Record Code","Table No.");
+        FieldSelectionForm.SETTABLEVIEW(GDPdURecDefField);
+        FILTERGROUP(0);
+        FieldSelectionForm.RUNMODAL;
+      END;
+    END;
+
+    PROCEDURE UpdateDefTableIndentation@1140006(VAR GDPdURecDefTable@1140000 : Record 11004;oldIndentation@1140001 : Integer);
+    VAR
+      RelGDPdURecDefTable@1140002 : Record 11004;
+      IndentText@1140003 : Text[30];
+      FoundRelation@1140004 : Boolean;
+      indented@1140005 : Boolean;
+    BEGIN
+      WITH GDPdURecDefTable DO BEGIN
+
+        CALCFIELDS("Table Relation Defined","Table Name");
+        IF "Table Relation Defined" THEN BEGIN
+          IF oldIndentation < Indentation THEN
+            IndentText := Text1140001
+          ELSE
+            IndentText := Text1140002;
+
+          IF NOT CONFIRM(Text1140000,FALSE,"Table Name",IndentText) THEN BEGIN
+            Indentation := oldIndentation;
+            EXIT;
+          END;
+        END;
+
+        FoundRelation := FALSE;
+        CASE TRUE OF
+          Indentation < 0 : Indentation := 0;
+          Indentation = 0 : BEGIN
+                              FoundRelation := TRUE;
+                              CLEAR("Relation To Table No.");
+                            END;
+          ELSE BEGIN
+            RelGDPdURecDefTable.COPY(GDPdURecDefTable);
+            IF RelGDPdURecDefTable.FIND('<') THEN BEGIN
+              IF RelGDPdURecDefTable.Indentation >= Indentation - 1 THEN BEGIN
+                REPEAT
+                  IF RelGDPdURecDefTable.Indentation = Indentation - 1 THEN BEGIN
+                    FoundRelation := TRUE;
+                    "Relation To Table No." := RelGDPdURecDefTable."Table No.";
+                  END;
+                UNTIL (RelGDPdURecDefTable.NEXT(-1) = 0) OR FoundRelation;
+              END ELSE
+                Indentation := oldIndentation;
+            END ELSE
+              Indentation := oldIndentation
+          END;
+        END;
+
+        IF FoundRelation THEN BEGIN
+          RelGDPdURecDefTable.COPY(GDPdURecDefTable);
+          IF RelGDPdURecDefTable.FIND('>') THEN BEGIN
+            IF oldIndentation < Indentation THEN BEGIN
+              REPEAT
+                indented := FALSE;
+                IF RelGDPdURecDefTable.Indentation > oldIndentation THEN BEGIN
+                  RelGDPdURecDefTable.Indentation := RelGDPdURecDefTable.Indentation + Indentation - oldIndentation;
+                  indented := TRUE;
+                  RelGDPdURecDefTable.MODIFY;
+                END;
+              UNTIL (indented = FALSE) OR (RelGDPdURecDefTable.NEXT = 0);
+            END ELSE BEGIN
+              REPEAT
+                indented := FALSE;
+                IF RelGDPdURecDefTable.Indentation >= oldIndentation THEN BEGIN
+                  RelGDPdURecDefTable.Indentation := RelGDPdURecDefTable.Indentation + Indentation - oldIndentation;
+                   IF RelGDPdURecDefTable.Indentation = Indentation THEN
+                     RelGDPdURecDefTable."Relation To Table No." := "Relation To Table No.";
+                   RelGDPdURecDefTable.MODIFY;
+                   indented := TRUE;
+                END;
+              UNTIL (indented = FALSE) OR (RelGDPdURecDefTable.NEXT = 0);
+            END;
+          END;
+        END;
+
+        IF FoundRelation THEN BEGIN
+          MODIFY;
+          DeleteTableRelation("Definition Group Code","Record Code","Table No.");
+        END;
+      END;
+    END;
+
+    LOCAL PROCEDURE DeleteTableRelation@1140007(DefGrpCode@1140000 : Code[10];RecordCode@1140001 : Code[10];TableNo@1140002 : Integer);
+    VAR
+      GDPdUTableRelation@1140003 : Record 11006;
+    BEGIN
+      GDPdUTableRelation.SETRANGE("Definition Group Code",DefGrpCode);
+      GDPdUTableRelation.SETRANGE("Record Code",RecordCode);
+      GDPdUTableRelation.SETRANGE("To Table No.",TableNo);
+      GDPdUTableRelation.DELETEALL;
+    END;
+
+    PROCEDURE CreateIndexXML@1140008(VAR TempGDPdUXMLBuffer@1140000 : Record 11009;VAR FileSysObjectClient@1101100002 : Automation "{F935DC20-1CF0-11D0-ADB9-00C04FD58A0B} 1.0:{0D43FE01-F093-11CF-8940-00A0C9054228}:'Windows Script Host Object Model'.FileSystemObject";ExportPath@1140001 : Text[250];Description@1140002 : Text[50];DefGrpCode@1140003 : Code[10];RecordCode@1140004 : Code[10];StartDate@1140005 : Date;EndDate@1140006 : Date;DTDFileName@1140007 : Text[250]);
+    VAR
+      Text1140008@1140008 : TextConst 'DEU="<?xml version=""1.0"" encoding=""UTF-8"" ?>";ENU="<?xml version=""1.0"" encoding=""UTF-8"" ?>"';
+      Text1140009@1140009 : TextConst 'DEU=<!DOCTYPE DataSet SYSTEM ";ENU=<!DOCTYPE DataSet SYSTEM "';
+      Text1140010@1140010 : TextConst 'DEU=""" ><DataSet></DataSet>";ENU=""" ><DataSet></DataSet>"';
+      Text1140011@1140011 : TextConst 'DEU=index.xml wurde nicht geschrieben!;ENU=index.xml was not created!';
+      GDPdURecDefField@1140012 : Record 11005;
+      GDPdUTableRelField@1140013 : Record 11006;
+      GDPdURecDefTable@1140014 : Record 11004;
+      CompanyInfo@1140015 : Record 79;
+      GLSetup@1140016 : Record 98;
+      BloBRef@1101100000 : Record 99008535;
+      XMLDOMManagement@1140017 : Codeunit 6224;
+      RBMgt@1140034 : Codeunit 419;
+      XMLDocOut@1140019 : Automation "{F5078F18-C551-11D3-89B9-0000F81FE221} 3.0:{F5078F32-C551-11D3-89B9-0000F81FE221}:'Microsoft XML, v3.0'.DOMDocument30";
+      XMLCurrNode@1140020 : Automation "{F5078F18-C551-11D3-89B9-0000F81FE221} 3.0:{2933BF80-7B36-11D2-B20E-00C04F983E60}:'Microsoft XML, v3.0'.IXMLDOMNode";
+      XMLNewChild@1140021 : Automation "{F5078F18-C551-11D3-89B9-0000F81FE221} 3.0:{2933BF80-7B36-11D2-B20E-00C04F983E60}:'Microsoft XML, v3.0'.IXMLDOMNode";
+      XMLprevNode@1140022 : Automation "{F5078F18-C551-11D3-89B9-0000F81FE221} 3.0:{2933BF80-7B36-11D2-B20E-00C04F983E60}:'Microsoft XML, v3.0'.IXMLDOMNode";
+      XMLPrevNode2@1140023 : Automation "{F5078F18-C551-11D3-89B9-0000F81FE221} 3.0:{2933BF80-7B36-11D2-B20E-00C04F983E60}:'Microsoft XML, v3.0'.IXMLDOMNode";
+      XMLPrevNode3@1140024 : Automation "{F5078F18-C551-11D3-89B9-0000F81FE221} 3.0:{2933BF80-7B36-11D2-B20E-00C04F983E60}:'Microsoft XML, v3.0'.IXMLDOMNode";
+      OutStr@1101100001 : OutStream;
+      FldType@1140025 : Text[250];
+      TempMediaName@1140026 : Text[30];
+      TempXMLFile@1140035 : Text[1024];
+      RecRef@1140027 : RecordRef;
+      KeyRef@1140028 : KeyRef;
+      FldRef@1140029 : FieldRef;
+      FldRef2@1140030 : FieldRef;
+      i@1140031 : Integer;
+      isPrimaryKey@1140032 : Boolean;
+      DecimalSymbol@1140033 : Decimal;
+    BEGIN
+      GDPdURecDefField.SETRANGE("Definition Group Code",DefGrpCode);
+      GDPdURecDefField.SETRANGE("Record Code",RecordCode);
+      GDPdUTableRelField.SETRANGE("Definition Group Code",DefGrpCode);
+      GDPdUTableRelField.SETRANGE("Record Code",RecordCode);
+      GLSetup.GET();
+
+      IF ISCLEAR(XMLDocOut) THEN
+        CREATE(XMLDocOut,TRUE);
+
+      XMLDocOut.async := FALSE;
+      XMLDocOut.validateOnParse := FALSE;
+      XMLDocOut.resolveExternals := FALSE;
+
+
+      XMLDocOut.loadXML(Text1140008+Text1140009+DTDFileName+Text1140010);
+
+      IF XMLDocOut.xml = '' THEN
+        ERROR(XMLDocOut.parseError.reason+Text1140011);
+
+      XMLCurrNode := XMLDocOut.documentElement;
+
+      XMLDOMManagement.SetNormalCase;
+
+      WITH XMLDOMManagement DO BEGIN
+
+        IF AddElement(XMLCurrNode,'Version','','',XMLNewChild) > 0 THEN
+          EXIT;
+
+        IF AddElement(XMLCurrNode,'DataSupplier','','',XMLNewChild) > 0 THEN
+          EXIT;
+
+        XMLCurrNode := XMLNewChild;
+        IF AddElement(XMLCurrNode,'Name',COMPANYNAME,'',XMLNewChild) > 0 THEN
+          EXIT;
+        CompanyInfo.GET;
+        IF AddElement(
+          XMLCurrNode,'Location',CompanyInfo.Address+' '+CompanyInfo."Address 2"+
+          ' '+CompanyInfo."Post Code"+' '+CompanyInfo.City,'',XMLNewChild) > 0
+        THEN
+          EXIT;
+
+        IF AddElement(XMLCurrNode,'Comment',Description,'',XMLNewChild) > 0 THEN
+          EXIT;
+
+        IF TempGDPdUXMLBuffer.FIND('-') THEN BEGIN
+          REPEAT
+            XMLCurrNode := XMLDocOut.documentElement;
+            IF AddElement(XMLCurrNode,'Media','','',XMLNewChild) > 0 THEN
+              EXIT;
+
+            XMLCurrNode := XMLNewChild;
+            XMLPrevNode2 := XMLNewChild;
+            IF AddElement(XMLCurrNode,'Name',TempGDPdUXMLBuffer."Media Name",'',XMLNewChild) > 0 THEN
+              EXIT;
+
+            REPEAT
+              XMLCurrNode := XMLPrevNode2;
+              GDPdURecDefField.SETRANGE("Table No.",TempGDPdUXMLBuffer."Table No.");
+              RecRef.OPEN(TempGDPdUXMLBuffer."Table No.");
+              IF AddElement(XMLCurrNode,'Table','','',XMLNewChild) > 0 THEN
+                EXIT;
+              XMLCurrNode := XMLNewChild;
+              XMLprevNode := XMLNewChild;
+              IF AddElement(XMLCurrNode,'URL',TempGDPdUXMLBuffer."File Name",'',XMLNewChild) > 0 THEN
+                EXIT;
+              IF AddElement(XMLCurrNode,'Name',RecRef.CAPTION,'',XMLNewChild) > 0 THEN
+                EXIT;
+
+              IF AddElement(XMLCurrNode,'Description',RecRef.CAPTION,'',XMLNewChild) > 0 THEN
+                EXIT;
+
+              GDPdURecDefTable.SETRANGE("Definition Group Code",DefGrpCode);
+              GDPdURecDefTable.SETRANGE("Record Code",RecordCode);
+              GDPdURecDefTable.SETRANGE("Table No.",TempGDPdUXMLBuffer."Table No.");
+              IF GDPdURecDefTable.FIND('-') THEN;
+
+              IF GDPdURecDefTable."GDPdU Period Field No." > 0 THEN BEGIN
+                IF AddElement(XMLCurrNode,'Validity','','',XMLNewChild) > 0 THEN
+                  EXIT;
+                XMLCurrNode := XMLNewChild;
+                XMLPrevNode3 := XMLNewChild;
+                IF AddElement(XMLCurrNode,'Range','','',XMLNewChild) > 0 THEN
+                  EXIT;
+                XMLCurrNode := XMLNewChild;
+                IF AddElement(XMLCurrNode,'From',FORMAT(StartDate,0,'<Day,2>.<Month,2>.<Year4>'),'',XMLNewChild) > 0 THEN
+                  EXIT;
+                IF AddElement(XMLCurrNode,'To',FORMAT(EndDate,0,'<Day,2>.<Month,2>.<Year4>'),'',XMLNewChild) > 0 THEN
+                  EXIT;
+              END;
+              XMLCurrNode := XMLprevNode;
+              DecimalSymbol := 1/10;
+              IF STRPOS(FORMAT(DecimalSymbol,0,1),',') > 0 THEN BEGIN
+                IF AddElement(XMLCurrNode,'DecimalSymbol',',','',XMLNewChild) > 0 THEN
+                  EXIT;
+                IF AddElement(XMLCurrNode,'DigitGroupingSymbol','.','',XMLNewChild) > 0 THEN
+                  EXIT;
+              END ELSE BEGIN
+                IF AddElement(XMLCurrNode,'DecimalSymbol','.','',XMLNewChild) > 0 THEN
+                  EXIT;
+                IF AddElement(XMLCurrNode,'DigitGroupingSymbol',',','',XMLNewChild) > 0 THEN
+                  EXIT;
+              END;
+              IF AddElement(XMLCurrNode,'VariableLength','','',XMLNewChild) > 0 THEN
+                EXIT;
+              XMLCurrNode := XMLNewChild;
+              XMLprevNode := XMLNewChild;
+              IF GDPdURecDefField.FIND('-') THEN
+                REPEAT
+                  KeyRef := RecRef.KEYINDEX(1);
+                  FOR i := 1 TO KeyRef.FIELDCOUNT DO BEGIN
+                    FldRef := KeyRef.FIELDINDEX(i);
+                    IF FldRef.NUMBER = GDPdURecDefField."Field No." THEN BEGIN
+                      XMLCurrNode := XMLprevNode;
+                      IF AddElement(XMLCurrNode,'VariablePrimaryKey','','',XMLNewChild) > 0 THEN
+                        EXIT;
+                      XMLCurrNode := XMLNewChild;
+                      XMLPrevNode3 := XMLNewChild;
+                      IF AddElement(XMLCurrNode,'Name',FldRef.CAPTION,'',XMLNewChild) > 0 THEN
+                        EXIT;
+                      IF AddElement(XMLCurrNode,'Description',FldRef.CAPTION,'',XMLNewChild) > 0 THEN
+                        EXIT;
+                      FldType := FORMAT(FldRef.TYPE ,250);
+                      IF (FldType = FORMAT('Integer',250)) OR
+                         (FldType = FORMAT('BigInteger',250)) OR
+                         (FldType = FORMAT('Decimal',250))
+                      THEN BEGIN
+                        IF AddElement(XMLCurrNode,'Numeric','','',XMLNewChild) > 0 THEN
+                          EXIT;
+                        IF FldType = FORMAT('Decimal',250) THEN BEGIN
+                          XMLCurrNode := XMLNewChild;
+                          IF AddElement(
+                            XMLCurrNode,'Accuracy',
+                            COPYSTR(GLSetup."Amount Decimal Places",STRLEN(GLSetup."Amount Decimal Places")),'',XMLNewChild) > 0
+                          THEN
+                            EXIT;
+                        END;
+                      END ELSE BEGIN
+                        IF FldType = FORMAT('Date',250) THEN BEGIN
+                          IF AddElement(XMLCurrNode,'Date','','',XMLNewChild) > 0 THEN
+                            EXIT;
+                        END ELSE BEGIN
+                          IF AddElement(XMLCurrNode,'AlphaNumeric','','',XMLNewChild) > 0 THEN
+                            EXIT;
+                        END;
+                      END;
+                    END;
+                  END;
+                UNTIL GDPdURecDefField.NEXT = 0;
+
+              IF GDPdURecDefField.FIND('-') THEN
+                REPEAT
+                  isPrimaryKey := FALSE;
+                  FOR i := 1 TO KeyRef.FIELDCOUNT DO BEGIN
+                    FldRef := KeyRef.FIELDINDEX(i);
+                    IF FldRef.NUMBER = GDPdURecDefField."Field No." THEN
+                      isPrimaryKey := TRUE;
+                  END;
+                  IF NOT isPrimaryKey THEN BEGIN
+                    FldRef2 := RecRef.FIELD(GDPdURecDefField."Field No.");
+                    XMLCurrNode := XMLprevNode;
+                    IF AddElement(XMLCurrNode,'VariableColumn','','',XMLNewChild) > 0 THEN
+                      EXIT;
+                    XMLCurrNode := XMLNewChild;
+                    XMLPrevNode3 := XMLCurrNode;
+                    IF AddElement(XMLCurrNode,'Name',FldRef2.CAPTION,'',XMLNewChild) > 0 THEN
+                      EXIT;
+                    IF AddElement(XMLCurrNode,'Description',FldRef2.CAPTION,'',XMLNewChild) > 0 THEN
+                      EXIT;
+                    FldType := FORMAT(FldRef2.TYPE ,250);
+                    IF (FldType = FORMAT('Integer',250)) OR
+                       (FldType = FORMAT('BigInteger',250)) OR
+                       (FldType = FORMAT('Decimal',250))
+                    THEN BEGIN
+                      IF AddElement(XMLCurrNode,'Numeric','','',XMLNewChild) > 0 THEN
+                        EXIT;
+                      IF FldType = FORMAT('Decimal',250) THEN BEGIN
+                        XMLCurrNode := XMLNewChild;
+                        IF AddElement(
+                          XMLCurrNode,'Accuracy',
+                          COPYSTR(GLSetup."Amount Decimal Places",STRLEN(GLSetup."Amount Decimal Places")),'',XMLNewChild) > 0
+                        THEN
+                          EXIT;
+                      END;
+                    END ELSE BEGIN
+                      IF FldType = FORMAT('Date',250) THEN BEGIN
+                        IF AddElement(XMLCurrNode,'Date','','',XMLNewChild) > 0 THEN
+                          EXIT;
+                      END ELSE BEGIN
+                        IF AddElement(XMLCurrNode,'AlphaNumeric','','',XMLNewChild) > 0 THEN
+                          EXIT;
+                      END;
+                    END;
+                  END;
+                UNTIL GDPdURecDefField.NEXT = 0;
+
+              GDPdUTableRelField.SETRANGE("To Table No.",TempGDPdUXMLBuffer."Table No.");
+              IF GDPdUTableRelField.FIND('-') THEN
+                REPEAT
+                  GDPdUTableRelField.CALCFIELDS("To Field Name","From Field Name");
+                  XMLCurrNode := XMLprevNode;
+                  IF AddElement(XMLCurrNode,'ForeignKey','','',XMLNewChild) > 0 THEN
+                    EXIT;
+                  XMLCurrNode := XMLNewChild;
+                  IF AddElement(XMLCurrNode,'Name',GDPdUTableRelField."To Field Name",'',XMLNewChild) > 0 THEN
+                    EXIT;
+                  IF AddElement(XMLCurrNode,'References',GDPdUTableRelField."From Field Name",'',XMLNewChild) > 0 THEN
+                    EXIT;
+                UNTIL GDPdUTableRelField.NEXT = 0;
+
+              TempMediaName := TempGDPdUXMLBuffer."Media Name";
+              IF TempGDPdUXMLBuffer.NEXT = 0 THEN
+                TempMediaName := '';
+              RecRef.CLOSE;
+            UNTIL TempGDPdUXMLBuffer."Media Name" <> TempMediaName;
+          UNTIL TempMediaName = '';
+        END;
+      END;
+
+      IF ISSERVICETIER THEN BEGIN
+        BloBRef.Blob.CREATEOUTSTREAM(OutStr);
+        XMLDocOut.save(OutStr);
+        TempXMLFile := RBMgt.BLOBExport(BloBRef,TempXMLFile,FALSE);
+        FileSysObjectClient.MoveFile(TempXMLFile,ExportPath + '\index.xml');
+      END ELSE
+        XMLDocOut.save(ExportPath+'\index.xml');
+      CLEAR(XMLDocOut);
+    END;
+
+    BEGIN
+    END.
+  }
+}
+

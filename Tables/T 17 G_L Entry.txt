@@ -1,0 +1,269 @@
+OBJECT Table 17 G/L Entry
+{
+  OBJECT-PROPERTIES
+  {
+    Date=05.11.08;
+    Time=12:00:00;
+    Version List=NAVW16.00,NAVDACH4.00;
+  }
+  PROPERTIES
+  {
+    CaptionML=[DEU=Sachposten;
+               ENU=G/L Entry];
+    LookupFormID=Form20;
+    DrillDownFormID=Form20;
+  }
+  FIELDS
+  {
+    { 1   ;   ;Entry No.           ;Integer       ;CaptionML=[DEU=Lfd. Nr.;
+                                                              ENU=Entry No.] }
+    { 3   ;   ;G/L Account No.     ;Code20        ;TableRelation="G/L Account";
+                                                   CaptionML=[DEU=Sachkontonr.;
+                                                              ENU=G/L Account No.] }
+    { 4   ;   ;Posting Date        ;Date          ;CaptionML=[DEU=Buchungsdatum;
+                                                              ENU=Posting Date];
+                                                   ClosingDates=Yes }
+    { 5   ;   ;Document Type       ;Option        ;CaptionML=[DEU=Belegart;
+                                                              ENU=Document Type];
+                                                   OptionCaptionML=[DEU=" ,Zahlung,Rechnung,Gutschrift,Zinsrechnung,Mahnung,Erstattung";
+                                                                    ENU=" ,Payment,Invoice,Credit Memo,Finance Charge Memo,Reminder,Refund"];
+                                                   OptionString=[ ,Payment,Invoice,Credit Memo,Finance Charge Memo,Reminder,Refund] }
+    { 6   ;   ;Document No.        ;Code20        ;CaptionML=[DEU=Belegnr.;
+                                                              ENU=Document No.] }
+    { 7   ;   ;Description         ;Text50        ;CaptionML=[DEU=Beschreibung;
+                                                              ENU=Description] }
+    { 10  ;   ;Bal. Account No.    ;Code20        ;TableRelation=IF (Bal. Account Type=CONST(G/L Account)) "G/L Account"
+                                                                 ELSE IF (Bal. Account Type=CONST(Customer)) Customer
+                                                                 ELSE IF (Bal. Account Type=CONST(Vendor)) Vendor
+                                                                 ELSE IF (Bal. Account Type=CONST(Bank Account)) "Bank Account"
+                                                                 ELSE IF (Bal. Account Type=CONST(Fixed Asset)) "Fixed Asset"
+                                                                 ELSE IF (Bal. Account Type=CONST(IC Partner)) "IC Partner";
+                                                   CaptionML=[DEU=Gegenkontonr.;
+                                                              ENU=Bal. Account No.] }
+    { 17  ;   ;Amount              ;Decimal       ;CaptionML=[DEU=Betrag;
+                                                              ENU=Amount];
+                                                   AutoFormatType=1 }
+    { 23  ;   ;Global Dimension 1 Code;Code20     ;TableRelation="Dimension Value".Code WHERE (Global Dimension No.=CONST(1));
+                                                   CaptionML=[DEU=Globaler Dimensionscode 1;
+                                                              ENU=Global Dimension 1 Code];
+                                                   CaptionClass='1,1,1' }
+    { 24  ;   ;Global Dimension 2 Code;Code20     ;TableRelation="Dimension Value".Code WHERE (Global Dimension No.=CONST(2));
+                                                   CaptionML=[DEU=Globaler Dimensionscode 2;
+                                                              ENU=Global Dimension 2 Code];
+                                                   CaptionClass='1,1,2' }
+    { 27  ;   ;User ID             ;Code20        ;TableRelation=User;
+                                                   OnLookup=VAR
+                                                              LoginMgt@1000 : Codeunit 418;
+                                                            BEGIN
+                                                              LoginMgt.LookupUserID("User ID");
+                                                            END;
+
+                                                   TestTableRelation=No;
+                                                   CaptionML=[DEU=Benutzer-ID;
+                                                              ENU=User ID] }
+    { 28  ;   ;Source Code         ;Code10        ;TableRelation="Source Code";
+                                                   CaptionML=[DEU=Herkunftscode;
+                                                              ENU=Source Code] }
+    { 29  ;   ;System-Created Entry;Boolean       ;CaptionML=[DEU=Systembuchung;
+                                                              ENU=System-Created Entry] }
+    { 30  ;   ;Prior-Year Entry    ;Boolean       ;CaptionML=[DEU=Nachbuchung;
+                                                              ENU=Prior-Year Entry] }
+    { 41  ;   ;Job No.             ;Code20        ;TableRelation=Job;
+                                                   CaptionML=[DEU=Projektnr.;
+                                                              ENU=Job No.] }
+    { 42  ;   ;Quantity            ;Decimal       ;CaptionML=[DEU=Menge;
+                                                              ENU=Quantity];
+                                                   DecimalPlaces=0:5 }
+    { 43  ;   ;VAT Amount          ;Decimal       ;CaptionML=[DEU=MwSt.-Betrag;
+                                                              ENU=VAT Amount];
+                                                   AutoFormatType=1 }
+    { 45  ;   ;Business Unit Code  ;Code10        ;TableRelation="Business Unit";
+                                                   CaptionML=[DEU=Konzernmandantencode;
+                                                              ENU=Business Unit Code] }
+    { 46  ;   ;Journal Batch Name  ;Code10        ;CaptionML=[DEU=Buch.-Blattname;
+                                                              ENU=Journal Batch Name] }
+    { 47  ;   ;Reason Code         ;Code10        ;TableRelation="Reason Code";
+                                                   CaptionML=[DEU=Ursachencode;
+                                                              ENU=Reason Code] }
+    { 48  ;   ;Gen. Posting Type   ;Option        ;CaptionML=[DEU=Buchungsart;
+                                                              ENU=Gen. Posting Type];
+                                                   OptionCaptionML=[DEU=" ,Einkauf,Verkauf,Ausgleich";
+                                                                    ENU=" ,Purchase,Sale,Settlement"];
+                                                   OptionString=[ ,Purchase,Sale,Settlement] }
+    { 49  ;   ;Gen. Bus. Posting Group;Code10     ;TableRelation="Gen. Business Posting Group";
+                                                   CaptionML=[DEU=Gesch„ftsbuchungsgruppe;
+                                                              ENU=Gen. Bus. Posting Group] }
+    { 50  ;   ;Gen. Prod. Posting Group;Code10    ;TableRelation="Gen. Product Posting Group";
+                                                   CaptionML=[DEU=Produktbuchungsgruppe;
+                                                              ENU=Gen. Prod. Posting Group] }
+    { 51  ;   ;Bal. Account Type   ;Option        ;CaptionML=[DEU=Gegenkontoart;
+                                                              ENU=Bal. Account Type];
+                                                   OptionCaptionML=[DEU=Sachkonto,Debitor,Kreditor,Bankkonto,Anlage,IC-Partner;
+                                                                    ENU=G/L Account,Customer,Vendor,Bank Account,Fixed Asset,IC Partner];
+                                                   OptionString=G/L Account,Customer,Vendor,Bank Account,Fixed Asset,IC Partner }
+    { 52  ;   ;Transaction No.     ;Integer       ;CaptionML=[DEU=Transaktionsnr.;
+                                                              ENU=Transaction No.] }
+    { 53  ;   ;Debit Amount        ;Decimal       ;CaptionML=[DEU=Sollbetrag;
+                                                              ENU=Debit Amount];
+                                                   BlankZero=Yes;
+                                                   AutoFormatType=1 }
+    { 54  ;   ;Credit Amount       ;Decimal       ;CaptionML=[DEU=Habenbetrag;
+                                                              ENU=Credit Amount];
+                                                   BlankZero=Yes;
+                                                   AutoFormatType=1 }
+    { 55  ;   ;Document Date       ;Date          ;CaptionML=[DEU=Belegdatum;
+                                                              ENU=Document Date];
+                                                   ClosingDates=Yes }
+    { 56  ;   ;External Document No.;Code20       ;CaptionML=[DEU=Externe Belegnummer;
+                                                              ENU=External Document No.] }
+    { 57  ;   ;Source Type         ;Option        ;CaptionML=[DEU=Herkunftsart;
+                                                              ENU=Source Type];
+                                                   OptionCaptionML=[DEU=" ,Debitor,Kreditor,Bankkonto,Anlage";
+                                                                    ENU=" ,Customer,Vendor,Bank Account,Fixed Asset"];
+                                                   OptionString=[ ,Customer,Vendor,Bank Account,Fixed Asset] }
+    { 58  ;   ;Source No.          ;Code20        ;TableRelation=IF (Source Type=CONST(Customer)) Customer
+                                                                 ELSE IF (Source Type=CONST(Vendor)) Vendor
+                                                                 ELSE IF (Source Type=CONST(Bank Account)) "Bank Account"
+                                                                 ELSE IF (Source Type=CONST(Fixed Asset)) "Fixed Asset";
+                                                   CaptionML=[DEU=Herkunftsnr.;
+                                                              ENU=Source No.] }
+    { 59  ;   ;No. Series          ;Code10        ;TableRelation="No. Series";
+                                                   CaptionML=[DEU=Nummernserie;
+                                                              ENU=No. Series] }
+    { 60  ;   ;Tax Area Code       ;Code20        ;TableRelation="Tax Area";
+                                                   CaptionML=[DEU=Steuergebietscode;
+                                                              ENU=Tax Area Code] }
+    { 61  ;   ;Tax Liable          ;Boolean       ;CaptionML=[DEU=Steuerpflichtig;
+                                                              ENU=Tax Liable] }
+    { 62  ;   ;Tax Group Code      ;Code10        ;TableRelation="Tax Group";
+                                                   CaptionML=[DEU=Steuergruppencode;
+                                                              ENU=Tax Group Code] }
+    { 63  ;   ;Use Tax             ;Boolean       ;CaptionML=[DEU=Verbrauchssteuer;
+                                                              ENU=Use Tax] }
+    { 64  ;   ;VAT Bus. Posting Group;Code10      ;TableRelation="VAT Business Posting Group";
+                                                   CaptionML=[DEU=MwSt.-Gesch„ftsbuchungsgruppe;
+                                                              ENU=VAT Bus. Posting Group] }
+    { 65  ;   ;VAT Prod. Posting Group;Code10     ;TableRelation="VAT Product Posting Group";
+                                                   CaptionML=[DEU=MwSt.-Produktbuchungsgruppe;
+                                                              ENU=VAT Prod. Posting Group] }
+    { 68  ;   ;Additional-Currency Amount;Decimal ;CaptionML=[DEU=Betrag (BW);
+                                                              ENU=Additional-Currency Amount];
+                                                   AutoFormatType=1;
+                                                   AutoFormatExpr=GetCurrencyCode }
+    { 69  ;   ;Add.-Currency Debit Amount;Decimal ;CaptionML=[DEU=Sollbetrag (BW);
+                                                              ENU=Add.-Currency Debit Amount];
+                                                   AutoFormatType=1;
+                                                   AutoFormatExpr=GetCurrencyCode }
+    { 70  ;   ;Add.-Currency Credit Amount;Decimal;CaptionML=[DEU=Habenbetrag (BW);
+                                                              ENU=Add.-Currency Credit Amount];
+                                                   AutoFormatType=1;
+                                                   AutoFormatExpr=GetCurrencyCode }
+    { 71  ;   ;Close Income Statement Dim. ID;Integer;
+                                                   CaptionML=[DEU=GuV-Konten Nullstellung Dim.ID;
+                                                              ENU=Close Income Statement Dim. ID] }
+    { 72  ;   ;IC Partner Code     ;Code20        ;TableRelation="IC Partner";
+                                                   CaptionML=[DEU=IC-Partnercode;
+                                                              ENU=IC Partner Code] }
+    { 73  ;   ;Reversed            ;Boolean       ;CaptionML=[DEU=Storniert;
+                                                              ENU=Reversed] }
+    { 74  ;   ;Reversed by Entry No.;Integer      ;TableRelation="G/L Entry";
+                                                   CaptionML=[DEU=Storniert durch Lfd. Nr.;
+                                                              ENU=Reversed by Entry No.];
+                                                   BlankZero=Yes }
+    { 75  ;   ;Reversed Entry No.  ;Integer       ;TableRelation="G/L Entry";
+                                                   CaptionML=[DEU=Stornierter Posten Lfd. Nr.;
+                                                              ENU=Reversed Entry No.];
+                                                   BlankZero=Yes }
+    { 76  ;   ;G/L Account Name    ;Text50        ;FieldClass=FlowField;
+                                                   CalcFormula=Lookup("G/L Account".Name WHERE (No.=FIELD(G/L Account No.)));
+                                                   CaptionML=[DEU=Sachkontoname;
+                                                              ENU=G/L Account Name];
+                                                   Editable=No }
+    { 5400;   ;Prod. Order No.     ;Code20        ;CaptionML=[DEU=FA-Nr.;
+                                                              ENU=Prod. Order No.] }
+    { 5600;   ;FA Entry Type       ;Option        ;CaptionML=[DEU=Anlagenpostenart;
+                                                              ENU=FA Entry Type];
+                                                   OptionCaptionML=[DEU=" ,Anlage,Wartung";
+                                                                    ENU=" ,Fixed Asset,Maintenance"];
+                                                   OptionString=[ ,Fixed Asset,Maintenance] }
+    { 5601;   ;FA Entry No.        ;Integer       ;TableRelation=IF (FA Entry Type=CONST(Fixed Asset)) "FA Ledger Entry"
+                                                                 ELSE IF (FA Entry Type=CONST(Maintenance)) "Maintenance Ledger Entry";
+                                                   CaptionML=[DEU=Anlagenposten Lfd. Nr.;
+                                                              ENU=FA Entry No.];
+                                                   BlankZero=Yes }
+  }
+  KEYS
+  {
+    {    ;Entry No.                               ;Clustered=Yes }
+    {    ;G/L Account No.,Posting Date            ;SumIndexFields=Amount,Debit Amount,Credit Amount,Additional-Currency Amount,Add.-Currency Debit Amount,Add.-Currency Credit Amount,VAT Amount }
+    {    ;G/L Account No.,Global Dimension 1 Code,Global Dimension 2 Code,Posting Date;
+                                                   SumIndexFields=Amount,Debit Amount,Credit Amount,Additional-Currency Amount,Add.-Currency Debit Amount,Add.-Currency Credit Amount,VAT Amount;
+                                                   KeyGroups=Acc(Dim);
+                                                   SIFTLevelsToMaintain=[{G/L Account No.,Global Dimension 1 Code},
+                                                                         {G/L Account No.,Global Dimension 1 Code,Global Dimension 2 Code},
+                                                                         {G/L Account No.,Global Dimension 1 Code,Global Dimension 2 Code,Posting Date:Year},
+                                                                         {G/L Account No.,Global Dimension 1 Code,Global Dimension 2 Code,Posting Date:Month},
+                                                                         {G/L Account No.,Global Dimension 1 Code,Global Dimension 2 Code,Posting Date:Day}] }
+    {    ;G/L Account No.,Business Unit Code,Posting Date;
+                                                   SumIndexFields=Amount,Debit Amount,Credit Amount,Additional-Currency Amount,Add.-Currency Debit Amount,Add.-Currency Credit Amount;
+                                                   KeyGroups=Acc(Cons);
+                                                   SIFTLevelsToMaintain=[{G/L Account No.,Business Unit Code},
+                                                                         {G/L Account No.,Business Unit Code,Posting Date:Year},
+                                                                         {G/L Account No.,Business Unit Code,Posting Date:Month},
+                                                                         {G/L Account No.,Business Unit Code,Posting Date:Day}] }
+    {    ;G/L Account No.,Business Unit Code,Global Dimension 1 Code,Global Dimension 2 Code,Posting Date;
+                                                   SumIndexFields=Amount,Debit Amount,Credit Amount,Additional-Currency Amount,Add.-Currency Debit Amount,Add.-Currency Credit Amount;
+                                                   KeyGroups=Acc(D/C);
+                                                   SIFTLevelsToMaintain=[{G/L Account No.,Business Unit Code},
+                                                                         {G/L Account No.,Business Unit Code,Global Dimension 1 Code},
+                                                                         {G/L Account No.,Business Unit Code,Global Dimension 1 Code,Global Dimension 2 Code},
+                                                                         {G/L Account No.,Business Unit Code,Global Dimension 1 Code,Global Dimension 2 Code,Posting Date:Year},
+                                                                         {G/L Account No.,Business Unit Code,Global Dimension 1 Code,Global Dimension 2 Code,Posting Date:Month},
+                                                                         {G/L Account No.,Business Unit Code,Global Dimension 1 Code,Global Dimension 2 Code,Posting Date:Day}] }
+    {    ;Document No.,Posting Date                }
+    {    ;Transaction No.                          }
+    {    ;IC Partner Code                         ;KeyGroups=Acc(IC) }
+    {    ;G/L Account No.,Job No.,Posting Date    ;SumIndexFields=Amount }
+  }
+  FIELDGROUPS
+  {
+    { 1   ;DropDown            ;Entry No.,Description,G/L Account No.,Posting Date,Document Type,Document No. }
+  }
+  CODE
+  {
+    VAR
+      GLSetup@1000 : Record 98;
+      GLSetupRead@1002 : Boolean;
+
+    PROCEDURE GetCurrencyCode@1() : Code[10];
+    BEGIN
+      IF NOT GLSetupRead THEN BEGIN
+        GLSetup.GET;
+        GLSetupRead := TRUE;
+      END;
+      EXIT(GLSetup."Additional Reporting Currency");
+    END;
+
+    PROCEDURE ShowValueEntries@8();
+    VAR
+      GLItemLedgRelation@1000 : Record 5823;
+      ValueEntry@1002 : Record 5802;
+      TempValueEntry@1001 : TEMPORARY Record 5802;
+    BEGIN
+      GLItemLedgRelation.SETRANGE("G/L Entry No.","Entry No.");
+      IF GLItemLedgRelation.FINDSET THEN
+        REPEAT
+          ValueEntry.GET(GLItemLedgRelation."Value Entry No.");
+          TempValueEntry.INIT;
+          TempValueEntry := ValueEntry;
+          TempValueEntry.INSERT;
+        UNTIL GLItemLedgRelation.NEXT = 0;
+
+      FORM.RUNMODAL(0,TempValueEntry);
+    END;
+
+    BEGIN
+    END.
+  }
+}
+

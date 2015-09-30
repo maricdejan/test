@@ -1,0 +1,54 @@
+OBJECT Table 277 Bank Account Posting Group
+{
+  OBJECT-PROPERTIES
+  {
+    Date=05.11.08;
+    Time=12:00:00;
+    Version List=NAVW16.00;
+  }
+  PROPERTIES
+  {
+    CaptionML=[DEU=Bankkontobuchungsgruppe;
+               ENU=Bank Account Posting Group];
+    LookupFormID=Form373;
+    DrillDownFormID=Form373;
+  }
+  FIELDS
+  {
+    { 1   ;   ;Code                ;Code10        ;CaptionML=[DEU=Code;
+                                                              ENU=Code];
+                                                   NotBlank=Yes }
+    { 2   ;   ;G/L Bank Account No.;Code20        ;TableRelation="G/L Account";
+                                                   OnValidate=BEGIN
+                                                                CheckGLAcc("G/L Bank Account No.");
+                                                              END;
+
+                                                   CaptionML=[DEU=Bankkonto Sachkontonr.;
+                                                              ENU=G/L Bank Account No.] }
+  }
+  KEYS
+  {
+    {    ;Code                                    ;Clustered=Yes }
+  }
+  FIELDGROUPS
+  {
+    { 1   ;DropDown            ;Code,G/L Bank Account No.                }
+  }
+  CODE
+  {
+
+    LOCAL PROCEDURE CheckGLAcc@2(AccNo@1000 : Code[20]);
+    VAR
+      GLAcc@1001 : Record 15;
+    BEGIN
+      IF AccNo <> '' THEN BEGIN
+        GLAcc.GET(AccNo);
+        GLAcc.CheckGLAcc;
+      END;
+    END;
+
+    BEGIN
+    END.
+  }
+}
+

@@ -1,0 +1,75 @@
+OBJECT Table 275 Bank Account Statement
+{
+  OBJECT-PROPERTIES
+  {
+    Date=05.11.08;
+    Time=12:00:00;
+    Version List=NAVW16.00;
+  }
+  PROPERTIES
+  {
+    DataCaptionFields=Bank Account No.,Statement No.;
+    OnDelete=BEGIN
+               BankAccStmtLinesDelete.RUN(Rec);
+             END;
+
+    OnRename=BEGIN
+               ERROR(Text000,TABLECAPTION);
+             END;
+
+    CaptionML=[DEU=Bankkontoauszug;
+               ENU=Bank Account Statement];
+    LookupFormID=Form389;
+  }
+  FIELDS
+  {
+    { 1   ;   ;Bank Account No.    ;Code20        ;TableRelation="Bank Account";
+                                                   CaptionML=[DEU=Bankkontonummer;
+                                                              ENU=Bank Account No.];
+                                                   NotBlank=Yes }
+    { 2   ;   ;Statement No.       ;Code20        ;CaptionML=[DEU=Auszugsnr.;
+                                                              ENU=Statement No.];
+                                                   NotBlank=Yes }
+    { 3   ;   ;Statement Ending Balance;Decimal   ;CaptionML=[DEU=Auszug Schluss-Saldo;
+                                                              ENU=Statement Ending Balance];
+                                                   AutoFormatType=1;
+                                                   AutoFormatExpr=GetCurrencyCode }
+    { 4   ;   ;Statement Date      ;Date          ;CaptionML=[DEU=Auszugsdatum;
+                                                              ENU=Statement Date] }
+    { 5   ;   ;Balance Last Statement;Decimal     ;CaptionML=[DEU=Saldo letzter Auszug;
+                                                              ENU=Balance Last Statement];
+                                                   Editable=No;
+                                                   AutoFormatType=1;
+                                                   AutoFormatExpr=GetCurrencyCode }
+  }
+  KEYS
+  {
+    {    ;Bank Account No.,Statement No.          ;Clustered=Yes }
+  }
+  FIELDGROUPS
+  {
+  }
+  CODE
+  {
+    VAR
+      Text000@1000 : TextConst 'DEU=Sie k”nnen einen %1 nicht umbenennen.;ENU=You cannot rename a %1.';
+      BankAccStmtLinesDelete@1001 : Codeunit 382;
+
+    PROCEDURE GetCurrencyCode@1() : Code[10];
+    VAR
+      BankAcc@1000 : Record 270;
+    BEGIN
+      IF ("Bank Account No." = BankAcc."No.") THEN
+        EXIT(BankAcc."Currency Code")
+      ELSE
+        IF BankAcc.GET("Bank Account No.") THEN
+          EXIT(BankAcc."Currency Code")
+        ELSE
+          EXIT('');
+    END;
+
+    BEGIN
+    END.
+  }
+}
+

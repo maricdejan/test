@@ -1,0 +1,43 @@
+OBJECT Codeunit 5005363 Calc. Qty. Expected One Line
+{
+  OBJECT-PROPERTIES
+  {
+    Date=01.10.04;
+    Time=12:00:00;
+    Version List=NAVDACH4.00;
+  }
+  PROPERTIES
+  {
+    TableNo=5005351;
+    OnRun=BEGIN
+            PhysInvtOrderLine.GET("Document No.", "Line No.");
+
+            IF NOT CONFIRM(
+              STRSUBSTNO(
+                Text1140000,
+                FIELDCAPTION("Qty. Expected (Base)")),
+              FALSE)
+            THEN
+              EXIT;
+
+            IF NOT PhysInvtOrderLine.EmptyLine THEN BEGIN
+              PhysInvtOrderLine.TESTFIELD("Item No.");
+              PhysInvtOrderLine.CalcQtyAndTrackLinesExpected;
+              PhysInvtOrderLine.MODIFY;
+            END;
+
+            Rec := PhysInvtOrderLine;
+          END;
+
+  }
+  CODE
+  {
+    VAR
+      Text1140000@1140000 : TextConst 'DEU=Wollen Sie %1 fÅr diese Zeile berechnen lassen?;ENU=Do you want to calculate %1 for this line?';
+      PhysInvtOrderLine@1140001 : Record 5005351;
+
+    BEGIN
+    END.
+  }
+}
+

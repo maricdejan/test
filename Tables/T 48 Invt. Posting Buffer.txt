@@ -1,0 +1,82 @@
+OBJECT Table 48 Invt. Posting Buffer
+{
+  OBJECT-PROPERTIES
+  {
+    Date=14.08.09;
+    Time=12:00:00;
+    Version List=NAVW16.00.01;
+  }
+  PROPERTIES
+  {
+    CaptionML=[DEU=Lagerbuchungspuffer;
+               ENU=Invt. Posting Buffer];
+  }
+  FIELDS
+  {
+    { 1   ;   ;Account Type        ;Option        ;CaptionML=[DEU=Kontoart;
+                                                              ENU=Account Type];
+                                                   OptionCaptionML=[DEU=Lagerbestand (Interim),Lagerzugang (Interim),Lagerbestand,Aktiviert Lager,Lagerkorrektur,Direkte Kosten verrechnet,Gemeinkosten verrechnet,Einkaufsabweichung,LAGERVERBR,LAGERVERBR (Interim),Materialabweichung,Kapazit„tsabweichung,Fremdarbeitskostenabweichung,Kap. Gemeinkostenabw.,Prod. Gemeinkostenabw.;
+                                                                    ENU=Inventory (Interim),Invt. Accrual (Interim),Inventory,WIP Inventory,Inventory Adjmt.,Direct Cost Applied,Overhead Applied,Purchase Variance,COGS,COGS (Interim),Material Variance,Capacity Variance,Subcontracted Variance,Cap. Overhead Variance,Mfg. Overhead Variance];
+                                                   OptionString=Inventory (Interim),Invt. Accrual (Interim),Inventory,WIP Inventory,Inventory Adjmt.,Direct Cost Applied,Overhead Applied,Purchase Variance,COGS,COGS (Interim),Material Variance,Capacity Variance,Subcontracted Variance,Cap. Overhead Variance,Mfg. Overhead Variance }
+    { 2   ;   ;Location Code       ;Code10        ;CaptionML=[DEU=Lagerortcode;
+                                                              ENU=Location Code] }
+    { 3   ;   ;Inventory Posting Group;Code10     ;CaptionML=[DEU=Lagerbuchungsgruppe;
+                                                              ENU=Inventory Posting Group] }
+    { 4   ;   ;Dimension Entry No. ;Integer       ;CaptionML=[DEU=Dimension Lfd. Nr.;
+                                                              ENU=Dimension Entry No.] }
+    { 5   ;   ;Amount              ;Decimal       ;CaptionML=[DEU=Betrag;
+                                                              ENU=Amount] }
+    { 6   ;   ;Amount (ACY)        ;Decimal       ;CaptionML=[DEU=Betrag (BW);
+                                                              ENU=Amount (ACY)] }
+    { 7   ;   ;Interim Account     ;Boolean       ;CaptionML=[DEU=Interimskonto;
+                                                              ENU=Interim Account] }
+    { 8   ;   ;Account No.         ;Code20        ;CaptionML=[DEU=Kontonr.;
+                                                              ENU=Account No.] }
+    { 9   ;   ;Posting Date        ;Date          ;CaptionML=[DEU=Buchungsdatum;
+                                                              ENU=Posting Date] }
+    { 10  ;   ;Gen. Bus. Posting Group;Code10     ;CaptionML=[DEU=Gesch„ftsbuchungsgruppe;
+                                                              ENU=Gen. Bus. Posting Group] }
+    { 11  ;   ;Gen. Prod. Posting Group;Code10    ;CaptionML=[DEU=Produktbuchungsgruppe;
+                                                              ENU=Gen. Prod. Posting Group] }
+    { 12  ;   ;Negative            ;Boolean       ;CaptionML=[DEU=Negativ;
+                                                              ENU=Negative] }
+    { 13  ;   ;Entry No.           ;Integer       ;CaptionML=[DEU=Lfd. Nr.;
+                                                              ENU=Entry No.] }
+    { 14  ;   ;Bal. Account Type   ;Option        ;CaptionML=[DEU=Gegenkontoart;
+                                                              ENU=Bal. Account Type];
+                                                   OptionCaptionML=[DEU=Lagerbestand (Interim),Lagerzugang (Interim),Lagerbestand,Aktiviert Lager,Lagerkorrektur,Direkte Kosten verrechnet,Gemeinkosten verrechnet,Einkaufsabweichung,LAGERVERBR,LAGERVERBR (Interim),Materialabweichung,Kapazit„tsabweichung,Fremdarbeitskostenabweichung,Kap. Gemeinkostenabw.,Prod. Gemeinkostenabw.;
+                                                                    ENU=Inventory (Interim),Invt. Accrual (Interim),Inventory,WIP Inventory,Inventory Adjmt.,Direct Cost Applied,Overhead Applied,Purchase Variance,COGS,COGS (Interim),Material Variance,Capacity Variance,Subcontracted Variance,Cap. Overhead Variance,Mfg. Overhead Variance];
+                                                   OptionString=Inventory (Interim),Invt. Accrual (Interim),Inventory,WIP Inventory,Inventory Adjmt.,Direct Cost Applied,Overhead Applied,Purchase Variance,COGS,COGS (Interim),Material Variance,Capacity Variance,Subcontracted Variance,Cap. Overhead Variance,Mfg. Overhead Variance }
+    { 15  ;   ;Job No.             ;Code20        ;CaptionML=[DEU=Projektnr.;
+                                                              ENU=Job No.] }
+  }
+  KEYS
+  {
+    {    ;Posting Date,Account Type,Location Code,Inventory Posting Group,Gen. Bus. Posting Group,Gen. Prod. Posting Group,Dimension Entry No.,Negative,Bal. Account Type;
+                                                   Clustered=Yes }
+  }
+  FIELDGROUPS
+  {
+  }
+  CODE
+  {
+
+    PROCEDURE UseInvtPostSetup@9() : Boolean;
+    BEGIN
+      EXIT(
+        "Account Type" IN
+        ["Account Type"::Inventory,
+         "Account Type"::"Inventory (Interim)",
+         "Account Type"::"WIP Inventory",
+         "Account Type"::"Material Variance",
+         "Account Type"::"Capacity Variance",
+         "Account Type"::"Subcontracted Variance",
+         "Account Type"::"Cap. Overhead Variance",
+         "Account Type"::"Mfg. Overhead Variance"]);
+    END;
+
+    BEGIN
+    END.
+  }
+}
+

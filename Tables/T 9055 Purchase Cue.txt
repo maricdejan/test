@@ -1,0 +1,78 @@
+OBJECT Table 9055 Purchase Cue
+{
+  OBJECT-PROPERTIES
+  {
+    Date=05.11.08;
+    Time=12:00:00;
+    Version List=NAVW16.00;
+  }
+  PROPERTIES
+  {
+    CaptionML=[DEU=Einkaufsstapel;
+               ENU=Purchase Cue];
+  }
+  FIELDS
+  {
+    { 1   ;   ;Primary Key         ;Code10        ;CaptionML=[DEU=PrimÑrschlÅssel;
+                                                              ENU=Primary Key] }
+    { 2   ;   ;To Send or Confirm  ;Integer       ;FieldClass=FlowField;
+                                                   CalcFormula=Count("Purchase Header" WHERE (Document Type=FILTER(Order),
+                                                                                              Status=FILTER(Open)));
+                                                   CaptionML=[DEU=Senden oder BestÑtigen;
+                                                              ENU=To Send or Confirm];
+                                                   Editable=No }
+    { 3   ;   ;Upcoming Orders     ;Integer       ;FieldClass=FlowField;
+                                                   CalcFormula=Count("Purchase Header" WHERE (Document Type=FILTER(Order),
+                                                                                              Status=FILTER(Released),
+                                                                                              Expected Receipt Date=FIELD(Date Filter)));
+                                                   CaptionML=[DEU=Anstehende AuftrÑge;
+                                                              ENU=Upcoming Orders];
+                                                   Editable=No }
+    { 4   ;   ;Outstanding Purchase Orders;Integer;FieldClass=FlowField;
+                                                   CalcFormula=Count("Purchase Header" WHERE (Document Type=FILTER(Order),
+                                                                                              Status=FILTER(Released),
+                                                                                              Receive=FILTER(Yes),
+                                                                                              Completely Received=FILTER(No)));
+                                                   CaptionML=[DEU=Ausstehende Bestellungen;
+                                                              ENU=Outstanding Purchase Orders];
+                                                   Editable=No }
+    { 5   ;   ;Purchase Return Orders - All;Integer;
+                                                   FieldClass=FlowField;
+                                                   CalcFormula=Count("Purchase Header" WHERE (Document Type=FILTER(Return Order)));
+                                                   CaptionML=[DEU=Einkaufsreklamationen - Alle;
+                                                              ENU=Purchase Return Orders - All];
+                                                   Editable=No }
+    { 6   ;   ;Not Invoiced        ;Integer       ;FieldClass=FlowField;
+                                                   CalcFormula=Count("Purchase Header" WHERE (Document Type=FILTER(Order),
+                                                                                              Completely Received=FILTER(Yes),
+                                                                                              Invoice=FILTER(No)));
+                                                   CaptionML=[DEU=Nicht fakturiert;
+                                                              ENU=Not Invoiced];
+                                                   Editable=No }
+    { 7   ;   ;Partially Invoiced  ;Integer       ;FieldClass=FlowField;
+                                                   CalcFormula=Count("Purchase Header" WHERE (Document Type=FILTER(Order),
+                                                                                              Completely Received=FILTER(Yes),
+                                                                                              Invoice=FILTER(Yes)));
+                                                   CaptionML=[DEU=Teilweise fakturiert;
+                                                              ENU=Partially Invoiced];
+                                                   Editable=No }
+    { 20  ;   ;Date Filter         ;Date          ;FieldClass=FlowFilter;
+                                                   CaptionML=[DEU=Datumsfilter;
+                                                              ENU=Date Filter];
+                                                   Editable=No }
+  }
+  KEYS
+  {
+    {    ;Primary Key                             ;Clustered=Yes }
+  }
+  FIELDGROUPS
+  {
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

@@ -1,0 +1,133 @@
+OBJECT Table 1004 Job WIP Entry
+{
+  OBJECT-PROPERTIES
+  {
+    Date=05.11.08;
+    Time=12:00:00;
+    Version List=NAVW16.00;
+  }
+  PROPERTIES
+  {
+    OnDelete=BEGIN
+               LedgerEntryDimension.SETRANGE("Table ID",DATABASE::"Job WIP Entry");
+               LedgerEntryDimension.SETRANGE("Entry No.","Entry No.");
+               IF NOT LedgerEntryDimension.ISEMPTY THEN
+                 LedgerEntryDimension.DELETEALL;
+             END;
+
+    CaptionML=[DEU=WIP-Projektposten;
+               ENU=Job WIP Entry];
+    LookupFormID=Form1008;
+    DrillDownFormID=Form1008;
+  }
+  FIELDS
+  {
+    { 1   ;   ;Entry No.           ;Integer       ;CaptionML=[DEU=Lfd. Nr.;
+                                                              ENU=Entry No.] }
+    { 2   ;   ;Job No.             ;Code20        ;TableRelation=Job;
+                                                   CaptionML=[DEU=Projektnr.;
+                                                              ENU=Job No.] }
+    { 3   ;   ;Document No.        ;Code20        ;CaptionML=[DEU=Belegnr.;
+                                                              ENU=Document No.] }
+    { 4   ;   ;G/L Account No.     ;Code20        ;TableRelation="G/L Account";
+                                                   CaptionML=[DEU=Sachkontonr.;
+                                                              ENU=G/L Account No.] }
+    { 5   ;   ;WIP Posting Date    ;Date          ;CaptionML=[DEU=WIP-Buchungsdatum;
+                                                              ENU=WIP Posting Date] }
+    { 6   ;   ;WIP Entry Amount    ;Decimal       ;CaptionML=[DEU=WIP-Postenbetrag;
+                                                              ENU=WIP Entry Amount];
+                                                   AutoFormatType=1 }
+    { 7   ;   ;Job Posting Group   ;Code10        ;TableRelation="Job Posting Group";
+                                                   CaptionML=[DEU=Projektbuchungsgruppe;
+                                                              ENU=Job Posting Group] }
+    { 8   ;   ;Type                ;Option        ;CaptionML=[DEU=Art;
+                                                              ENU=Type];
+                                                   OptionCaptionML=[DEU=Unf. Arbeiten Verkauf,Unf. Arbeiten Kosten,Deaktivierte Kosten,Deaktivierter Verkauf,Aufgelaufene Kosten,Aufgelaufene Verk„ufe;
+                                                                    ENU=WIP Sales,WIP Costs,Recognized Costs,Recognized Sales,Accrued Costs,Accrued Sales];
+                                                   OptionString=WIP Sales,WIP Costs,Recognized Costs,Recognized Sales,Accrued Costs,Accrued Sales }
+    { 9   ;   ;G/L Bal. Account No.;Code20        ;TableRelation="G/L Account";
+                                                   CaptionML=[DEU=Sachposten-Gegenkontonr.;
+                                                              ENU=G/L Bal. Account No.] }
+    { 10  ;   ;WIP Method Used     ;Option        ;CaptionML=[DEU=Verwendete WIP-Methode;
+                                                              ENU=WIP Method Used];
+                                                   OptionCaptionML=[DEU=" ,Einstandswert,Verkaufswert,Vertriebskosten,Prozentsatz der Fertigung,bei Abschluss";
+                                                                    ENU=" ,Cost Value,Sales Value,Cost of Sales,Percentage of Completion,Completed Contract"];
+                                                   OptionString=[ ,Cost Value,Sales Value,Cost of Sales,Percentage of Completion,Completed Contract];
+                                                   Editable=No }
+    { 11  ;   ;Job Complete        ;Boolean       ;CaptionML=[DEU=Auftrag abgeschlossen;
+                                                              ENU=Job Complete] }
+    { 20  ;   ;WIP Schedule (Total Cost);Decimal  ;CaptionML=[DEU=WIP-Plan (Einstandsbetrag);
+                                                              ENU=WIP Schedule (Total Cost)];
+                                                   BlankZero=Yes;
+                                                   Editable=No;
+                                                   AutoFormatType=1 }
+    { 21  ;   ;WIP Schedule (Total Price);Decimal ;CaptionML=[DEU=WIP-Plan (Verkaufspreis);
+                                                              ENU=WIP Schedule (Total Price)];
+                                                   BlankZero=Yes;
+                                                   Editable=No;
+                                                   AutoFormatType=1 }
+    { 22  ;   ;WIP Usage (Total Cost);Decimal     ;CaptionML=[DEU=WIP-Verbrauch (Einstandsbetrag);
+                                                              ENU=WIP Usage (Total Cost)];
+                                                   BlankZero=Yes;
+                                                   Editable=No;
+                                                   AutoFormatType=1 }
+    { 23  ;   ;WIP Usage (Total Price);Decimal    ;CaptionML=[DEU=WIP-Verbrauch (Verkaufspreis);
+                                                              ENU=WIP Usage (Total Price)];
+                                                   BlankZero=Yes;
+                                                   Editable=No;
+                                                   AutoFormatType=1 }
+    { 24  ;   ;WIP Contract (Total Cost);Decimal  ;CaptionML=[DEU=WIP-Vertrag (Einstandsbetr.);
+                                                              ENU=WIP Contract (Total Cost)];
+                                                   BlankZero=Yes;
+                                                   Editable=No;
+                                                   AutoFormatType=1 }
+    { 25  ;   ;WIP Contract (Total Price);Decimal ;CaptionML=[DEU=WIP-Vertr. (Einstandsbetrag);
+                                                              ENU=WIP Contract (Total Price)];
+                                                   BlankZero=Yes;
+                                                   Editable=No;
+                                                   AutoFormatType=1 }
+    { 26  ;   ;WIP (Invoiced Price);Decimal       ;CaptionML=[DEU=WIP (Preis fakturiert);
+                                                              ENU=WIP (Invoiced Price)];
+                                                   BlankZero=Yes;
+                                                   Editable=No;
+                                                   AutoFormatType=1 }
+    { 27  ;   ;WIP (Invoiced Cost) ;Decimal       ;CaptionML=[DEU=WIP (Einstandsbetrag fakturiert);
+                                                              ENU=WIP (Invoiced Cost)];
+                                                   BlankZero=Yes;
+                                                   Editable=No;
+                                                   AutoFormatType=1 }
+    { 28  ;   ;WIP Posting Date Filter;Text250    ;CaptionML=[DEU=WIP-Buchungsdatumsfilter;
+                                                              ENU=WIP Posting Date Filter];
+                                                   Editable=No }
+    { 29  ;   ;WIP Planning Date Filter;Text250   ;CaptionML=[DEU=WIP-Planungsdatumsfilter;
+                                                              ENU=WIP Planning Date Filter];
+                                                   Editable=No }
+    { 60  ;   ;Global Dimension 1 Code;Code20     ;TableRelation="Dimension Value".Code WHERE (Global Dimension No.=CONST(1));
+                                                   CaptionML=[DEU=Globaler Dimensionscode 1;
+                                                              ENU=Global Dimension 1 Code];
+                                                   CaptionClass='1,1,1' }
+    { 61  ;   ;Global Dimension 2 Code;Code20     ;TableRelation="Dimension Value".Code WHERE (Global Dimension No.=CONST(2));
+                                                   CaptionML=[DEU=Globaler Dimensionscode 2;
+                                                              ENU=Global Dimension 2 Code];
+                                                   CaptionClass='1,1,2' }
+  }
+  KEYS
+  {
+    {    ;Entry No.                               ;Clustered=Yes }
+    {    ;Job No.,Job Posting Group,WIP Posting Date,Type,Job Complete;
+                                                   SumIndexFields=WIP Entry Amount }
+    {    ;G/L Account No.                          }
+  }
+  FIELDGROUPS
+  {
+  }
+  CODE
+  {
+    VAR
+      LedgerEntryDimension@1000 : Record 355;
+
+    BEGIN
+    END.
+  }
+}
+

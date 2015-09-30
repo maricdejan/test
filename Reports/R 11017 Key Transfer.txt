@@ -1,0 +1,85 @@
+OBJECT Report 11017 Key Transfer
+{
+  OBJECT-PROPERTIES
+  {
+    Date=14.08.09;
+    Time=12:00:00;
+    Version List=NAVDACH6.00.01;
+  }
+  PROPERTIES
+  {
+    CaptionML=[DEU=SchlÅsselÅbertragung;
+               ENU=Key Transfer];
+    ProcessingOnly=Yes;
+  }
+  DATAITEMS
+  {
+    { PROPERTIES
+      {
+        DataItemTable=Table2000000063;
+        DataItemTableView=SORTING(TableNo,No.);
+        OnPreDataItem=BEGIN
+                        LastFieldNo := FIELDNO(TableNo);
+                        KeyBuffer.INIT;
+                      END;
+
+        OnAfterGetRecord=BEGIN
+                           KeyBuffer."Table No" := TableNo;
+                           KeyBuffer."Field No." := "No.";
+                           KeyBuffer.Key := Key;
+                           KeyBuffer.INSERT;
+                         END;
+
+        ReqFilterFields=TableNo;
+        GroupTotalFields=TableNo;
+      }
+      SECTIONS
+      {
+        { PROPERTIES
+          {
+            SectionType=Header;
+            PrintOnEveryPage=Yes;
+            SectionWidth=18150;
+            SectionHeight=846;
+          }
+          CONTROLS
+          {
+          }
+           }
+      }
+       }
+  }
+  REQUESTFORM
+  {
+    PROPERTIES
+    {
+      Width=9020;
+      Height=3410;
+    }
+    CONTROLS
+    {
+    }
+  }
+  REQUESTPAGE
+  {
+    PROPERTIES
+    {
+    }
+    CONTROLS
+    {
+    }
+  }
+  CODE
+  {
+    VAR
+      KeyBuffer@1140000 : Record 11015;
+      LastFieldNo@1140001 : Integer;
+
+    BEGIN
+    END.
+  }
+  RDLDATA
+  {
+  }
+}
+

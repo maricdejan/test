@@ -1,0 +1,144 @@
+OBJECT Table 203 Res. Ledger Entry
+{
+  OBJECT-PROPERTIES
+  {
+    Date=05.11.08;
+    Time=12:00:00;
+    Version List=NAVW16.00;
+  }
+  PROPERTIES
+  {
+    CaptionML=[DEU=Ressourcenposten;
+               ENU=Res. Ledger Entry];
+    LookupFormID=Form202;
+    DrillDownFormID=Form202;
+  }
+  FIELDS
+  {
+    { 1   ;   ;Entry No.           ;Integer       ;CaptionML=[DEU=Lfd. Nr.;
+                                                              ENU=Entry No.] }
+    { 2   ;   ;Entry Type          ;Option        ;CaptionML=[DEU=Postenart;
+                                                              ENU=Entry Type];
+                                                   OptionCaptionML=[DEU=Verbrauch,Verkauf;
+                                                                    ENU=Usage,Sale];
+                                                   OptionString=Usage,Sale }
+    { 3   ;   ;Document No.        ;Code20        ;CaptionML=[DEU=Belegnr.;
+                                                              ENU=Document No.] }
+    { 4   ;   ;Posting Date        ;Date          ;CaptionML=[DEU=Buchungsdatum;
+                                                              ENU=Posting Date] }
+    { 5   ;   ;Resource No.        ;Code20        ;TableRelation=Resource;
+                                                   CaptionML=[DEU=Ressourcennr.;
+                                                              ENU=Resource No.] }
+    { 6   ;   ;Resource Group No.  ;Code20        ;TableRelation="Resource Group";
+                                                   CaptionML=[DEU=Res.-Gruppennr.;
+                                                              ENU=Resource Group No.] }
+    { 7   ;   ;Description         ;Text50        ;CaptionML=[DEU=Beschreibung;
+                                                              ENU=Description] }
+    { 8   ;   ;Work Type Code      ;Code10        ;TableRelation="Work Type";
+                                                   CaptionML=[DEU=Arbeitstypencode;
+                                                              ENU=Work Type Code] }
+    { 9   ;   ;Job No.             ;Code20        ;TableRelation=Job;
+                                                   CaptionML=[DEU=Projektnr.;
+                                                              ENU=Job No.] }
+    { 10  ;   ;Unit of Measure Code;Code10        ;TableRelation="Unit of Measure";
+                                                   CaptionML=[DEU=Einheitencode;
+                                                              ENU=Unit of Measure Code] }
+    { 11  ;   ;Quantity            ;Decimal       ;CaptionML=[DEU=Menge;
+                                                              ENU=Quantity];
+                                                   DecimalPlaces=0:5 }
+    { 12  ;   ;Direct Unit Cost    ;Decimal       ;CaptionML=[DEU=EK-Preis;
+                                                              ENU=Direct Unit Cost];
+                                                   AutoFormatType=2 }
+    { 13  ;   ;Unit Cost           ;Decimal       ;CaptionML=[DEU=Einstandspreis;
+                                                              ENU=Unit Cost];
+                                                   AutoFormatType=2 }
+    { 14  ;   ;Total Cost          ;Decimal       ;CaptionML=[DEU=Einstandsbetrag;
+                                                              ENU=Total Cost];
+                                                   AutoFormatType=1 }
+    { 15  ;   ;Unit Price          ;Decimal       ;CaptionML=[DEU=VK-Preis;
+                                                              ENU=Unit Price];
+                                                   AutoFormatType=2 }
+    { 16  ;   ;Total Price         ;Decimal       ;CaptionML=[DEU=Verkaufsbetrag;
+                                                              ENU=Total Price];
+                                                   AutoFormatType=1 }
+    { 17  ;   ;Global Dimension 1 Code;Code20     ;TableRelation="Dimension Value".Code WHERE (Global Dimension No.=CONST(1));
+                                                   CaptionML=[DEU=Globaler Dimensionscode 1;
+                                                              ENU=Global Dimension 1 Code];
+                                                   CaptionClass='1,1,1' }
+    { 18  ;   ;Global Dimension 2 Code;Code20     ;TableRelation="Dimension Value".Code WHERE (Global Dimension No.=CONST(2));
+                                                   CaptionML=[DEU=Globaler Dimensionscode 2;
+                                                              ENU=Global Dimension 2 Code];
+                                                   CaptionClass='1,1,2' }
+    { 20  ;   ;User ID             ;Code20        ;TableRelation=User;
+                                                   OnLookup=VAR
+                                                              LoginMgt@1000 : Codeunit 418;
+                                                            BEGIN
+                                                              LoginMgt.LookupUserID("User ID");
+                                                            END;
+
+                                                   TestTableRelation=No;
+                                                   CaptionML=[DEU=Benutzer-ID;
+                                                              ENU=User ID] }
+    { 21  ;   ;Source Code         ;Code10        ;TableRelation="Source Code";
+                                                   CaptionML=[DEU=Herkunftscode;
+                                                              ENU=Source Code] }
+    { 22  ;   ;Chargeable          ;Boolean       ;InitValue=Yes;
+                                                   CaptionML=[DEU=Fakturierbar;
+                                                              ENU=Chargeable] }
+    { 23  ;   ;Journal Batch Name  ;Code10        ;CaptionML=[DEU=Buch.-Blattname;
+                                                              ENU=Journal Batch Name] }
+    { 24  ;   ;Reason Code         ;Code10        ;TableRelation="Reason Code";
+                                                   CaptionML=[DEU=Ursachencode;
+                                                              ENU=Reason Code] }
+    { 25  ;   ;Gen. Bus. Posting Group;Code10     ;TableRelation="Gen. Business Posting Group";
+                                                   CaptionML=[DEU=Gesch„ftsbuchungsgruppe;
+                                                              ENU=Gen. Bus. Posting Group] }
+    { 26  ;   ;Gen. Prod. Posting Group;Code10    ;TableRelation="Gen. Product Posting Group";
+                                                   CaptionML=[DEU=Produktbuchungsgruppe;
+                                                              ENU=Gen. Prod. Posting Group] }
+    { 27  ;   ;Document Date       ;Date          ;CaptionML=[DEU=Belegdatum;
+                                                              ENU=Document Date] }
+    { 28  ;   ;External Document No.;Code20       ;CaptionML=[DEU=Externe Belegnummer;
+                                                              ENU=External Document No.] }
+    { 29  ;   ;No. Series          ;Code10        ;TableRelation="No. Series";
+                                                   CaptionML=[DEU=Nummernserie;
+                                                              ENU=No. Series] }
+    { 30  ;   ;Source Type         ;Option        ;CaptionML=[DEU=Herkunftsart;
+                                                              ENU=Source Type];
+                                                   OptionCaptionML=[DEU=" ,Debitor";
+                                                                    ENU=" ,Customer"];
+                                                   OptionString=[ ,Customer] }
+    { 31  ;   ;Source No.          ;Code20        ;TableRelation=IF (Source Type=CONST(Customer)) Customer.No.;
+                                                   CaptionML=[DEU=Herkunftsnr.;
+                                                              ENU=Source No.] }
+    { 32  ;   ;Qty. per Unit of Measure;Decimal   ;CaptionML=[DEU=Menge pro Einheit;
+                                                              ENU=Qty. per Unit of Measure] }
+    { 33  ;   ;Quantity (Base)     ;Decimal       ;CaptionML=[DEU=Menge (Basis);
+                                                              ENU=Quantity (Base)] }
+  }
+  KEYS
+  {
+    {    ;Entry No.                               ;Clustered=Yes }
+    {    ;Resource No.,Posting Date                }
+    {    ;Entry Type,Chargeable,Unit of Measure Code,Resource No.,Posting Date;
+                                                   SumIndexFields=Quantity,Total Cost,Total Price,Quantity (Base) }
+    {    ;Entry Type,Chargeable,Unit of Measure Code,Resource Group No.,Posting Date;
+                                                   SumIndexFields=Quantity,Total Cost,Total Price,Quantity (Base);
+                                                   SIFTLevelsToMaintain=[{Entry Type,Chargeable,Unit of Measure Code,Resource Group No.},
+                                                                         {Entry Type,Chargeable,Unit of Measure Code,Resource Group No.,Posting Date:Year},
+                                                                         {Entry Type,Chargeable,Unit of Measure Code,Resource Group No.,Posting Date:Month},
+                                                                         {Entry Type,Chargeable,Unit of Measure Code,Resource Group No.,Posting Date:Day}] }
+    {    ;Document No.,Posting Date                }
+  }
+  FIELDGROUPS
+  {
+    { 1   ;DropDown            ;Entry No.,Description,Entry Type,Document No.,Posting Date }
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

@@ -1,0 +1,281 @@
+OBJECT Form 404 Check Preview
+{
+  OBJECT-PROPERTIES
+  {
+    Date=05.11.08;
+    Time=12:00:00;
+    Version List=NAVW16.00;
+  }
+  PROPERTIES
+  {
+    Width=13970;
+    Height=8360;
+    Editable=No;
+    CaptionML=[DEU=Scheckansicht;
+               ENU=Check Preview];
+    LinksAllowed=No;
+    SourceTable=Table81;
+    DataCaptionExpr="Document No." + ' ' + CheckToAddr[1];
+    OnOpenForm=BEGIN
+                 CompanyInfo.GET;
+                 FormatAddr.Company(CompanyAddr,CompanyInfo);
+               END;
+
+    OnActivateForm=BEGIN
+                     CalcCheck;
+                   END;
+
+    OnAfterGetRecord=BEGIN
+                       CalcCheck;
+                     END;
+
+  }
+  CONTROLS
+  {
+    { 11  ;Frame        ;220  ;220  ;13530;2530 ;HorzGlue=Both;
+                                                 VertGlue=Both;
+                                                 ShowCaption=No;
+                                                 CaptionML=[DEU=Zahlender;
+                                                            ENU=Payer] }
+    { 5   ;TextBox      ;10780;440  ;2750 ;440  ;Focusable=No;
+                                                 ParentControl=11;
+                                                 InFrame=Yes;
+                                                 SourceExpr="Document No." }
+    { 15  ;TextBox      ;440  ;440  ;5500 ;440  ;Focusable=No;
+                                                 ParentControl=11;
+                                                 InFrame=Yes;
+                                                 CaptionML=[DEU=Mandantenname;
+                                                            ENU=Company Name];
+                                                 SourceExpr=CompanyAddr[1] }
+    { 16  ;TextBox      ;440  ;990  ;5500 ;440  ;Focusable=No;
+                                                 ParentControl=11;
+                                                 InFrame=Yes;
+                                                 CaptionML=[DEU=Mandantenadresse;
+                                                            ENU=Company Address];
+                                                 SourceExpr=CompanyAddr[2] }
+    { 17  ;TextBox      ;440  ;1540 ;5500 ;440  ;Focusable=No;
+                                                 ParentControl=11;
+                                                 InFrame=Yes;
+                                                 CaptionML=[DEU=Mandantenadresse 2;
+                                                            ENU=Company Address 2];
+                                                 SourceExpr=CompanyAddr[3] }
+    { 18  ;TextBox      ;440  ;2090 ;5500 ;440  ;Focusable=No;
+                                                 ParentControl=11;
+                                                 InFrame=Yes;
+                                                 CaptionML=[DEU=Mandanten-PLZ-Code/Ort;
+                                                            ENU=Company Post Code/City];
+                                                 SourceExpr=CompanyAddr[4] }
+    { 19  ;TextBox      ;10780;990  ;2750 ;440  ;Focusable=No;
+                                                 ParentControl=11;
+                                                 InFrame=Yes;
+                                                 CaptionML=[DEU=Status;
+                                                            ENU=Status];
+                                                 SourceExpr=CheckStatusText }
+    { 12  ;CommandButton;11550;7590 ;2200 ;550  ;HorzGlue=Right;
+                                                 VertGlue=Bottom;
+                                                 PushAction=FormHelp }
+    { 20  ;Frame        ;220  ;2860 ;13530;1430 ;HorzGlue=Both;
+                                                 VertGlue=Bottom;
+                                                 ShowCaption=No;
+                                                 CaptionML=[DEU=Betrag;
+                                                            ENU=Amount] }
+    { 11026;Frame       ;330  ;2970 ;13310;1210 ;ParentControl=20;
+                                                 InFrame=Yes;
+                                                 ShowCaption=No;
+                                                 Border=No }
+    { 14  ;TextBox      ;440  ;3630 ;13090;440  ;HorzGlue=Both;
+                                                 Focusable=No;
+                                                 ParentControl=11026;
+                                                 InFrame=Yes;
+                                                 CaptionML=[DEU=Betragtext 2;
+                                                            ENU=Amount Text 2];
+                                                 SourceExpr=NumberText[2] }
+    { 13  ;TextBox      ;440  ;3080 ;13090;440  ;HorzGlue=Both;
+                                                 Focusable=No;
+                                                 ParentControl=11026;
+                                                 InFrame=Yes;
+                                                 CaptionML=[DEU=Betragtext;
+                                                            ENU=Amount Text];
+                                                 SourceExpr=NumberText[1] }
+    { 23  ;Frame        ;220  ;4400 ;13530;2970 ;HorzGlue=Both;
+                                                 VertGlue=Bottom;
+                                                 ShowCaption=No;
+                                                 CaptionML=[DEU=Zahlungsempf„nger;
+                                                            ENU=Payee] }
+    { 1   ;Label        ;440  ;4510 ;5500 ;440  ;ParentControl=23;
+                                                 InFrame=Yes;
+                                                 VertAlign=Top;
+                                                 MultiLine=Yes;
+                                                 LeaderDots=No;
+                                                 CaptionML=[DEU=Zahlung zu Gunsten von;
+                                                            ENU=Pay to the order of] }
+    { 2   ;TextBox      ;440  ;5060 ;5500 ;440  ;Focusable=No;
+                                                 ParentControl=23;
+                                                 InFrame=Yes;
+                                                 CaptionML=[DEU=Zahlung an Name;
+                                                            ENU=Pay-to Name];
+                                                 SourceExpr=CheckToAddr[1] }
+    { 8   ;TextBox      ;440  ;5610 ;5500 ;440  ;Focusable=No;
+                                                 ParentControl=23;
+                                                 InFrame=Yes;
+                                                 CaptionML=[DEU=Zahlung an Adresse;
+                                                            ENU=Pay-to Address];
+                                                 SourceExpr=CheckToAddr[2] }
+    { 9   ;TextBox      ;440  ;6160 ;5500 ;440  ;Focusable=No;
+                                                 ParentControl=23;
+                                                 InFrame=Yes;
+                                                 CaptionML=[DEU=Zahlung an Adresse 2;
+                                                            ENU=Pay-to Address 2];
+                                                 SourceExpr=CheckToAddr[3] }
+    { 10  ;TextBox      ;440  ;6710 ;5500 ;440  ;Focusable=No;
+                                                 ParentControl=23;
+                                                 InFrame=Yes;
+                                                 CaptionML=[DEU=Zahlung an PLZ-Code/Ort;
+                                                            ENU=Pay-to Post Code/City];
+                                                 SourceExpr=CheckToAddr[4] }
+    { 6   ;TextBox      ;8910 ;5060 ;1650 ;440  ;Focusable=No;
+                                                 ParentControl=23;
+                                                 InFrame=Yes;
+                                                 SourceExpr="Posting Date" }
+    { 3   ;Label        ;8910 ;4510 ;1650 ;440  ;ParentControl=6;
+                                                 HorzAlign=Right;
+                                                 LeaderDots=No;
+                                                 CaptionML=[DEU=Datum;
+                                                            ENU=Date] }
+    { 7   ;TextBox      ;10780;5060 ;2750 ;440  ;Focusable=No;
+                                                 ParentControl=23;
+                                                 InFrame=Yes;
+                                                 SourceExpr=CheckAmount;
+                                                 AutoFormatType=1;
+                                                 AutoFormatExpr="Currency Code" }
+    { 4   ;Label        ;10780;4510 ;2750 ;440  ;ParentControl=7;
+                                                 HorzAlign=Right;
+                                                 LeaderDots=No;
+                                                 CaptionML=[DEU=Betrag;
+                                                            ENU=Amount] }
+    { 24  ;TextBox      ;8910 ;5610 ;1650 ;440  ;Visible=No;
+                                                 ParentControl=23;
+                                                 InFrame=Yes;
+                                                 ForeColor=65535;
+                                                 SourceExpr=Text002 }
+    { 25  ;TextBox      ;10780;5610 ;2750 ;440  ;Visible=No;
+                                                 ParentControl=23;
+                                                 InFrame=Yes;
+                                                 ForeColor=65535;
+                                                 SourceExpr=Text002 }
+    { 26  ;TextBox      ;8910 ;6160 ;1650 ;440  ;Visible=No;
+                                                 ParentControl=23;
+                                                 InFrame=Yes;
+                                                 ForeColor=65535;
+                                                 SourceExpr=Text002 }
+    { 27  ;TextBox      ;10780;6160 ;2750 ;440  ;Visible=No;
+                                                 ParentControl=23;
+                                                 InFrame=Yes;
+                                                 ForeColor=65535;
+                                                 SourceExpr=Text002 }
+    { 28  ;TextBox      ;8910 ;6710 ;1650 ;440  ;Visible=No;
+                                                 ParentControl=23;
+                                                 InFrame=Yes;
+                                                 ForeColor=65535;
+                                                 SourceExpr=Text002 }
+    { 29  ;TextBox      ;10780;6710 ;2750 ;440  ;Visible=No;
+                                                 ParentControl=23;
+                                                 InFrame=Yes;
+                                                 ForeColor=65535;
+                                                 SourceExpr=Text002 }
+  }
+  CODE
+  {
+    VAR
+      Text000@1000 : TextConst 'DEU=Scheck gedruckt;ENU=Printed Check';
+      Text001@1001 : TextConst 'DEU=Scheck nicht gedruckt;ENU=Not Printed Check';
+      GenJnlLine@1002 : Record 81;
+      Cust@1003 : Record 18;
+      Vend@1004 : Record 23;
+      BankAcc@1005 : Record 270;
+      CompanyInfo@1006 : Record 79;
+      CheckReport@1007 : Report 1401;
+      FormatAddr@1008 : Codeunit 365;
+      CheckToAddr@1009 : ARRAY [8] OF Text[50];
+      CompanyAddr@1010 : ARRAY [8] OF Text[50];
+      NumberText@1011 : ARRAY [2] OF Text[80];
+      CheckStatusText@1012 : Text[30];
+      CheckAmount@1013 : Decimal;
+      Text002@1014 : TextConst 'DEU=Platzhalter;ENU=Placeholder';
+
+    LOCAL PROCEDURE CalcCheck@1();
+    BEGIN
+      IF "Check Printed" THEN BEGIN
+        GenJnlLine.RESET;
+        GenJnlLine.SETCURRENTKEY("Journal Template Name","Journal Batch Name","Posting Date","Document No.");
+        GenJnlLine.SETRANGE("Journal Template Name", "Journal Template Name");
+        GenJnlLine.SETRANGE("Journal Batch Name","Journal Batch Name");
+        GenJnlLine.SETRANGE("Posting Date","Posting Date");
+        GenJnlLine.SETRANGE("Document No.","Document No.");
+        IF "Bal. Account No." = '' THEN
+          GenJnlLine.SETRANGE("Bank Payment Type","Bank Payment Type"::" ")
+        ELSE
+          GenJnlLine.SETRANGE("Bank Payment Type","Bank Payment Type"::"Computer Check");
+        GenJnlLine.SETRANGE("Check Printed",TRUE);
+        CheckStatusText := Text000;
+      END ELSE BEGIN
+        GenJnlLine.RESET;
+        GenJnlLine.SETCURRENTKEY("Journal Template Name","Journal Batch Name","Posting Date","Document No.");
+        GenJnlLine.SETRANGE("Journal Template Name", "Journal Template Name");
+        GenJnlLine.SETRANGE("Journal Batch Name","Journal Batch Name");
+        GenJnlLine.SETRANGE("Posting Date","Posting Date");
+        GenJnlLine.SETRANGE("Document No.","Document No.");
+        GenJnlLine.SETRANGE("Account Type","Account Type");
+        GenJnlLine.SETRANGE("Account No.","Account No.");
+        GenJnlLine.SETRANGE("Bal. Account Type","Bal. Account Type");
+        GenJnlLine.SETRANGE("Bal. Account No.","Bal. Account No.");
+        GenJnlLine.SETRANGE("Bank Payment Type","Bank Payment Type");
+        CheckStatusText := Text001;
+      END;
+
+      CheckAmount := 0;
+      IF GenJnlLine.FIND('-') THEN
+        REPEAT
+          CheckAmount := CheckAmount + GenJnlLine.Amount;
+        UNTIL GenJnlLine.NEXT = 0;
+
+      IF CheckAmount < 0 THEN
+        CheckAmount := 0;
+
+      CheckReport.InitTextVariable;
+      CheckReport.FormatNoText(NumberText,CheckAmount,GenJnlLine."Currency Code");
+
+      CASE GenJnlLine."Account Type" OF
+        GenJnlLine."Account Type"::"G/L Account":
+          BEGIN
+            CLEAR(CheckToAddr);
+            CheckToAddr[1] := GenJnlLine.Description;
+          END;
+        GenJnlLine."Account Type"::Customer:
+          BEGIN
+            Cust.GET(GenJnlLine."Account No.");
+            Cust.Contact := '';
+            FormatAddr.Customer(CheckToAddr,Cust);
+          END;
+        GenJnlLine."Account Type"::Vendor:
+          BEGIN
+            Vend.GET(GenJnlLine."Account No.");
+            Vend.Contact := '';
+            FormatAddr.Vendor(CheckToAddr,Vend);
+          END;
+        GenJnlLine."Account Type"::"Bank Account":
+          BEGIN
+            BankAcc.GET(GenJnlLine."Account No.");
+            BankAcc.Contact := '';
+            FormatAddr.BankAcc(CheckToAddr,BankAcc);
+          END;
+        GenJnlLine."Account Type"::"Fixed Asset":
+          GenJnlLine.FIELDERROR("Account Type");
+      END;
+    END;
+
+    BEGIN
+    END.
+  }
+}
+

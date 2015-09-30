@@ -1,0 +1,49 @@
+OBJECT Table 2000000003 Member Of
+{
+  OBJECT-PROPERTIES
+  {
+    Date=25.05.05;
+    Time=12:00:00;
+    Version List=;
+  }
+  PROPERTIES
+  {
+    DataPerCompany=No;
+    CaptionML=[DEU=Mitglied von;
+               ENU=Member Of];
+  }
+  FIELDS
+  {
+    { 1   ;   ;User ID             ;Code20        ;TableRelation=User."User ID";
+                                                   CaptionML=[DEU=Benutzer-ID;
+                                                              ENU=User ID] }
+    { 2   ;   ;User Name           ;Text30        ;FieldClass=FlowField;
+                                                   CalcFormula=Lookup(User.Name WHERE (User ID=FIELD(User ID)));
+                                                   CaptionML=[DEU=Benutzername;
+                                                              ENU=User Name] }
+    { 3   ;   ;Role ID             ;Code20        ;TableRelation="User Role"."Role ID";
+                                                   CaptionML=[DEU=Rollen-ID;
+                                                              ENU=Role ID] }
+    { 4   ;   ;Role Name           ;Text30        ;FieldClass=FlowField;
+                                                   CalcFormula=Lookup("User Role".Name WHERE (Role ID=FIELD(Role ID)));
+                                                   CaptionML=[DEU=Rollenname;
+                                                              ENU=Role Name] }
+    { 5   ;   ;Company             ;Text30        ;TableRelation=Company.Name;
+                                                   CaptionML=[DEU=Mandant;
+                                                              ENU=Company] }
+  }
+  KEYS
+  {
+    {    ;User ID,Role ID,Company                 ;Clustered=Yes }
+  }
+  FIELDGROUPS
+  {
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

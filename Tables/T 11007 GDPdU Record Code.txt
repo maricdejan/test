@@ -1,0 +1,48 @@
+OBJECT Table 11007 GDPdU Record Code
+{
+  OBJECT-PROPERTIES
+  {
+    Date=05.11.08;
+    Time=12:00:00;
+    Version List=NAVDACH6.00;
+  }
+  PROPERTIES
+  {
+    OnDelete=VAR
+               GDPdURecordDef@1140000 : Record 11003;
+             BEGIN
+               GDPdURecordDef.SETRANGE("Record Code",Code);
+               IF GDPdURecordDef.FIND('-') THEN
+                 ERROR(Text1140000,TABLECAPTION,Code,GDPdURecordDef.TABLECAPTION);
+             END;
+
+    CaptionML=[DEU=GDPdU Datensatzcode;
+               ENU=GDPdU Record Code];
+    LookupFormID=Form11014;
+  }
+  FIELDS
+  {
+    { 1   ;   ;Code                ;Code10        ;CaptionML=[DEU=Code;
+                                                              ENU=Code];
+                                                   NotBlank=Yes }
+    { 2   ;   ;Description         ;Text50        ;CaptionML=[DEU=Beschreibung;
+                                                              ENU=Description] }
+  }
+  KEYS
+  {
+    {    ;Code                                    ;Clustered=Yes }
+  }
+  FIELDGROUPS
+  {
+    { 1   ;DropDown            ;Code,Description                         }
+  }
+  CODE
+  {
+    VAR
+      Text1140000@1140000 : TextConst 'DEU=Sie dÅrfen den %1 %2 nicht lîschen, wenn eine %3 fÅr ihn existiert.;ENU=You must not delete the %1 %2, if there exists a %3 for it.';
+
+    BEGIN
+    END.
+  }
+}
+

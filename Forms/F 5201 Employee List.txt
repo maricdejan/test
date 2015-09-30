@@ -1,0 +1,266 @@
+OBJECT Form 5201 Employee List
+{
+  OBJECT-PROPERTIES
+  {
+    Date=13.02.07;
+    Time=12:00:00;
+    Version List=NAVW15.00;
+  }
+  PROPERTIES
+  {
+    Width=16500;
+    Height=6710;
+    Editable=No;
+    CaptionML=[DEU=MitarbeiterÅbersicht;
+               ENU=Employee List];
+    TableBoxID=1;
+    SourceTable=Table5200;
+  }
+  CONTROLS
+  {
+    { 1   ;TableBox     ;220  ;220  ;16060;5500 ;HorzGlue=Both;
+                                                 VertGlue=Both }
+    { 2   ;TextBox      ;0    ;0    ;1650 ;0    ;ParentControl=1;
+                                                 InColumn=Yes;
+                                                 SourceExpr="No." }
+    { 3   ;Label        ;0    ;0    ;0    ;0    ;ParentControl=2;
+                                                 InColumnHeading=Yes }
+    { 17  ;TextBox      ;5424 ;440  ;4400 ;440  ;HorzGlue=Both;
+                                                 ParentControl=1;
+                                                 InColumn=Yes;
+                                                 CaptionML=[DEU=VollstÑndiger Name;
+                                                            ENU=Full Name];
+                                                 SourceExpr=FullName }
+    { 18  ;Label        ;0    ;0    ;0    ;0    ;ParentControl=17;
+                                                 InColumnHeading=Yes }
+    { 4   ;TextBox      ;0    ;0    ;4400 ;0    ;HorzGlue=Both;
+                                                 Visible=No;
+                                                 ParentControl=1;
+                                                 InColumn=Yes;
+                                                 SourceExpr="First Name" }
+    { 5   ;Label        ;0    ;0    ;0    ;0    ;ParentControl=4;
+                                                 InColumnHeading=Yes }
+    { 6   ;TextBox      ;0    ;0    ;4400 ;0    ;Visible=No;
+                                                 ParentControl=1;
+                                                 InColumn=Yes;
+                                                 SourceExpr="Middle Name" }
+    { 7   ;Label        ;0    ;0    ;0    ;0    ;ParentControl=6;
+                                                 InColumnHeading=Yes }
+    { 8   ;TextBox      ;0    ;0    ;4400 ;0    ;Visible=No;
+                                                 ParentControl=1;
+                                                 InColumn=Yes;
+                                                 SourceExpr="Last Name" }
+    { 9   ;Label        ;0    ;0    ;0    ;0    ;ParentControl=8;
+                                                 InColumnHeading=Yes }
+    { 10  ;TextBox      ;0    ;0    ;4400 ;0    ;Visible=No;
+                                                 ParentControl=1;
+                                                 InColumn=Yes;
+                                                 SourceExpr=Initials }
+    { 11  ;Label        ;0    ;0    ;0    ;0    ;ParentControl=10;
+                                                 InColumnHeading=Yes }
+    { 12  ;TextBox      ;0    ;0    ;4400 ;0    ;ParentControl=1;
+                                                 InColumn=Yes;
+                                                 SourceExpr="Job Title" }
+    { 13  ;Label        ;0    ;0    ;0    ;0    ;ParentControl=12;
+                                                 InColumnHeading=Yes }
+    { 22  ;TextBox      ;0    ;0    ;1650 ;0    ;Visible=No;
+                                                 ParentControl=1;
+                                                 InColumn=Yes;
+                                                 SourceExpr="Post Code" }
+    { 23  ;Label        ;0    ;0    ;0    ;0    ;ParentControl=22;
+                                                 InColumnHeading=Yes }
+    { 84  ;TextBox      ;0    ;0    ;1650 ;0    ;Visible=No;
+                                                 ParentControl=1;
+                                                 InColumn=Yes;
+                                                 SourceExpr="Country/Region Code" }
+    { 85  ;Label        ;0    ;0    ;0    ;0    ;ParentControl=84;
+                                                 InColumnHeading=Yes }
+    { 80  ;TextBox      ;0    ;0    ;2200 ;0    ;ParentControl=1;
+                                                 InColumn=Yes;
+                                                 SourceExpr=Extension }
+    { 81  ;Label        ;0    ;0    ;0    ;0    ;ParentControl=80;
+                                                 InColumnHeading=Yes }
+    { 26  ;TextBox      ;0    ;0    ;2200 ;0    ;Visible=No;
+                                                 ParentControl=1;
+                                                 InColumn=Yes;
+                                                 SourceExpr="Phone No." }
+    { 27  ;Label        ;0    ;0    ;0    ;0    ;ParentControl=26;
+                                                 InColumnHeading=Yes }
+    { 28  ;TextBox      ;0    ;0    ;2200 ;0    ;Visible=No;
+                                                 ParentControl=1;
+                                                 InColumn=Yes;
+                                                 SourceExpr="Mobile Phone No." }
+    { 29  ;Label        ;0    ;0    ;0    ;0    ;ParentControl=28;
+                                                 InColumnHeading=Yes }
+    { 30  ;TextBox      ;0    ;0    ;4400 ;0    ;Visible=No;
+                                                 ParentControl=1;
+                                                 InColumn=Yes;
+                                                 SourceExpr="E-Mail" }
+    { 31  ;Label        ;0    ;0    ;0    ;0    ;ParentControl=30;
+                                                 InColumnHeading=Yes }
+    { 52  ;TextBox      ;0    ;0    ;1650 ;0    ;Visible=No;
+                                                 ParentControl=1;
+                                                 InColumn=Yes;
+                                                 SourceExpr="Statistics Group Code" }
+    { 53  ;Label        ;0    ;0    ;0    ;0    ;ParentControl=52;
+                                                 InColumnHeading=Yes }
+    { 72  ;TextBox      ;0    ;0    ;1650 ;0    ;Visible=No;
+                                                 ParentControl=1;
+                                                 InColumn=Yes;
+                                                 SourceExpr="Resource No." }
+    { 73  ;Label        ;0    ;0    ;0    ;0    ;ParentControl=72;
+                                                 InColumnHeading=Yes }
+    { 14  ;TextBox      ;0    ;0    ;1650 ;0    ;ParentControl=1;
+                                                 InColumn=Yes;
+                                                 SourceExpr="Search Name" }
+    { 15  ;Label        ;0    ;0    ;0    ;0    ;ParentControl=14;
+                                                 InColumnHeading=Yes }
+    { 16  ;CheckBox     ;14023;330  ;1650 ;440  ;ParentControl=1;
+                                                 InColumn=Yes;
+                                                 ShowCaption=No;
+                                                 SourceExpr=Comment }
+    { 38  ;Label        ;0    ;0    ;0    ;0    ;ParentControl=16;
+                                                 InColumnHeading=Yes }
+    { 86  ;CommandButton;6820 ;5940 ;2200 ;550  ;HorzGlue=Right;
+                                                 VertGlue=Bottom;
+                                                 Default=Yes;
+                                                 PushAction=LookupOK;
+                                                 InvalidActionAppearance=Hide }
+    { 87  ;CommandButton;9240 ;5940 ;2200 ;550  ;HorzGlue=Right;
+                                                 VertGlue=Bottom;
+                                                 Cancel=Yes;
+                                                 PushAction=LookupCancel;
+                                                 InvalidActionAppearance=Hide }
+    { 88  ;CommandButton;14080;5940 ;2200 ;550  ;HorzGlue=Right;
+                                                 VertGlue=Bottom;
+                                                 PushAction=FormHelp }
+    { 33  ;MenuButton   ;11660;5940 ;2200 ;550  ;HorzGlue=Right;
+                                                 VertGlue=Bottom;
+                                                 CaptionML=[DEU=&Mitarbeiter;
+                                                            ENU=E&mployee];
+                                                 Menu=MENUITEMS
+                                                 {
+                                                   { ID=39;
+                                                     PushAction=RunObject;
+                                                     ShortCutKey=Shift+F5;
+                                                     CaptionML=[DEU=&Karte;
+                                                                ENU=&Card];
+                                                     RunObject=Form 5200;
+                                                     RunFormLinkType=OnUpdate;
+                                                     RunFormLink=No.=FIELD(No.) }
+                                                   { ID=43;
+                                                     PushAction=RunObject;
+                                                     CaptionML=[DEU=Be&merkungen;
+                                                                ENU=Co&mments];
+                                                     RunObject=Form 5222;
+                                                     RunFormLinkType=OnUpdate;
+                                                     RunFormLink=Table Name=CONST(Employee),
+                                                                 No.=FIELD(No.) }
+                                                   { ID=20;
+                                                     CaptionML=[DEU=Dimensionen;
+                                                                ENU=Dimensions] }
+                                                   { ID=184;
+                                                     PushAction=RunObject;
+                                                     ShortCutKey=Shift+Ctrl+D;
+                                                     MenuLevel=1;
+                                                     CaptionML=[DEU=Zuordnung fÅr &aktuellen Datensatz;
+                                                                ENU=Dimensions-Single];
+                                                     RunObject=Form 540;
+                                                     RunFormLinkType=OnUpdate;
+                                                     RunFormLink=Table ID=CONST(5200),
+                                                                 No.=FIELD(No.) }
+                                                   { ID=19;
+                                                     MenuLevel=1;
+                                                     CaptionML=[DEU=Zuordnung fÅr &markierte DatensÑtze;
+                                                                ENU=Dimensions-&Multiple];
+                                                     OnPush=VAR
+                                                              Employee@1001 : Record 5200;
+                                                              DefaultDimMultiple@1002 : Form 542;
+                                                            BEGIN
+                                                              CurrForm.SETSELECTIONFILTER(Employee);
+                                                              DefaultDimMultiple.SetMultiEmployee(Employee);
+                                                              DefaultDimMultiple.RUNMODAL;
+                                                            END;
+                                                             }
+                                                   { ID=44;
+                                                     PushAction=RunObject;
+                                                     CaptionML=[DEU=Bi&ld;
+                                                                ENU=&Picture];
+                                                     RunObject=Form 5202;
+                                                     RunFormLinkType=OnUpdate;
+                                                     RunFormLink=No.=FIELD(No.) }
+                                                   { ID=45;
+                                                     PushAction=RunObject;
+                                                     CaptionML=[DEU=Al&ternative Adressen;
+                                                                ENU=&Alternative Addresses];
+                                                     RunObject=Form 5203;
+                                                     RunFormLinkType=OnUpdate;
+                                                     RunFormLink=Employee No.=FIELD(No.) }
+                                                   { ID=46;
+                                                     PushAction=RunObject;
+                                                     CaptionML=[DEU=V&erwandte;
+                                                                ENU=&Relatives];
+                                                     RunObject=Form 5209;
+                                                     RunFormLinkType=OnUpdate;
+                                                     RunFormLink=Employee No.=FIELD(No.) }
+                                                   { ID=47;
+                                                     PushAction=RunObject;
+                                                     CaptionML=[DEU=&Personalaustattung Zuordnung;
+                                                                ENU=Mi&sc. Article Information];
+                                                     RunObject=Form 5219;
+                                                     RunFormLinkType=OnUpdate;
+                                                     UpdateOnAction=Yes;
+                                                     RunFormLink=Employee No.=FIELD(No.) }
+                                                   { ID=48;
+                                                     PushAction=RunObject;
+                                                     CaptionML=[DEU=&Vertraulich Zuordnung;
+                                                                ENU=Co&nfidential Information];
+                                                     RunObject=Form 5221;
+                                                     RunFormLinkType=OnUpdate;
+                                                     UpdateOnAction=Yes;
+                                                     RunFormLink=Employee No.=FIELD(No.) }
+                                                   { ID=49;
+                                                     PushAction=RunObject;
+                                                     CaptionML=[DEU=&Qualifikationen;
+                                                                ENU=Q&ualifications];
+                                                     RunObject=Form 5206;
+                                                     RunFormLinkType=OnUpdate;
+                                                     RunFormLink=Employee No.=FIELD(No.) }
+                                                   { ID=50;
+                                                     PushAction=RunObject;
+                                                     CaptionML=[DEU=&Abwesenheiten;
+                                                                ENU=A&bsences];
+                                                     RunObject=Form 5211;
+                                                     RunFormLinkType=OnUpdate;
+                                                     RunFormLink=Employee No.=FIELD(No.) }
+                                                   { ID=51;
+                                                     MenuItemType=Separator }
+                                                   { ID=54;
+                                                     PushAction=RunObject;
+                                                     CaptionML=[DEU=A&bwesenheiten nach Kategorien;
+                                                                ENU=Absences by Ca&tegories];
+                                                     RunObject=Form 5226;
+                                                     RunFormLinkType=OnUpdate;
+                                                     RunFormLink=No.=FIELD(No.),
+                                                                 Employee No. Filter=FIELD(No.) }
+                                                   { ID=55;
+                                                     PushAction=RunObject;
+                                                     CaptionML=[DEU=Personala&usstattung Matrix;
+                                                                ENU=Misc. Articles &Overview];
+                                                     RunObject=Form 5228 }
+                                                   { ID=56;
+                                                     PushAction=RunObject;
+                                                     CaptionML=[DEU=Vertraulic&h Zuordnung Matrix;
+                                                                ENU=Con&fidential Info. Overview];
+                                                     RunObject=Form 5229 }
+                                                 }
+                                                  }
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

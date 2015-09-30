@@ -1,0 +1,61 @@
+OBJECT Page 11003 GDPdU Record Definitions
+{
+  OBJECT-PROPERTIES
+  {
+    Date=01.10.04;
+    Time=12:00:00;
+    Version List=NAVDACH4.00;
+  }
+  PROPERTIES
+  {
+    CaptionML=[DEU=GDPdU Datensatzdefinitionen;
+               ENU=GDPdU Record Definitions];
+    SourceTable=Table11003;
+    DataCaptionFields=Definition Group Code;
+    PageType=List;
+    ActionList=ACTIONS
+    {
+      { 1900000003;0 ;ActionContainer;
+                      ActionContainerType=RelatedInformation }
+      { 1140012 ;1   ;ActionGroup;
+                      CaptionML=[DEU=Da&tensatzdefinition;
+                                 ENU=Re&cord Definition] }
+      { 1140013 ;2   ;Action    ;
+                      CaptionML=[DEU=Da&tens.-Def. Tabellen;
+                                 ENU=Re&cord Def. Tables];
+                      RunObject=Page 11004;
+                      RunFormView=SORTING(Definition Group Code,Record Code,Line No.);
+                      RunFormLink=Definition Group Code=FIELD(Definition Group Code),
+                                  Record Code=FIELD(Record Code) }
+    }
+  }
+  CONTROLS
+  {
+    { 1900000001;0;Container;
+                ContainerType=ContentArea }
+
+    { 1140000;1;Group     ;
+                GroupType=Repeater }
+
+    { 1140001;2;Field     ;
+                SourceExpr="Definition Group Code";
+                Visible=FALSE }
+
+    { 1140003;2;Field     ;
+                SourceExpr="Record Code" }
+
+    { 1140005;2;Field     ;
+                SourceExpr=Description }
+
+    { 1140007;2;Field     ;
+                SourceExpr="Export Path" }
+
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

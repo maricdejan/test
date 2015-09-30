@@ -1,0 +1,105 @@
+OBJECT Report 1193 Implement Res. Price Change
+{
+  OBJECT-PROPERTIES
+  {
+    Date=05.11.08;
+    Time=12:00:00;
+    Version List=NAVW16.00;
+  }
+  PROPERTIES
+  {
+    CaptionML=[DEU=Res.-VK-Preisvorschl. Åberneh.;
+               ENU=Implement Res. Price Change];
+    ProcessingOnly=Yes;
+  }
+  DATAITEMS
+  {
+    { PROPERTIES
+      {
+        DataItemTable=Table335;
+        DataItemTableView=SORTING(Job No.,Type,Code,Work Type Code,Currency Code);
+        OnPreDataItem=BEGIN
+                        Window.OPEN(
+                          Text000 +
+                          Text001 +
+                          Text002 +
+                          Text003 +
+                          Text004 +
+                          Text005);
+                      END;
+
+        OnAfterGetRecord=BEGIN
+                           Window.UPDATE(1,Type);
+                           Window.UPDATE(2,Code);
+                           Window.UPDATE(3,"Job No.");
+                           Window.UPDATE(4,"Work Type Code");
+                           Window.UPDATE(5,"Currency Code");
+                           ResPrice."Job No." := "Job No.";
+                           ResPrice.Type := Type;
+                           ResPrice.Code := Code;
+                           ResPrice."Work Type Code" := "Work Type Code";
+                           ResPrice."Currency Code" := "Currency Code";
+                           ResPrice."Unit Price" := "New Unit Price";
+                           IF NOT ResPrice.INSERT THEN
+                             ResPrice.MODIFY;
+                           ConfirmDeletion := TRUE;
+                         END;
+
+        OnPostDataItem=BEGIN
+                         IF ConfirmDeletion THEN BEGIN
+                           COMMIT;
+                           IF CONFIRM(Text006 + Text007) THEN
+                             "Resource Price Change".DELETEALL;
+                         END;
+                       END;
+
+        ReqFilterFields=Type,Code,Currency Code;
+      }
+      SECTIONS
+      {
+      }
+       }
+  }
+  REQUESTFORM
+  {
+    PROPERTIES
+    {
+      Width=9020;
+      Height=3410;
+    }
+    CONTROLS
+    {
+    }
+  }
+  REQUESTPAGE
+  {
+    PROPERTIES
+    {
+    }
+    CONTROLS
+    {
+    }
+  }
+  CODE
+  {
+    VAR
+      Text000@1000 : TextConst 'DEU=Res.-VK-Preise aktualisieren...\\;ENU=Updating Resource Prices...\\';
+      Text001@1001 : TextConst 'DEU=Art                 #1##########\;ENU=Type                #1##########\';
+      Text002@1002 : TextConst 'DEU=Code                #2##########\;ENU=Code                #2##########\';
+      Text003@1003 : TextConst 'DEU=Arbeitstypencode    #3##########\;ENU=Work Type Code      #3##########\';
+      Text004@1004 : TextConst 'DEU=Projektnr.          #4##########\;ENU=Job No.             #4##########\';
+      Text005@1005 : TextConst 'DEU=WÑhrungscode        #5##########\;ENU=Currency Code       #5##########\';
+      Text006@1006 : TextConst 'DEU=Die Ressourcen VK-Preise wurden aufgrund der vorgeschlagenen PreisÑnderungen aktualisiert.\\;ENU=The resource prices have now been updated in accordance with the suggested price changes.\\';
+      Text007@1007 : TextConst 'DEU=Mîchten Sie die vorgeschlagenen PreisÑnderungen lîschen?;ENU=Do you want to delete the suggested price changes?';
+      ResPrice@1008 : Record 201;
+      Window@1009 : Dialog;
+      ConfirmDeletion@1102601000 : Boolean;
+
+    BEGIN
+    END.
+  }
+  RDLDATA
+  {
+  }
+}
+

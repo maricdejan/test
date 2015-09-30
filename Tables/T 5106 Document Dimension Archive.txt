@@ -1,0 +1,57 @@
+OBJECT Table 5106 Document Dimension Archive
+{
+  OBJECT-PROPERTIES
+  {
+    Date=05.11.08;
+    Time=12:00:00;
+    Version List=NAVW16.00;
+  }
+  PROPERTIES
+  {
+    CaptionML=[DEU=Belegdimensionsarchiv;
+               ENU=Document Dimension Archive];
+  }
+  FIELDS
+  {
+    { 1   ;   ;Table ID            ;Integer       ;TableRelation=AllObj."Object ID" WHERE (Object Type=CONST(Table));
+                                                   CaptionML=[DEU=Tabellen-ID;
+                                                              ENU=Table ID];
+                                                   NotBlank=Yes }
+    { 2   ;   ;Document Type       ;Option        ;CaptionML=[DEU=Belegart;
+                                                              ENU=Document Type];
+                                                   OptionCaptionML=[DEU="Angebot/Anfrage,Auftrag/Bestellung,Rechnung,Gutschrift,R.-Auftrag/R.-Best.,Reklamation, ";
+                                                                    ENU="Quote,Order,Invoice,Credit Memo,Blanket Order,Return Order, "];
+                                                   OptionString=[Quote,Order,Invoice,Credit Memo,Blanket Order,Return Order, ] }
+    { 3   ;   ;Document No.        ;Code20        ;CaptionML=[DEU=Belegnr.;
+                                                              ENU=Document No.] }
+    { 4   ;   ;Line No.            ;Integer       ;CaptionML=[DEU=Zeilennr.;
+                                                              ENU=Line No.] }
+    { 5   ;   ;Dimension Code      ;Code20        ;TableRelation=Dimension;
+                                                   CaptionML=[DEU=Dimensionscode;
+                                                              ENU=Dimension Code];
+                                                   NotBlank=Yes }
+    { 6   ;   ;Dimension Value Code;Code20        ;TableRelation="Dimension Value".Code WHERE (Dimension Code=FIELD(Dimension Code));
+                                                   CaptionML=[DEU=Dimensionswertcode;
+                                                              ENU=Dimension Value Code];
+                                                   NotBlank=Yes }
+    { 5047;   ;Version No.         ;Integer       ;CaptionML=[DEU=Versionsnr.;
+                                                              ENU=Version No.] }
+    { 5048;   ;Doc. No. Occurrence ;Integer       ;CaptionML=[DEU=Belegnr.-H„ufigkeit;
+                                                              ENU=Doc. No. Occurrence] }
+  }
+  KEYS
+  {
+    {    ;Table ID,Document Type,Document No.,Line No.,Doc. No. Occurrence,Version No.,Dimension Code;
+                                                   Clustered=Yes }
+  }
+  FIELDGROUPS
+  {
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

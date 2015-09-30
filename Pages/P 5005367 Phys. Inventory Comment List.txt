@@ -1,0 +1,46 @@
+OBJECT Page 5005367 Phys. Inventory Comment List
+{
+  OBJECT-PROPERTIES
+  {
+    Date=01.10.04;
+    Time=12:00:00;
+    Version List=NAVDACH4.00;
+  }
+  PROPERTIES
+  {
+    Editable=No;
+    CaptionML=[DEU=InventurbemerkungsÅbersicht;
+               ENU=Phys. Inventory Comment List];
+    SourceTable=Table5005358;
+    DataCaptionFields=Document Type,Order No.,Recording No.;
+    PageType=List;
+  }
+  CONTROLS
+  {
+    { 1900000001;0;Container;
+                ContainerType=ContentArea }
+
+    { 1140000;1;Group     ;
+                GroupType=Repeater }
+
+    { 1140001;2;Field     ;
+                SourceExpr="Order No." }
+
+    { 1140003;2;Field     ;
+                SourceExpr="Recording No." }
+
+    { 1140005;2;Field     ;
+                SourceExpr=Date }
+
+    { 1140007;2;Field     ;
+                SourceExpr=Comment }
+
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

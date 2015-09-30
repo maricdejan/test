@@ -1,0 +1,138 @@
+OBJECT Table 206 Res. Journal Template
+{
+  OBJECT-PROPERTIES
+  {
+    Date=05.11.08;
+    Time=12:00:00;
+    Version List=NAVW16.00;
+  }
+  PROPERTIES
+  {
+    OnInsert=BEGIN
+               VALIDATE("Form ID");
+             END;
+
+    OnDelete=BEGIN
+               ResJnlLine.SETRANGE("Journal Template Name",Name);
+               ResJnlLine.DELETEALL(TRUE);
+               ResJnlBatch.SETRANGE("Journal Template Name",Name);
+               ResJnlBatch.DELETEALL;
+             END;
+
+    CaptionML=[DEU=Res. Buch.-Blattvorlage;
+               ENU=Res. Journal Template];
+    LookupFormID=Form271;
+    DrillDownFormID=Form271;
+  }
+  FIELDS
+  {
+    { 1   ;   ;Name                ;Code10        ;CaptionML=[DEU=Name;
+                                                              ENU=Name];
+                                                   NotBlank=Yes }
+    { 2   ;   ;Description         ;Text80        ;CaptionML=[DEU=Beschreibung;
+                                                              ENU=Description] }
+    { 5   ;   ;Test Report ID      ;Integer       ;TableRelation=Object.ID WHERE (Type=CONST(Report));
+                                                   CaptionML=[DEU=Testberichts-ID;
+                                                              ENU=Test Report ID] }
+    { 6   ;   ;Form ID             ;Integer       ;TableRelation=Object.ID WHERE (Type=CONST(Form));
+                                                   OnValidate=BEGIN
+                                                                IF "Form ID" = 0 THEN
+                                                                  VALIDATE(Recurring);
+                                                              END;
+
+                                                   CaptionML=[DEU=Formular-ID;
+                                                              ENU=Form ID] }
+    { 7   ;   ;Posting Report ID   ;Integer       ;TableRelation=Object.ID WHERE (Type=CONST(Report));
+                                                   CaptionML=[DEU=Buchungsberichts-ID;
+                                                              ENU=Posting Report ID] }
+    { 8   ;   ;Force Posting Report;Boolean       ;CaptionML=[DEU=Buchungsbericht immer drucken;
+                                                              ENU=Force Posting Report] }
+    { 10  ;   ;Source Code         ;Code10        ;TableRelation="Source Code";
+                                                   OnValidate=BEGIN
+                                                                ResJnlLine.SETRANGE("Journal Template Name",Name);
+                                                                ResJnlLine.MODIFYALL("Source Code","Source Code");
+                                                                MODIFY;
+                                                              END;
+
+                                                   CaptionML=[DEU=Herkunftscode;
+                                                              ENU=Source Code] }
+    { 11  ;   ;Reason Code         ;Code10        ;TableRelation="Reason Code";
+                                                   CaptionML=[DEU=Ursachencode;
+                                                              ENU=Reason Code] }
+    { 12  ;   ;Recurring           ;Boolean       ;OnValidate=BEGIN
+                                                                IF Recurring THEN
+                                                                  "Form ID" := FORM::"Recurring Resource Jnl."
+                                                                ELSE
+                                                                  "Form ID" := FORM::"Resource Journal";
+                                                                "Test Report ID" := REPORT::"Resource Journal - Test";
+                                                                "Posting Report ID" := REPORT::"Resource Register";
+                                                                SourceCodeSetup.GET;
+                                                                "Source Code" := SourceCodeSetup."Resource Journal";
+                                                                IF Recurring THEN
+                                                                  TESTFIELD("No. Series",'');
+                                                              END;
+
+                                                   CaptionML=[DEU=Wiederkehrend;
+                                                              ENU=Recurring] }
+    { 13  ;   ;Test Report Name    ;Text80        ;FieldClass=FlowField;
+                                                   CalcFormula=Lookup(AllObjWithCaption."Object Caption" WHERE (Object Type=CONST(Report),
+                                                                                                                Object ID=FIELD(Test Report ID)));
+                                                   CaptionML=[DEU=Testberichtsname;
+                                                              ENU=Test Report Name];
+                                                   Editable=No }
+    { 14  ;   ;Form Name           ;Text80        ;FieldClass=FlowField;
+                                                   CalcFormula=Lookup(AllObjWithCaption."Object Caption" WHERE (Object Type=CONST(Form),
+                                                                                                                Object ID=FIELD(Form ID)));
+                                                   CaptionML=[DEU=Formularname;
+                                                              ENU=Form Name];
+                                                   Editable=No }
+    { 15  ;   ;Posting Report Name ;Text80        ;FieldClass=FlowField;
+                                                   CalcFormula=Lookup(AllObjWithCaption."Object Caption" WHERE (Object Type=CONST(Report),
+                                                                                                                Object ID=FIELD(Posting Report ID)));
+                                                   CaptionML=[DEU=Buchungsberichtsname;
+                                                              ENU=Posting Report Name];
+                                                   Editable=No }
+    { 16  ;   ;No. Series          ;Code10        ;TableRelation="No. Series";
+                                                   OnValidate=BEGIN
+                                                                IF "No. Series" <> '' THEN BEGIN
+                                                                  IF Recurring THEN
+                                                                    ERROR(
+                                                                      Text000,
+                                                                      FIELDCAPTION("Posting No. Series"));
+                                                                  IF "No. Series" = "Posting No. Series" THEN
+                                                                    "Posting No. Series" := '';
+                                                                END;
+                                                              END;
+
+                                                   CaptionML=[DEU=Nummernserie;
+                                                              ENU=No. Series] }
+    { 17  ;   ;Posting No. Series  ;Code10        ;TableRelation="No. Series";
+                                                   OnValidate=BEGIN
+                                                                IF ("Posting No. Series" = "No. Series") AND ("Posting No. Series" <> '') THEN
+                                                                  FIELDERROR("Posting No. Series",STRSUBSTNO(Text001,"Posting No. Series"));
+                                                              END;
+
+                                                   CaptionML=[DEU=Buchungsnr.-Serie;
+                                                              ENU=Posting No. Series] }
+  }
+  KEYS
+  {
+    {    ;Name                                    ;Clustered=Yes }
+  }
+  FIELDGROUPS
+  {
+  }
+  CODE
+  {
+    VAR
+      Text000@1000 : TextConst 'DEU=Nur das %1 Feld kann in wiederk. Buch.-Bl. ausgefÅllt werden.;ENU=Only the %1 field can be filled in on recurring journals.';
+      Text001@1001 : TextConst 'DEU=darf nicht %1 sein;ENU=must not be %1';
+      ResJnlBatch@1002 : Record 236;
+      ResJnlLine@1003 : Record 207;
+      SourceCodeSetup@1004 : Record 242;
+
+    BEGIN
+    END.
+  }
+}
+

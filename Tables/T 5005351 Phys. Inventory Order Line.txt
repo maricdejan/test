@@ -1,0 +1,848 @@
+OBJECT Table 5005351 Phys. Inventory Order Line
+{
+  OBJECT-PROPERTIES
+  {
+    Date=14.08.09;
+    Time=12:00:00;
+    Version List=NAVDACH6.00.01;
+  }
+  PROPERTIES
+  {
+    OnInsert=BEGIN
+               GetPhysInvtOrderHeader;
+               PhysInvtOrderHeader.TESTFIELD(Status, PhysInvtOrderHeader.Status::Open);
+
+               DimManagement.InsertDocDim(
+                 DATABASE::"Phys. Inventory Order Line",DocDim."Document Type"::" ","Document No.","Line No.",
+                 "Shortcut Dimension 1 Code","Shortcut Dimension 2 Code");
+             END;
+
+    OnDelete=BEGIN
+               TestStatusOpen;
+               TESTFIELD("In Recording Lines", FALSE);
+
+               DimManagement.DeleteDocDim(
+                 DATABASE::"Phys. Inventory Order Line",DocDim."Document Type"::" ","Document No.","Line No.");
+
+               ExpectPhysInvtTrackLine.RESET;
+               ExpectPhysInvtTrackLine.SETRANGE("Order No", "Document No.");
+               ExpectPhysInvtTrackLine.SETRANGE("Order Line No.", "Line No.");
+               ExpectPhysInvtTrackLine.DELETEALL;
+
+               ReservEntry.RESET;
+               ReservEntry.SETCURRENTKEY(
+                 "Source Type", "Source Subtype", "Source ID",
+                 "Source Batch Name", "Source Prod. Order Line",
+                 "Source Ref. No.");
+               ReservEntry.SETRANGE("Source Type", DATABASE::"Phys. Inventory Order Line");
+               ReservEntry.SETRANGE("Source Subtype", 0);
+               ReservEntry.SETRANGE("Source ID", "Document No.");
+               ReservEntry.SETRANGE("Source Batch Name", '');
+               ReservEntry.SETRANGE("Source Prod. Order Line", 0);
+               ReservEntry.SETRANGE("Source Ref. No.", "Line No.");
+               ReservEntry.DELETEALL;
+             END;
+
+    OnRename=BEGIN
+               ERROR(Text1005,TABLECAPTION);
+             END;
+
+    CaptionML=[DEU=Inventurauftragszeile;
+               ENU=Phys. Inventory Order Line];
+    PasteIsValid=No;
+    LookupFormID=Form5005353;
+    DrillDownFormID=Form5005353;
+  }
+  FIELDS
+  {
+    { 1   ;   ;Document No.        ;Code20        ;TableRelation="Phys. Inventory Order Header";
+                                                   CaptionML=[DEU=Belegnr.;
+                                                              ENU=Document No.] }
+    { 2   ;   ;Line No.            ;Integer       ;CaptionML=[DEU=Zeilennr.;
+                                                              ENU=Line No.] }
+    { 12  ;   ;In Recording Lines  ;Boolean       ;CaptionML=[DEU=In Erfassungszeilen enthalten;
+                                                              ENU=In Recording Lines];
+                                                   Editable=No }
+    { 20  ;   ;Item No.            ;Code20        ;TableRelation=Item;
+                                                   OnValidate=VAR
+                                                                TempPhysInvtOrderLine@1140000 : TEMPORARY Record 5005351;
+                                                              BEGIN
+                                                                TestStatusOpen;
+                                                                TESTFIELD("In Recording Lines", FALSE);
+
+                                                                TempPhysInvtOrderLine := Rec;
+                                                                INIT;
+                                                                "Item No." := TempPhysInvtOrderLine."Item No.";
+                                                                "Variant Code" := '';
+                                                                ResetQtyExpected;
+
+                                                                IF "Item No." = '' THEN
+                                                                  EXIT;
+
+                                                                GetPhysInvtOrderHeader;
+                                                                GetItem;
+                                                                Item.TESTFIELD(Blocked,FALSE);
+
+                                                                VALIDATE(Description, Item.Description);
+                                                                VALIDATE("Description 2",Item."Description 2");
+
+                                                                VALIDATE("Base Unit of Measure Code",Item."Base Unit of Measure");
+                                                                IF "Base Unit of Measure Code" <> '' THEN BEGIN
+                                                                  UnitOfMeasure.GET("Base Unit of Measure Code");
+                                                                  "Unit of Measure" := UnitOfMeasure.Description;
+                                                                END ELSE
+                                                                  "Unit of Measure" := '';
+
+                                                                "Shelf/Bin No." := Item."Shelf No.";
+                                                                "Item Category Code" := Item."Item Category Code";
+                                                                "Product Group Code" := Item."Product Group Code";
+
+                                                                VALIDATE("Gen. Bus. Posting Group", PhysInvtOrderHeader."Gen. Bus. Posting Group");
+                                                                VALIDATE("Gen. Prod. Posting Group", Item."Gen. Prod. Posting Group");
+                                                                VALIDATE("Inventory Posting Group", Item."Inventory Posting Group");
+
+                                                                CreateDim(DATABASE::Item,"Item No.");
+
+                                                                "Location Code" := PhysInvtOrderHeader."Location Code";
+                                                                "Bin Code" := PhysInvtOrderHeader."Bin Code";
+
+                                                                "Use Tracking Lines" :=
+                                                                  ItemTrkgMgtPhysInvtLine.SuggestUseTrackingLines(Item);
+
+                                                                GetFieldsFromSKU();
+                                                              END;
+
+                                                   CaptionML=[DEU=Artikelnr.;
+                                                              ENU=Item No.] }
+    { 21  ;   ;Variant Code        ;Code10        ;TableRelation="Item Variant".Code WHERE (Item No.=FIELD(Item No.));
+                                                   OnValidate=BEGIN
+                                                                TestStatusOpen;
+                                                                TESTFIELD("In Recording Lines", FALSE);
+
+                                                                IF "Variant Code" <> xRec."Variant Code" THEN BEGIN
+                                                                  ResetQtyExpected;
+                                                                  GetFieldsFromSKU();
+                                                                END;
+
+                                                                IF "Variant Code" = '' THEN
+                                                                  EXIT;
+
+                                                                TESTFIELD("Item No.");
+
+                                                                ItemVariant.GET("Item No.","Variant Code");
+                                                                Description := ItemVariant.Description;
+                                                                "Description 2" := ItemVariant."Description 2";
+                                                              END;
+
+                                                   CaptionML=[DEU=Variantencode;
+                                                              ENU=Variant Code] }
+    { 22  ;   ;Location Code       ;Code10        ;TableRelation=Location;
+                                                   OnValidate=BEGIN
+                                                                TestStatusOpen;
+                                                                TESTFIELD("In Recording Lines", FALSE);
+
+                                                                IF "Location Code" <> xRec."Location Code" THEN
+                                                                  ResetQtyExpected;
+
+                                                                GetFieldsFromSKU();
+                                                              END;
+
+                                                   CaptionML=[DEU=Lagerortcode;
+                                                              ENU=Location Code] }
+    { 23  ;   ;Bin Code            ;Code20        ;TableRelation=Bin.Code WHERE (Location Code=FIELD(Location Code));
+                                                   OnValidate=VAR
+                                                                Location@1140000 : Record 14;
+                                                              BEGIN
+                                                                TestStatusOpen;
+                                                                TESTFIELD("In Recording Lines", FALSE);
+
+                                                                IF "Bin Code" <> '' THEN BEGIN
+                                                                  TESTFIELD("Location Code");
+                                                                  Location.GET("Location Code");
+                                                                  Location.TESTFIELD("Bin Mandatory", TRUE);
+                                                                  Location.TESTFIELD("Directed Put-away and Pick",FALSE);
+                                                                END;
+
+                                                                IF "Bin Code" <> xRec."Bin Code" THEN
+                                                                  ResetQtyExpected;
+                                                              END;
+
+                                                   CaptionML=[DEU=Lagerplatzcode;
+                                                              ENU=Bin Code] }
+    { 30  ;   ;Description         ;Text30        ;CaptionML=[DEU=Beschreibung;
+                                                              ENU=Description] }
+    { 31  ;   ;Description 2       ;Text30        ;CaptionML=[DEU=Beschreibung 2;
+                                                              ENU=Description 2] }
+    { 32  ;   ;Unit of Measure     ;Text10        ;CaptionML=[DEU=Einheit;
+                                                              ENU=Unit of Measure] }
+    { 40  ;   ;Base Unit of Measure Code;Code10   ;TableRelation="Unit of Measure";
+                                                   CaptionML=[DEU=Basiseinheitencode;
+                                                              ENU=Base Unit of Measure Code];
+                                                   Editable=No }
+    { 50  ;   ;Qty. Expected (Base);Decimal       ;CaptionML=[DEU=Erwartete Menge (Basis);
+                                                              ENU=Qty. Expected (Base)];
+                                                   DecimalPlaces=0:5;
+                                                   Editable=No }
+    { 51  ;   ;Qty. Exp. Calculated;Boolean       ;CaptionML=[DEU=Berechnete erw. Menge;
+                                                              ENU=Qty. Exp. Calculated];
+                                                   Editable=No }
+    { 52  ;   ;Qty. Exp. Track. Lines (Base);Decimal;
+                                                   FieldClass=FlowField;
+                                                   CalcFormula=Sum("Expect. Phys. Inv. Track. Line"."Quantity (Base)" WHERE (Order No=FIELD(Document No.),
+                                                                                                                             Order Line No.=FIELD(Line No.)));
+                                                   CaptionML=[DEU=Erw. Menge Verf.-Zeile (Basis);
+                                                              ENU=Qty. Exp. Track. Lines (Base)];
+                                                   DecimalPlaces=0:5;
+                                                   Editable=No }
+    { 53  ;   ;Use Tracking Lines  ;Boolean       ;FieldClass=Normal;
+                                                   OnValidate=BEGIN
+                                                                TestStatusOpen;
+
+                                                                IF "Use Tracking Lines" <> xRec."Use Tracking Lines" THEN
+                                                                  ResetQtyExpected;
+                                                              END;
+
+                                                   CaptionML=[DEU=Verfolgungszeilen verwenden;
+                                                              ENU=Use Tracking Lines] }
+    { 55  ;   ;Last Item Ledger Entry No.;Integer ;TableRelation="Item Ledger Entry";
+                                                   TestTableRelation=No;
+                                                   CaptionML=[DEU=Letzte Artikelposten Lfd. Nr.;
+                                                              ENU=Last Item Ledger Entry No.];
+                                                   Editable=No }
+    { 60  ;   ;Unit Amount         ;Decimal       ;CaptionML=[DEU=StÅckpreis;
+                                                              ENU=Unit Amount];
+                                                   AutoFormatType=2 }
+    { 62  ;   ;Unit Cost           ;Decimal       ;CaptionML=[DEU=Einstandspreis;
+                                                              ENU=Unit Cost];
+                                                   AutoFormatType=2 }
+    { 70  ;   ;No. Finished Rec.-Lines;Integer    ;CaptionML=[DEU=Anzahl beendete Erfassungszeilen;
+                                                              ENU=No. Finished Rec.-Lines];
+                                                   Editable=No }
+    { 71  ;   ;Qty. Recorded (Base);Decimal       ;CaptionML=[DEU=Erfasste Menge (Basis);
+                                                              ENU=Qty. Recorded (Base)];
+                                                   DecimalPlaces=0:5;
+                                                   Editable=No }
+    { 72  ;   ;Quantity (Base)     ;Decimal       ;CaptionML=[DEU=Menge (Basis);
+                                                              ENU=Quantity (Base)];
+                                                   DecimalPlaces=0:5;
+                                                   Editable=No }
+    { 73  ;   ;Entry Type          ;Option        ;CaptionML=[DEU=Postenart;
+                                                              ENU=Entry Type];
+                                                   OptionCaptionML=[DEU=" ,Zugang,Abgang";
+                                                                    ENU=" ,Positive Adjmt.,Negative Adjmt."];
+                                                   OptionString=[ ,Positive Adjmt.,Negative Adjmt.];
+                                                   Editable=No }
+    { 74  ;   ;Pos. Qty. (Base)    ;Decimal       ;CaptionML=[DEU=Positive Menge (Basis);
+                                                              ENU=Pos. Qty. (Base)];
+                                                   DecimalPlaces=0:5;
+                                                   Editable=No }
+    { 75  ;   ;Neg. Qty. (Base)    ;Decimal       ;CaptionML=[DEU=Negative Menge (Basis);
+                                                              ENU=Neg. Qty. (Base)];
+                                                   DecimalPlaces=0:5;
+                                                   Editable=No }
+    { 76  ;   ;Without difference  ;Boolean       ;CaptionML=[DEU=Ohne Differenz;
+                                                              ENU=Without difference];
+                                                   Editable=No }
+    { 80  ;   ;Recorded without Order;Boolean     ;CaptionML=[DEU=Ohne Auftrag erfasst;
+                                                              ENU=Recorded without Order];
+                                                   Editable=No }
+    { 90  ;   ;Shortcut Dimension 1 Code;Code20   ;TableRelation="Dimension Value".Code WHERE (Global Dimension No.=CONST(1));
+                                                   OnValidate=BEGIN
+                                                                ValidateShortcutDimCode(1,"Shortcut Dimension 1 Code");
+                                                                MODIFY;
+                                                              END;
+
+                                                   CaptionML=[DEU=Shortcutdimensionscode 1;
+                                                              ENU=Shortcut Dimension 1 Code];
+                                                   CaptionClass='1,2,1' }
+    { 91  ;   ;Shortcut Dimension 2 Code;Code20   ;TableRelation="Dimension Value".Code WHERE (Global Dimension No.=CONST(2));
+                                                   OnValidate=BEGIN
+                                                                ValidateShortcutDimCode(2,"Shortcut Dimension 2 Code");
+                                                                MODIFY;
+                                                              END;
+
+                                                   CaptionML=[DEU=Shortcutdimensionscode 2;
+                                                              ENU=Shortcut Dimension 2 Code];
+                                                   CaptionClass='1,2,2' }
+    { 100 ;   ;Shelf/Bin No.       ;Code10        ;CaptionML=[DEU=Regalnr.;
+                                                              ENU=Shelf/Bin No.] }
+    { 110 ;   ;Gen. Bus. Posting Group;Code10     ;TableRelation="Gen. Business Posting Group";
+                                                   CaptionML=[DEU=GeschÑftsbuchungsgruppe;
+                                                              ENU=Gen. Bus. Posting Group] }
+    { 111 ;   ;Gen. Prod. Posting Group;Code10    ;TableRelation="Gen. Product Posting Group";
+                                                   CaptionML=[DEU=Produktbuchungsgruppe;
+                                                              ENU=Gen. Prod. Posting Group] }
+    { 112 ;   ;Inventory Posting Group;Code10     ;TableRelation="Inventory Posting Group";
+                                                   CaptionML=[DEU=Lagerbuchungsgruppe;
+                                                              ENU=Inventory Posting Group] }
+    { 5704;   ;Item Category Code  ;Code10        ;TableRelation="Item Category";
+                                                   CaptionML=[DEU=Artikelkategoriencode;
+                                                              ENU=Item Category Code] }
+    { 5707;   ;Product Group Code  ;Code10        ;TableRelation="Product Group".Code WHERE (Item Category Code=FIELD(Item Category Code));
+                                                   CaptionML=[DEU=Produktgruppencode;
+                                                              ENU=Product Group Code] }
+    { 7380;   ;Phys Invt Counting Period Code;Code10;
+                                                   TableRelation="Phys. Invt. Counting Period";
+                                                   CaptionML=[DEU=InventurhÑufigkeitscode;
+                                                              ENU=Phys Invt Counting Period Code];
+                                                   Editable=No }
+    { 7381;   ;Phys Invt Counting Period Type;Option;
+                                                   CaptionML=[DEU=InventurhÑufigk.-Codeherkunft;
+                                                              ENU=Phys Invt Counting Period Type];
+                                                   OptionCaptionML=[DEU=" ,Artikel,Lagerhaltungsdaten";
+                                                                    ENU=" ,Item,SKU"];
+                                                   OptionString=[ ,Item,SKU];
+                                                   Editable=No }
+  }
+  KEYS
+  {
+    {    ;Document No.,Line No.                   ;Clustered=Yes }
+    {    ;Document No.,Item No.,Variant Code,Location Code,Bin Code }
+    {    ;Document No.,Entry Type,Without difference }
+  }
+  FIELDGROUPS
+  {
+    { 1   ;DropDown            ;Document No.,Line No.,Description        }
+  }
+  CODE
+  {
+    VAR
+      Text1140000@1140000 : TextConst 'DEU=Es existiert kein %1 fÅr diese %2.;ENU=There is no %1 for this %2.';
+      Text1140001@1140001 : TextConst 'DEU=Sie kînnen %1 nicht auf Ja setzten, weil eine Differenz zwischen den Werten der Felder %2 and %3 existiert.\;ENU="You cannot set %1 = yes, because there is a difference between the values of the fields %2 and %3. \"';
+      Text1140002@1140002 : TextConst 'DEU=Identifizierende Werte der Zeile:  %1 %2 %3 %4.;ENU=Identified values in the line:  %1 %2 %3 %4.';
+      Text1140003@1140003 : TextConst 'DEU=Der Wert des Feldes %1 und die Summe aller %2, Feld %3 der Auftragszeile sind unterschiedlich.;ENU=The value of field %1 and the sum of all %2, field %3, of the order line are different.';
+      Text1140004@1140004 : TextConst 'DEU=Sie mÅssen %1 oder %2 in %3 %4 angeben, wenn Sie %5 auf Ja setzen.;ENU="You must specify a %1 or a %2 in %3 %4 when you set %5 = yes."';
+      PhysInvtOrderHeader@1140005 : Record 5005350;
+      Item@1140006 : Record 27;
+      ItemVariant@1140007 : Record 5401;
+      UnitOfMeasure@1140008 : Record 204;
+      ItemTrackingCode@1140009 : Record 6502;
+      ExpectPhysInvtTrackLine@1140010 : Record 5005361;
+      ReservEntry@1140011 : Record 337;
+      DocDim@1140012 : Record 357;
+      SKU@1140013 : Record 5700;
+      BinContent@1140014 : Record 7302;
+      DimManagement@1140015 : Codeunit 408;
+      Text1005@1140016 : TextConst 'DEU=Sie kînnen einen %1 nicht umbenennen.;ENU=You cannot rename a %1.';
+      ItemTrackingMgt@1140017 : Codeunit 6500;
+      ItemTrkgMgtPhysInvtLine@1140018 : Codeunit 5005364;
+
+    LOCAL PROCEDURE GetPhysInvtOrderHeader@1140000();
+    BEGIN
+      TESTFIELD("Document No.");
+      IF ("Document No." <> PhysInvtOrderHeader."No.") THEN
+        PhysInvtOrderHeader.GET("Document No.");
+    END;
+
+    LOCAL PROCEDURE GetItem@1140001();
+    BEGIN
+      TESTFIELD("Item No.");
+      IF "Item No." <> Item."No." THEN
+        Item.GET("Item No.");
+    END;
+
+    LOCAL PROCEDURE TestStatusOpen@1140002();
+    BEGIN
+      GetPhysInvtOrderHeader;
+      PhysInvtOrderHeader.TESTFIELD(Status, PhysInvtOrderHeader.Status::Open);
+    END;
+
+    PROCEDURE CalcQtyAndTrackLinesExpected@1140003();
+    VAR
+      ItemLedgEntry@1140000 : Record 32;
+      WhseEntry@1140001 : Record 7312;
+    BEGIN
+      IF EmptyLine THEN
+        EXIT;
+
+      GetItem;
+
+      GetPhysInvtOrderHeader;
+      PhysInvtOrderHeader.TESTFIELD("Posting Date");
+
+      TestStatusOpen;
+
+      CalcQtyAndLastItemLedgExpected(
+        "Qty. Expected (Base)",
+        "Last Item Ledger Entry No.");
+
+      // Create Expected Phys. Invt. Tracking Lines:
+      IF "Use Tracking Lines" THEN BEGIN
+        ExpectPhysInvtTrackLine.RESET;
+        ExpectPhysInvtTrackLine.SETRANGE("Order No", "Document No.");
+        ExpectPhysInvtTrackLine.SETRANGE("Order Line No.", "Line No.");
+        ExpectPhysInvtTrackLine.DELETEALL;
+
+        IF NOT ItemTrkgMgtPhysInvtLine.LocationIsBinMandatory("Location Code") THEN BEGIN
+          ItemLedgEntry.RESET;
+
+          ItemLedgEntry.SETCURRENTKEY(
+            "Item No.", "Entry Type", "Variant Code", "Drop Shipment", "Location Code", "Posting Date");
+          ItemLedgEntry.SETRANGE("Item No.", "Item No.");
+          ItemLedgEntry.SETRANGE("Variant Code", "Variant Code");
+          ItemLedgEntry.SETRANGE("Location Code", "Location Code");
+          ItemLedgEntry.SETRANGE("Posting Date", 0D, PhysInvtOrderHeader."Posting Date");
+          IF ItemLedgEntry.FIND('-') THEN REPEAT
+            IF NOT
+              ExpectPhysInvtTrackLine.GET(
+                "Document No.", "Line No.", ItemLedgEntry."Serial No.", ItemLedgEntry."Lot No.")
+            THEN BEGIN
+              ExpectPhysInvtTrackLine.INIT;
+              ExpectPhysInvtTrackLine."Order No" := "Document No.";
+              ExpectPhysInvtTrackLine."Order Line No." := "Line No.";
+              ExpectPhysInvtTrackLine."Serial No." := ItemLedgEntry."Serial No.";
+              ExpectPhysInvtTrackLine."Lot No." := ItemLedgEntry."Lot No.";
+              ExpectPhysInvtTrackLine."Quantity (Base)" := ItemLedgEntry.Quantity;
+              ExpectPhysInvtTrackLine.INSERT;
+            END ELSE BEGIN
+              ExpectPhysInvtTrackLine."Quantity (Base)" :=
+                ExpectPhysInvtTrackLine."Quantity (Base)" +
+                ItemLedgEntry.Quantity;
+              ExpectPhysInvtTrackLine.MODIFY;
+            END;
+          UNTIL ItemLedgEntry.NEXT = 0;
+          ExpectPhysInvtTrackLine.RESET;
+          ExpectPhysInvtTrackLine.SETRANGE("Order No", "Document No.");
+          ExpectPhysInvtTrackLine.SETRANGE("Order Line No.", "Line No.");
+          ExpectPhysInvtTrackLine.SETRANGE("Quantity (Base)", 0);
+          ExpectPhysInvtTrackLine.DELETEALL;
+          TestQtyExpected;
+        END ELSE BEGIN
+          IF ItemTrkgMgtPhysInvtLine.GetTrackingNosFromWhse(Item) THEN BEGIN
+            WhseEntry.RESET;
+            WhseEntry.SETCURRENTKEY(
+              "Location Code", "Bin Code", "Item No.", "Variant Code");
+            WhseEntry.SETRANGE("Location Code", "Location Code");
+            WhseEntry.SETRANGE("Bin Code", "Bin Code");
+            WhseEntry.SETRANGE("Item No.", "Item No.");
+            WhseEntry.SETRANGE("Variant Code", "Variant Code");
+            WhseEntry.SETRANGE("Registering Date", 0D, PhysInvtOrderHeader."Posting Date");
+            IF WhseEntry.FIND('-') THEN REPEAT
+              IF NOT
+                ExpectPhysInvtTrackLine.GET(
+                  "Document No.", "Line No.", WhseEntry."Serial No.", WhseEntry."Lot No.")
+              THEN BEGIN
+                ExpectPhysInvtTrackLine.INIT;
+                ExpectPhysInvtTrackLine."Order No" := "Document No.";
+                ExpectPhysInvtTrackLine."Order Line No." := "Line No.";
+                ExpectPhysInvtTrackLine."Serial No." := WhseEntry."Serial No.";
+                ExpectPhysInvtTrackLine."Lot No." := WhseEntry."Lot No.";
+                ExpectPhysInvtTrackLine."Quantity (Base)" := WhseEntry."Qty. (Base)";
+                ExpectPhysInvtTrackLine.INSERT;
+              END ELSE BEGIN
+                ExpectPhysInvtTrackLine."Quantity (Base)" :=
+                  ExpectPhysInvtTrackLine."Quantity (Base)" +
+                  WhseEntry."Qty. (Base)";
+                ExpectPhysInvtTrackLine.MODIFY;
+              END;
+            UNTIL WhseEntry.NEXT = 0;
+            ExpectPhysInvtTrackLine.RESET;
+            ExpectPhysInvtTrackLine.SETRANGE("Order No", "Document No.");
+            ExpectPhysInvtTrackLine.SETRANGE("Order Line No.", "Line No.");
+            ExpectPhysInvtTrackLine.SETRANGE("Quantity (Base)", 0);
+            ExpectPhysInvtTrackLine.DELETEALL;
+            TestQtyExpected;
+          END ELSE BEGIN
+            // In the case of
+            //   ItemTrkgMgtPhysInvtLine.LocationIsBinMandatory("Location Code") = Yes and
+            //   ItemTrkgMgtPhysInvtLine.GetTrackingNosFromWhse(Item) = No
+            // Navision cannot create the records of table ExpectPhysInvtTrackLine
+            // In this case Navision must create the Reservation Entries by
+            // analyzing the ItemLedgerEntries and WhseEntries during the function to Finish the Order.
+          END;
+        END;
+      END;
+
+      "Qty. Exp. Calculated" := TRUE;
+    END;
+
+    PROCEDURE CalcQtyAndLastItemLedgExpected@1140004(VAR QtyExpected@1140000 : Decimal;VAR LastItemLedgEntryNo@1140001 : Integer);
+    VAR
+      ItemLedgEntry@1140002 : Record 32;
+      WhseEntry@1140003 : Record 7312;
+    BEGIN
+      GetPhysInvtOrderHeader;
+      PhysInvtOrderHeader.TESTFIELD("Posting Date");
+
+      TestStatusOpen;
+
+      ItemLedgEntry.RESET;
+      ItemLedgEntry.SETCURRENTKEY("Item No.");
+      ItemLedgEntry.SETRANGE("Item No.","Item No.");
+      IF ItemLedgEntry.FIND('+') THEN
+        LastItemLedgEntryNo := ItemLedgEntry."Entry No."
+      ELSE
+        LastItemLedgEntryNo := 0;
+
+      IF ItemTrkgMgtPhysInvtLine.LocationIsBinMandatory("Location Code") THEN BEGIN
+        TESTFIELD("Bin Code");
+        WhseEntry.RESET;
+        WhseEntry.SETCURRENTKEY(
+          "Location Code", "Bin Code", "Item No.", "Variant Code");
+        WhseEntry.SETRANGE("Location Code", "Location Code");
+        WhseEntry.SETRANGE("Bin Code", "Bin Code");
+        WhseEntry.SETRANGE("Item No.", "Item No.");
+        WhseEntry.SETRANGE("Variant Code", "Variant Code");
+        WhseEntry.SETRANGE("Registering Date", 0D, PhysInvtOrderHeader."Posting Date");
+        WhseEntry.CALCSUMS("Qty. (Base)");
+        QtyExpected := WhseEntry."Qty. (Base)";
+      END ELSE BEGIN
+        TESTFIELD("Bin Code", '');
+        ItemLedgEntry.RESET;
+
+        ItemLedgEntry.SETCURRENTKEY(
+          "Item No.", "Entry Type", "Variant Code", "Drop Shipment", "Location Code", "Posting Date");
+        ItemLedgEntry.SETRANGE("Item No.", "Item No.");
+        ItemLedgEntry.SETRANGE("Variant Code", "Variant Code");
+        ItemLedgEntry.SETRANGE("Location Code", "Location Code");
+        ItemLedgEntry.SETRANGE("Posting Date", 0D, PhysInvtOrderHeader."Posting Date");
+        ItemLedgEntry.CALCSUMS(Quantity);
+        QtyExpected := ItemLedgEntry.Quantity;
+      END;
+    END;
+
+    PROCEDURE ResetQtyExpected@1140005();
+    BEGIN
+      "Qty. Expected (Base)" := 0;
+
+      ExpectPhysInvtTrackLine.RESET;
+      ExpectPhysInvtTrackLine.SETRANGE("Order No", "Document No.");
+      ExpectPhysInvtTrackLine.SETRANGE("Order Line No.", "Line No.");
+      ExpectPhysInvtTrackLine.DELETEALL;
+      CALCFIELDS("Qty. Exp. Track. Lines (Base)");
+
+      "Qty. Exp. Calculated" := FALSE;
+    END;
+
+    PROCEDURE TestQtyExpected@1140006();
+    BEGIN
+      IF "Use Tracking Lines" THEN BEGIN
+
+        IF ItemTrkgMgtPhysInvtLine.LocationIsBinMandatory("Location Code") AND
+           NOT ItemTrkgMgtPhysInvtLine.GetTrackingNosFromWhse(Item)
+        THEN EXIT;
+
+        CALCFIELDS("Qty. Exp. Track. Lines (Base)");
+        IF "Qty. Expected (Base)" <> "Qty. Exp. Track. Lines (Base)" THEN
+          ERROR(
+            STRSUBSTNO(
+              Text1140001 +
+              '%2: %4' +
+              '%3: %5',
+              FIELDCAPTION("Use Tracking Lines"),
+              FIELDCAPTION("Qty. Expected (Base)"),
+              FIELDCAPTION("Qty. Exp. Track. Lines (Base)"),
+              "Qty. Expected (Base)",
+              "Qty. Exp. Track. Lines (Base)" ) + '\ '+
+            STRSUBSTNO(
+              Text1140002,
+              "Item No.", "Variant Code", "Location Code", "Bin Code") );
+      END;
+    END;
+
+    PROCEDURE TestQtyRecorded@1140007();
+    VAR
+      PhysInvtRecordingLine@1140000 : Record 5005353;
+      Sum@1140001 : Decimal;
+    BEGIN
+      Sum := 0;
+
+      PhysInvtRecordingLine.RESET;
+      PhysInvtRecordingLine.SETCURRENTKEY("Order No.", "Order Line No.");
+      PhysInvtRecordingLine.SETRANGE("Order No.", "Document No.");
+      PhysInvtRecordingLine.SETRANGE("Order Line No.", "Line No.");
+      IF PhysInvtRecordingLine.FIND('-') THEN REPEAT
+        PhysInvtRecordingLine.TESTFIELD("Item No.", "Item No.");
+        PhysInvtRecordingLine.TESTFIELD("Variant Code", "Variant Code");
+        PhysInvtRecordingLine.TESTFIELD("Location Code", "Location Code");
+        PhysInvtRecordingLine.TESTFIELD("Bin Code", "Bin Code");
+        IF "Use Tracking Lines" THEN
+          IF (PhysInvtRecordingLine."Quantity (Base)" <> 0) AND
+             (PhysInvtRecordingLine."Serial No." = '') AND
+             (PhysInvtRecordingLine."Lot No." = '')
+          THEN
+            ERROR(
+              STRSUBSTNO(
+                Text1140004,
+                PhysInvtRecordingLine.FIELDCAPTION("Serial No."),
+                PhysInvtRecordingLine.FIELDCAPTION("Lot No."),
+                PhysInvtRecordingLine.TABLECAPTION,
+                PhysInvtRecordingLine."Recording No.",
+                FIELDCAPTION("Use Tracking Lines") ) + '\' +
+             STRSUBSTNO(
+               Text1140002,
+              "Item No.", "Variant Code", "Location Code", "Bin Code") );
+        Sum := Sum + PhysInvtRecordingLine."Quantity (Base)";
+      UNTIL PhysInvtRecordingLine.NEXT = 0;
+
+      IF "Qty. Recorded (Base)" <> Sum  THEN
+        ERROR(
+          STRSUBSTNO(
+            Text1140003,
+            FIELDCAPTION("Qty. Recorded (Base)"),
+            PhysInvtRecordingLine.TABLECAPTION,
+            PhysInvtRecordingLine.FIELDCAPTION("Quantity (Base)") ) + '/ '+
+          STRSUBSTNO(
+            Text1140002,
+            "Item No.", "Variant Code", "Location Code", "Bin Code") );
+    END;
+
+    PROCEDURE CalcCosts@1140008();
+    VAR
+      ItemJnlLine@1140000 : Record 83;
+      Text1000@1140001 : TextConst 'DEU=Unbekannter Eintragstyp.;ENU=Unknown Entry Type.';
+    BEGIN
+      IF EmptyLine THEN
+        EXIT;
+      TESTFIELD("Item No.");
+
+      TestStatusOpen;
+      TESTFIELD("Qty. Exp. Calculated", TRUE);
+      TESTFIELD("In Recording Lines", TRUE);
+
+      GetPhysInvtOrderHeader;
+
+      ItemJnlLine.INIT;
+      ItemJnlLine."Posting Date" := PhysInvtOrderHeader."Posting Date";
+      CASE "Entry Type" OF
+        "Entry Type"::"Positive Adjmt.":
+          ItemJnlLine."Entry Type" := ItemJnlLine."Entry Type"::"Positive Adjmt.";
+        "Entry Type"::"Negative Adjmt.":
+          ItemJnlLine."Entry Type" := ItemJnlLine."Entry Type"::"Negative Adjmt.";
+        ELSE
+          ERROR(Text1000);
+      END;
+
+      ItemJnlLine.VALIDATE("Item No.", "Item No.");
+      ItemJnlLine.VALIDATE("Variant Code", "Variant Code");
+      ItemJnlLine.VALIDATE("Location Code", "Location Code");
+
+      VALIDATE("Unit Amount", ItemJnlLine."Unit Amount");
+      VALIDATE("Unit Cost", ItemJnlLine."Unit Cost");
+    END;
+
+    PROCEDURE EmptyLine@1140009() : Boolean;
+    BEGIN
+      EXIT(
+        ("Item No." = '') AND
+        ("Variant Code" = '') AND
+        ("Location Code" = '') AND
+        ("Bin Code" = '') );
+    END;
+
+    PROCEDURE ShowDimensions@1140010();
+    VAR
+      DocDim@1140000 : Record 357;
+      DocDimensions@1140001 : Form 546;
+    BEGIN
+      IF EmptyLine THEN
+        EXIT;
+
+      TESTFIELD("Document No.");
+      TESTFIELD("Line No.");
+      DocDim.SETRANGE("Table ID",DATABASE::"Phys. Inventory Order Line");
+      DocDim.SETRANGE("Document Type",DocDim."Document Type"::" ");
+      DocDim.SETRANGE("Document No.","Document No.");
+      DocDim.SETRANGE("Line No.","Line No.");
+      DocDimensions.SETTABLEVIEW(DocDim);
+      DocDimensions.RUNMODAL;
+    END;
+
+    PROCEDURE CreateDim@1140011(Type1@1140000 : Integer;No1@1140001 : Code[20]);
+    VAR
+      SourceCodeSetup@1140002 : Record 242;
+      TableID@1140003 : ARRAY [10] OF Integer;
+      No@1140004 : ARRAY [10] OF Code[20];
+    BEGIN
+      SourceCodeSetup.GET;
+      TableID[1] := Type1;
+      No[1] := No1;
+      "Shortcut Dimension 1 Code" := '';
+      "Shortcut Dimension 2 Code" := '';
+      DimManagement.GetPreviousDocDefaultDim(
+        DATABASE::"Phys. Inventory Order Header",DocDim."Document Type"::" ","Document No.",0,
+        DATABASE::Item,"Shortcut Dimension 1 Code","Shortcut Dimension 2 Code");
+      DimManagement.GetDefaultDim(
+        TableID,No,SourceCodeSetup."Phys. Invt. Order",
+        "Shortcut Dimension 1 Code","Shortcut Dimension 2 Code");
+      IF "Line No." <> 0 THEN
+        DimManagement.UpdateDocDefaultDim(
+          DATABASE::"Phys. Inventory Order Line",DocDim."Document Type"::" ","Document No.","Line No.",
+          "Shortcut Dimension 1 Code","Shortcut Dimension 2 Code");
+    END;
+
+    PROCEDURE ValidateShortcutDimCode@1140012(FieldNo@1140000 : Integer;VAR ShortcutDimCode@1140001 : Code[20]);
+    BEGIN
+      DimManagement.ValidateDimValueCode(FieldNo,ShortcutDimCode);
+      IF "Line No." <> 0 THEN
+        DimManagement.SaveDocDim(
+          DATABASE::"Phys. Inventory Order Line",DocDim."Document Type"::" ","Document No.",
+          "Line No.",FieldNo,ShortcutDimCode)
+      ELSE
+        DimManagement.SaveTempDim(FieldNo,ShortcutDimCode);
+    END;
+
+    PROCEDURE LookupShortcutDimCode@1140013(FieldNo@1140000 : Integer;VAR ShortcutDimCode@1140001 : Code[20]);
+    BEGIN
+      DimManagement.LookupDimValueCode(FieldNo,ShortcutDimCode);
+      IF "Line No." <> 0 THEN
+        DimManagement.SaveDocDim(
+          DATABASE::"Phys. Inventory Order Line",DocDim."Document Type"::" ","Document No.",
+          "Line No.",FieldNo,ShortcutDimCode)
+      ELSE
+        DimManagement.SaveTempDim(FieldNo,ShortcutDimCode);
+    END;
+
+    PROCEDURE ShowShortcutDimCode@1140014(VAR ShortcutDimCode@1140000 : ARRAY [8] OF Code[20]);
+    BEGIN
+      IF "Line No." <> 0 THEN
+        DimManagement.ShowDocDim(
+          DATABASE::"Phys. Inventory Order Line",DocDim."Document Type"::" ","Document No.",
+          "Line No.",ShortcutDimCode)
+      ELSE
+        DimManagement.ShowTempDim(ShortcutDimCode);
+    END;
+
+    PROCEDURE ShowPhysInvtRecordingLines@1140015();
+    VAR
+      PhysInvtRecordingLine@1140000 : Record 5005353;
+    BEGIN
+      IF EmptyLine THEN
+        EXIT;
+      TESTFIELD("Item No.");
+
+      TESTFIELD("In Recording Lines", TRUE);
+
+      PhysInvtRecordingLine.RESET;
+      PhysInvtRecordingLine.SETCURRENTKEY("Order No.", "Order Line No.");
+      PhysInvtRecordingLine.SETRANGE("Order No.", "Document No.");
+      PhysInvtRecordingLine.SETRANGE("Order Line No.", "Line No.");
+
+      FORM.RUNMODAL(0, PhysInvtRecordingLine);
+    END;
+
+    PROCEDURE ShowExpectPhysInvtTrackLines@1140016();
+    BEGIN
+      IF EmptyLine THEN
+        EXIT;
+      TESTFIELD("Item No.");
+
+      TESTFIELD("Qty. Exp. Calculated", TRUE);
+
+      ExpectPhysInvtTrackLine.RESET;
+      ExpectPhysInvtTrackLine.SETRANGE("Order No", "Document No.");
+      ExpectPhysInvtTrackLine.SETRANGE("Order Line No.", "Line No.");
+
+      FORM.RUNMODAL(0, ExpectPhysInvtTrackLine);
+    END;
+
+    PROCEDURE ShowItemTrackingLines@1140017(Which@1140000 : 'All,Positive,Negative');
+    BEGIN
+      IF EmptyLine THEN
+        EXIT;
+      TESTFIELD("Item No.");
+
+      PhysInvtOrderHeader.GET("Document No.");                                                 // KS.02
+      PhysInvtOrderHeader.TESTFIELD(Status, PhysInvtOrderHeader.Status::Finished);
+
+      ReservEntry.RESET;
+      ReservEntry.SETCURRENTKEY(
+        "Source Type", "Source Subtype", "Source ID",
+        "Source Batch Name", "Source Prod. Order Line",
+        "Source Ref. No.");
+      ReservEntry.SETRANGE("Source Type", 5005351);
+      ReservEntry.SETRANGE("Source Subtype", 0);
+      ReservEntry.SETRANGE("Source ID", "Document No.");
+      ReservEntry.SETRANGE("Source Batch Name", '');
+      ReservEntry.SETRANGE("Source Prod. Order Line", 0);
+      ReservEntry.SETRANGE("Source Ref. No.", "Line No.");
+      CASE Which OF
+        Which::All:
+          ReservEntry.SETRANGE(Positive);
+        Which::Positive:
+          ReservEntry.SETRANGE(Positive, TRUE);
+        Which::Negative:
+          ReservEntry.SETRANGE(Positive, FALSE);
+      END;
+
+      FORM.RUNMODAL(FORM::"Phys. Invt. Item Track. List", ReservEntry);
+    END;
+
+    PROCEDURE ShowItemLedgerEntries@1140018();
+    VAR
+      ItemLedgEntry@1140000 : Record 32;
+    BEGIN
+      IF EmptyLine THEN
+        EXIT;
+
+      TESTFIELD("Item No.");
+      GetPhysInvtOrderHeader;
+      PhysInvtOrderHeader.TESTFIELD("Posting Date");
+
+      ItemLedgEntry.RESET;
+
+      ItemLedgEntry.SETCURRENTKEY(
+        "Item No.", "Entry Type", "Variant Code", "Drop Shipment", "Location Code", "Posting Date");
+      ItemLedgEntry.SETRANGE("Item No.", "Item No.");
+      ItemLedgEntry.SETRANGE("Variant Code", "Variant Code");
+      ItemLedgEntry.SETRANGE("Location Code", "Location Code");
+      ItemLedgEntry.SETRANGE("Posting Date", 0D, PhysInvtOrderHeader."Posting Date");
+
+      FORM.RUNMODAL(0, ItemLedgEntry);
+    END;
+
+    PROCEDURE ShowPhysInvtLedgerEntries@1140019();
+    VAR
+      PhysInvtLedgEntry@1140000 : Record 281;
+    BEGIN
+      IF EmptyLine THEN
+        EXIT;
+
+      TESTFIELD("Item No.");
+      GetPhysInvtOrderHeader;
+      PhysInvtOrderHeader.TESTFIELD("Posting Date");
+
+      PhysInvtLedgEntry.RESET;
+      PhysInvtLedgEntry.SETCURRENTKEY(
+        "Item No.", "Variant Code",
+        "Global Dimension 1 Code", "Global Dimension 2 Code",
+        "Location Code", "Posting Date");
+      PhysInvtLedgEntry.SETRANGE("Item No.", "Item No.");
+      PhysInvtLedgEntry.SETRANGE("Variant Code", "Variant Code");
+      PhysInvtLedgEntry.SETRANGE("Location Code", "Location Code");
+      PhysInvtLedgEntry.SETRANGE("Posting Date", 0D, PhysInvtOrderHeader."Posting Date");
+
+      FORM.RUNMODAL(0, PhysInvtLedgEntry);
+    END;
+
+    PROCEDURE GetFieldsFromSKU@1140020();
+    BEGIN
+      IF SKU.GET("Location Code", "Item No.", "Variant Code") THEN BEGIN
+        VALIDATE("Shelf/Bin No.", SKU."Shelf No.");
+      END;
+    END;
+
+    PROCEDURE ShowBinContentItem@1140021();
+    BEGIN
+      BinContent.RESET;
+      BinContent.SETCURRENTKEY("Item No.");
+      BinContent.SETRANGE("Item No.", "Item No.");
+
+      FORM.RUNMODAL( 0, BinContent);
+    END;
+
+    PROCEDURE ShowBinContentBin@1140022();
+    BEGIN
+      BinContent.RESET;
+      BinContent.SETCURRENTKEY("Location Code", "Bin Code");
+      BinContent.SETRANGE("Location Code", "Location Code");
+      BinContent.SETRANGE("Bin Code", "Bin Code");
+
+      FORM.RUNMODAL( 0, BinContent);
+    END;
+
+    BEGIN
+    END.
+  }
+}
+

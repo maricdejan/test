@@ -1,0 +1,38 @@
+OBJECT Table 285 Transaction Specification
+{
+  OBJECT-PROPERTIES
+  {
+    Date=05.11.08;
+    Time=12:00:00;
+    Version List=NAVW16.00,NAVDACH4.00;
+  }
+  PROPERTIES
+  {
+    CaptionML=[DEU=Verfahren;
+               ENU=Transaction Specification];
+    LookupFormID=Form406;
+  }
+  FIELDS
+  {
+    { 1   ;   ;Code                ;Code10        ;CaptionML=[DEU=Code;
+                                                              ENU=Code];
+                                                   NotBlank=Yes }
+    { 2   ;   ;Text                ;Text200       ;CaptionML=[DEU=Text;
+                                                              ENU=Text] }
+  }
+  KEYS
+  {
+    {    ;Code                                    ;Clustered=Yes }
+  }
+  FIELDGROUPS
+  {
+    { 1   ;DropDown            ;Code,Text                                }
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

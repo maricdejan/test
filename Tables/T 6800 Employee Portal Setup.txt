@@ -1,0 +1,288 @@
+OBJECT Table 6800 Employee Portal Setup
+{
+  OBJECT-PROPERTIES
+  {
+    Date=05.11.08;
+    Time=12:00:00;
+    Version List=NAVW16.00;
+  }
+  PROPERTIES
+  {
+    OnInsert=BEGIN
+               InsertDefBySystemRequests;
+             END;
+
+    OnDelete=BEGIN
+               DeleteDefBySystemRequests;
+             END;
+
+    CaptionML=[DEU=Employee Portal Einrichtung;
+               ENU=Employee Portal Setup];
+  }
+  FIELDS
+  {
+    { 1   ;   ;Primary Key         ;Code10        ;CaptionML=[DEU=PrimÑrschlÅssel;
+                                                              ENU=Primary Key] }
+    { 12  ;   ;Search Limit        ;Integer       ;CaptionML=[DEU=SucheinschrÑnkung;
+                                                              ENU=Search Limit] }
+    { 20  ;   ;Temp. Key Index     ;Integer       ;CaptionML=[DEU=Temp. SchlÅsselindex;
+                                                              ENU=Temp. Key Index] }
+    { 21  ;   ;Temp. Table No.     ;Integer       ;CaptionML=[DEU=Temp. Tabellennr.;
+                                                              ENU=Temp. Table No.] }
+    { 22  ;   ;Temp. Key String    ;Text250       ;CaptionML=[DEU=Temp. SchlÅsselzeichenfolge;
+                                                              ENU=Temp. Key String] }
+    { 25  ;   ;Temp. Option Value  ;Integer       ;CaptionML=[DEU=Temp. Optionswert;
+                                                              ENU=Temp. Option Value] }
+    { 26  ;   ;Temp. Option Caption;Text250       ;CaptionML=[DEU=Temp. Optionscaption;
+                                                              ENU=Temp. Option Caption] }
+    { 30  ;   ;Temp. SharePoint Site Name;Text250 ;CaptionML=[DEU=Temp. SharePoint Sitename;
+                                                              ENU=Temp. SharePoint Site Name] }
+    { 50  ;   ;Back End Public Key ;BLOB          ;CaptionML=[DEU=Back-End îffentlicher SchlÅssel;
+                                                              ENU=Back End Public Key] }
+    { 51  ;   ;Back End Private Key;BLOB          ;CaptionML=[DEU=Back-End privater SchlÅssel;
+                                                              ENU=Back End Private Key] }
+    { 100 ;   ;Write Debugging Info.;Boolean      ;CaptionML=[DEU=Debuginformationen schreiben;
+                                                              ENU=Write Debugging Info.] }
+    { 101 ;   ;Config Tool Pane Caption ID;Integer;OnLookup=BEGIN
+                                                              WebSetupCaption(FIELDNO("Config Tool Pane Caption ID"));
+                                                            END;
+
+                                                   CaptionML=[DEU=Konfig.-Toolbereich Caption-ID;
+                                                              ENU=Config Tool Pane Caption ID];
+                                                   Editable=No }
+    { 102 ;   ;Config TP WP Request Capt ID;Integer;
+                                                   OnLookup=BEGIN
+                                                              WebSetupCaption(FIELDNO("Config TP WP Request Capt ID"));
+                                                            END;
+
+                                                   CaptionML=[DEU=Konfig.-Toolbereich Webpartanf.-Caption-ID;
+                                                              ENU=Config TP WP Request Capt ID];
+                                                   Editable=No }
+    { 104 ;   ;Config TP Initial Req. Capt ID;Integer;
+                                                   OnLookup=BEGIN
+                                                              WebSetupCaption(FIELDNO("Config TP Initial Req. Capt ID"));
+                                                            END;
+
+                                                   CaptionML=[DEU=Konfig.-Toolbereich Erstanforderungscaption-ID;
+                                                              ENU=Config TP Initial Req. Capt ID];
+                                                   Editable=No }
+    { 105 ;   ;Config TP Group Capt ID;Integer    ;OnLookup=BEGIN
+                                                              WebSetupCaption(FIELDNO("Config TP Group Capt ID"));
+                                                            END;
+
+                                                   CaptionML=[DEU=Konfig.-Toolbereich Gruppencaption-ID;
+                                                              ENU=Config TP Group Capt ID];
+                                                   Editable=No }
+    { 106 ;   ;Search Tool Pane Caption ID;Integer;OnLookup=BEGIN
+                                                              WebSetupCaption(FIELDNO("Search Tool Pane Caption ID"));
+                                                            END;
+
+                                                   CaptionML=[DEU=Suchtoolbereich Caption-ID;
+                                                              ENU=Search Tool Pane Caption ID];
+                                                   Editable=No }
+    { 108 ;   ;Search Config Table ID;Integer     ;CaptionML=[DEU=Suchkonfiguration Tabellen-ID;
+                                                              ENU=Search Config Table ID] }
+    { 109 ;   ;Search TP All Tables Capt ID;Integer;
+                                                   OnLookup=BEGIN
+                                                              WebSetupCaption(FIELDNO("Search TP All Tables Capt ID"));
+                                                            END;
+
+                                                   CaptionML=[DEU=Suchtoolbereich alle Tabellencaption-ID;
+                                                              ENU=Search TP All Tables Capt ID];
+                                                   Editable=No }
+    { 121 ;   ;Config Tool Pane Caption;Text80    ;OnLookup=BEGIN
+                                                              WebSetupCaption(FIELDNO("Config Tool Pane Caption ID"));
+                                                            END;
+
+                                                   CaptionML=[DEU=Konfig.-Toolbereich Caption;
+                                                              ENU=Config Tool Pane Caption];
+                                                   Editable=No }
+    { 122 ;   ;Config TP WP Request Caption;Text80;OnLookup=BEGIN
+                                                              WebSetupCaption(FIELDNO("Config TP WP Request Capt ID"));
+                                                            END;
+
+                                                   CaptionML=[DEU=Konfig.-Toolbereich Webpartanf.-Caption;
+                                                              ENU=Config TP WP Request Caption];
+                                                   Editable=No }
+    { 124 ;   ;Config TP Initial Req. Caption;Text80;
+                                                   OnLookup=BEGIN
+                                                              WebSetupCaption(FIELDNO("Config TP Initial Req. Capt ID"));
+                                                            END;
+
+                                                   CaptionML=[DEU=Konfig.-Toolbereich Erstanforderungscaption;
+                                                              ENU=Config TP Initial Req. Caption];
+                                                   Editable=No }
+    { 125 ;   ;Config TP Group Caption;Text80     ;OnLookup=BEGIN
+                                                              WebSetupCaption(FIELDNO("Config TP Group Capt ID"));
+                                                            END;
+
+                                                   CaptionML=[DEU=Konfig.-Toolbereich Gruppencaption;
+                                                              ENU=Config TP Group Caption];
+                                                   Editable=No }
+    { 126 ;   ;Search Tool Pane Caption;Text80    ;OnLookup=BEGIN
+                                                              WebSetupCaption(FIELDNO("Search Tool Pane Caption ID"));
+                                                            END;
+
+                                                   CaptionML=[DEU=Suchtoolbereich Caption;
+                                                              ENU=Search Tool Pane Caption];
+                                                   Editable=No }
+    { 128 ;   ;Search Config Table Caption;Text80 ;OnLookup=BEGIN
+                                                              WebSetupCaption(FIELDNO("Search Config Table ID"));
+                                                            END;
+
+                                                   CaptionML=[DEU=Suchkonfiguration Tabellencaption;
+                                                              ENU=Search Config Table Caption];
+                                                   Editable=No }
+    { 129 ;   ;Search TP All Tables Caption;Text80;OnLookup=BEGIN
+                                                              WebSetupCaption(FIELDNO("Search TP All Tables Capt ID"));
+                                                            END;
+
+                                                   CaptionML=[DEU=Suchtoolbereich alle Tabellencaption;
+                                                              ENU=Search TP All Tables Caption];
+                                                   Editable=No }
+    { 200 ;   ;Debugging Path      ;Text250       ;CaptionML=[DEU=Debugpfad;
+                                                              ENU=Debugging Path] }
+  }
+  KEYS
+  {
+    {    ;Primary Key                             ;Clustered=Yes }
+  }
+  FIELDGROUPS
+  {
+  }
+  CODE
+  {
+    VAR
+      XINSERTHEADERDESC@1006 : TextConst 'DEU=Neuen Kopf einfÅgen;ENU=Insert New Header';
+      XMODIFYHEADERDESC@1005 : TextConst 'DEU=Kopf Ñndern;ENU=Modify Header';
+      XDELETEHEADERDESC@1004 : TextConst 'DEU=Kopf lîschen;ENU=Delete Header';
+      XINSERTLINEDESC@1003 : TextConst 'DEU=Neue Zeile einfÅgen;ENU=Insert New Line';
+      XMODIFYLINEDESC@1002 : TextConst 'DEU=Zeile Ñndern;ENU=Modify Line';
+      XDELETELINEDESC@1001 : TextConst 'DEU=Zeile lîschen;ENU=Delete Line';
+      XSHOWREPORTDESC@1000 : TextConst 'DEU=Bericht anzeigen;ENU=Show Report';
+      XSHOWPICTUREDESC@1007 : TextConst 'DEU=Bild anzeigen;ENU=Show Picture';
+
+    PROCEDURE WebSetupCaption@1(FieldNo@1001 : Integer);
+    VAR
+      EPCaption@1000 : Record 6850;
+    BEGIN
+      EPCaption.RESET;
+      EPCaption.FILTERGROUP(2);
+      EPCaption.SETRANGE("Table No.",DATABASE::"Employee Portal Setup");
+      EPCaption.FILTERGROUP(0);
+      IF EPCaption.FIND('-') THEN;
+
+      IF ACTION::LookupOK = FORM.RUNMODAL(FORM::"EP Web Setup Captions",EPCaption) THEN BEGIN
+        CASE FieldNo OF
+          101:
+            BEGIN
+              "Config Tool Pane Caption ID" := EPCaption."Caption ID";
+              "Config Tool Pane Caption" := EPCaption.Caption;
+            END;
+          102:
+            BEGIN
+              "Config TP WP Request Capt ID" := EPCaption."Caption ID";
+              "Config TP WP Request Caption" := EPCaption.Caption;
+            END;
+          104:
+            BEGIN
+              "Config TP Initial Req. Capt ID" := EPCaption."Caption ID";
+              "Config TP Initial Req. Caption" := EPCaption.Caption;
+            END;
+          105:
+            BEGIN
+              "Config TP Group Capt ID" := EPCaption."Caption ID";
+              "Config TP Group Caption" := EPCaption.Caption;
+            END;
+          106:
+            BEGIN
+              "Search Tool Pane Caption ID" := EPCaption."Caption ID";
+              "Search Tool Pane Caption" := EPCaption.Caption;
+            END;
+          108:
+            BEGIN
+              "Search Config Table ID" := EPCaption."Caption ID";
+              "Search Config Table Caption" := EPCaption.Caption;
+            END;
+          109:
+            BEGIN
+              "Search TP All Tables Capt ID" := EPCaption."Caption ID";
+              "Search TP All Tables Caption" := EPCaption.Caption;
+            END;
+        END;
+      END;
+    END;
+
+    PROCEDURE InsertDefBySystemRequests@4();
+    VAR
+      EPWPRequest@1000 : Record 6805;
+    BEGIN
+      IF NOT EPWPRequest.WRITEPERMISSION THEN
+        EXIT;
+
+      InsertEPWPRequestTemplate('INSERTHEAD',XINSERTHEADERDESC,XINSERTHEADERDESC);
+      InsertEPWPRequestTemplate('MODIFYHEAD',XMODIFYHEADERDESC,XMODIFYHEADERDESC);
+      InsertEPWPRequestTemplate('DELETEHEAD',XDELETEHEADERDESC,XDELETEHEADERDESC);
+      InsertEPWPRequestTemplate('INSERTLINE',XINSERTLINEDESC,XINSERTLINEDESC);
+      InsertEPWPRequestTemplate('MODIFYLINE',XMODIFYLINEDESC,XMODIFYLINEDESC);
+      InsertEPWPRequestTemplate('DELETELINE',XDELETELINEDESC,XDELETELINEDESC);
+      InsertEPWPRequestTemplate('SHOWREPORT',XSHOWREPORTDESC,XSHOWREPORTDESC);
+      InsertEPWPRequestTemplate('SHOWPICTURE',XSHOWPICTUREDESC,XSHOWPICTUREDESC);
+    END;
+
+    LOCAL PROCEDURE InsertEPWPRequestTemplate@2(WPRCode@1004 : Code[20];WPRDescription@1002 : Text[30];WPRCaption@1000 : Text[80]);
+    VAR
+      EPCaption@1003 : Record 6850;
+      EPWPRequest@1007 : Record 6805;
+    BEGIN
+      EPWPRequest.INIT;
+      EPWPRequest.VALIDATE(Code,WPRCode);
+      EPWPRequest.VALIDATE(Description,WPRDescription);
+      EPWPRequest.VALIDATE(Type,EPWPRequest.Type::System);
+      EPWPRequest.VALIDATE(Editable,FALSE);
+      EPWPRequest.VALIDATE("Defined by System",TRUE);
+
+      InsertCaption(EPCaption,DATABASE::"EP Web Part Request",WPRCaption);
+      EPWPRequest.VALIDATE("Caption ID",EPCaption."Caption ID");
+      EPWPRequest.VALIDATE(Caption,EPCaption.Caption);
+
+      IF EPWPRequest.INSERT(TRUE) THEN;
+    END;
+
+    PROCEDURE InsertCaption@3(VAR EPCaption@1000 : Record 6850;TableNo@1003 : Integer;NewCaption@1001 : Text[80]);
+    VAR
+      NewCaptionID@1004 : Integer;
+    BEGIN
+      EPCaption.SETRANGE("Table No.",TableNo);
+      EPCaption.SETRANGE("Language ID",GLOBALLANGUAGE);
+      EPCaption.SETRANGE(Caption,NewCaption);
+      IF EPCaption.FIND('+') THEN
+        EXIT;
+
+      EPCaption.SETRANGE(Caption);
+      IF EPCaption.FIND('+') THEN
+        NewCaptionID := EPCaption."Caption ID" + 1
+      ELSE
+        NewCaptionID := 0;
+
+      EPCaption.INIT;
+      EPCaption."Language ID" := GLOBALLANGUAGE;
+      EPCaption."Caption ID" := NewCaptionID;
+      EPCaption."Table No." := TableNo;
+      EPCaption.Caption := NewCaption;
+      EPCaption.INSERT(TRUE);
+    END;
+
+    PROCEDURE DeleteDefBySystemRequests@5();
+    VAR
+      EPWPRequest@1000 : Record 6805;
+    BEGIN
+      EPWPRequest.SETRANGE("Defined by System",TRUE);
+      EPWPRequest.DELETEALL;
+    END;
+
+    BEGIN
+    END.
+  }
+}
+

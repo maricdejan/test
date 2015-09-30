@@ -1,0 +1,109 @@
+OBJECT Form 11012 GDPdU Field List Subform
+{
+  OBJECT-PROPERTIES
+  {
+    Date=05.11.08;
+    Time=12:00:00;
+    Version List=NAVDACH6.00;
+  }
+  PROPERTIES
+  {
+    Width=9790;
+    Height=7040;
+    CaptionML=[DEU=GDPdU FelderÅbersicht Subform;
+               ENU=GDPdU Field List Subform];
+    InsertAllowed=No;
+    DeleteAllowed=No;
+    TableBoxID=1140000;
+    SourceTable=Table2000000041;
+    OnAfterGetRecord=BEGIN
+                       TempField.SETRANGE(TableNo,TableNo);
+                       TempField.SETRANGE("No.","No.");
+                       Selected := TempField.FIND('-');
+                     END;
+
+  }
+  CONTROLS
+  {
+    { 1140000;TableBox  ;0    ;0    ;9790 ;7040 ;HorzGlue=Both;
+                                                 VertGlue=Both }
+    { 1140001;CheckBox  ;212  ;330  ;1650 ;440  ;ParentControl=1140000;
+                                                 InColumn=Yes;
+                                                 ShowCaption=No;
+                                                 CaptionML=[DEU=AusgewÑhlt;
+                                                            ENU=Selected];
+                                                 SourceExpr=Selected;
+                                                 OnPush=BEGIN
+                                                          SelectObject;
+                                                          CurrForm.UPDATE(FALSE);
+                                                        END;
+                                                         }
+    { 1140002;Label     ;0    ;0    ;0    ;0    ;ParentControl=1140001;
+                                                 InColumnHeading=Yes }
+    { 1140003;TextBox   ;0    ;0    ;1650 ;0    ;Editable=No;
+                                                 ParentControl=1140000;
+                                                 InColumn=Yes;
+                                                 CaptionML=[DEU=Feldnr.;
+                                                            ENU=Field No.];
+                                                 SourceExpr="No." }
+    { 1140004;Label     ;0    ;0    ;0    ;0    ;ParentControl=1140003;
+                                                 InColumnHeading=Yes }
+    { 1140005;TextBox   ;0    ;0    ;4400 ;0    ;HorzGlue=Both;
+                                                 Editable=No;
+                                                 ParentControl=1140000;
+                                                 InColumn=Yes;
+                                                 CaptionML=[DEU=Feldname;
+                                                            ENU=Field Name];
+                                                 SourceExpr="Field Caption" }
+    { 1140006;Label     ;0    ;0    ;0    ;0    ;ParentControl=1140005;
+                                                 InColumnHeading=Yes }
+  }
+  CODE
+  {
+    VAR
+      TempField@1140000 : TEMPORARY Record 2000000041;
+      Selected@1140001 : Boolean;
+
+    LOCAL PROCEDURE SelectObject@1140001();
+    BEGIN
+      TempField := Rec;
+      IF Selected THEN BEGIN
+        IF TempField.INSERT THEN;
+      END ELSE BEGIN;
+        IF TempField.DELETE THEN;
+      END;
+    END;
+
+    PROCEDURE UpdateForm@1140003();
+    BEGIN
+      CurrForm.UPDATE(FALSE);
+    END;
+
+    PROCEDURE SetField@1140004(VAR Fld@11400000 : Record 2000000041);
+    BEGIN
+      TempField.DELETEALL;
+
+      IF Fld.FINDSET THEN
+        REPEAT
+          TempField := Fld;
+          IF TempField.INSERT THEN;
+        UNTIL Fld.NEXT = 0;
+    END;
+
+    PROCEDURE GetField@1140005(VAR Fld@11400000 : Record 2000000041);
+    BEGIN
+      Fld.DELETEALL;
+      TempField.SETRANGE("No.");
+
+      IF TempField.FINDSET THEN
+        REPEAT
+          Fld := TempField;
+          IF Fld.INSERT THEN;
+        UNTIL TempField.NEXT = 0;
+    END;
+
+    BEGIN
+    END.
+  }
+}
+

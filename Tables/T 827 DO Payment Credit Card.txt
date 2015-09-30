@@ -1,0 +1,235 @@
+OBJECT Table 827 DO Payment Credit Card
+{
+  OBJECT-PROPERTIES
+  {
+    Date=11.12.10;
+    Time=12:00:00;
+    Version List=NAVW16.00.10;
+  }
+  PROPERTIES
+  {
+    Permissions=TableData 828=rimd;
+    OnInsert=BEGIN
+               IF "No." = '' THEN BEGIN
+                 PaymentConfig.GET;
+                 PaymentConfig.TESTFIELD("Credit Card Nos.");
+                 NoSeriesMgt.InitSeries(PaymentConfig."Credit Card Nos.",xRec."No. Series",0D,"No.","No. Series");
+               END;
+
+               VALIDATE("Customer No.",GETFILTER("Customer No."));
+             END;
+
+    OnDelete=BEGIN
+               IF LogEntry.HasTransaction(Rec) THEN
+                 ERROR(Text010,TABLECAPTION,"No.");
+               DeleteCreditCardNumber;
+             END;
+
+    OnRename=BEGIN
+               IF LogEntry.HasTransaction(Rec) THEN
+                 ERROR(Text010,TABLECAPTION,"No.");
+             END;
+
+    CaptionML=[DEU=Dynamics Online-Zahlung - Kreditkarte;
+               ENU=Dynamics Online Payment Credit Card];
+    LookupFormID=Form828;
+    DrillDownFormID=Form828;
+  }
+  FIELDS
+  {
+    { 1   ;   ;No.                 ;Code20        ;CaptionML=[DEU=Nr.;
+                                                              ENU=No.] }
+    { 2   ;   ;Type                ;Code20        ;TableRelation="DO Payment Card Type".Name;
+                                                   OnValidate=BEGIN
+                                                                IF Type <> xRec.Type THEN
+                                                                  DeleteCreditCardNumber;
+                                                              END;
+
+                                                   CaptionML=[DEU=Art;
+                                                              ENU=Type];
+                                                   NotBlank=Yes }
+    { 3   ;   ;Credit Card Number  ;Text20        ;CaptionML=[DEU=Kreditkartennummer;
+                                                              ENU=Credit Card Number] }
+    { 4   ;   ;Expiry Date         ;Code4         ;OnValidate=VAR
+                                                                IntegerValue@1000 : Integer;
+                                                              BEGIN
+                                                                IF NOT EVALUATE(IntegerValue,"Expiry Date") OR (STRLEN("Expiry Date") <> 4) THEN
+                                                                  ERROR(Text006,FIELDCAPTION("Expiry Date"));
+
+                                                                EVALUATE(IntegerValue,COPYSTR("Expiry Date",1,2));
+                                                                IF NOT (IntegerValue IN [1..12]) THEN
+                                                                  ERROR(Text007);
+                                                              END;
+
+                                                   CaptionML=[DEU=Ablaufdatum;
+                                                              ENU=Expiry Date];
+                                                   NotBlank=Yes }
+    { 5   ;   ;Card Holder Name    ;Text50        ;CaptionML=[DEU=Name des Karteninhabers;
+                                                              ENU=Card Holder Name];
+                                                   NotBlank=Yes }
+    { 6   ;   ;Customer No.        ;Code20        ;TableRelation=Customer;
+                                                   OnValidate=BEGIN
+                                                                "Contact No." := FindFirstContactNo;
+                                                                ValidateContact;
+                                                              END;
+
+                                                   CaptionML=[DEU=Debitorennr.;
+                                                              ENU=Customer No.];
+                                                   NotBlank=Yes }
+    { 7   ;   ;Contact No.         ;Code20        ;OnValidate=BEGIN
+                                                                IF "Contact No." <> xRec."Contact No." THEN
+                                                                  ValidateContact;
+                                                              END;
+
+                                                   OnLookup=VAR
+                                                              ContactList@1000 : Form 5052;
+                                                            BEGIN
+                                                              IF "Contact No." <> '' THEN BEGIN
+                                                                Contact.GET("Contact No.");
+                                                                Contact.SETRANGE("Company No.",Contact."Company No.");
+                                                              END ELSE BEGIN
+
+                                                                IF Contact.GET(FindFirstContactNo) THEN;
+                                                                Contact.SETRANGE("Company No.",Contact."Company No.");
+                                                              END;
+                                                              ContactList.SETTABLEVIEW(Contact);
+                                                              ContactList.LOOKUPMODE(TRUE);
+                                                              IF ContactList.RUNMODAL = ACTION::LookupOK THEN BEGIN
+                                                                ContactList.GETRECORD(Contact);
+                                                                VALIDATE("Contact No.",Contact."No.");
+                                                              END;
+                                                            END;
+
+                                                   CaptionML=[DEU=Kontaktnr.;
+                                                              ENU=Contact No.];
+                                                   NotBlank=Yes }
+    { 8   ;   ;Cvc No.             ;Integer       ;CaptionML=[DEU=CVC-Nummer;
+                                                              ENU=Cvc No.] }
+    { 10  ;   ;No. Series          ;Code10        ;TableRelation="No. Series";
+                                                   CaptionML=[DEU=Nummernserie;
+                                                              ENU=No. Series] }
+  }
+  KEYS
+  {
+    {    ;No.                                     ;Clustered=Yes }
+    {    ;Customer No.                             }
+  }
+  FIELDGROUPS
+  {
+    { 1   ;DropDown            ;No.,Type,Expiry Date                     }
+  }
+  CODE
+  {
+    VAR
+      Text006@1010 : TextConst 'DEU=%1 muss vier Zeichen lang sein, z. B. 1094 fÅr Oktober 1994.;ENU=%1 must be 4 characters, for example, 1094 for October, 1994.';
+      Text007@1008 : TextConst 'DEU=Bitte die Monatsnummer prÅfen.;ENU=Please check the month number.';
+      Text010@1013 : TextConst 'DEU=%1 %2 kann nicht gelîscht werden, da es einen gÅltigen Transaktionsprotokolleintrag besitzt.;ENU=You cannot delete %1 %2 because it has valid transaction log entry.';
+      PaymentConfig@1000 : Record 826;
+      LogEntry@1002 : Record 829;
+      Contact@1009 : Record 5050;
+      NoSeriesMgt@1001 : Codeunit 396;
+
+    PROCEDURE AssistEdit@2(OldCreditCard@1000 : Record 827) : Boolean;
+    VAR
+      CreditCard@1001 : Record 827;
+    BEGIN
+      WITH CreditCard DO BEGIN
+        CreditCard := Rec;
+        PaymentConfig.GET;
+        PaymentConfig.TESTFIELD("Credit Card Nos.");
+        IF NoSeriesMgt.SelectSeries(PaymentConfig."Credit Card Nos.",OldCreditCard."No. Series","No. Series") THEN BEGIN
+          NoSeriesMgt.SetSeries("No.");
+          Rec := CreditCard;
+          EXIT(TRUE);
+        END;
+      END;
+    END;
+
+    PROCEDURE SetCreditCardNumber@1(CreditCardNumberText@1000 : Text[30]);
+    VAR
+      CreditCardNumber@1001 : Record 828;
+      CardValidator@1002 : Codeunit 827;
+      StarString@1003 : Text[30];
+    BEGIN
+      CardValidator.ValidateCreditCard(CreditCardNumberText,Type);
+
+      IF CreditCardNumber.GET("No.") THEN BEGIN
+        CreditCardNumber.SetData(CreditCardNumberText);
+        CreditCardNumber.MODIFY;
+      END ELSE BEGIN
+        CreditCardNumber.INIT;
+        CreditCardNumber."No." := "No.";
+        CreditCardNumber.SetData(CreditCardNumberText);
+        CreditCardNumber.INSERT;
+      END;
+
+      // Set obfuscated card no
+      StarString := '';
+      "Credit Card Number" :=
+        PADSTR(
+          StarString,
+          STRLEN(CreditCardNumberText) - 4,'*') + COPYSTR(CreditCardNumberText,
+          STRLEN(CreditCardNumberText) - 3);
+    END;
+
+    PROCEDURE DeleteCreditCardNumber@11();
+    VAR
+      CardNumber@1000 : Record 828;
+    BEGIN
+      IF CardNumber.GET("No.") THEN BEGIN
+        CardNumber.DELETE;
+        "Credit Card Number" := '';
+      END;
+    END;
+
+    PROCEDURE ValidateContact@10();
+    BEGIN
+      IF "Contact No." <> '' THEN BEGIN
+        Contact.GET("Contact No.");
+        IF "Card Holder Name" = '' THEN
+          "Card Holder Name" := Contact.Name;
+      END;
+    END;
+
+    PROCEDURE FindFirstContactNo@9() : Code[20];
+    VAR
+      ContBusRel@1001 : Record 5054;
+    BEGIN
+      ContBusRel.SETCURRENTKEY("Link to Table","No.");
+      ContBusRel.SETRANGE("Link to Table",ContBusRel."Link to Table"::Customer);
+      ContBusRel.SETRANGE("No.","Customer No.");
+      IF ContBusRel.FINDFIRST THEN
+        EXIT(ContBusRel."Contact No.");
+    END;
+
+    PROCEDURE DeleteByContact@12(Contact@1000 : Record 5050);
+    VAR
+      ContactCreditCards@1001 : Record 827;
+    BEGIN
+      ContactCreditCards.SETFILTER("Contact No.",Contact."No.");
+      IF ContactCreditCards.FINDFIRST THEN
+        ContactCreditCards.DELETEALL(TRUE);
+    END;
+
+    PROCEDURE DeleteByCustomer@13(Customer@1000 : Record 18);
+    VAR
+      CustomerCreditCards@1001 : Record 827;
+    BEGIN
+      CustomerCreditCards.SETFILTER("Customer No.",Customer."No.");
+      IF CustomerCreditCards.FINDFIRST THEN
+        CustomerCreditCards.DELETEALL(TRUE);
+    END;
+
+    PROCEDURE GetCreditCardNumber@3(CreditCardNo@1000 : Code[20]) : Text[20];
+    BEGIN
+      IF GET(CreditCardNo) THEN
+        EXIT("Credit Card Number");
+
+      EXIT('');
+    END;
+
+    BEGIN
+    END.
+  }
+}
+

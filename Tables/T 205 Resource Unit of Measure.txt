@@ -1,0 +1,53 @@
+OBJECT Table 205 Resource Unit of Measure
+{
+  OBJECT-PROPERTIES
+  {
+    Date=05.11.08;
+    Time=12:00:00;
+    Version List=NAVW16.00;
+  }
+  PROPERTIES
+  {
+    CaptionML=[DEU=Ressourceneinheit;
+               ENU=Resource Unit of Measure];
+    LookupFormID=Form210;
+  }
+  FIELDS
+  {
+    { 1   ;   ;Resource No.        ;Code20        ;TableRelation=Resource;
+                                                   CaptionML=[DEU=Ressourcennr.;
+                                                              ENU=Resource No.];
+                                                   NotBlank=Yes }
+    { 2   ;   ;Code                ;Code10        ;TableRelation="Unit of Measure";
+                                                   CaptionML=[DEU=Code;
+                                                              ENU=Code];
+                                                   NotBlank=Yes }
+    { 3   ;   ;Qty. per Unit of Measure;Decimal   ;InitValue=1;
+                                                   CaptionML=[DEU=Menge pro Einheit;
+                                                              ENU=Qty. per Unit of Measure];
+                                                   DecimalPlaces=0:5 }
+    { 4   ;   ;Related to Base Unit of Meas.;Boolean;
+                                                   InitValue=Yes;
+                                                   OnValidate=BEGIN
+                                                                IF "Related to Base Unit of Meas." = FALSE THEN
+                                                                  "Qty. per Unit of Measure" := 1;
+                                                              END;
+
+                                                   CaptionML=[DEU=VerknÅpft mit Basiseinheit;
+                                                              ENU=Related to Base Unit of Meas.] }
+  }
+  KEYS
+  {
+    {    ;Resource No.,Code                       ;Clustered=Yes }
+  }
+  FIELDGROUPS
+  {
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

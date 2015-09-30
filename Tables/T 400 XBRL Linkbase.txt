@@ -1,0 +1,59 @@
+OBJECT Table 400 XBRL Linkbase
+{
+  OBJECT-PROPERTIES
+  {
+    Date=05.11.08;
+    Time=12:00:00;
+    Version List=NAVW16.00;
+  }
+  PROPERTIES
+  {
+    CaptionML=[DEU=XBRL-Linkbase;
+               ENU=XBRL Linkbase];
+  }
+  FIELDS
+  {
+    { 1   ;   ;XBRL Taxonomy Name  ;Code20        ;CaptionML=[DEU=XBRL-Taxonomiename;
+                                                              ENU=XBRL Taxonomy Name];
+                                                   NotBlank=Yes }
+    { 2   ;   ;XBRL Schema Line No.;Integer       ;CaptionML=[DEU=XBRL-Schemazeilennr.;
+                                                              ENU=XBRL Schema Line No.] }
+    { 3   ;   ;Line No.            ;Integer       ;CaptionML=[DEU=Zeilennr.;
+                                                              ENU=Line No.] }
+    { 4   ;   ;Description         ;Text50        ;CaptionML=[DEU=Beschreibung;
+                                                              ENU=Description] }
+    { 5   ;   ;Type                ;Option        ;OnValidate=BEGIN
+                                                                IF "Line No." <> 0 THEN BEGIN
+                                                                  CALCFIELDS(XML);
+                                                                  IF Rec.XML.HASVALUE THEN
+                                                                    ERROR(Text001,FIELDCAPTION(Type));
+                                                                END;
+                                                              END;
+
+                                                   CaptionML=[DEU=Art;
+                                                              ENU=Type];
+                                                   OptionCaptionML=[DEU=Beschriftung,Darstellung,Berechnung,Referenz;
+                                                                    ENU=Label,Presentation,Calculation,Reference];
+                                                   OptionString=Label,Presentation,Calculation,Reference }
+    { 7   ;   ;XML                 ;BLOB          ;CaptionML=[DEU=XML;
+                                                              ENU=XML];
+                                                   SubType=Memo }
+  }
+  KEYS
+  {
+    {    ;XBRL Taxonomy Name,XBRL Schema Line No.,Line No.;
+                                                   Clustered=Yes }
+  }
+  FIELDGROUPS
+  {
+  }
+  CODE
+  {
+    VAR
+      Text001@1000 : TextConst 'DEU=Sie k”nnen die %1 nicht „ndern, wenn Sie eine Linkbase importiert haben.;ENU=You cannot change %1 when you have imported a linkbase.';
+
+    BEGIN
+    END.
+  }
+}
+

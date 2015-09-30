@@ -1,0 +1,94 @@
+OBJECT Form 5005374 Used Tracking Lines
+{
+  OBJECT-PROPERTIES
+  {
+    Date=01.10.04;
+    Time=12:00:00;
+    Version List=NAVDACH4.00;
+  }
+  PROPERTIES
+  {
+    Width=7480;
+    Height=6710;
+    Editable=No;
+    CaptionML=[DEU=Verwendete Artikelverfolgungszeilen;
+               ENU=Used Tracking Lines];
+    TableBoxID=1140000;
+    SourceTable=Table5005360;
+    OnCloseForm=BEGIN
+                  TempPhysInvtTrackBuffer := Rec;
+                END;
+
+    OnFindRecord=BEGIN
+                   TempPhysInvtTrackBuffer.SETVIEW(GETVIEW);
+                   TempPhysInvtTrackBuffer := Rec;
+                   IF NOT TempPhysInvtTrackBuffer.FIND(Which) THEN
+                     EXIT(FALSE);
+                   Rec := TempPhysInvtTrackBuffer;
+                   EXIT(TRUE);
+                 END;
+
+    OnNextRecord=VAR
+                   CurrentSteps@1140000 : Integer;
+                 BEGIN
+                   TempPhysInvtTrackBuffer := Rec;
+                   CurrentSteps := TempPhysInvtTrackBuffer.NEXT(Steps);
+                   IF CurrentSteps <> 0 THEN
+                     Rec := TempPhysInvtTrackBuffer;
+                   EXIT(CurrentSteps);
+                 END;
+
+  }
+  CONTROLS
+  {
+    { 1140000;TableBox  ;220  ;220  ;7040 ;5500 ;HorzGlue=Both;
+                                                 VertGlue=Both }
+    { 1140001;TextBox   ;0    ;0    ;1700 ;0    ;ParentControl=1140000;
+                                                 InColumn=Yes;
+                                                 SourceExpr="Serial No." }
+    { 1140002;Label     ;0    ;0    ;0    ;0    ;ParentControl=1140001;
+                                                 InColumnHeading=Yes }
+    { 1140003;TextBox   ;0    ;0    ;1700 ;0    ;ParentControl=1140000;
+                                                 InColumn=Yes;
+                                                 SourceExpr="Lot No" }
+    { 1140004;Label     ;0    ;0    ;0    ;0    ;ParentControl=1140003;
+                                                 InColumnHeading=Yes }
+    { 1140005;TextBox   ;0    ;0    ;2200 ;0    ;ParentControl=1140000;
+                                                 InColumn=Yes;
+                                                 SourceExpr="Qty. Expected (Base)" }
+    { 1140006;Label     ;0    ;0    ;0    ;0    ;ParentControl=1140005;
+                                                 InColumnHeading=Yes }
+    { 1140007;CommandButton;220;5940;2200 ;550  ;HorzGlue=Right;
+                                                 VertGlue=Bottom;
+                                                 Default=Yes;
+                                                 PushAction=LookupOK;
+                                                 InvalidActionAppearance=Hide }
+    { 1140008;CommandButton;2640;5940;2200;550  ;HorzGlue=Right;
+                                                 VertGlue=Bottom;
+                                                 Cancel=Yes;
+                                                 PushAction=LookupCancel;
+                                                 InvalidActionAppearance=Hide }
+    { 1140009;CommandButton;5060;5940;2200;550  ;HorzGlue=Right;
+                                                 VertGlue=Bottom;
+                                                 PushAction=FormHelp }
+  }
+  CODE
+  {
+    VAR
+      TempPhysInvtTrackBuffer@1140000 : TEMPORARY Record 5005360;
+
+    PROCEDURE SetSources@1140000(VAR PhysInvtTrackBuffer@1140000 : Record 5005360);
+    BEGIN
+      TempPhysInvtTrackBuffer.RESET;
+      TempPhysInvtTrackBuffer.DELETEALL;
+      IF PhysInvtTrackBuffer.FIND('-') THEN REPEAT
+        TempPhysInvtTrackBuffer := PhysInvtTrackBuffer;
+        TempPhysInvtTrackBuffer.INSERT;
+      UNTIL PhysInvtTrackBuffer.NEXT = 0;
+    END;
+
+    BEGIN
+    END.
+  }
+}
+

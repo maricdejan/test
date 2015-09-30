@@ -1,0 +1,141 @@
+OBJECT Codeunit 5005351 Phys. Invt. Rec. Finish
+{
+  OBJECT-PROPERTIES
+  {
+    Date=05.11.08;
+    Time=12:00:00;
+    Version List=NAVDACH6.00;
+  }
+  PROPERTIES
+  {
+    TableNo=5005352;
+    OnRun=BEGIN
+            PhysInvtRecordingHeader.COPY(Rec);
+            Code;
+            Rec := PhysInvtRecordingHeader;
+          END;
+
+  }
+  CODE
+  {
+    VAR
+      Text1140000@1140000 : TextConst 'DEU=Beende Zeilen                #2######;ENU=Finishing lines              #2######';
+      InvtSetup@1140001 : Record 313;
+      Location@1140002 : Record 14;
+      PhysInvtRecordingHeader@1140003 : Record 5005352;
+      PhysInvtRecordingLine@1140004 : Record 5005353;
+      PhysInvtOrderHeader@1140005 : Record 5005350;
+      PhysInvtOrderLine@1140006 : Record 5005351;
+      Text1004@1140007 : TextConst 'DEU=Es wurden keine Zeilen erfaát.;ENU=There are no Lines recorded.';
+      Window@1140008 : Dialog;
+      ErrorText@1140009 : Text[250];
+      LineCount@1140010 : Integer;
+      NextOrderLineNo@1140011 : Integer;
+      NoOfOrderLines@1140012 : Integer;
+
+    PROCEDURE Code@1140000();
+    BEGIN
+      InvtSetup.GET;
+      WITH PhysInvtRecordingHeader DO BEGIN
+        TESTFIELD("Order No.");
+        TESTFIELD("Recording No.");
+        TESTFIELD(Status, Status::Open);
+
+        PhysInvtRecordingLine.RESET;
+        PhysInvtRecordingLine.SETRANGE("Order No.", "Order No.");
+        PhysInvtRecordingLine.SETRANGE("Recording No.", "Recording No.");
+        PhysInvtRecordingLine.SETFILTER("Item No.", '<>%1', '');
+        IF NOT PhysInvtRecordingLine.FIND('-') THEN
+          ERROR(
+            Text1004);
+
+        Window.OPEN(
+          '#1#################################\\' +
+          Text1140000);
+        Window.UPDATE(1,STRSUBSTNO('%1 %2',TABLECAPTION, "Order No."));
+
+        PhysInvtOrderHeader.LOCKTABLE;
+        PhysInvtOrderLine.LOCKTABLE;
+        PhysInvtOrderLine.RESET;
+        PhysInvtOrderLine.SETRANGE("Document No.", "Order No.");
+        IF PhysInvtOrderLine.FIND('+') THEN
+          NextOrderLineNo := PhysInvtOrderLine."Line No." + 10000
+        ELSE
+          NextOrderLineNo := 10000;
+
+        PhysInvtOrderHeader.GET("Order No.");
+
+        LineCount := 0;
+        PhysInvtRecordingLine.RESET;
+        PhysInvtRecordingLine.SETRANGE("Order No.", "Order No.");
+        PhysInvtRecordingLine.SETRANGE("Recording No.", "Recording No.");
+        IF PhysInvtRecordingLine.FIND('-') THEN
+          REPEAT
+            LineCount := LineCount + 1;
+            Window.UPDATE(2, LineCount);
+
+            IF NOT PhysInvtRecordingLine.EmptyLine THEN BEGIN
+              PhysInvtRecordingLine.TESTFIELD("Item No.");
+              PhysInvtRecordingLine.TESTFIELD(Recorded, TRUE);
+              IF PhysInvtRecordingLine."Location Code" <> '' THEN BEGIN
+                Location.GET(PhysInvtRecordingLine."Location Code");
+                Location.TESTFIELD("Directed Put-away and Pick", FALSE);
+                IF Location."Bin Mandatory" THEN
+                  PhysInvtRecordingLine.TESTFIELD("Bin Code")
+                ELSE
+                  PhysInvtRecordingLine.TESTFIELD("Bin Code", '');
+              END ELSE BEGIN
+                IF InvtSetup."Location Mandatory" THEN
+                  PhysInvtRecordingLine.TESTFIELD("Location Code");
+                PhysInvtRecordingLine.TESTFIELD("Bin Code", '');
+              END;
+              NoOfOrderLines :=
+                PhysInvtOrderHeader.GetSamePhysInvtOrderLine(
+                  PhysInvtRecordingLine."Item No.", PhysInvtRecordingLine."Variant Code",
+                  PhysInvtRecordingLine."Location Code", PhysInvtRecordingLine."Bin Code",
+                  ErrorText,
+                  PhysInvtOrderLine);
+              IF NoOfOrderLines > 1 THEN
+                ERROR(ErrorText);
+              IF NoOfOrderLines = 0 THEN BEGIN
+                IF NOT PhysInvtRecordingHeader."Recording without order permit" THEN
+                  ERROR(
+                    ErrorText);
+                PhysInvtOrderLine.INIT;
+                PhysInvtOrderLine."Document No." := "Order No.";
+                PhysInvtOrderLine."Line No." := NextOrderLineNo;
+                PhysInvtOrderLine.VALIDATE("Item No.", PhysInvtRecordingLine."Item No.");
+                PhysInvtOrderLine.VALIDATE("Variant Code", PhysInvtRecordingLine."Variant Code");
+                PhysInvtOrderLine.VALIDATE("Location Code", PhysInvtRecordingLine."Location Code");
+                PhysInvtOrderLine.VALIDATE("Bin Code", PhysInvtRecordingLine."Bin Code");
+                PhysInvtOrderLine."Recorded without Order" := TRUE;
+                PhysInvtOrderLine.INSERT(TRUE);
+                PhysInvtOrderLine.CreateDim(DATABASE::Item, PhysInvtOrderLine."Item No.");
+                PhysInvtOrderLine.MODIFY;
+                NextOrderLineNo := NextOrderLineNo + 10000;
+              END;
+
+              PhysInvtRecordingLine."Order Line No." := PhysInvtOrderLine."Line No.";
+              PhysInvtRecordingLine."Recorded without Order" := PhysInvtOrderLine."Recorded without Order";
+              PhysInvtRecordingLine.MODIFY;
+
+              PhysInvtOrderLine."Qty. Recorded (Base)" :=
+                PhysInvtOrderLine."Qty. Recorded (Base)" + PhysInvtRecordingLine."Quantity (Base)";
+              PhysInvtOrderLine."No. Finished Rec.-Lines" :=
+                PhysInvtOrderLine."No. Finished Rec.-Lines" + 1;
+              PhysInvtOrderLine."In Recording Lines" := PhysInvtOrderLine."No. Finished Rec.-Lines" <> 0;
+              PhysInvtOrderLine.MODIFY;
+            END;
+          UNTIL PhysInvtRecordingLine.NEXT = 0;
+
+
+        Status := Status::Finished;
+        MODIFY;
+      END;
+    END;
+
+    BEGIN
+    END.
+  }
+}
+

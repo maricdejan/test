@@ -1,0 +1,33 @@
+OBJECT Codeunit 5005352 Phys. Invt. Rec. Reopen (Y/N)
+{
+  OBJECT-PROPERTIES
+  {
+    Date=01.10.04;
+    Time=12:00:00;
+    Version List=NAVDACH4.00;
+  }
+  PROPERTIES
+  {
+    TableNo=5005352;
+    OnRun=BEGIN
+            PhysInvtRecordingHeader.COPY(Rec);
+
+            IF CONFIRM(Text1140000, FALSE) THEN
+              PhysInvtRecordingReopen.RUN(PhysInvtRecordingHeader);
+
+            Rec := PhysInvtRecordingHeader;
+          END;
+
+  }
+  CODE
+  {
+    VAR
+      Text1140000@1140000 : TextConst 'DEU=Wollen Sie den Erfassungsbeleg zur Bearbeitung ”ffnen?;ENU=Do you want to reopen the recording?';
+      PhysInvtRecordingHeader@1140001 : Record 5005352;
+      PhysInvtRecordingReopen@1140002 : Codeunit 5005353;
+
+    BEGIN
+    END.
+  }
+}
+

@@ -1,0 +1,53 @@
+OBJECT Table 2000000071 Object Metadata
+{
+  OBJECT-PROPERTIES
+  {
+    Date=11.12.10;
+    Time=12:00:00;
+    Version List=;
+  }
+  PROPERTIES
+  {
+    DataPerCompany=No;
+    TrackingObject=Yes;
+    CaptionML=[DEU=Objektmetadaten;
+               ENU=Object Metadata];
+  }
+  FIELDS
+  {
+    { 3   ;   ;Object Type         ;Option        ;CaptionML=[DEU=Objektart;
+                                                              ENU=Object Type];
+                                                   OptionCaptionML=[DEU=TableData,Tabelle,Formular,Bericht,Dataport,Codeunit,XMLport,MenuSuite,Seite,,System,FieldNumber;
+                                                                    ENU=TableData,Table,Form,Report,Dataport,Codeunit,XMLport,MenuSuite,Page,,System,FieldNumber];
+                                                   OptionString=TableData,Table,Form,Report,Dataport,Codeunit,XMLport,MenuSuite,Page,,System,FieldNumber }
+    { 6   ;   ;Object ID           ;Integer       ;TableRelation=Object.ID WHERE (Type=FIELD(Object Type));
+                                                   TestTableRelation=No;
+                                                   CaptionML=[DEU=Objekt-ID;
+                                                              ENU=Object ID] }
+    { 9   ;   ;Metadata            ;BLOB          ;Volatile=Yes;
+                                                   CaptionML=[DEU=Metadaten;
+                                                              ENU=Metadata] }
+    { 12  ;   ;Version List        ;Text80        ;CaptionML=[DEU=VersionsÅbersicht;
+                                                              ENU=Version List] }
+    { 15  ;   ;User Code           ;BLOB          ;Volatile=Yes;
+                                                   CaptionML=[DEU=Benutzercode;
+                                                              ENU=User Code] }
+    { 24  ;   ;Object Key          ;GUID          ;Volatile=Yes;
+                                                   CaptionML=[DEU=ObjektschlÅssel;
+                                                              ENU=Object Key] }
+  }
+  KEYS
+  {
+    {    ;Object Type,Object ID                   ;Clustered=Yes }
+  }
+  FIELDGROUPS
+  {
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

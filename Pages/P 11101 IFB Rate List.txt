@@ -1,0 +1,64 @@
+OBJECT Page 11101 IFB Rate List
+{
+  OBJECT-PROPERTIES
+  {
+    Date=04.09.01;
+    Time=12:00:00;
+    Version List=NAVDACH4.00;
+  }
+  PROPERTIES
+  {
+    Editable=No;
+    CaptionML=[DEU=IFB-SatzÅbersicht;
+               ENU=IFB Rate List];
+    SourceTable=Table11101;
+    PageType=List;
+    ActionList=ACTIONS
+    {
+      { 1900000003;0 ;ActionContainer;
+                      ActionContainerType=RelatedInformation }
+      { 17      ;1   ;ActionGroup;
+                      CaptionML=[DEU=IFB-&Satz;
+                                 ENU=IFB &Rate] }
+      { 19      ;2   ;Action    ;
+                      CaptionML=[DEU=Perioden&konten;
+                                 ENU=Period &Accounts];
+                      RunObject=Page 11103;
+                      RunFormLink=IFB Ratecode=FIELD(Code) }
+    }
+  }
+  CONTROLS
+  {
+    { 1900000001;0;Container;
+                ContainerType=ContentArea }
+
+    { 1   ;1   ;Group     ;
+                GroupType=Repeater }
+
+    { 2   ;2   ;Field     ;
+                SourceExpr=Code }
+
+    { 15  ;2   ;Field     ;
+                SourceExpr="IFB %" }
+
+    { 4   ;2   ;Field     ;
+                SourceExpr=Description }
+
+    { 6   ;2   ;Field     ;
+                SourceExpr=Startdate }
+
+    { 8   ;2   ;Field     ;
+                SourceExpr=Enddate }
+
+    { 10  ;2   ;Field     ;
+                SourceExpr="Keepingperiod (Years)" }
+
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

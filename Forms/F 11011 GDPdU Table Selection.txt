@@ -1,0 +1,153 @@
+OBJECT Form 11011 GDPdU Table Selection
+{
+  OBJECT-PROPERTIES
+  {
+    Date=01.10.04;
+    Time=12:00:00;
+    Version List=NAVDACH4.00;
+  }
+  PROPERTIES
+  {
+    Width=9790;
+    Height=7040;
+    CaptionML=[DEU=GDPdU Tabellenauswahl;
+               ENU=GDPdU Table Selection];
+    InsertAllowed=No;
+    DeleteAllowed=No;
+    ModifyAllowed=No;
+    TableBoxID=1140000;
+    SourceTable=Table2000000058;
+    SourceTableView=SORTING(Object Type,Object ID)
+                    WHERE(Object Type=CONST(Table),
+                          Object ID=FILTER(<2000000000));
+    OnFindRecord=BEGIN
+                   IF FIND(Which) THEN BEGIN
+
+                     AllObj := Rec;
+                     WHILE TRUE DO
+                       IF NOT GDPdUMgt.FindGDPdURecDefTable(GDPdUDefGrpCode,GDPdURecordCode,"Object ID") THEN
+                         EXIT(TRUE)
+                       ELSE
+                         IF NEXT(1) = 0 THEN BEGIN
+                           Rec := AllObj;
+                           IF FIND(Which) THEN
+                             WHILE TRUE DO
+                               IF NOT GDPdUMgt.FindGDPdURecDefTable(GDPdUDefGrpCode,GDPdURecordCode,"Object ID") THEN
+                                 EXIT(TRUE)
+                               ELSE
+                                 IF NEXT(-1) = 0 THEN
+                                   EXIT(FALSE);
+                         END;
+                   END;
+                   EXIT(FALSE);
+                 END;
+
+    OnNextRecord=VAR
+                   Nextsteps@1140000 : Integer;
+                   Realsteps@1140001 : Integer;
+                 BEGIN
+                   IF Steps = 0 THEN
+                     EXIT;
+
+                   AllObj := Rec;
+                   REPEAT
+                     Nextsteps := NEXT(Steps/ABS(Steps));
+                     IF NOT GDPdUMgt.FindGDPdURecDefTable(GDPdUDefGrpCode,GDPdURecordCode,"Object ID") THEN BEGIN
+                       Realsteps := Realsteps + Nextsteps;
+                       AllObj := Rec;
+                     END;
+                   UNTIL (Nextsteps = 0) OR (Realsteps = Steps);
+                   Rec := AllObj;
+                   FIND;
+                   EXIT(Realsteps);
+                 END;
+
+  }
+  CONTROLS
+  {
+    { 1140000;TableBox  ;0    ;0    ;9790 ;7040 ;HorzGlue=Both;
+                                                 VertGlue=Both }
+    { 1140001;CheckBox  ;212  ;330  ;1650 ;440  ;ParentControl=1140000;
+                                                 InColumn=Yes;
+                                                 ShowCaption=No;
+                                                 CaptionML=[DEU=Ausgew„hlt;
+                                                            ENU=Selected];
+                                                 SourceExpr=Selected;
+                                                 OnPush=BEGIN
+                                                          SelectObject;
+                                                          CurrForm.UPDATE;
+                                                        END;
+                                                         }
+    { 1140002;Label     ;0    ;0    ;0    ;0    ;ParentControl=1140001;
+                                                 InColumnHeading=Yes }
+    { 1140003;TextBox   ;0    ;0    ;1650 ;0    ;Editable=No;
+                                                 ParentControl=1140000;
+                                                 InColumn=Yes;
+                                                 CaptionML=[DEU=Tabellennr.;
+                                                            ENU=Table No.];
+                                                 SourceExpr="Object ID" }
+    { 1140004;Label     ;0    ;0    ;0    ;0    ;ParentControl=1140003;
+                                                 InColumnHeading=Yes }
+    { 1140005;TextBox   ;0    ;0    ;4400 ;0    ;HorzGlue=Both;
+                                                 Editable=No;
+                                                 ParentControl=1140000;
+                                                 InColumn=Yes;
+                                                 CaptionML=[DEU=Tabellenname;
+                                                            ENU=Table Name];
+                                                 SourceExpr="Object Caption" }
+    { 1140006;Label     ;0    ;0    ;0    ;0    ;ParentControl=1140005;
+                                                 InColumnHeading=Yes }
+  }
+  CODE
+  {
+    VAR
+      Text1140000@1140000 : TextConst 'DEU=Sie drfen nur eine Tabelle ausw„hlen.;ENU=You must only choose one table.';
+      TempAllObj@11400001 : TEMPORARY Record 2000000058;
+      AllObj@1140002 : Record 2000000058;
+      GDPdUMgt@1140003 : Codeunit 11000;
+      GDPdUDefGrpCode@1140004 : Code[10];
+      GDPdURecordCode@1140005 : Code[10];
+
+    LOCAL PROCEDURE SelectObject@1140000();
+    BEGIN
+      IF TempAllObj.FIND('-') THEN
+        IF TempAllObj."Object ID" <> "Object ID" THEN
+          ERROR(Text1140000);
+
+      IF NOT Selected THEN BEGIN
+        TempAllObj := Rec;
+        TempAllObj.INSERT;
+      END ELSE BEGIN
+        TempAllObj := Rec;
+        TempAllObj.DELETE;
+      END;
+    END;
+
+    LOCAL PROCEDURE Selected@1140001() : Boolean;
+    BEGIN
+      EXIT(TempAllObj.GET("Object Type","Object ID"));
+    END;
+
+    PROCEDURE SetGDPdUCode@1140002(NewGDPdUDefGrpCode@1140000 : Code[10];NewGDPdURecordCode@1140001 : Code[10]);
+    BEGIN
+      GDPdUDefGrpCode := NewGDPdUDefGrpCode;
+      GDPdURecordCode := NewGDPdURecordCode;
+      CurrForm.UPDATE;
+    END;
+
+    PROCEDURE GetTableNo@1140003() : Integer;
+    BEGIN
+      EXIT(TempAllObj."Object ID");
+    END;
+
+    PROCEDURE DeleteTempTable@1140004();
+    BEGIN
+      TempAllObj.DELETEALL;
+      CurrForm.UPDATE;
+    END;
+
+    BEGIN
+    END.
+  }
+}
+

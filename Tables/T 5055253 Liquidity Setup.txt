@@ -1,0 +1,87 @@
+OBJECT Table 5055253 Liquidity Setup
+{
+  OBJECT-PROPERTIES
+  {
+    Date=14.02.08;
+    Time=12:00:00;
+    Version List=LIQEM5.00,NAVDACH5.00.01;
+  }
+  PROPERTIES
+  {
+    CaptionML=[DEU=LiquiditÑt Einrichtung;
+               ENU=Liquidity Setup];
+  }
+  FIELDS
+  {
+    { 1   ;   ;Primary Key         ;Code10        ;CaptionML=[DEU=PrimÑrschlÅssel;
+                                                              ENU=Primary Key] }
+    { 2   ;   ;Liquidity No. Series;Code10        ;TableRelation="No. Series";
+                                                   CaptionML=[DEU=LiquiditÑtsnummernserien;
+                                                              ENU=Liquidity No. Series] }
+    { 3   ;   ;Receivables Liq. Account No.;Code20;TableRelation="Liquidity Account";
+                                                   OnValidate=BEGIN
+                                                                CheckAccType("Receivables Liq. Account No.");
+                                                              END;
+
+                                                   CaptionML=[DEU=Ford.-LiquiditÑtskontonr.;
+                                                              ENU=Receivables Liq. Account No.] }
+    { 4   ;   ;Payables Liq. Account No.;Code20   ;TableRelation="Liquidity Account";
+                                                   OnValidate=BEGIN
+                                                                CheckAccType("Payables Liq. Account No.");
+                                                              END;
+
+                                                   CaptionML=[DEU=Verb.-LiquiditÑtskontonr.;
+                                                              ENU=Payables Liq. Account No.] }
+    { 5   ;   ;Sales Order Liq. Account No.;Code20;TableRelation="Liquidity Account";
+                                                   OnValidate=BEGIN
+                                                                CheckAccType("Sales Order Liq. Account No.");
+                                                              END;
+
+                                                   CaptionML=[DEU=AuftragsliquiditÑtskontonr.;
+                                                              ENU=Sales Order Liq. Account No.] }
+    { 6   ;   ;Purch. Order Liq. Account No.;Code20;
+                                                   TableRelation="Liquidity Account";
+                                                   OnValidate=BEGIN
+                                                                CheckAccType("Purch. Order Liq. Account No.");
+                                                              END;
+
+                                                   CaptionML=[DEU=BestellliquiditÑtskontonr.;
+                                                              ENU=Purch. Order Liq. Account No.] }
+    { 8   ;   ;FA Investment Liq. Account No.;Code20;
+                                                   TableRelation="Liquidity Account";
+                                                   CaptionML=[DEU=Anlageninvest.-Liq.-Kontonr.;
+                                                              ENU=FA Investment Liq. Account No.] }
+    { 9   ;   ;FA Sales Liq. Account No.;Code20   ;TableRelation="Liquidity Account";
+                                                   CaptionML=[DEU=Anlagenverk.-Liq.-Kontonr.;
+                                                              ENU=FA Sales Liq. Account No.] }
+    { 10  ;   ;Service Liq. Account No.;Code20    ;TableRelation="Liquidity Account";
+                                                   CaptionML=[DEU=ServiceliquiditÑtskontonr.;
+                                                              ENU=Service Liq. Account No.] }
+  }
+  KEYS
+  {
+    {    ;Primary Key                             ;Clustered=Yes }
+  }
+  FIELDGROUPS
+  {
+  }
+  CODE
+  {
+    VAR
+      Text1140000@1140000 : TextConst 'DEU=Kontoart muss Konto sein!;ENU=Account Type has to be Account!';
+      LiqAcc@1140001 : Record 5055251;
+
+    PROCEDURE CheckAccType@1140000(Code@1140000 : Code[20]);
+    BEGIN
+      IF (Code <> '') THEN BEGIN
+        LiqAcc.GET(Code);
+        IF LiqAcc."Account Type" <> LiqAcc."Account Type"::Posting THEN
+          ERROR(Text1140000);
+      END;
+    END;
+
+    BEGIN
+    END.
+  }
+}
+

@@ -1,0 +1,39 @@
+OBJECT Table 8620 Company Type
+{
+  OBJECT-PROPERTIES
+  {
+    Date=14.08.09;
+    Time=12:00:00;
+    Version List=NAVW16.00.01;
+  }
+  PROPERTIES
+  {
+    CaptionML=[DEU=Mandantentyp;
+               ENU=Company Type];
+  }
+  FIELDS
+  {
+    { 1   ;   ;Name                ;Text50        ;CaptionML=[DEU=Name;
+                                                              ENU=Name];
+                                                   Editable=No }
+    { 2   ;   ;Description         ;Text250       ;CaptionML=[DEU=Beschreibung;
+                                                              ENU=Description];
+                                                   Editable=No }
+    { 3   ;   ;Selected            ;Boolean       ;CaptionML=[DEU=Ausgew„hlt;
+                                                              ENU=Selected] }
+  }
+  KEYS
+  {
+    {    ;Name                                    ;Clustered=Yes }
+  }
+  FIELDGROUPS
+  {
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

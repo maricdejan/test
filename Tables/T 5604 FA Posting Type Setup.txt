@@ -1,0 +1,88 @@
+OBJECT Table 5604 FA Posting Type Setup
+{
+  OBJECT-PROPERTIES
+  {
+    Date=05.11.08;
+    Time=12:00:00;
+    Version List=NAVW16.00;
+  }
+  PROPERTIES
+  {
+    OnRename=BEGIN
+               ERROR(Text000,TABLECAPTION);
+             END;
+
+    CaptionML=[DEU=Anlagenbuchungsart Einr.;
+               ENU=FA Posting Type Setup];
+  }
+  FIELDS
+  {
+    { 1   ;   ;FA Posting Type     ;Option        ;CaptionML=[DEU=Anlagenbuchungsart;
+                                                              ENU=FA Posting Type];
+                                                   OptionCaptionML=[DEU=Erh”hte AfA,Zuschreibung,Sonder-AfA,Benutzerdef. AfA;
+                                                                    ENU=Write-Down,Appreciation,Custom 1,Custom 2];
+                                                   OptionString=Write-Down,Appreciation,Custom 1,Custom 2;
+                                                   Editable=No }
+    { 2   ;   ;Depreciation Book Code;Code10      ;TableRelation="Depreciation Book";
+                                                   CaptionML=[DEU=AfA Buchcode;
+                                                              ENU=Depreciation Book Code];
+                                                   NotBlank=Yes;
+                                                   Editable=No }
+    { 3   ;   ;Part of Book Value  ;Boolean       ;OnValidate=BEGIN
+                                                                IF NOT "Part of Book Value" THEN
+                                                                  TESTFIELD("Reverse before Disposal",FALSE);
+                                                              END;
+
+                                                   CaptionML=[DEU=Teil d. Buchwerts;
+                                                              ENU=Part of Book Value] }
+    { 4   ;   ;Part of Depreciable Basis;Boolean  ;CaptionML=[DEU=Teil d. AfA-Grundlage;
+                                                              ENU=Part of Depreciable Basis] }
+    { 5   ;   ;Include in Depr. Calculation;Boolean;
+                                                   CaptionML=[DEU=In AfA-Berechnung enthalten;
+                                                              ENU=Include in Depr. Calculation] }
+    { 6   ;   ;Include in Gain/Loss Calc.;Boolean ;CaptionML=[DEU=In Gew.-/Verl.-Berech. enth.;
+                                                              ENU=Include in Gain/Loss Calc.] }
+    { 7   ;   ;Reverse before Disposal;Boolean    ;OnValidate=BEGIN
+                                                                IF "Reverse before Disposal" THEN
+                                                                  TESTFIELD("Part of Book Value",TRUE);
+                                                              END;
+
+                                                   CaptionML=[DEU=AfA-Storno vor Verkauf;
+                                                              ENU=Reverse before Disposal] }
+    { 8   ;   ;Sign                ;Option        ;CaptionML=[DEU=Vorzeichen;
+                                                              ENU=Sign];
+                                                   OptionCaptionML=[DEU=" ,Soll,Haben";
+                                                                    ENU=" ,Debit,Credit"];
+                                                   OptionString=[ ,Debit,Credit] }
+    { 9   ;   ;Depreciation Type   ;Boolean       ;OnValidate=BEGIN
+                                                                IF "Depreciation Type" THEN
+                                                                  "Acquisition Type" := FALSE;
+                                                              END;
+
+                                                   CaptionML=[DEU=AfA-Art;
+                                                              ENU=Depreciation Type] }
+    { 10  ;   ;Acquisition Type    ;Boolean       ;OnValidate=BEGIN
+                                                                IF "Acquisition Type" THEN
+                                                                  "Depreciation Type" := FALSE;
+                                                              END;
+
+                                                   CaptionML=[DEU=Anschaffungsart;
+                                                              ENU=Acquisition Type] }
+  }
+  KEYS
+  {
+    {    ;Depreciation Book Code,FA Posting Type  ;Clustered=Yes }
+  }
+  FIELDGROUPS
+  {
+  }
+  CODE
+  {
+    VAR
+      Text000@1000 : TextConst 'DEU=Sie k”nnen eine %1 nicht umbenennen.;ENU=You cannot rename a %1.';
+
+    BEGIN
+    END.
+  }
+}
+

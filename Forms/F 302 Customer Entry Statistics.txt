@@ -1,0 +1,629 @@
+OBJECT Form 302 Customer Entry Statistics
+{
+  OBJECT-PROPERTIES
+  {
+    Date=05.11.08;
+    Time=12:00:00;
+    Version List=NAVW16.00;
+  }
+  PROPERTIES
+  {
+    Width=16170;
+    Height=7590;
+    Editable=No;
+    CaptionML=[DEU=Debitorenbuchungsstatistik;
+               ENU=Customer Entry Statistics];
+    LinksAllowed=No;
+    SourceTable=Table18;
+    OnAfterGetRecord=BEGIN
+                       SETRANGE("No.");
+                       CLEARALL;
+
+                       FOR j := 1 TO 6 DO BEGIN
+                         CustLedgEntry[j].SETCURRENTKEY("Document Type","Customer No.","Posting Date");
+                         CustLedgEntry[j].SETRANGE("Document Type",j); // Payment,Invoice,Credit Memo,Finance Charge Memo,Reminder,Refund
+                         CustLedgEntry[j].SETRANGE("Customer No.","No.");
+                         IF CustLedgEntry[j].FIND('+') THEN
+                           CustLedgEntry[j].CALCFIELDS(Amount,"Remaining Amount");
+                       END;
+
+                       CustLedgEntry2.SETCURRENTKEY("Customer No.",Open);
+                       CustLedgEntry2.SETRANGE("Customer No.","No.");
+                       CustLedgEntry2.SETRANGE(Open,TRUE);
+                       IF CustLedgEntry2.FIND('+') THEN
+                         REPEAT
+                           j := CustLedgEntry2."Document Type";
+                           IF j > 0 THEN BEGIN
+                             CustLedgEntry2.CALCFIELDS("Remaining Amt. (LCY)");
+                             TotalRemainAmountLCY[j] := TotalRemainAmountLCY[j] + CustLedgEntry2."Remaining Amt. (LCY)";
+                           END;
+                         UNTIL CustLedgEntry2.NEXT(-1) = 0;
+
+                       DateFilterCalc.CreateAccountingPeriodFilter(CustDateFilter[1],CustDateName[1],WORKDATE,0);
+                       DateFilterCalc.CreateFiscalYearFilter(CustDateFilter[2],CustDateName[2],WORKDATE,0);
+                       DateFilterCalc.CreateFiscalYearFilter(CustDateFilter[3],CustDateName[3],WORKDATE,-1);
+
+                       FOR i := 1 TO 3 DO BEGIN
+                         CustLedgEntry2.RESET;
+                         CustLedgEntry2.SETCURRENTKEY("Customer No.","Posting Date");
+                         CustLedgEntry2.SETRANGE("Customer No.","No.");
+
+                         CustLedgEntry2.SETFILTER("Posting Date",CustDateFilter[i]);
+                         CustLedgEntry2.SETRANGE("Posting Date",0D,CustLedgEntry2.GETRANGEMAX("Posting Date"));
+                         DtldCustLedgEntry2.SETCURRENTKEY("Customer No.","Posting Date");
+                         CustLedgEntry2.COPYFILTER("Customer No.",DtldCustLedgEntry2."Customer No.");
+                         CustLedgEntry2.COPYFILTER("Posting Date",DtldCustLedgEntry2."Posting Date");
+                         DtldCustLedgEntry2.CALCSUMS("Amount (LCY)");
+                         CustBalanceLCY := DtldCustLedgEntry2."Amount (LCY)";
+                         HighestBalanceLCY[i] := CustBalanceLCY;
+                         DaysToPay := 0;
+                         NoOfInv := 0;
+
+                         CustLedgEntry2.SETFILTER("Posting Date",CustDateFilter[i]);
+                         IF CustLedgEntry2.FIND('+') THEN
+                           REPEAT
+                             j := CustLedgEntry2."Document Type";
+                             IF j > 0 THEN
+                               NoOfDoc[i][j] := NoOfDoc[i][j] + 1;
+
+                             CustLedgEntry2.CALCFIELDS("Amount (LCY)");
+                             CustBalanceLCY := CustBalanceLCY - CustLedgEntry2."Amount (LCY)";
+                             IF CustBalanceLCY > HighestBalanceLCY[i] THEN
+                               HighestBalanceLCY[i] := CustBalanceLCY;
+
+                             // Optimized Approximation
+                             IF (CustLedgEntry2."Document Type" = CustLedgEntry2."Document Type"::Invoice) AND
+                                NOT CustLedgEntry2.Open
+                             THEN
+                               IF CustLedgEntry2."Closed at Date" > CustLedgEntry2."Posting Date" THEN
+                                 UpdateDaysToPay(CustLedgEntry2."Closed at Date" - CustLedgEntry2."Posting Date")
+                               ELSE
+                                 IF CustLedgEntry2."Closed by Entry No." <> 0 THEN BEGIN
+                                   IF CustLedgEntry3.GET(CustLedgEntry2."Closed by Entry No.") THEN
+                                     UpdateDaysToPay(CustLedgEntry3."Posting Date" - CustLedgEntry2."Posting Date");
+                                 END ELSE BEGIN
+                                   CustLedgEntry3.SETCURRENTKEY("Closed by Entry No.");
+                                   CustLedgEntry3.SETRANGE("Closed by Entry No.",CustLedgEntry2."Entry No.");
+                                   IF CustLedgEntry3.FIND('+') THEN
+                                     UpdateDaysToPay(CustLedgEntry3."Posting Date" - CustLedgEntry2."Posting Date");
+                                 END;
+                           UNTIL CustLedgEntry2.NEXT(-1) = 0;
+                         IF NoOfInv <> 0 THEN
+                           AvgDaysToPay[i] := DaysToPay / NoOfInv;
+                       END;
+                     END;
+
+  }
+  CONTROLS
+  {
+    { 1   ;TabControl   ;220  ;220  ;15730;6490 ;HorzGlue=Both;
+                                                 VertGlue=Both;
+                                                 PageNamesML=[DEU=Letzte Belege,Anzahl Belege;
+                                                              ENU=Last Documents,No. of Documents] }
+    { 2   ;Label        ;3850 ;990  ;1650 ;440  ;ParentControl=1;
+                                                 InPage=0;
+                                                 HorzAlign=Right;
+                                                 LeaderDots=No;
+                                                 CaptionML=[DEU=Datum;
+                                                            ENU=Date] }
+    { 3   ;Label        ;5720 ;990  ;2750 ;440  ;ParentControl=1;
+                                                 InPage=0;
+                                                 HorzAlign=Right;
+                                                 LeaderDots=No;
+                                                 CaptionML=[DEU=Belegnr.;
+                                                            ENU=Document No.] }
+    { 5   ;Label        ;10010;990  ;2750 ;440  ;HorzGlue=Left;
+                                                 ParentControl=1;
+                                                 InPage=0;
+                                                 HorzAlign=Left;
+                                                 LeaderDots=No;
+                                                 CaptionML=[DEU=Betrag;
+                                                            ENU=Amount] }
+    { 6   ;Label        ;12980;990  ;2750 ;440  ;HorzGlue=Left;
+                                                 ParentControl=1;
+                                                 InPage=0;
+                                                 HorzAlign=Left;
+                                                 LeaderDots=No;
+                                                 CaptionML=[DEU=Restbetrag;
+                                                            ENU=Remaining Amount] }
+    { 7   ;TextBox      ;3850 ;1540 ;1650 ;440  ;ParentControl=1;
+                                                 InPage=0;
+                                                 CaptionML=[DEU=Zahlung;
+                                                            ENU=Payment];
+                                                 SourceExpr=CustLedgEntry[1]."Posting Date" }
+    { 8   ;TextBox      ;5720 ;1540 ;2750 ;440  ;ParentControl=1;
+                                                 InPage=0;
+                                                 CaptionML=[DEU=Belegnr.;
+                                                            ENU=Document No.];
+                                                 SourceExpr=CustLedgEntry[1]."Document No." }
+    { 10  ;TextBox      ;10010;1540 ;2750 ;440  ;HorzGlue=Left;
+                                                 ParentControl=1;
+                                                 InPage=0;
+                                                 CaptionML=[DEU=Betrag;
+                                                            ENU=Amount];
+                                                 SourceExpr=-CustLedgEntry[1].Amount;
+                                                 AutoFormatType=1;
+                                                 AutoFormatExpr=CustLedgEntry[1]."Currency Code" }
+    { 11  ;TextBox      ;12980;1540 ;2750 ;440  ;HorzGlue=Left;
+                                                 ParentControl=1;
+                                                 InPage=0;
+                                                 CaptionML=[DEU=Restbetrag;
+                                                            ENU=Remaining Amount];
+                                                 SourceExpr=-CustLedgEntry[1]."Remaining Amount";
+                                                 AutoFormatType=1;
+                                                 AutoFormatExpr=CustLedgEntry[1]."Currency Code" }
+    { 12  ;Label        ;440  ;1540 ;3300 ;440  ;ParentControl=1;
+                                                 InPage=0;
+                                                 CaptionML=[DEU=Zahlung;
+                                                            ENU=Payment] }
+    { 13  ;TextBox      ;3850 ;2090 ;1650 ;440  ;ParentControl=1;
+                                                 InPage=0;
+                                                 CaptionML=[DEU=Rechnung;
+                                                            ENU=Invoice];
+                                                 SourceExpr=CustLedgEntry[2]."Posting Date" }
+    { 14  ;TextBox      ;5720 ;2090 ;2750 ;440  ;ParentControl=1;
+                                                 InPage=0;
+                                                 CaptionML=[DEU=Belegnr.;
+                                                            ENU=Document No.];
+                                                 SourceExpr=CustLedgEntry[2]."Document No." }
+    { 16  ;TextBox      ;10010;2090 ;2750 ;440  ;HorzGlue=Left;
+                                                 ParentControl=1;
+                                                 InPage=0;
+                                                 CaptionML=[DEU=Betrag;
+                                                            ENU=Amount];
+                                                 SourceExpr=CustLedgEntry[2].Amount;
+                                                 AutoFormatType=1;
+                                                 AutoFormatExpr=CustLedgEntry[2]."Currency Code" }
+    { 17  ;TextBox      ;12980;2090 ;2750 ;440  ;HorzGlue=Left;
+                                                 ParentControl=1;
+                                                 InPage=0;
+                                                 CaptionML=[DEU=Restbetrag;
+                                                            ENU=Remaining Amount];
+                                                 SourceExpr=CustLedgEntry[2]."Remaining Amount";
+                                                 AutoFormatType=1;
+                                                 AutoFormatExpr=CustLedgEntry[2]."Currency Code" }
+    { 18  ;Label        ;440  ;2090 ;3300 ;440  ;ParentControl=1;
+                                                 InPage=0;
+                                                 CaptionML=[DEU=Rechnung;
+                                                            ENU=Invoice] }
+    { 19  ;TextBox      ;3850 ;2640 ;1650 ;440  ;ParentControl=1;
+                                                 InPage=0;
+                                                 CaptionML=[DEU=Gutschrift;
+                                                            ENU=Credit Memo];
+                                                 SourceExpr=CustLedgEntry[3]."Posting Date" }
+    { 20  ;TextBox      ;5720 ;2640 ;2750 ;440  ;ParentControl=1;
+                                                 InPage=0;
+                                                 CaptionML=[DEU=Belegnr.;
+                                                            ENU=Document No.];
+                                                 SourceExpr=CustLedgEntry[3]."Document No." }
+    { 22  ;TextBox      ;10010;2640 ;2750 ;440  ;HorzGlue=Left;
+                                                 ParentControl=1;
+                                                 InPage=0;
+                                                 CaptionML=[DEU=Betrag;
+                                                            ENU=Amount];
+                                                 SourceExpr=-CustLedgEntry[3].Amount;
+                                                 AutoFormatType=1;
+                                                 AutoFormatExpr=CustLedgEntry[3]."Currency Code" }
+    { 23  ;TextBox      ;12980;2640 ;2750 ;440  ;HorzGlue=Left;
+                                                 ParentControl=1;
+                                                 InPage=0;
+                                                 CaptionML=[DEU=Restbetrag;
+                                                            ENU=Remaining Amount];
+                                                 SourceExpr=-CustLedgEntry[3]."Remaining Amount";
+                                                 AutoFormatType=1;
+                                                 AutoFormatExpr=CustLedgEntry[3]."Currency Code" }
+    { 24  ;Label        ;440  ;2640 ;3300 ;440  ;ParentControl=1;
+                                                 InPage=0;
+                                                 CaptionML=[DEU=Gutschrift;
+                                                            ENU=Credit Memo] }
+    { 25  ;TextBox      ;3850 ;3190 ;1650 ;440  ;ParentControl=1;
+                                                 InPage=0;
+                                                 CaptionML=[DEU=Mahnung;
+                                                            ENU=Reminder];
+                                                 SourceExpr=CustLedgEntry[5]."Posting Date" }
+    { 26  ;TextBox      ;5720 ;3190 ;2750 ;440  ;ParentControl=1;
+                                                 InPage=0;
+                                                 CaptionML=[DEU=Belegnr.;
+                                                            ENU=Document No.];
+                                                 SourceExpr=CustLedgEntry[5]."Document No." }
+    { 28  ;TextBox      ;10010;3190 ;2750 ;440  ;HorzGlue=Left;
+                                                 ParentControl=1;
+                                                 InPage=0;
+                                                 CaptionML=[DEU=Betrag;
+                                                            ENU=Amount];
+                                                 SourceExpr=CustLedgEntry[5].Amount;
+                                                 AutoFormatType=1;
+                                                 AutoFormatExpr=CustLedgEntry[5]."Currency Code" }
+    { 29  ;TextBox      ;12980;3190 ;2750 ;440  ;HorzGlue=Left;
+                                                 ParentControl=1;
+                                                 InPage=0;
+                                                 CaptionML=[DEU=Restbetrag;
+                                                            ENU=Remaining Amount];
+                                                 SourceExpr=CustLedgEntry[5]."Remaining Amount";
+                                                 AutoFormatType=1;
+                                                 AutoFormatExpr=CustLedgEntry[5]."Currency Code" }
+    { 30  ;Label        ;440  ;3190 ;3300 ;440  ;ParentControl=1;
+                                                 InPage=0;
+                                                 CaptionML=[DEU=Mahnung;
+                                                            ENU=Reminder] }
+    { 69  ;TextBox      ;3850 ;3740 ;1650 ;440  ;ParentControl=1;
+                                                 InPage=0;
+                                                 CaptionML=[DEU=Zinsrechnung;
+                                                            ENU=Finance Charge Memo];
+                                                 SourceExpr=CustLedgEntry[4]."Posting Date" }
+    { 70  ;TextBox      ;5720 ;3740 ;2750 ;440  ;ParentControl=1;
+                                                 InPage=0;
+                                                 CaptionML=[DEU=Belegnr.;
+                                                            ENU=Document No.];
+                                                 SourceExpr=CustLedgEntry[4]."Document No." }
+    { 72  ;TextBox      ;10010;3740 ;2750 ;440  ;HorzGlue=Left;
+                                                 ParentControl=1;
+                                                 InPage=0;
+                                                 CaptionML=[DEU=Betrag;
+                                                            ENU=Amount];
+                                                 SourceExpr=CustLedgEntry[4].Amount;
+                                                 AutoFormatType=1;
+                                                 AutoFormatExpr=CustLedgEntry[4]."Currency Code" }
+    { 73  ;TextBox      ;12980;3740 ;2750 ;440  ;HorzGlue=Left;
+                                                 ParentControl=1;
+                                                 InPage=0;
+                                                 CaptionML=[DEU=Restbetrag;
+                                                            ENU=Remaining Amount];
+                                                 SourceExpr=CustLedgEntry[4]."Remaining Amount";
+                                                 AutoFormatType=1;
+                                                 AutoFormatExpr=CustLedgEntry[4]."Currency Code" }
+    { 74  ;Label        ;440  ;3740 ;3300 ;440  ;ParentControl=1;
+                                                 InPage=0;
+                                                 CaptionML=[DEU=Zinsrechnung;
+                                                            ENU=Finance Charge Memo] }
+    { 27  ;TextBox      ;8690 ;3190 ;1100 ;440  ;ParentControl=1;
+                                                 InPage=0;
+                                                 CaptionML=[DEU=W„hrungscode;
+                                                            ENU=Currency Code];
+                                                 SourceExpr=CustLedgEntry[5]."Currency Code" }
+    { 75  ;TextBox      ;8690 ;2640 ;1100 ;440  ;ParentControl=1;
+                                                 InPage=0;
+                                                 CaptionML=[DEU=W„hrungscode;
+                                                            ENU=Currency Code];
+                                                 SourceExpr=CustLedgEntry[3]."Currency Code" }
+    { 76  ;TextBox      ;8690 ;2090 ;1100 ;440  ;ParentControl=1;
+                                                 InPage=0;
+                                                 CaptionML=[DEU=W„hrungscode;
+                                                            ENU=Currency Code];
+                                                 SourceExpr=CustLedgEntry[2]."Currency Code" }
+    { 77  ;TextBox      ;8690 ;1540 ;1100 ;440  ;ParentControl=1;
+                                                 InPage=0;
+                                                 CaptionML=[DEU=W„hrungscode;
+                                                            ENU=Currency Code];
+                                                 SourceExpr=CustLedgEntry[1]."Currency Code" }
+    { 80  ;TextBox      ;8690 ;3740 ;1100 ;440  ;ParentControl=1;
+                                                 InPage=0;
+                                                 CaptionML=[DEU=W„hrungscode;
+                                                            ENU=Currency Code];
+                                                 SourceExpr=CustLedgEntry[4]."Currency Code" }
+    { 82  ;Label        ;8690 ;990  ;1100 ;440  ;ParentControl=1;
+                                                 InPage=0;
+                                                 HorzAlign=Right;
+                                                 LeaderDots=No;
+                                                 CaptionML=[DEU=W„hrungscode;
+                                                            ENU=Currency Code] }
+    { 4   ;Label        ;440  ;4290 ;3300 ;440  ;ParentControl=1;
+                                                 InPage=0;
+                                                 CaptionML=[DEU=Erstattung;
+                                                            ENU=Refund] }
+    { 9   ;TextBox      ;3850 ;4290 ;1650 ;440  ;ParentControl=1;
+                                                 InPage=0;
+                                                 CaptionML=[DEU=Erstattung;
+                                                            ENU=Refund];
+                                                 SourceExpr=CustLedgEntry[6]."Posting Date" }
+    { 15  ;TextBox      ;5720 ;4290 ;2750 ;440  ;ParentControl=1;
+                                                 InPage=0;
+                                                 CaptionML=[DEU=Belegnr.;
+                                                            ENU=Document No.];
+                                                 SourceExpr=CustLedgEntry[6]."Document No." }
+    { 21  ;TextBox      ;8690 ;4290 ;1100 ;440  ;ParentControl=1;
+                                                 InPage=0;
+                                                 CaptionML=[DEU=W„hrungscode;
+                                                            ENU=Currency Code];
+                                                 SourceExpr=CustLedgEntry[6]."Currency Code" }
+    { 71  ;TextBox      ;10010;4290 ;2750 ;440  ;HorzGlue=Left;
+                                                 ParentControl=1;
+                                                 InPage=0;
+                                                 CaptionML=[DEU=Betrag;
+                                                            ENU=Amount];
+                                                 SourceExpr=CustLedgEntry[6].Amount;
+                                                 AutoFormatType=1;
+                                                 AutoFormatExpr=CustLedgEntry[6]."Currency Code" }
+    { 78  ;TextBox      ;12980;4290 ;2750 ;440  ;HorzGlue=Left;
+                                                 ParentControl=1;
+                                                 InPage=0;
+                                                 CaptionML=[DEU=Restbetrag;
+                                                            ENU=Remaining Amount];
+                                                 SourceExpr=CustLedgEntry[6]."Remaining Amount";
+                                                 AutoFormatType=1;
+                                                 AutoFormatExpr=CustLedgEntry[6]."Currency Code" }
+    { 31  ;TextBox      ;3850 ;1540 ;2750 ;440  ;Focusable=No;
+                                                 ParentControl=1;
+                                                 InPage=1;
+                                                 HorzAlign=Right;
+                                                 Border=No;
+                                                 SourceExpr=CustDateName[1] }
+    { 32  ;Label        ;6820 ;990  ;2750 ;440  ;ParentControl=1;
+                                                 InPage=1;
+                                                 HorzAlign=Right;
+                                                 LeaderDots=No;
+                                                 CaptionML=[DEU=Dieses Jahr;
+                                                            ENU=This Year] }
+    { 33  ;Label        ;9790 ;990  ;2750 ;440  ;ParentControl=1;
+                                                 InPage=1;
+                                                 HorzAlign=Right;
+                                                 LeaderDots=No;
+                                                 CaptionML=[DEU=Vorjahr;
+                                                            ENU=Last Year] }
+    { 34  ;Label        ;12760;990  ;2750 ;440  ;ParentControl=1;
+                                                 InPage=1;
+                                                 HorzAlign=Right;
+                                                 LeaderDots=No;
+                                                 CaptionML=[DEU=Restbetrag (MW);
+                                                            ENU=Remaining Amt. (LCY)] }
+    { 35  ;TextBox      ;3850 ;2090 ;2750 ;440  ;ParentControl=1;
+                                                 InPage=1;
+                                                 CaptionML=[DEU=Zahlungen;
+                                                            ENU=Payments];
+                                                 SourceExpr=NoOfDoc[1][1] }
+    { 36  ;TextBox      ;6820 ;2090 ;2750 ;440  ;ParentControl=1;
+                                                 InPage=1;
+                                                 CaptionML=[DEU=Zahlungen;
+                                                            ENU=Payments];
+                                                 SourceExpr=NoOfDoc[2][1] }
+    { 37  ;TextBox      ;9790 ;2090 ;2750 ;440  ;ParentControl=1;
+                                                 InPage=1;
+                                                 CaptionML=[DEU=Zahlungen;
+                                                            ENU=Payments];
+                                                 SourceExpr=NoOfDoc[3][1] }
+    { 38  ;TextBox      ;12760;2090 ;2750 ;440  ;ParentControl=1;
+                                                 InPage=1;
+                                                 CaptionML=[DEU=Restbetrag (MW);
+                                                            ENU=Remaining Amt. (LCY)];
+                                                 SourceExpr=-TotalRemainAmountLCY[1];
+                                                 AutoFormatType=1 }
+    { 39  ;Label        ;440  ;2090 ;3300 ;440  ;ParentControl=1;
+                                                 InPage=1;
+                                                 CaptionML=[DEU=Zahlungen;
+                                                            ENU=Payments] }
+    { 40  ;TextBox      ;3850 ;2640 ;2750 ;440  ;ParentControl=1;
+                                                 InPage=1;
+                                                 CaptionML=[DEU=Rechnungen;
+                                                            ENU=Invoices];
+                                                 SourceExpr=NoOfDoc[1][2] }
+    { 41  ;TextBox      ;6820 ;2640 ;2750 ;440  ;ParentControl=1;
+                                                 InPage=1;
+                                                 CaptionML=[DEU=Rechnungen;
+                                                            ENU=Invoices];
+                                                 SourceExpr=NoOfDoc[2][2] }
+    { 42  ;TextBox      ;9790 ;2640 ;2750 ;440  ;ParentControl=1;
+                                                 InPage=1;
+                                                 CaptionML=[DEU=Rechnungen;
+                                                            ENU=Invoices];
+                                                 SourceExpr=NoOfDoc[3][2] }
+    { 43  ;TextBox      ;12760;2640 ;2750 ;440  ;ParentControl=1;
+                                                 InPage=1;
+                                                 CaptionML=[DEU=Restbetrag (MW);
+                                                            ENU=Remaining Amt. (LCY)];
+                                                 SourceExpr=TotalRemainAmountLCY[2];
+                                                 AutoFormatType=1 }
+    { 44  ;Label        ;440  ;2640 ;3300 ;440  ;ParentControl=1;
+                                                 InPage=1;
+                                                 CaptionML=[DEU=Rechnungen;
+                                                            ENU=Invoices] }
+    { 45  ;TextBox      ;3850 ;3190 ;2750 ;440  ;ParentControl=1;
+                                                 InPage=1;
+                                                 CaptionML=[DEU=Gutschriften;
+                                                            ENU=Credit Memos];
+                                                 SourceExpr=NoOfDoc[1][3] }
+    { 46  ;TextBox      ;6820 ;3190 ;2750 ;440  ;ParentControl=1;
+                                                 InPage=1;
+                                                 CaptionML=[DEU=Gutschriften;
+                                                            ENU=Credit Memos];
+                                                 SourceExpr=NoOfDoc[2][3] }
+    { 47  ;TextBox      ;9790 ;3190 ;2750 ;440  ;ParentControl=1;
+                                                 InPage=1;
+                                                 CaptionML=[DEU=Gutschriften;
+                                                            ENU=Credit Memos];
+                                                 SourceExpr=NoOfDoc[3][3] }
+    { 48  ;TextBox      ;12760;3190 ;2750 ;440  ;ParentControl=1;
+                                                 InPage=1;
+                                                 CaptionML=[DEU=Restbetrag (MW);
+                                                            ENU=Remaining Amt. (LCY)];
+                                                 SourceExpr=-TotalRemainAmountLCY[3];
+                                                 AutoFormatType=1 }
+    { 49  ;Label        ;440  ;3190 ;3300 ;440  ;ParentControl=1;
+                                                 InPage=1;
+                                                 CaptionML=[DEU=Gutschriften;
+                                                            ENU=Credit Memos] }
+    { 50  ;TextBox      ;3850 ;4290 ;2750 ;440  ;ParentControl=1;
+                                                 InPage=1;
+                                                 CaptionML=[DEU=Zinsrechnungen;
+                                                            ENU=Finance Charge Memos];
+                                                 SourceExpr=NoOfDoc[1][4] }
+    { 51  ;TextBox      ;6820 ;4290 ;2750 ;440  ;ParentControl=1;
+                                                 InPage=1;
+                                                 CaptionML=[DEU=Zinsrechnungen;
+                                                            ENU=Finance Charge Memos];
+                                                 SourceExpr=NoOfDoc[2][4] }
+    { 52  ;TextBox      ;9790 ;4290 ;2750 ;440  ;ParentControl=1;
+                                                 InPage=1;
+                                                 CaptionML=[DEU=Zinsrechnungen;
+                                                            ENU=Finance Charge Memos];
+                                                 SourceExpr=NoOfDoc[3][4] }
+    { 53  ;TextBox      ;12760;4290 ;2750 ;440  ;ParentControl=1;
+                                                 InPage=1;
+                                                 CaptionML=[DEU=Restbetrag (MW);
+                                                            ENU=Remaining Amt. (LCY)];
+                                                 SourceExpr=TotalRemainAmountLCY[4];
+                                                 AutoFormatType=1 }
+    { 54  ;Label        ;440  ;4290 ;3300 ;440  ;ParentControl=1;
+                                                 InPage=1;
+                                                 CaptionML=[DEU=Zinsrechnungen;
+                                                            ENU=Finance Charge Memos] }
+    { 55  ;TextBox      ;3850 ;5500 ;2750 ;440  ;ParentControl=1;
+                                                 InPage=1;
+                                                 CaptionML=[DEU=Durchschn. Zahlungsfrist (Tage);
+                                                            ENU=Avg. Collection Period (Days)];
+                                                 DecimalPlaces=0:0;
+                                                 SourceExpr=AvgDaysToPay[1] }
+    { 56  ;TextBox      ;6820 ;5500 ;2750 ;440  ;ParentControl=1;
+                                                 InPage=1;
+                                                 CaptionML=[DEU=Durchschn. Zahlungsfrist (Tage);
+                                                            ENU=Avg. Collection Period (Days)];
+                                                 DecimalPlaces=0:0;
+                                                 SourceExpr=AvgDaysToPay[2] }
+    { 57  ;TextBox      ;9790 ;5500 ;2750 ;440  ;ParentControl=1;
+                                                 InPage=1;
+                                                 CaptionML=[DEU=Durchschn. Zahlungsfrist (Tage);
+                                                            ENU=Avg. Collection Period (Days)];
+                                                 DecimalPlaces=0:0;
+                                                 SourceExpr=AvgDaysToPay[3] }
+    { 58  ;Label        ;440  ;5500 ;3300 ;440  ;ParentControl=1;
+                                                 InPage=1;
+                                                 CaptionML=[DEU=Durchschn. Zahlungsfrist (Tage);
+                                                            ENU=Avg. Collection Period (Days)] }
+    { 59  ;TextBox      ;3850 ;6050 ;2750 ;440  ;ParentControl=1;
+                                                 InPage=1;
+                                                 CaptionML=[DEU=H”chster Saldo;
+                                                            ENU=Largest Balance];
+                                                 SourceExpr=HighestBalanceLCY[1];
+                                                 AutoFormatType=1 }
+    { 60  ;TextBox      ;6820 ;6050 ;2750 ;440  ;ParentControl=1;
+                                                 InPage=1;
+                                                 CaptionML=[DEU=H”chster Saldo;
+                                                            ENU=Largest Balance];
+                                                 SourceExpr=HighestBalanceLCY[2];
+                                                 AutoFormatType=1 }
+    { 61  ;TextBox      ;9790 ;6050 ;2750 ;440  ;ParentControl=1;
+                                                 InPage=1;
+                                                 CaptionML=[DEU=H”chster Saldo;
+                                                            ENU=Largest Balance];
+                                                 SourceExpr=HighestBalanceLCY[3];
+                                                 AutoFormatType=1 }
+    { 62  ;Label        ;440  ;6050 ;3300 ;440  ;ParentControl=1;
+                                                 InPage=1;
+                                                 CaptionML=[DEU=H”chster Saldo (MW);
+                                                            ENU=Largest Balance (LCY)] }
+    { 64  ;TextBox      ;3850 ;3740 ;2750 ;440  ;ParentControl=1;
+                                                 InPage=1;
+                                                 CaptionML=[DEU=Mahnung;
+                                                            ENU=Reminder];
+                                                 SourceExpr=NoOfDoc[1][5] }
+    { 65  ;TextBox      ;6820 ;3740 ;2750 ;440  ;ParentControl=1;
+                                                 InPage=1;
+                                                 CaptionML=[DEU=Mahnung;
+                                                            ENU=Reminder];
+                                                 SourceExpr=NoOfDoc[2][5] }
+    { 66  ;TextBox      ;9790 ;3740 ;2750 ;440  ;ParentControl=1;
+                                                 InPage=1;
+                                                 CaptionML=[DEU=Mahnung;
+                                                            ENU=Reminder];
+                                                 SourceExpr=NoOfDoc[3][5] }
+    { 67  ;TextBox      ;12760;3740 ;2750 ;440  ;ParentControl=1;
+                                                 InPage=1;
+                                                 CaptionML=[DEU=Restbetrag (MW);
+                                                            ENU=Remaining Amt. (LCY)];
+                                                 SourceExpr=TotalRemainAmountLCY[5];
+                                                 AutoFormatType=1 }
+    { 68  ;Label        ;440  ;3740 ;3300 ;440  ;ParentControl=1;
+                                                 InPage=1;
+                                                 CaptionML=[DEU=Mahnung;
+                                                            ENU=Reminder] }
+    { 79  ;Label        ;440  ;4840 ;3300 ;440  ;ParentControl=1;
+                                                 InPage=1;
+                                                 CaptionML=[DEU=Erstattung;
+                                                            ENU=Refund] }
+    { 81  ;TextBox      ;3850 ;4840 ;2750 ;440  ;ParentControl=1;
+                                                 InPage=1;
+                                                 CaptionML=[DEU=Erstattung;
+                                                            ENU=Refund];
+                                                 SourceExpr=NoOfDoc[1][6] }
+    { 83  ;TextBox      ;6820 ;4840 ;2750 ;440  ;ParentControl=1;
+                                                 InPage=1;
+                                                 CaptionML=[DEU=Erstattung;
+                                                            ENU=Refund];
+                                                 SourceExpr=NoOfDoc[2][6] }
+    { 84  ;TextBox      ;9790 ;4840 ;2750 ;440  ;ParentControl=1;
+                                                 InPage=1;
+                                                 CaptionML=[DEU=Erstattung;
+                                                            ENU=Refund];
+                                                 SourceExpr=NoOfDoc[3][6] }
+    { 85  ;TextBox      ;12760;4840 ;2750 ;440  ;ParentControl=1;
+                                                 InPage=1;
+                                                 CaptionML=[DEU=Restbetrag (MW);
+                                                            ENU=Remaining Amt. (LCY)];
+                                                 SourceExpr=TotalRemainAmountLCY[6];
+                                                 AutoFormatType=1 }
+    { 86  ;TextBox      ;6820 ;1540 ;2750 ;440  ;Visible=No;
+                                                 ParentControl=1;
+                                                 InPage=1;
+                                                 ForeColor=65535;
+                                                 SourceExpr=Text000 }
+    { 87  ;TextBox      ;9790 ;1540 ;2750 ;440  ;Visible=No;
+                                                 ParentControl=1;
+                                                 InPage=1;
+                                                 ForeColor=65535;
+                                                 SourceExpr=Text000 }
+    { 88  ;Label        ;3850 ;990  ;2750 ;440  ;ParentControl=1;
+                                                 InPage=1;
+                                                 HorzAlign=Right;
+                                                 LeaderDots=No;
+                                                 CaptionML=[DEU=Diese Periode;
+                                                            ENU=This Period] }
+    { 89  ;TextBox      ;12760;5500 ;2750 ;440  ;Visible=No;
+                                                 ParentControl=1;
+                                                 InPage=1;
+                                                 ForeColor=65535;
+                                                 SourceExpr=Text000 }
+    { 90  ;TextBox      ;12760;6050 ;2750 ;440  ;Visible=No;
+                                                 ParentControl=1;
+                                                 InPage=1;
+                                                 ForeColor=65535;
+                                                 SourceExpr=Text000 }
+    { 93  ;TextBox      ;12760;1540 ;2750 ;440  ;Visible=No;
+                                                 ParentControl=1;
+                                                 InPage=1;
+                                                 ForeColor=65535;
+                                                 SourceExpr=Text000 }
+    { 63  ;CommandButton;13640;6820 ;2200 ;550  ;HorzGlue=Right;
+                                                 VertGlue=Bottom;
+                                                 PushAction=FormHelp }
+  }
+  CODE
+  {
+    VAR
+      CustLedgEntry2@1000 : Record 21;
+      CustLedgEntry3@1001 : Record 21;
+      DtldCustLedgEntry2@1002 : Record 379;
+      DateFilterCalc@1003 : Codeunit 358;
+      CustLedgEntry@1004 : ARRAY [6] OF Record 21;
+      CustDateFilter@1005 : ARRAY [3] OF Text[30];
+      CustDateName@1006 : ARRAY [3] OF Text[30];
+      TotalRemainAmountLCY@1007 : ARRAY [6] OF Decimal;
+      NoOfDoc@1008 : ARRAY [3,6] OF Integer;
+      AvgDaysToPay@1009 : ARRAY [3] OF Decimal;
+      DaysToPay@1010 : Decimal;
+      NoOfInv@1011 : Integer;
+      HighestBalanceLCY@1012 : ARRAY [3] OF Decimal;
+      CustBalanceLCY@1013 : Decimal;
+      i@1014 : Integer;
+      j@1015 : Integer;
+      Text000@1016 : TextConst 'DEU=Platzhalter;ENU=Placeholder';
+
+    LOCAL PROCEDURE UpdateDaysToPay@1(NoOfDays@1000 : Integer);
+    BEGIN
+      DaysToPay := DaysToPay + NoOfDays;
+      NoOfInv := NoOfInv + 1;
+    END;
+
+    BEGIN
+    END.
+  }
+}
+

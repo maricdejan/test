@@ -1,0 +1,42 @@
+OBJECT Table 2000000078 Chart
+{
+  OBJECT-PROPERTIES
+  {
+    Date=11.12.10;
+    Time=12:00:00;
+    Version List=;
+  }
+  PROPERTIES
+  {
+    DataPerCompany=No;
+    CaptionML=[DEU=Diagramm;
+               ENU=Chart];
+  }
+  FIELDS
+  {
+    { 3   ;   ;ID                  ;Code20        ;CaptionML=[DEU=ID;
+                                                              ENU=ID] }
+    { 6   ;   ;Name                ;Text30        ;CaptionML=[DEU=Name;
+                                                              ENU=Name] }
+    { 9   ;   ;BLOB                ;BLOB          ;CaptionML=[DEU=BLOB;
+                                                              ENU=BLOB] }
+    { 12  ;   ;Company             ;Text30        ;TableRelation=Company.Name;
+                                                   CaptionML=[DEU=Mandant;
+                                                              ENU=Company] }
+  }
+  KEYS
+  {
+    {    ;Company,ID                              ;Clustered=Yes }
+    {    ;ID                                       }
+  }
+  FIELDGROUPS
+  {
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

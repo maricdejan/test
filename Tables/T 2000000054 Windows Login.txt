@@ -1,0 +1,42 @@
+OBJECT Table 2000000054 Windows Login
+{
+  OBJECT-PROPERTIES
+  {
+    Date=25.05.05;
+    Time=12:00:00;
+    Version List=;
+  }
+  PROPERTIES
+  {
+    DataPerCompany=No;
+    CaptionML=[DEU=Windows Anmeldung;
+               ENU=Windows Login];
+  }
+  FIELDS
+  {
+    { 1   ;   ;SID                 ;Text119       ;CaptionML=[DEU=SID;
+                                                              ENU=SID] }
+    { 2   ;   ;ID                  ;Text132       ;FieldClass=FlowField;
+                                                   CalcFormula=Lookup("SID - Account ID".ID WHERE (SID=FIELD(SID)));
+                                                   CaptionML=[DEU=ID;
+                                                              ENU=ID] }
+    { 3   ;   ;Name                ;Text208       ;FieldClass=FlowField;
+                                                   CalcFormula=Lookup("SID - Account ID".ID WHERE (SID=FIELD(SID)));
+                                                   CaptionML=[DEU=Name;
+                                                              ENU=Name] }
+  }
+  KEYS
+  {
+    {    ;SID                                     ;Clustered=Yes }
+  }
+  FIELDGROUPS
+  {
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

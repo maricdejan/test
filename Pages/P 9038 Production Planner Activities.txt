@@ -1,0 +1,137 @@
+OBJECT Page 9038 Production Planner Activities
+{
+  OBJECT-PROPERTIES
+  {
+    Date=05.11.08;
+    Time=12:00:00;
+    Version List=NAVW16.00;
+  }
+  PROPERTIES
+  {
+    CaptionML=[DEU=AktivitÑten;
+               ENU=Activities];
+    SourceTable=Table9056;
+    PageType=CardPart;
+    OnOpenPage=BEGIN
+                 RESET;
+                 IF NOT GET THEN BEGIN
+                   INIT;
+                   INSERT;
+                 END;
+
+                 SETRANGE("User ID Filter",USERID);
+               END;
+
+  }
+  CONTROLS
+  {
+    { 1900000001;0;Container;
+                ContainerType=ContentArea }
+
+    { 2   ;1   ;Group     ;
+                CaptionML=[DEU=FertigungsauftrÑge;
+                           ENU=Production Orders];
+                GroupType=CueGroup;
+                ActionList=ACTIONS
+                {
+                  { 21      ;0   ;Action    ;
+                                  CaptionML=[DEU=FA-Status Ñndern;
+                                             ENU=Change Production Order Status];
+                                  RunObject=Page 99000914;
+                                  Image=ChangeStatus }
+                  { 12      ;0   ;Action    ;
+                                  CaptionML=[DEU=Neuer Fertigungsauftrag;
+                                             ENU=New Production Order];
+                                  RunObject=Page 99000813;
+                                  RunFormMode=Create }
+                  { 28      ;0   ;Action    ;
+                                  CaptionML=[DEU=Navigate;
+                                             ENU=Navigate];
+                                  RunObject=Page 344;
+                                  Image=Navigate }
+                }
+                 }
+
+    { 1   ;2   ;Field     ;
+                SourceExpr="Planned Prod. Orders - All";
+                DrillDownFormID=Planned Production Orders }
+
+    { 5   ;2   ;Field     ;
+                SourceExpr="Firm Plan. Prod. Orders - All";
+                DrillDownFormID=Firm Planned Prod. Orders }
+
+    { 7   ;2   ;Field     ;
+                SourceExpr="Released Prod. Orders - All";
+                DrillDownFormID=Released Production Orders }
+
+    { 3   ;1   ;Group     ;
+                CaptionML=[DEU=Planung - ArbeitsgÑnge;
+                           ENU=Planning - Operations];
+                GroupType=CueGroup;
+                ActionList=ACTIONS
+                {
+                  { 15      ;0   ;Action    ;
+                                  CaptionML=[DEU=Neue Bestellung;
+                                             ENU=New Purchase Order];
+                                  RunObject=Page 50;
+                                  RunFormMode=Create }
+                  { 16      ;0   ;Action    ;
+                                  CaptionML=[DEU=Planungsvorschlag bearbeiten;
+                                             ENU=Edit Planning Worksheet];
+                                  RunObject=Page 99000852 }
+                  { 17      ;0   ;Action    ;
+                                  CaptionML=[DEU=Fremdarbeitenvorschlag bearbeiten;
+                                             ENU=Edit Subcontracting Worksheet];
+                                  RunObject=Page 99000886 }
+                }
+                 }
+
+    { 11  ;2   ;Field     ;
+                DrillDown=Yes;
+                CaptionML=[DEU=Meine Bestellungen;
+                           ENU=My Purchase Orders];
+                SourceExpr="Purchase Orders";
+                DrillDownFormID=Purchase Order List }
+
+    { 10  ;1   ;Group     ;
+                CaptionML=[DEU=Design;
+                           ENU=Design];
+                GroupType=CueGroup;
+                ActionList=ACTIONS
+                {
+                  { 24      ;0   ;Action    ;
+                                  CaptionML=[DEU=Neuer Artikel;
+                                             ENU=New Item];
+                                  RunObject=Page 30;
+                                  Image=NewItem;
+                                  RunFormMode=Create }
+                  { 25      ;0   ;Action    ;
+                                  CaptionML=[DEU=Neue FertigungsstÅckliste;
+                                             ENU=New Production BOM];
+                                  RunObject=Page 99000786;
+                                  RunFormMode=Create }
+                  { 26      ;0   ;Action    ;
+                                  CaptionML=[DEU=Neuer Arbeitsplan;
+                                             ENU=New Routing];
+                                  RunObject=Page 99000766;
+                                  RunFormMode=Create }
+                }
+                 }
+
+    { 19  ;2   ;Field     ;
+                SourceExpr="Prod. BOMs under Development";
+                DrillDownFormID=Production BOM List }
+
+    { 18  ;2   ;Field     ;
+                SourceExpr="Routings under Development";
+                DrillDownFormID=Routing List }
+
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

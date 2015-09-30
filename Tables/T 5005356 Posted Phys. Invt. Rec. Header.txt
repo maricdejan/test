@@ -1,0 +1,95 @@
+OBJECT Table 5005356 Posted Phys. Invt. Rec. Header
+{
+  OBJECT-PROPERTIES
+  {
+    Date=01.10.04;
+    Time=12:00:00;
+    Version List=NAVDACH4.00;
+  }
+  PROPERTIES
+  {
+    OnDelete=BEGIN
+               LOCKTABLE;
+
+               PostedPhysInvtRecordingLine.RESET;
+               PostedPhysInvtRecordingLine.SETRANGE("Order No.", "Order No.");
+               PostedPhysInvtRecordingLine.SETRANGE("Recording No.", "Recording No.");
+               PostedPhysInvtRecordingLine.DELETEALL(TRUE);
+
+               PhysInvtCommentLine.RESET;
+               PhysInvtCommentLine.SETRANGE("Document Type", PhysInvtCommentLine."Document Type"::"Posted Recording");
+               PhysInvtCommentLine.SETRANGE("Order No.", "Order No.");
+               PhysInvtCommentLine.SETRANGE("Recording No.", "Recording No.");
+               PhysInvtCommentLine.DELETEALL;
+             END;
+
+    CaptionML=[DEU=Geb. Inventurerfassungskopf;
+               ENU=Posted Phys. Invt. Rec. Header];
+    LookupFormID=Form5005363;
+    DrillDownFormID=Form5005363;
+  }
+  FIELDS
+  {
+    { 1   ;   ;Order No.           ;Code20        ;TableRelation="Phys. Inventory Order Header";
+                                                   CaptionML=[DEU=Auftragsnr.;
+                                                              ENU=Order No.] }
+    { 2   ;   ;Recording No.       ;Integer       ;CaptionML=[DEU=Erfassungsnr.;
+                                                              ENU=Recording No.];
+                                                   Editable=No }
+    { 10  ;   ;Description         ;Text50        ;CaptionML=[DEU=Beschreibung;
+                                                              ENU=Description] }
+    { 11  ;   ;Status              ;Option        ;CaptionML=[DEU=Status;
+                                                              ENU=Status];
+                                                   OptionCaptionML=[DEU=Offen,Beendet;
+                                                                    ENU=Open,Finished];
+                                                   OptionString=Open,Finished;
+                                                   Editable=No }
+    { 30  ;   ;Comment             ;Boolean       ;FieldClass=FlowField;
+                                                   CalcFormula=Exist("Phys. Inventory Comment Line" WHERE (Document Type=CONST(Posted Recording),
+                                                                                                           Order No.=FIELD(Order No.),
+                                                                                                           Recording No.=FIELD(Recording No.)));
+                                                   CaptionML=[DEU=Bemerkung;
+                                                              ENU=Comment];
+                                                   Editable=No }
+    { 31  ;   ;Person Responsible  ;Code20        ;TableRelation=Employee;
+                                                   ValidateTableRelation=No;
+                                                   TestTableRelation=No;
+                                                   CaptionML=[DEU=Verantwortlich;
+                                                              ENU=Person Responsible] }
+    { 40  ;   ;Recording without order permit;Boolean;
+                                                   CaptionML=[DEU=Erfassung ohne Auftrag erlaubt;
+                                                              ENU=Recording without order permit] }
+    { 100 ;   ;Date Recorded       ;Date          ;CaptionML=[DEU=Erfassungsdatum;
+                                                              ENU=Date Recorded] }
+    { 101 ;   ;Time Recorded       ;Time          ;CaptionML=[DEU=Erfassungszeit;
+                                                              ENU=Time Recorded] }
+    { 102 ;   ;Person Recorded     ;Code20        ;TableRelation=Employee;
+                                                   ValidateTableRelation=No;
+                                                   TestTableRelation=No;
+                                                   CaptionML=[DEU=Erfasst von;
+                                                              ENU=Person Recorded] }
+    { 110 ;   ;Location Code       ;Code10        ;TableRelation=Location;
+                                                   CaptionML=[DEU=Lagerortcode;
+                                                              ENU=Location Code] }
+    { 111 ;   ;Bin Code            ;Code20        ;TableRelation=Bin.Code WHERE (Location Code=FIELD(Location Code));
+                                                   CaptionML=[DEU=Lagerplatzcode;
+                                                              ENU=Bin Code] }
+  }
+  KEYS
+  {
+    {    ;Order No.,Recording No.                 ;Clustered=Yes }
+  }
+  FIELDGROUPS
+  {
+  }
+  CODE
+  {
+    VAR
+      PostedPhysInvtRecordingLine@1140000 : Record 5005357;
+      PhysInvtCommentLine@1140001 : Record 5005358;
+
+    BEGIN
+    END.
+  }
+}
+

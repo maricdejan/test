@@ -1,0 +1,90 @@
+OBJECT Table 212 Job Posting Buffer
+{
+  OBJECT-PROPERTIES
+  {
+    Date=05.11.08;
+    Time=12:00:00;
+    Version List=NAVW16.00;
+  }
+  PROPERTIES
+  {
+    CaptionML=[DEU=Projektregulierungspuffer;
+               ENU=Job Posting Buffer];
+  }
+  FIELDS
+  {
+    { 1   ;   ;Job No.             ;Code20        ;TableRelation=Job;
+                                                   CaptionML=[DEU=Projektnr.;
+                                                              ENU=Job No.] }
+    { 2   ;   ;Entry Type          ;Option        ;CaptionML=[DEU=Postenart;
+                                                              ENU=Entry Type];
+                                                   OptionCaptionML=[DEU=Verbrauch,Verkauf;
+                                                                    ENU=Usage,Sale];
+                                                   OptionString=Usage,Sale }
+    { 3   ;   ;Posting Group Type  ;Option        ;CaptionML=[DEU=Buchungsgruppenart;
+                                                              ENU=Posting Group Type];
+                                                   OptionCaptionML=[DEU=Ressource,Artikel,Sachkonto;
+                                                                    ENU=Resource,Item,G/L Account];
+                                                   OptionString=Resource,Item,G/L Account }
+    { 4   ;   ;No.                 ;Code20        ;CaptionML=[DEU=Nr.;
+                                                              ENU=No.] }
+    { 5   ;   ;Posting Group       ;Code20        ;TableRelation="Job Posting Group";
+                                                   CaptionML=[DEU=Buchungsgruppe;
+                                                              ENU=Posting Group] }
+    { 6   ;   ;Global Dimension 1 Code;Code20     ;TableRelation="Dimension Value".Code WHERE (Global Dimension No.=CONST(1));
+                                                   CaptionML=[DEU=Globaler Dimensionscode 1;
+                                                              ENU=Global Dimension 1 Code];
+                                                   CaptionClass='1,1,1' }
+    { 7   ;   ;Global Dimension 2 Code;Code20     ;TableRelation="Dimension Value".Code WHERE (Global Dimension No.=CONST(2));
+                                                   CaptionML=[DEU=Globaler Dimensionscode 2;
+                                                              ENU=Global Dimension 2 Code];
+                                                   CaptionClass='1,1,2' }
+    { 8   ;   ;Unit of Measure Code;Code10        ;CaptionML=[DEU=Einheitencode;
+                                                              ENU=Unit of Measure Code] }
+    { 9   ;   ;Work Type Code      ;Code10        ;TableRelation="Work Type";
+                                                   CaptionML=[DEU=Arbeitstypencode;
+                                                              ENU=Work Type Code] }
+    { 20  ;   ;Amount              ;Decimal       ;CaptionML=[DEU=Betrag;
+                                                              ENU=Amount];
+                                                   AutoFormatType=1 }
+    { 21  ;   ;Quantity            ;Decimal       ;CaptionML=[DEU=Menge;
+                                                              ENU=Quantity];
+                                                   DecimalPlaces=0:5 }
+    { 22  ;   ;Total Cost          ;Decimal       ;CaptionML=[DEU=Einstandsbetrag;
+                                                              ENU=Total Cost];
+                                                   AutoFormatType=1 }
+    { 23  ;   ;Total Price         ;Decimal       ;CaptionML=[DEU=Verkaufsbetrag;
+                                                              ENU=Total Price];
+                                                   AutoFormatType=1 }
+    { 24  ;   ;Applies-to ID       ;Code20        ;CaptionML=[DEU=Ausgleichs-ID;
+                                                              ENU=Applies-to ID] }
+    { 25  ;   ;Gen. Bus. Posting Group;Code10     ;TableRelation="Gen. Business Posting Group";
+                                                   CaptionML=[DEU=Gesch„ftsbuchungsgruppe;
+                                                              ENU=Gen. Bus. Posting Group] }
+    { 26  ;   ;Gen. Prod. Posting Group;Code10    ;TableRelation="Gen. Product Posting Group";
+                                                   CaptionML=[DEU=Produktbuchungsgruppe;
+                                                              ENU=Gen. Prod. Posting Group] }
+    { 27  ;   ;Additional-Currency Amount;Decimal ;CaptionML=[DEU=Betrag (BW);
+                                                              ENU=Additional-Currency Amount];
+                                                   AutoFormatType=1 }
+    { 28  ;   ;Dimension Entry No. ;Integer       ;CaptionML=[DEU=Dimension Lfd. Nr.;
+                                                              ENU=Dimension Entry No.] }
+    { 29  ;   ;Variant Code        ;Code10        ;CaptionML=[DEU=Variantencode;
+                                                              ENU=Variant Code] }
+  }
+  KEYS
+  {
+    {    ;Job No.,Entry Type,Posting Group Type,No.,Variant Code,Posting Group,Gen. Bus. Posting Group,Gen. Prod. Posting Group,Unit of Measure Code,Work Type Code,Dimension Entry No.;
+                                                   Clustered=Yes }
+  }
+  FIELDGROUPS
+  {
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

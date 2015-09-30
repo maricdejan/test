@@ -1,0 +1,64 @@
+OBJECT Table 372 Payment Buffer
+{
+  OBJECT-PROPERTIES
+  {
+    Date=05.11.08;
+    Time=12:00:00;
+    Version List=NAVW16.00;
+  }
+  PROPERTIES
+  {
+    CaptionML=[DEU=Zahlungspuffer;
+               ENU=Payment Buffer];
+  }
+  FIELDS
+  {
+    { 1   ;   ;Vendor No.          ;Code20        ;TableRelation=Vendor;
+                                                   CaptionML=[DEU=Kreditorennr.;
+                                                              ENU=Vendor No.] }
+    { 2   ;   ;Currency Code       ;Code10        ;TableRelation=Currency;
+                                                   CaptionML=[DEU=W„hrungscode;
+                                                              ENU=Currency Code] }
+    { 3   ;   ;Vendor Ledg. Entry No.;Integer     ;TableRelation="Vendor Ledger Entry";
+                                                   CaptionML=[DEU=Kreditorenposten Lfd. Nr.;
+                                                              ENU=Vendor Ledg. Entry No.] }
+    { 4   ;   ;Dimension Entry No. ;Integer       ;CaptionML=[DEU=Dimension Lfd. Nr.;
+                                                              ENU=Dimension Entry No.] }
+    { 5   ;   ;Global Dimension 1 Code;Code20     ;TableRelation="Dimension Value".Code WHERE (Global Dimension No.=CONST(1));
+                                                   CaptionML=[DEU=Globaler Dimensionscode 1;
+                                                              ENU=Global Dimension 1 Code];
+                                                   CaptionClass='1,1,1' }
+    { 6   ;   ;Global Dimension 2 Code;Code20     ;TableRelation="Dimension Value".Code WHERE (Global Dimension No.=CONST(2));
+                                                   CaptionML=[DEU=Globaler Dimensionscode 2;
+                                                              ENU=Global Dimension 2 Code];
+                                                   CaptionClass='1,1,2' }
+    { 7   ;   ;Document No.        ;Code20        ;CaptionML=[DEU=Belegnr.;
+                                                              ENU=Document No.] }
+    { 8   ;   ;Amount              ;Decimal       ;CaptionML=[DEU=Betrag;
+                                                              ENU=Amount];
+                                                   AutoFormatType=1 }
+    { 9   ;   ;Vendor Ledg. Entry Doc. Type;Option;CaptionML=[DEU=Kreditorenposten Belegart;
+                                                              ENU=Vendor Ledg. Entry Doc. Type];
+                                                   OptionCaptionML=[DEU=" ,Zahlung,Rechnung,Gutschrift,Zinsrechnung,Mahnung,Erstattung";
+                                                                    ENU=" ,Payment,Invoice,Credit Memo,Finance Charge Memo,Reminder,Refund"];
+                                                   OptionString=[ ,Payment,Invoice,Credit Memo,Finance Charge Memo,Reminder,Refund] }
+    { 10  ;   ;Vendor Ledg. Entry Doc. No.;Code20 ;CaptionML=[DEU=Kreditorenposten Belegnr.;
+                                                              ENU=Vendor Ledg. Entry Doc. No.] }
+  }
+  KEYS
+  {
+    {    ;Vendor No.,Currency Code,Vendor Ledg. Entry No.,Dimension Entry No.;
+                                                   Clustered=Yes }
+    {    ;Document No.                             }
+  }
+  FIELDGROUPS
+  {
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

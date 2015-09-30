@@ -1,0 +1,67 @@
+OBJECT Table 2000000068 Record Link
+{
+  OBJECT-PROPERTIES
+  {
+    Date=11.12.10;
+    Time=12:00:00;
+    Version List=;
+  }
+  PROPERTIES
+  {
+    DataPerCompany=No;
+    CaptionML=[DEU=DatensatzverknÅpfung;
+               ENU=Record Link];
+  }
+  FIELDS
+  {
+    { 1   ;   ;Link ID             ;Integer       ;AutoIncrement=Yes;
+                                                   CaptionML=[DEU=VerknÅpfungs-ID;
+                                                              ENU=Link ID] }
+    { 2   ;   ;Record ID           ;RecordID      ;CaptionML=[DEU=Datensatz-ID;
+                                                              ENU=Record ID] }
+    { 3   ;   ;URL1                ;Text250       ;CaptionML=[DEU=URL1;
+                                                              ENU=URL1] }
+    { 4   ;   ;URL2                ;Text250       ;CaptionML=[DEU=URL2;
+                                                              ENU=URL2] }
+    { 5   ;   ;URL3                ;Text250       ;CaptionML=[DEU=URL3;
+                                                              ENU=URL3] }
+    { 6   ;   ;URL4                ;Text250       ;CaptionML=[DEU=URL4;
+                                                              ENU=URL4] }
+    { 7   ;   ;Description         ;Text250       ;CaptionML=[DEU=Beschreibung;
+                                                              ENU=Description] }
+    { 8   ;   ;Type                ;Option        ;CaptionML=[DEU=Art;
+                                                              ENU=Type];
+                                                   OptionCaptionML=[DEU=VerknÅpfung,Notiz;
+                                                                    ENU=Link,Note];
+                                                   OptionString=Link,Note }
+    { 9   ;   ;Note                ;BLOB          ;CaptionML=[DEU=Hinweis;
+                                                              ENU=Note] }
+    { 10  ;   ;Created             ;DateTime      ;CaptionML=[DEU=Erstellt;
+                                                              ENU=Created] }
+    { 11  ;   ;User ID             ;Text132       ;CaptionML=[DEU=Benutzer-ID;
+                                                              ENU=User ID] }
+    { 12  ;   ;Company             ;Text30        ;TableRelation=Company.Name;
+                                                   CaptionML=[DEU=Mandant;
+                                                              ENU=Company] }
+    { 13  ;   ;Notify              ;Boolean       ;CaptionML=[DEU=Benachrichtigen;
+                                                              ENU=Notify] }
+    { 14  ;   ;To User ID          ;Text132       ;CaptionML=[DEU=An Benutzer-ID;
+                                                              ENU=To User ID] }
+  }
+  KEYS
+  {
+    {    ;Link ID                                 ;Clustered=Yes }
+    {    ;Record ID                                }
+    {    ;Company                                  }
+  }
+  FIELDGROUPS
+  {
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

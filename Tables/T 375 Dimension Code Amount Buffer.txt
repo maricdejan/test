@@ -1,0 +1,38 @@
+OBJECT Table 375 Dimension Code Amount Buffer
+{
+  OBJECT-PROPERTIES
+  {
+    Date=05.11.08;
+    Time=12:00:00;
+    Version List=NAVW16.00;
+  }
+  PROPERTIES
+  {
+    CaptionML=[DEU=Dimensionscode-Betragspuffer;
+               ENU=Dimension Code Amount Buffer];
+  }
+  FIELDS
+  {
+    { 1   ;   ;Line Code           ;Code20        ;CaptionML=[DEU=Zeilencode;
+                                                              ENU=Line Code] }
+    { 2   ;   ;Column Code         ;Code20        ;CaptionML=[DEU=Spaltencode;
+                                                              ENU=Column Code] }
+    { 3   ;   ;Amount              ;Decimal       ;CaptionML=[DEU=Betrag;
+                                                              ENU=Amount];
+                                                   AutoFormatType=1 }
+  }
+  KEYS
+  {
+    {    ;Line Code,Column Code                   ;Clustered=Yes }
+  }
+  FIELDGROUPS
+  {
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

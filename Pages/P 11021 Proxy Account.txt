@@ -1,0 +1,66 @@
+OBJECT Page 11021 Proxy Account
+{
+  OBJECT-PROPERTIES
+  {
+    Date=12.01.06;
+    Time=12:00:00;
+    Version List=NAVDACH4.00.02;
+  }
+  PROPERTIES
+  {
+    CaptionML=[DEU=Proxykonto;
+               ENU=Proxy Account];
+    PageType=ConfirmationDialog;
+    OnQueryClosePage=BEGIN
+                       IF CloseAction IN [ACTION::Cancel,ACTION::LookupCancel] THEN
+                           CancelOnPush;
+                     END;
+
+  }
+  CONTROLS
+  {
+    { 1900000001;0;Container;
+                ContainerType=ContentArea }
+
+    { 1140000;1;Group     ;
+                CaptionML=[DEU=Details;
+                           ENU=Details] }
+
+    { 1140005;2;Field     ;
+                CaptionClass=FORMAT (Text1140000) }
+
+    { 1140001;2;Field     ;
+                CaptionML=[DEU=Benutzer;
+                           ENU=User];
+                SourceExpr=ProxyUser }
+
+    { 1140003;2;Field     ;
+                ExtendedDatatype=Masked;
+                CaptionML=[DEU=Kennwort;
+                           ENU=Password];
+                SourceExpr=ProxyPassword }
+
+  }
+  CODE
+  {
+    VAR
+      Text1140000@1140000 : TextConst 'DEU=Bitte geben Sie Benutzer und Kennwort fÅr den Proxyserver ein.;ENU=Please enter User and Password for Proxy Server';
+      ProxyUser@1140001 : Text[30];
+      ProxyPassword@1140002 : Text[30];
+
+    PROCEDURE GetProxyUserAccount@1140000(VAR User@1140000 : Text[30];VAR Password@1140001 : Text[30]);
+    BEGIN
+      User := ProxyUser;
+      Password := ProxyPassword;
+    END;
+
+    LOCAL PROCEDURE CancelOnPush@19054690();
+    BEGIN
+      CurrPage.CLOSE
+    END;
+
+    BEGIN
+    END.
+  }
+}
+

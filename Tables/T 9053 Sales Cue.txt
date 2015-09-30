@@ -1,0 +1,89 @@
+OBJECT Table 9053 Sales Cue
+{
+  OBJECT-PROPERTIES
+  {
+    Date=05.11.08;
+    Time=12:00:00;
+    Version List=NAVW16.00;
+  }
+  PROPERTIES
+  {
+    CaptionML=[DEU=Verkaufsstapel;
+               ENU=Sales Cue];
+  }
+  FIELDS
+  {
+    { 1   ;   ;Primary Key         ;Code10        ;CaptionML=[DEU=PrimÑrschlÅssel;
+                                                              ENU=Primary Key] }
+    { 2   ;   ;Sales Quotes - Open ;Integer       ;FieldClass=FlowField;
+                                                   CalcFormula=Count("Sales Header" WHERE (Document Type=FILTER(Quote),
+                                                                                           Status=FILTER(Open)));
+                                                   CaptionML=[DEU=Verkaufsangebote - Offen;
+                                                              ENU=Sales Quotes - Open];
+                                                   Editable=No }
+    { 3   ;   ;Sales Orders - Open ;Integer       ;FieldClass=FlowField;
+                                                   CalcFormula=Count("Sales Header" WHERE (Document Type=FILTER(Order),
+                                                                                           Status=FILTER(Open)));
+                                                   CaptionML=[DEU=VerkaufsauftrÑge - Offen;
+                                                              ENU=Sales Orders - Open];
+                                                   Editable=No }
+    { 4   ;   ;Ready to Ship       ;Integer       ;FieldClass=FlowField;
+                                                   CalcFormula=Count("Sales Header" WHERE (Document Type=FILTER(Order),
+                                                                                           Status=FILTER(Released),
+                                                                                           Ship=FILTER(No),
+                                                                                           Shipment Date=FIELD(Date Filter2)));
+                                                   CaptionML=[DEU=Lieferbereit;
+                                                              ENU=Ready to Ship];
+                                                   Editable=No }
+    { 5   ;   ;Delayed             ;Integer       ;FieldClass=FlowField;
+                                                   CalcFormula=Count("Sales Header" WHERE (Document Type=FILTER(Order),
+                                                                                           Status=FILTER(Released),
+                                                                                           Shipment Date=FIELD(Date Filter)));
+                                                   CaptionML=[DEU=Verzîgert;
+                                                              ENU=Delayed];
+                                                   Editable=No }
+    { 6   ;   ;Sales Return Orders - All;Integer  ;FieldClass=FlowField;
+                                                   CalcFormula=Count("Sales Header" WHERE (Document Type=FILTER(Return Order),
+                                                                                           Status=FILTER(Open)));
+                                                   CaptionML=[DEU=Verkaufsreklamationen - Alle;
+                                                              ENU=Sales Return Orders - All];
+                                                   Editable=No }
+    { 7   ;   ;Sales Credit Memos - All;Integer   ;FieldClass=FlowField;
+                                                   CalcFormula=Count("Sales Header" WHERE (Document Type=FILTER(Credit Memo),
+                                                                                           Status=FILTER(Open)));
+                                                   CaptionML=[DEU=Verkaufsgutschriften - Alle;
+                                                              ENU=Sales Credit Memos - All];
+                                                   Editable=No }
+    { 8   ;   ;Partially Shipped   ;Integer       ;FieldClass=FlowField;
+                                                   CalcFormula=Count("Sales Header" WHERE (Document Type=FILTER(Order),
+                                                                                           Status=FILTER(Released),
+                                                                                           Ship=FILTER(Yes),
+                                                                                           Completely Shipped=FILTER(No),
+                                                                                           Shipment Date=FIELD(Date Filter2)));
+                                                   CaptionML=[DEU=Teilweise geliefert;
+                                                              ENU=Partially Shipped];
+                                                   Editable=No }
+    { 20  ;   ;Date Filter         ;Date          ;FieldClass=FlowFilter;
+                                                   CaptionML=[DEU=Datumsfilter;
+                                                              ENU=Date Filter];
+                                                   Editable=No }
+    { 21  ;   ;Date Filter2        ;Date          ;FieldClass=FlowFilter;
+                                                   CaptionML=[DEU=Datumsfilter2;
+                                                              ENU=Date Filter2];
+                                                   Editable=No }
+  }
+  KEYS
+  {
+    {    ;Primary Key                             ;Clustered=Yes }
+  }
+  FIELDGROUPS
+  {
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

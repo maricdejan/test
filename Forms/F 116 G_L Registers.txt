@@ -1,0 +1,166 @@
+OBJECT Form 116 G/L Registers
+{
+  OBJECT-PROPERTIES
+  {
+    Date=13.02.07;
+    Time=12:00:00;
+    Version List=NAVW15.00;
+  }
+  PROPERTIES
+  {
+    Width=16500;
+    Height=6710;
+    Editable=No;
+    CaptionML=[DEU=Fibujournale;
+               ENU=G/L Registers];
+    TableBoxID=1;
+    SourceTable=Table45;
+  }
+  CONTROLS
+  {
+    { 1   ;TableBox     ;220  ;220  ;16060;5500 ;HorzGlue=Both;
+                                                 VertGlue=Both }
+    { 2   ;TextBox      ;0    ;0    ;1650 ;0    ;ParentControl=1;
+                                                 InColumn=Yes;
+                                                 SourceExpr="No." }
+    { 3   ;Label        ;0    ;0    ;0    ;0    ;ParentControl=2;
+                                                 InColumnHeading=Yes }
+    { 4   ;TextBox      ;0    ;0    ;1650 ;0    ;ParentControl=1;
+                                                 InColumn=Yes;
+                                                 SourceExpr="Creation Date" }
+    { 5   ;Label        ;0    ;0    ;0    ;0    ;ParentControl=4;
+                                                 InColumnHeading=Yes }
+    { 18  ;TextBox      ;0    ;0    ;1650 ;0    ;ParentControl=1;
+                                                 InColumn=Yes;
+                                                 SourceExpr="User ID" }
+    { 19  ;Label        ;0    ;0    ;0    ;0    ;ParentControl=18;
+                                                 InColumnHeading=Yes }
+    { 6   ;TextBox      ;0    ;0    ;1650 ;0    ;ParentControl=1;
+                                                 InColumn=Yes;
+                                                 SourceExpr="Source Code" }
+    { 7   ;Label        ;0    ;0    ;0    ;0    ;ParentControl=6;
+                                                 InColumnHeading=Yes }
+    { 16  ;TextBox      ;0    ;0    ;1650 ;0    ;ParentControl=1;
+                                                 InColumn=Yes;
+                                                 SourceExpr="Journal Batch Name" }
+    { 17  ;Label        ;0    ;0    ;0    ;0    ;ParentControl=16;
+                                                 InColumnHeading=Yes }
+    { 33  ;CheckBox     ;7012 ;880  ;1700 ;440  ;Visible=No;
+                                                 ParentControl=1;
+                                                 InColumn=Yes;
+                                                 ShowCaption=No;
+                                                 SourceExpr=Reversed }
+    { 34  ;Label        ;0    ;0    ;0    ;0    ;ParentControl=33;
+                                                 InColumnHeading=Yes }
+    { 20  ;TextBox      ;0    ;0    ;1650 ;0    ;ParentControl=1;
+                                                 InColumn=Yes;
+                                                 SourceExpr="From Entry No." }
+    { 21  ;Label        ;0    ;0    ;0    ;0    ;ParentControl=20;
+                                                 InColumnHeading=Yes }
+    { 22  ;TextBox      ;0    ;0    ;1650 ;0    ;ParentControl=1;
+                                                 InColumn=Yes;
+                                                 SourceExpr="To Entry No." }
+    { 23  ;Label        ;0    ;0    ;0    ;0    ;ParentControl=22;
+                                                 InColumnHeading=Yes }
+    { 27  ;TextBox      ;10742;440  ;1650 ;440  ;ParentControl=1;
+                                                 InColumn=Yes;
+                                                 SourceExpr="From VAT Entry No." }
+    { 28  ;Label        ;0    ;0    ;0    ;0    ;ParentControl=27;
+                                                 InColumnHeading=Yes }
+    { 29  ;TextBox      ;12392;440  ;1650 ;440  ;ParentControl=1;
+                                                 InColumn=Yes;
+                                                 SourceExpr="To VAT Entry No." }
+    { 30  ;Label        ;0    ;0    ;0    ;0    ;ParentControl=29;
+                                                 InColumnHeading=Yes }
+    { 8   ;CommandButton;4400 ;5940 ;2200 ;550  ;HorzGlue=Right;
+                                                 VertGlue=Bottom;
+                                                 Default=Yes;
+                                                 PushAction=LookupOK;
+                                                 InvalidActionAppearance=Hide }
+    { 9   ;CommandButton;6820 ;5940 ;2200 ;550  ;HorzGlue=Right;
+                                                 VertGlue=Bottom;
+                                                 Cancel=Yes;
+                                                 PushAction=LookupCancel;
+                                                 InvalidActionAppearance=Hide }
+    { 10  ;MenuButton   ;9240 ;5940 ;2200 ;550  ;HorzGlue=Right;
+                                                 VertGlue=Bottom;
+                                                 CaptionML=[DEU=&Journal;
+                                                            ENU=&Register];
+                                                 Menu=MENUITEMS
+                                                 {
+                                                   { ID=11;
+                                                     PushAction=RunObject;
+                                                     CaptionML=[DEU=&Sachposten;
+                                                                ENU=General Ledger];
+                                                     RunObject=Codeunit 235 }
+                                                   { ID=12;
+                                                     PushAction=RunObject;
+                                                     CaptionML=[DEU=&Debitorenposten;
+                                                                ENU=Customer &Ledger];
+                                                     RunObject=Codeunit 236 }
+                                                   { ID=13;
+                                                     PushAction=RunObject;
+                                                     CaptionML=[DEU=K&reditorenposten;
+                                                                ENU=Ven&dor Ledger];
+                                                     RunObject=Codeunit 237 }
+                                                   { ID=24;
+                                                     PushAction=RunObject;
+                                                     CaptionML=[DEU=&Bankposten;
+                                                                ENU=Bank Account Ledger];
+                                                     RunObject=Codeunit 377 }
+                                                   { ID=25;
+                                                     PushAction=RunObject;
+                                                     CaptionML=[DEU=A&nlagenposten;
+                                                                ENU=Fixed &Asset Ledger];
+                                                     RunObject=Codeunit 5619 }
+                                                   { ID=26;
+                                                     PushAction=RunObject;
+                                                     CaptionML=[DEU=Wart&ungsposten;
+                                                                ENU=Maintenance Ledger];
+                                                     RunObject=Codeunit 5649 }
+                                                   { ID=14;
+                                                     PushAction=RunObject;
+                                                     CaptionML=[DEU=&MwSt.-Posten;
+                                                                ENU=VAT Entries];
+                                                     RunObject=Codeunit 238 }
+                                                   { ID=35;
+                                                     PushAction=RunObject;
+                                                     CaptionML=[DEU=Artikelpostenrelation;
+                                                                ENU=Item Ledger Relation];
+                                                     RunObject=Form 5823;
+                                                     RunFormLinkType=OnUpdate;
+                                                     RunFormView=SORTING(G/L Register No.);
+                                                     RunFormLink=G/L Register No.=FIELD(No.) }
+                                                 }
+                                                  }
+    { 15  ;CommandButton;14080;5940 ;2200 ;550  ;HorzGlue=Right;
+                                                 VertGlue=Bottom;
+                                                 PushAction=FormHelp }
+    { 31  ;MenuButton   ;11660;5940 ;2200 ;550  ;HorzGlue=Right;
+                                                 VertGlue=Bottom;
+                                                 CaptionML=[DEU=F&unktion;
+                                                            ENU=F&unctions];
+                                                 Menu=MENUITEMS
+                                                 {
+                                                   { ID=32;
+                                                     Ellipsis=Yes;
+                                                     CaptionML=[DEU=Journal stornieren;
+                                                                ENU=Reverse Register];
+                                                     OnPush=VAR
+                                                              ReversalEntry@1000 : Record 179;
+                                                            BEGIN
+                                                              TESTFIELD("No.");
+                                                              ReversalEntry.ReverseRegister("No.");
+                                                            END;
+                                                             }
+                                                 }
+                                                  }
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

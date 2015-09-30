@@ -1,0 +1,84 @@
+OBJECT Table 800 Online Map Setup
+{
+  OBJECT-PROPERTIES
+  {
+    Date=05.11.08;
+    Time=12:00:00;
+    Version List=NAVW16.00;
+  }
+  PROPERTIES
+  {
+    CaptionML=[DEU=Online Map-Einrichtung;
+               ENU=Online Map Setup];
+    LookupFormID=Form801;
+    DrillDownFormID=Form801;
+  }
+  FIELDS
+  {
+    { 1   ;   ;Primary Key         ;Code20        ;CaptionML=[DEU=PrimÑrschlÅssel;
+                                                              ENU=Primary Key] }
+    { 2   ;   ;Default Country/Region Code;Code10 ;TableRelation="Online Map Parameter Setup"."Country/Region Code";
+                                                   OnValidate=BEGIN
+                                                                CALCFIELDS("Default Country/Region Name");
+                                                              END;
+
+                                                   CaptionML=[DEU=StandardlÑnder-/-regionscode;
+                                                              ENU=Default Country/Region Code];
+                                                   Editable=No }
+    { 3   ;   ;Default Country/Region Name;Text50 ;FieldClass=FlowField;
+                                                   CalcFormula=Lookup(Country/Region.Name WHERE (Code=FIELD(Default Country/Region Code)));
+                                                   CaptionML=[DEU=StandardlÑnder-/-regionsname;
+                                                              ENU=Default Country/Region Name];
+                                                   Editable=No }
+    { 4   ;   ;Distance In         ;Option        ;CaptionML=[DEU=Entfernung in;
+                                                              ENU=Distance In];
+                                                   OptionCaptionML=[DEU=Meilen,Kilometern;
+                                                                    ENU=Miles,Kilometers];
+                                                   OptionString=Miles,Kilometers }
+    { 5   ;   ;Route               ;Option        ;CaptionML=[DEU=Route;
+                                                              ENU=Route];
+                                                   OptionCaptionML=[DEU=Schnellste,KÅrzeste;
+                                                                    ENU=Quickest,Shortest];
+                                                   OptionString=Quickest,Shortest }
+    { 6   ;   ;Default Language Code;Code10       ;TableRelation="Online Map Parameter Setup"."Language Code";
+                                                   OnValidate=VAR
+                                                                OnlineMapParamSetup@1000 : Record 801;
+                                                              BEGIN
+                                                                CALCFIELDS("Default Language Name");
+                                                                OnlineMapParamSetup.SETRANGE("Language Code","Default Language Code");
+                                                                IF OnlineMapParamSetup.FIND('-') THEN
+                                                                  VALIDATE("Default Country/Region Code",OnlineMapParamSetup."Country/Region Code")
+                                                                ELSE
+                                                                  ERROR(STRSUBSTNO(Text001,OnlineMapParamSetup."Language Code"));
+                                                              END;
+
+                                                   CaptionML=[DEU=Standardsprachcode;
+                                                              ENU=Default Language Code] }
+    { 7   ;   ;Default Language Name;Text50       ;FieldClass=FlowField;
+                                                   CalcFormula=Lookup(Language.Name WHERE (Code=FIELD(Default Language Code)));
+                                                   CaptionML=[DEU=Name der Standardsprache;
+                                                              ENU=Default Language Name];
+                                                   Editable=No }
+    { 8   ;   ;Show Maps In Language;Option       ;CaptionML=[DEU=Karten anzeigen in Sprache;
+                                                              ENU=Show Maps In Language];
+                                                   OptionCaptionML=[DEU="Standardsprache,Clientsprache ";
+                                                                    ENU="Default Language,Client Language "];
+                                                   OptionString=[Default Language,Client Language ] }
+  }
+  KEYS
+  {
+    {    ;Primary Key                             ;Clustered=Yes }
+  }
+  FIELDGROUPS
+  {
+  }
+  CODE
+  {
+    VAR
+      Text001@1000 : TextConst 'DEU=Dem Sprachcode %1 ist kein LÑnder-/Regionscode zugeordnet.;ENU=Language Code %1 has no related Country/Region Code.';
+
+    BEGIN
+    END.
+  }
+}
+

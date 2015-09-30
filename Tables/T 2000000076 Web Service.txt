@@ -1,0 +1,44 @@
+OBJECT Table 2000000076 Web Service
+{
+  OBJECT-PROPERTIES
+  {
+    Date=11.12.10;
+    Time=12:00:00;
+    Version List=;
+  }
+  PROPERTIES
+  {
+    DataPerCompany=No;
+    CaptionML=[DEU=Webdienst;
+               ENU=Web Service];
+  }
+  FIELDS
+  {
+    { 3   ;   ;Object Type         ;Option        ;CaptionML=[DEU=Objektart;
+                                                              ENU=Object Type];
+                                                   OptionCaptionML=[DEU=,,,,,Codeunit,,,Page;
+                                                                    ENU=,,,,,Codeunit,,,Page];
+                                                   OptionString=,,,,,Codeunit,,,Page }
+    { 6   ;   ;Object ID           ;Integer       ;TableRelation=Object.ID WHERE (Type=FIELD(Object Type));
+                                                   CaptionML=[DEU=Objekt-ID;
+                                                              ENU=Object ID] }
+    { 9   ;   ;Service Name        ;Text240       ;CaptionML=[DEU=Servicename;
+                                                              ENU=Service Name] }
+    { 12  ;   ;Published           ;Boolean       ;CaptionML=[DEU=Ver”ffentlicht;
+                                                              ENU=Published] }
+  }
+  KEYS
+  {
+    {    ;Object Type,Service Name                ;Clustered=Yes }
+  }
+  FIELDGROUPS
+  {
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

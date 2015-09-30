@@ -1,0 +1,283 @@
+OBJECT Table 252 General Posting Setup
+{
+  OBJECT-PROPERTIES
+  {
+    Date=05.11.08;
+    Time=12:00:00;
+    Version List=NAVW16.00;
+  }
+  PROPERTIES
+  {
+    CaptionML=[DEU=Buchungsmatrix Einrichtung;
+               ENU=General Posting Setup];
+    LookupFormID=Form314;
+    DrillDownFormID=Form314;
+  }
+  FIELDS
+  {
+    { 1   ;   ;Gen. Bus. Posting Group;Code10     ;TableRelation="Gen. Business Posting Group";
+                                                   CaptionML=[DEU=Gesch„ftsbuchungsgruppe;
+                                                              ENU=Gen. Bus. Posting Group] }
+    { 2   ;   ;Gen. Prod. Posting Group;Code10    ;TableRelation="Gen. Product Posting Group";
+                                                   CaptionML=[DEU=Produktbuchungsgruppe;
+                                                              ENU=Gen. Prod. Posting Group];
+                                                   NotBlank=Yes }
+    { 10  ;   ;Sales Account       ;Code20        ;TableRelation="G/L Account";
+                                                   OnValidate=BEGIN
+                                                                CheckGLAcc("Sales Account");
+                                                              END;
+
+                                                   CaptionML=[DEU=Warenverkaufskonto;
+                                                              ENU=Sales Account] }
+    { 11  ;   ;Sales Line Disc. Account;Code20    ;TableRelation="G/L Account";
+                                                   OnValidate=BEGIN
+                                                                CheckGLAcc("Sales Line Disc. Account");
+                                                              END;
+
+                                                   CaptionML=[DEU=Verk.-Zeilenrabattkonto;
+                                                              ENU=Sales Line Disc. Account] }
+    { 12  ;   ;Sales Inv. Disc. Account;Code20    ;TableRelation="G/L Account";
+                                                   OnValidate=BEGIN
+                                                                CheckGLAcc("Sales Inv. Disc. Account");
+                                                              END;
+
+                                                   CaptionML=[DEU=Verk.-Rechnungsrabattkonto;
+                                                              ENU=Sales Inv. Disc. Account] }
+    { 13  ;   ;Sales Pmt. Disc. Debit Acc.;Code20 ;TableRelation="G/L Account";
+                                                   OnValidate=BEGIN
+                                                                CheckGLAcc("Sales Pmt. Disc. Debit Acc.");
+                                                                IF "Sales Pmt. Disc. Debit Acc." <> '' THEN BEGIN
+                                                                  GLSetup.GET;
+                                                                  GLSetup.TESTFIELD("Adjust for Payment Disc.",TRUE);
+                                                                END;
+                                                              END;
+
+                                                   CaptionML=[DEU=Verk.-Skonto Sollkonto;
+                                                              ENU=Sales Pmt. Disc. Debit Acc.] }
+    { 14  ;   ;Purch. Account      ;Code20        ;TableRelation="G/L Account";
+                                                   OnValidate=BEGIN
+                                                                CheckGLAcc("Purch. Account");
+                                                              END;
+
+                                                   CaptionML=[DEU=Wareneinkaufskonto;
+                                                              ENU=Purch. Account] }
+    { 15  ;   ;Purch. Line Disc. Account;Code20   ;TableRelation="G/L Account";
+                                                   OnValidate=BEGIN
+                                                                CheckGLAcc("Purch. Line Disc. Account");
+                                                              END;
+
+                                                   CaptionML=[DEU=Eink.-Zeilenrabattkonto;
+                                                              ENU=Purch. Line Disc. Account] }
+    { 16  ;   ;Purch. Inv. Disc. Account;Code20   ;TableRelation="G/L Account";
+                                                   OnValidate=BEGIN
+                                                                CheckGLAcc("Purch. Inv. Disc. Account");
+                                                              END;
+
+                                                   CaptionML=[DEU=Eink.-Rechnungsrabattkonto;
+                                                              ENU=Purch. Inv. Disc. Account] }
+    { 17  ;   ;Purch. Pmt. Disc. Credit Acc.;Code20;
+                                                   TableRelation="G/L Account";
+                                                   OnValidate=BEGIN
+                                                                CheckGLAcc("Purch. Pmt. Disc. Credit Acc.");
+                                                                IF "Purch. Pmt. Disc. Credit Acc." <> '' THEN BEGIN
+                                                                  GLSetup.GET;
+                                                                  GLSetup.TESTFIELD("Adjust for Payment Disc.",TRUE);
+                                                                END;
+                                                              END;
+
+                                                   CaptionML=[DEU=Eink.-Skonto Habenkonto;
+                                                              ENU=Purch. Pmt. Disc. Credit Acc.] }
+    { 18  ;   ;COGS Account        ;Code20        ;TableRelation="G/L Account";
+                                                   OnValidate=BEGIN
+                                                                CheckGLAcc("COGS Account");
+                                                              END;
+
+                                                   CaptionML=[DEU=Lagerverbrauchskonto;
+                                                              ENU=COGS Account] }
+    { 19  ;   ;Inventory Adjmt. Account;Code20    ;TableRelation="G/L Account";
+                                                   OnValidate=BEGIN
+                                                                CheckGLAcc("Inventory Adjmt. Account");
+                                                              END;
+
+                                                   CaptionML=[DEU=Lagerkorrekturkonto;
+                                                              ENU=Inventory Adjmt. Account] }
+    { 24  ;   ;Job Sales Adjmt. Account;Code20    ;TableRelation="G/L Account";
+                                                   OnValidate=BEGIN
+                                                                CheckGLAcc("Job Sales Adjmt. Account");
+                                                              END;
+
+                                                   CaptionML=[DEU=Projektumsatzregul.-Konto;
+                                                              ENU=Job Sales Adjmt. Account] }
+    { 25  ;   ;Job Cost Adjmt. Account;Code20     ;TableRelation="G/L Account";
+                                                   OnValidate=BEGIN
+                                                                CheckGLAcc("Job Cost Adjmt. Account");
+                                                              END;
+
+                                                   CaptionML=[DEU=Projektkostenregul.-Konto;
+                                                              ENU=Job Cost Adjmt. Account] }
+    { 27  ;   ;Sales Credit Memo Account;Code20   ;TableRelation="G/L Account";
+                                                   OnValidate=BEGIN
+                                                                CheckGLAcc("Sales Credit Memo Account");
+                                                              END;
+
+                                                   CaptionML=[DEU=Verk.-Gutschriftskonto;
+                                                              ENU=Sales Credit Memo Account] }
+    { 28  ;   ;Purch. Credit Memo Account;Code20  ;TableRelation="G/L Account";
+                                                   OnValidate=BEGIN
+                                                                CheckGLAcc("Purch. Credit Memo Account");
+                                                              END;
+
+                                                   CaptionML=[DEU=Eink.-Gutschriftskonto;
+                                                              ENU=Purch. Credit Memo Account] }
+    { 30  ;   ;Sales Pmt. Disc. Credit Acc.;Code20;TableRelation="G/L Account";
+                                                   OnValidate=BEGIN
+                                                                CheckGLAcc("Sales Pmt. Disc. Credit Acc.");
+                                                                IF "Sales Pmt. Disc. Credit Acc." <> '' THEN BEGIN
+                                                                  GLSetup.GET;
+                                                                  GLSetup.TESTFIELD("Adjust for Payment Disc.",TRUE);
+                                                                END;
+                                                              END;
+
+                                                   CaptionML=[DEU=Verk.-Skonto Habenkonto;
+                                                              ENU=Sales Pmt. Disc. Credit Acc.] }
+    { 31  ;   ;Purch. Pmt. Disc. Debit Acc.;Code20;TableRelation="G/L Account";
+                                                   OnValidate=BEGIN
+                                                                CheckGLAcc("Purch. Pmt. Disc. Debit Acc.");
+                                                                IF "Purch. Pmt. Disc. Debit Acc." <> '' THEN BEGIN
+                                                                  GLSetup.GET;
+                                                                  GLSetup.TESTFIELD("Adjust for Payment Disc.",TRUE);
+                                                                END;
+                                                              END;
+
+                                                   CaptionML=[DEU=Eink.-Skonto Sollkonto;
+                                                              ENU=Purch. Pmt. Disc. Debit Acc.] }
+    { 32  ;   ;Sales Pmt. Tol. Debit Acc.;Code20  ;TableRelation="G/L Account";
+                                                   OnValidate=BEGIN
+                                                                CheckGLAcc("Sales Pmt. Tol. Debit Acc.");
+                                                                IF "Purch. Pmt. Disc. Debit Acc." <> '' THEN BEGIN
+                                                                  GLSetup.GET;
+                                                                  GLSetup.TESTFIELD("Adjust for Payment Disc.",TRUE);
+                                                                END;
+                                                              END;
+
+                                                   CaptionML=[DEU=Verk.-Zahlungstol. Sollkonto;
+                                                              ENU=Sales Pmt. Tol. Debit Acc.] }
+    { 33  ;   ;Sales Pmt. Tol. Credit Acc.;Code20 ;TableRelation="G/L Account";
+                                                   OnValidate=BEGIN
+                                                                CheckGLAcc("Sales Pmt. Tol. Credit Acc.");
+                                                                IF "Purch. Pmt. Disc. Debit Acc." <> '' THEN BEGIN
+                                                                  GLSetup.GET;
+                                                                  GLSetup.TESTFIELD("Adjust for Payment Disc.",TRUE);
+                                                                END;
+                                                              END;
+
+                                                   CaptionML=[DEU=Verk.-Zahlungstol. Habenkonto;
+                                                              ENU=Sales Pmt. Tol. Credit Acc.] }
+    { 34  ;   ;Purch. Pmt. Tol. Debit Acc.;Code20 ;TableRelation="G/L Account";
+                                                   OnValidate=BEGIN
+                                                                CheckGLAcc("Purch. Pmt. Tol. Debit Acc.");
+                                                                IF "Purch. Pmt. Disc. Debit Acc." <> '' THEN BEGIN
+                                                                  GLSetup.GET;
+                                                                  GLSetup.TESTFIELD("Adjust for Payment Disc.",TRUE);
+                                                                END;
+                                                              END;
+
+                                                   CaptionML=[DEU=Eink.-Zahlungstol. Sollkonto;
+                                                              ENU=Purch. Pmt. Tol. Debit Acc.] }
+    { 35  ;   ;Purch. Pmt. Tol. Credit Acc.;Code20;TableRelation="G/L Account";
+                                                   OnValidate=BEGIN
+                                                                CheckGLAcc("Purch. Pmt. Tol. Credit Acc.");
+                                                                IF "Purch. Pmt. Disc. Debit Acc." <> '' THEN BEGIN
+                                                                  GLSetup.GET;
+                                                                  GLSetup.TESTFIELD("Adjust for Payment Disc.",TRUE);
+                                                                END;
+                                                              END;
+
+                                                   CaptionML=[DEU=Eink.-Zahlungstol. Habenkonto;
+                                                              ENU=Purch. Pmt. Tol. Credit Acc.] }
+    { 36  ;   ;Sales Prepayments Account;Code20   ;TableRelation="G/L Account";
+                                                   OnValidate=BEGIN
+                                                                CheckGLAcc("Sales Prepayments Account");
+                                                              END;
+
+                                                   CaptionML=[DEU=Verkaufsvorauszahlungs-Konto;
+                                                              ENU=Sales Prepayments Account] }
+    { 37  ;   ;Purch. Prepayments Account;Code20  ;TableRelation="G/L Account";
+                                                   OnValidate=BEGIN
+                                                                CheckGLAcc("Purch. Prepayments Account");
+                                                              END;
+
+                                                   CaptionML=[DEU=Einkaufsvorauszahlungs-Konto;
+                                                              ENU=Purch. Prepayments Account] }
+    { 5600;   ;Purch. FA Disc. Account;Code20     ;TableRelation="G/L Account";
+                                                   OnValidate=BEGIN
+                                                                CheckGLAcc("Purch. FA Disc. Account");
+                                                              END;
+
+                                                   CaptionML=[DEU=Eink.-Anlagenrabattkonto;
+                                                              ENU=Purch. FA Disc. Account] }
+    { 5801;   ;Invt. Accrual Acc. (Interim);Code20;TableRelation="G/L Account";
+                                                   OnValidate=BEGIN
+                                                                CheckGLAcc("Invt. Accrual Acc. (Interim)");
+                                                              END;
+
+                                                   CaptionML=[DEU=Lagerzugangskonto (Interim);
+                                                              ENU=Invt. Accrual Acc. (Interim)] }
+    { 5803;   ;COGS Account (Interim);Code20      ;TableRelation="G/L Account";
+                                                   OnValidate=BEGIN
+                                                                CheckGLAcc("COGS Account (Interim)");
+                                                              END;
+
+                                                   CaptionML=[DEU=Lagerverbrauchskonto (Interim);
+                                                              ENU=COGS Account (Interim)] }
+    { 99000752;;Direct Cost Applied Account;Code20;TableRelation="G/L Account";
+                                                   OnValidate=BEGIN
+                                                                CheckGLAcc("Direct Cost Applied Account");
+                                                              END;
+
+                                                   CaptionML=[DEU=Direkte Kosten Verrech.-Konto;
+                                                              ENU=Direct Cost Applied Account] }
+    { 99000753;;Overhead Applied Account;Code20   ;TableRelation="G/L Account";
+                                                   OnValidate=BEGIN
+                                                                CheckGLAcc("Overhead Applied Account");
+                                                              END;
+
+                                                   CaptionML=[DEU=Gemeinkostenverrechnungskonto;
+                                                              ENU=Overhead Applied Account] }
+    { 99000754;;Purchase Variance Account;Code20  ;TableRelation="G/L Account";
+                                                   OnValidate=BEGIN
+                                                                CheckGLAcc("Purchase Variance Account");
+                                                              END;
+
+                                                   CaptionML=[DEU=Einkaufsabweichungskonto;
+                                                              ENU=Purchase Variance Account] }
+  }
+  KEYS
+  {
+    {    ;Gen. Bus. Posting Group,Gen. Prod. Posting Group;
+                                                   Clustered=Yes }
+    {    ;Gen. Prod. Posting Group,Gen. Bus. Posting Group }
+  }
+  FIELDGROUPS
+  {
+  }
+  CODE
+  {
+    VAR
+      GLSetup@1000 : Record 98;
+
+    LOCAL PROCEDURE CheckGLAcc@2(AccNo@1000 : Code[20]);
+    VAR
+      GLAcc@1001 : Record 15;
+    BEGIN
+      IF AccNo <> '' THEN BEGIN
+        GLAcc.GET(AccNo);
+        GLAcc.CheckGLAcc;
+      END;
+    END;
+
+    BEGIN
+    END.
+  }
+}
+

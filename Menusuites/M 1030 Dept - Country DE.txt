@@ -1,0 +1,75 @@
+OBJECT MenuSuite 1030 Dept - Country DE
+{
+  OBJECT-PROPERTIES
+  {
+    Date=14.08.09;
+    Time=12:00:00;
+    Version List=NAVDE6.00.01;
+  }
+  PROPERTIES
+  {
+  }
+  MENUNODES
+  {
+    {                ;[{06E5A214-491B-4EC8-BFFE-1A99534972A2}] ;Deleted=Yes }
+    {                ;[{71BC9BE2-3B48-430F-9F15-D6D3E58DE459}] ;Deleted=Yes }
+    {                ;[{9BAB2056-B403-43A6-A7CD-FB88215CF166}] ;Deleted=Yes }
+    {                ;[{6F1C7D34-46A7-43E9-8238-A0C24D2BF276}] ;NextNodeID=[{9FCCA059-53FA-400D-87EC-6F152BA33812}];
+                                                                Deleted=Yes }
+    {                ;[{6D46C32B-7444-43DF-8031-73CA6B1853F6}] ;Deleted=Yes }
+    {                ;[{996FAABB-5F19-4855-9EDA-2D6FCBB023F1}] ;Deleted=Yes }
+    {                ;[{AD837DA9-676E-4361-9F06-8C564AC3A7D2}] ;Deleted=Yes }
+    {                ;[{D9EA6198-93A2-44FD-91E1-5713CBAAA81B}] ;Deleted=Yes }
+    {                ;[{D7D691B0-E62F-490A-ADBE-1BADCB88D441}] ;Deleted=Yes }
+    {                ;[{2D2855D7-7960-4B98-824B-5530D7A651A8}] ;Deleted=Yes }
+    {                ;[{08C8A480-9A90-4517-8FAB-E8435D1A7C7D}] ;Deleted=Yes }
+    {                ;[{8202F27D-B049-457E-86B5-57E17A7C47AC}] ;Deleted=Yes }
+    { MenuItem       ;[{9FCCA059-53FA-400D-87EC-6F152BA33812}] ;Name=Crossborder Services;
+                                                                CaptionML=[DEU=GrenzÅberschreitende Services;
+                                                                           ENU=Crossborder Services];
+                                                                RunObjectType=Report;
+                                                                RunObjectID=11111;
+                                                                Visible=Yes;
+                                                                NextNodeID=[{98049953-C2B2-44AB-A6EA-197D620C9D96}];
+                                                                Deleted=Yes;
+                                                                DepartmentCategory=Reports and Analysis }
+    {                ;[{46ABA44B-DE9F-4A57-87AC-27A779810A0B}] ;NextNodeID=[{969A9DCE-380B-48B4-BA9D-0DA944925BB2}] }
+    { MenuItem       ;[{969A9DCE-380B-48B4-BA9D-0DA944925BB2}] ;Name=Crossborder Services;
+                                                                CaptionML=[DEU=GrenzÅberschreitende Services;
+                                                                           ENU=Crossborder Services];
+                                                                RunObjectType=Report;
+                                                                RunObjectID=11111;
+                                                                Visible=Yes;
+                                                                NextNodeID=[{F2596877-E625-46EC-B6AB-2989FC1AF3AC}];
+                                                                Deleted=Yes;
+                                                                DepartmentCategory=Reports and Analysis }
+    {                ;[{11267A09-6388-49C0-A075-87B9C0745CE9}] ;Deleted=Yes }
+    { MenuItem       ;[{98049953-C2B2-44AB-A6EA-197D620C9D96}] ;Name=Crossborder Services;
+                                                                CaptionML=[DEU=GrenzÅberschreitende Services;
+                                                                           ENU=Crossborder Services];
+                                                                RunObjectType=Report;
+                                                                RunObjectID=11111;
+                                                                Visible=Yes;
+                                                                Deleted=Yes;
+                                                                DepartmentCategory=Reports and Analysis }
+    { MenuItem       ;[{F2596877-E625-46EC-B6AB-2989FC1AF3AC}] ;Name=Crossborder Services;
+                                                                CaptionML=[DEU=GrenzÅberschreitende Services;
+                                                                           ENU=Crossborder Services];
+                                                                RunObjectType=Report;
+                                                                RunObjectID=11111;
+                                                                Visible=Yes;
+                                                                Deleted=Yes;
+                                                                DepartmentCategory=Reports and Analysis }
+    {                ;[{0EFD1761-879C-42E7-858A-10172B968190}] ;Deleted=Yes }
+    {                ;[{9DB27C21-181C-4F69-B321-6C04C8834AF7}] ;Deleted=Yes }
+    {                ;[{3D093CF6-A39B-4389-BC9A-D01CD5A6201D}] ;Deleted=Yes }
+    {                ;[{3FB68689-2B0F-4ED6-9151-16C2B073141B}] ;Deleted=Yes }
+    {                ;[{15AA7773-ABBC-4834-B698-B6FDB0BFDB5B}] ;Deleted=Yes }
+    {                ;[{91D950F1-08AD-4740-AFE4-9DFB93F6532B}] ;Deleted=Yes }
+    {                ;[{60C4DAE5-47E8-4A80-845E-9C149A1E25AE}] ;Deleted=Yes }
+    {                ;[{DDB89D23-2603-4CF0-856B-09B4A902C190}] ;Deleted=Yes }
+    {                ;[{5906F15B-8A21-42D1-95C6-D4B11617A85D}] ;Deleted=Yes }
+    {                ;[{0A2D6873-ADE2-4481-8F45-1F564E8DDA94}] ;Deleted=Yes }
+    {                ;[{949AB0CE-9C58-41B3-83EE-4897237C04CA}] ;Deleted=Yes }
+  }
+}

@@ -1,0 +1,590 @@
+OBJECT Form 230 Res. Gr. Statistics
+{
+  OBJECT-PROPERTIES
+  {
+    Date=05.11.08;
+    Time=12:00:00;
+    Version List=NAVW16.00;
+  }
+  PROPERTIES
+  {
+    Width=15950;
+    Height=8360;
+    Editable=No;
+    CaptionML=[DEU=Ressourcengr.-Statistik;
+               ENU=Res. Gr. Statistics];
+    LinksAllowed=No;
+    SourceTable=Table152;
+    OnAfterGetRecord=BEGIN
+                       SETRANGE("No.");
+
+                       IF CurrentDate <> WORKDATE THEN BEGIN
+                         CurrentDate := WORKDATE;
+                         DateFilterCalc.CreateAccountingPeriodFilter(ResGrDateFilter[1],ResGrDateName[1],CurrentDate,0);
+                         DateFilterCalc.CreateFiscalYearFilter(ResGrDateFilter[2],ResGrDateName[2],CurrentDate,0);
+                         DateFilterCalc.CreateFiscalYearFilter(ResGrDateFilter[3],ResGrDateName[3],CurrentDate,-1);
+                       END;
+
+                       CLEAR(TotalUsageUnits);
+
+                       FOR i := 1 TO 4 DO BEGIN
+                         SETFILTER("Date Filter",ResGrDateFilter[i]);
+                         SETRANGE("Chargeable Filter");
+                         CALCFIELDS(Capacity,"Usage (Cost)","Sales (Price)");
+
+                         ResGrCapacity[i] := Capacity;
+                         ResGrUsageCost[i] := "Usage (Cost)";
+                         UnitPrice[i] := "Sales (Price)";
+
+                         FOR j := 1 TO 2 DO BEGIN
+                           IF j = 1 THEN
+                             Chargeable := FALSE
+                           ELSE
+                             Chargeable := TRUE;
+                           SETRANGE("Chargeable Filter",Chargeable);
+                           CALCFIELDS("Usage (Qty.)","Usage (Price)");
+                           ResGrUsageUnits[i][j] := "Usage (Qty.)";
+                           ResGrUsagePrice[i][j] := "Usage (Price)";
+                           TotalUsageUnits[i] := TotalUsageUnits[i] + "Usage (Qty.)";
+                         END;
+
+                         UnusedCapacity[i] := ResGrCapacity[i] - TotalUsageUnits[i];
+                         ChargeablePct[i] := CalcPercentage(ResGrUsageUnits[i][2],TotalUsageUnits[i]);
+                         InvoicedPct[i] := CalcPercentage(UnitPrice[i],ResGrUsagePrice[i][2]);
+                         Profit[i] := UnitPrice[i] - ResGrUsageCost[i];
+                         ResGrProfitPct[i] := CalcPercentage(Profit[i],UnitPrice[i]);
+                       END;
+
+                       SETRANGE("Date Filter");
+                       SETRANGE("Chargeable Filter");
+                     END;
+
+  }
+  CONTROLS
+  {
+    { 75  ;CommandButton;13530;7590 ;2200 ;550  ;HorzGlue=Right;
+                                                 VertGlue=Bottom;
+                                                 PushAction=FormHelp }
+    { 2   ;TabControl   ;220  ;220  ;15510;7260 ;HorzGlue=Both;
+                                                 VertGlue=Both;
+                                                 PageNamesML=[DEU=Verbrauch,Verkauf;
+                                                              ENU=Usage,Sale] }
+    { 9   ;Label        ;6820 ;990  ;2750 ;440  ;ParentControl=2;
+                                                 InPage=0;
+                                                 HorzAlign=Right;
+                                                 LeaderDots=No;
+                                                 CaptionML=[DEU=Dieses Jahr;
+                                                            ENU=This Year] }
+    { 8   ;TextBox      ;3850 ;1540 ;2750 ;440  ;Focusable=No;
+                                                 ParentControl=2;
+                                                 InPage=0;
+                                                 HorzAlign=Right;
+                                                 BackTransparent=Yes;
+                                                 Border=No;
+                                                 SourceExpr=ResGrDateName[1] }
+    { 10  ;Label        ;9790 ;990  ;2750 ;440  ;ParentControl=2;
+                                                 InPage=0;
+                                                 HorzAlign=Right;
+                                                 LeaderDots=No;
+                                                 CaptionML=[DEU=Vorjahr;
+                                                            ENU=Last Year] }
+    { 11  ;Label        ;12760;990  ;2750 ;440  ;ParentControl=2;
+                                                 InPage=0;
+                                                 HorzAlign=Right;
+                                                 LeaderDots=No;
+                                                 CaptionML=[DEU=Gesamt;
+                                                            ENU=Total] }
+    { 22  ;Label        ;440  ;2640 ;3300 ;440  ;ParentControl=2;
+                                                 InPage=0;
+                                                 CaptionML=[DEU=Freie Kapazit„t;
+                                                            ENU=Unused Capacity] }
+    { 17  ;Label        ;440  ;2090 ;3300 ;440  ;ParentControl=2;
+                                                 InPage=0;
+                                                 CaptionML=[DEU=Kapazit„t;
+                                                            ENU=Capacity] }
+    { 13  ;TextBox      ;3850 ;2090 ;2750 ;440  ;ParentControl=2;
+                                                 InPage=0;
+                                                 CaptionML=[DEU=Kapazit„t;
+                                                            ENU=Capacity];
+                                                 DecimalPlaces=0:5;
+                                                 SourceExpr=ResGrCapacity[1] }
+    { 18  ;TextBox      ;3850 ;2640 ;2750 ;440  ;ParentControl=2;
+                                                 InPage=0;
+                                                 CaptionML=[DEU=Freie Kapazit„t;
+                                                            ENU=Unused Capacity];
+                                                 DecimalPlaces=0:5;
+                                                 SourceExpr=UnusedCapacity[1] }
+    { 14  ;TextBox      ;6820 ;2090 ;2750 ;440  ;ParentControl=2;
+                                                 InPage=0;
+                                                 CaptionML=[DEU=Kapazit„t;
+                                                            ENU=Capacity];
+                                                 DecimalPlaces=0:5;
+                                                 SourceExpr=ResGrCapacity[2] }
+    { 19  ;TextBox      ;6820 ;2640 ;2750 ;440  ;ParentControl=2;
+                                                 InPage=0;
+                                                 CaptionML=[DEU=Freie Kapazit„t;
+                                                            ENU=Unused Capacity];
+                                                 DecimalPlaces=0:5;
+                                                 SourceExpr=UnusedCapacity[2] }
+    { 15  ;TextBox      ;9790 ;2090 ;2750 ;440  ;ParentControl=2;
+                                                 InPage=0;
+                                                 CaptionML=[DEU=Kapazit„t;
+                                                            ENU=Capacity];
+                                                 DecimalPlaces=0:5;
+                                                 SourceExpr=ResGrCapacity[3] }
+    { 16  ;TextBox      ;12760;2090 ;2750 ;440  ;ParentControl=2;
+                                                 InPage=0;
+                                                 CaptionML=[DEU=Kapazit„t;
+                                                            ENU=Capacity];
+                                                 DecimalPlaces=0:5;
+                                                 SourceExpr=ResGrCapacity[4] }
+    { 20  ;TextBox      ;9790 ;2640 ;2750 ;440  ;ParentControl=2;
+                                                 InPage=0;
+                                                 CaptionML=[DEU=Freie Kapazit„t;
+                                                            ENU=Unused Capacity];
+                                                 DecimalPlaces=0:5;
+                                                 SourceExpr=UnusedCapacity[3] }
+    { 21  ;TextBox      ;12760;2640 ;2750 ;440  ;ParentControl=2;
+                                                 InPage=0;
+                                                 CaptionML=[DEU=Freie Kapazit„t;
+                                                            ENU=Unused Capacity];
+                                                 DecimalPlaces=0:5;
+                                                 SourceExpr=UnusedCapacity[4] }
+    { 33  ;Label        ;660  ;4400 ;3080 ;440  ;ParentControl=2;
+                                                 InPage=0;
+                                                 CaptionML=[DEU=VK-Preis;
+                                                            ENU=Price] }
+    { 24  ;TextBox      ;3850 ;3850 ;2750 ;440  ;ParentControl=2;
+                                                 InPage=0;
+                                                 CaptionML=[DEU=Einheiten;
+                                                            ENU=Units];
+                                                 DecimalPlaces=0:5;
+                                                 SourceExpr=ResGrUsageUnits[1][1] }
+    { 28  ;Label        ;660  ;3850 ;3080 ;440  ;ParentControl=2;
+                                                 InPage=0;
+                                                 CaptionML=[DEU=Einheiten;
+                                                            ENU=Units] }
+    { 29  ;TextBox      ;3850 ;4400 ;2750 ;440  ;ParentControl=2;
+                                                 InPage=0;
+                                                 CaptionML=[DEU=VK-Preis;
+                                                            ENU=Price];
+                                                 SourceExpr=ResGrUsagePrice[1][1];
+                                                 AutoFormatType=1 }
+    { 23  ;Label        ;440  ;3300 ;3300 ;440  ;ParentControl=2;
+                                                 InPage=0;
+                                                 LeaderDots=No;
+                                                 CaptionML=[DEU=Nicht fakturierbar;
+                                                            ENU=Not Chargeable Usage] }
+    { 25  ;TextBox      ;6820 ;3850 ;2750 ;440  ;ParentControl=2;
+                                                 InPage=0;
+                                                 CaptionML=[DEU=Einheiten;
+                                                            ENU=Units];
+                                                 DecimalPlaces=0:5;
+                                                 SourceExpr=ResGrUsageUnits[2][1] }
+    { 30  ;TextBox      ;6820 ;4400 ;2750 ;440  ;ParentControl=2;
+                                                 InPage=0;
+                                                 CaptionML=[DEU=VK-Preis;
+                                                            ENU=Price];
+                                                 SourceExpr=ResGrUsagePrice[2][1];
+                                                 AutoFormatType=1 }
+    { 26  ;TextBox      ;9790 ;3850 ;2750 ;440  ;ParentControl=2;
+                                                 InPage=0;
+                                                 CaptionML=[DEU=Einheiten;
+                                                            ENU=Units];
+                                                 DecimalPlaces=0:5;
+                                                 SourceExpr=ResGrUsageUnits[3][1] }
+    { 31  ;TextBox      ;9790 ;4400 ;2750 ;440  ;ParentControl=2;
+                                                 InPage=0;
+                                                 CaptionML=[DEU=VK-Preis;
+                                                            ENU=Price];
+                                                 SourceExpr=ResGrUsagePrice[3][1];
+                                                 AutoFormatType=1 }
+    { 27  ;TextBox      ;12760;3850 ;2750 ;440  ;ParentControl=2;
+                                                 InPage=0;
+                                                 CaptionML=[DEU=Einheiten;
+                                                            ENU=Units];
+                                                 DecimalPlaces=0:5;
+                                                 SourceExpr=ResGrUsageUnits[4][1] }
+    { 32  ;TextBox      ;12760;4400 ;2750 ;440  ;ParentControl=2;
+                                                 InPage=0;
+                                                 CaptionML=[DEU=VK-Preis;
+                                                            ENU=Price];
+                                                 SourceExpr=ResGrUsagePrice[4][1];
+                                                 AutoFormatType=1 }
+    { 34  ;Label        ;440  ;5060 ;3300 ;440  ;ParentControl=2;
+                                                 InPage=0;
+                                                 LeaderDots=No;
+                                                 CaptionML=[DEU=Fakturierbar;
+                                                            ENU=Chargeable Usage] }
+    { 39  ;Label        ;660  ;5610 ;3080 ;440  ;ParentControl=2;
+                                                 InPage=0;
+                                                 CaptionML=[DEU=Einheiten;
+                                                            ENU=Units] }
+    { 44  ;Label        ;660  ;6160 ;3080 ;440  ;ParentControl=2;
+                                                 InPage=0;
+                                                 CaptionML=[DEU=VK-Preis;
+                                                            ENU=Price] }
+    { 35  ;TextBox      ;3850 ;5610 ;2750 ;440  ;ParentControl=2;
+                                                 InPage=0;
+                                                 CaptionML=[DEU=Einheiten;
+                                                            ENU=Units];
+                                                 DecimalPlaces=0:5;
+                                                 SourceExpr=ResGrUsageUnits[1][2] }
+    { 40  ;TextBox      ;3850 ;6160 ;2750 ;440  ;ParentControl=2;
+                                                 InPage=0;
+                                                 CaptionML=[DEU=VK-Preis;
+                                                            ENU=Price];
+                                                 SourceExpr=ResGrUsagePrice[1][2];
+                                                 AutoFormatType=1 }
+    { 36  ;TextBox      ;6820 ;5610 ;2750 ;440  ;ParentControl=2;
+                                                 InPage=0;
+                                                 CaptionML=[DEU=Einheiten;
+                                                            ENU=Units];
+                                                 DecimalPlaces=0:5;
+                                                 SourceExpr=ResGrUsageUnits[2][2] }
+    { 37  ;TextBox      ;9790 ;5610 ;2750 ;440  ;ParentControl=2;
+                                                 InPage=0;
+                                                 CaptionML=[DEU=Einheiten;
+                                                            ENU=Units];
+                                                 DecimalPlaces=0:5;
+                                                 SourceExpr=ResGrUsageUnits[3][2] }
+    { 41  ;TextBox      ;6820 ;6160 ;2750 ;440  ;ParentControl=2;
+                                                 InPage=0;
+                                                 CaptionML=[DEU=VK-Preis;
+                                                            ENU=Price];
+                                                 SourceExpr=ResGrUsagePrice[2][2];
+                                                 AutoFormatType=1 }
+    { 42  ;TextBox      ;9790 ;6160 ;2750 ;440  ;ParentControl=2;
+                                                 InPage=0;
+                                                 CaptionML=[DEU=VK-Preis;
+                                                            ENU=Price];
+                                                 SourceExpr=ResGrUsagePrice[3][2];
+                                                 AutoFormatType=1 }
+    { 38  ;TextBox      ;12760;5610 ;2750 ;440  ;ParentControl=2;
+                                                 InPage=0;
+                                                 CaptionML=[DEU=Einheiten;
+                                                            ENU=Units];
+                                                 DecimalPlaces=0:5;
+                                                 SourceExpr=ResGrUsageUnits[4][2] }
+    { 43  ;TextBox      ;12760;6160 ;2750 ;440  ;ParentControl=2;
+                                                 InPage=0;
+                                                 CaptionML=[DEU=VK-Preis;
+                                                            ENU=Price];
+                                                 SourceExpr=ResGrUsagePrice[4][2];
+                                                 AutoFormatType=1 }
+    { 46  ;TextBox      ;6820 ;6820 ;2750 ;440  ;ParentControl=2;
+                                                 InPage=0;
+                                                 CaptionML=[DEU=Fakturierbar % (Einh);
+                                                            ENU=Chargeable % (Units)];
+                                                 DecimalPlaces=1:1;
+                                                 SourceExpr=ChargeablePct[2] }
+    { 45  ;TextBox      ;3850 ;6820 ;2750 ;440  ;ParentControl=2;
+                                                 InPage=0;
+                                                 CaptionML=[DEU=Fakturierbar % (Einh);
+                                                            ENU=Chargeable % (Units)];
+                                                 DecimalPlaces=1:1;
+                                                 SourceExpr=ChargeablePct[1] }
+    { 49  ;Label        ;440  ;6820 ;3300 ;440  ;ParentControl=2;
+                                                 InPage=0;
+                                                 CaptionML=[DEU=Fakturierbar % (Einh);
+                                                            ENU=Chargeable % (Units)] }
+    { 47  ;TextBox      ;9790 ;6820 ;2750 ;440  ;ParentControl=2;
+                                                 InPage=0;
+                                                 CaptionML=[DEU=Fakturierbar % (Einh);
+                                                            ENU=Chargeable % (Units)];
+                                                 DecimalPlaces=1:1;
+                                                 SourceExpr=ChargeablePct[3] }
+    { 48  ;TextBox      ;12760;6820 ;2750 ;440  ;ParentControl=2;
+                                                 InPage=0;
+                                                 CaptionML=[DEU=Fakturierbar % (Einh);
+                                                            ENU=Chargeable % (Units)];
+                                                 DecimalPlaces=1:1;
+                                                 SourceExpr=ChargeablePct[4] }
+    { 1   ;Label        ;3850 ;990  ;2750 ;440  ;ParentControl=2;
+                                                 InPage=0;
+                                                 HorzAlign=Right;
+                                                 LeaderDots=No;
+                                                 CaptionML=[DEU=Diese Periode;
+                                                            ENU=This Period] }
+    { 7   ;TextBox      ;6820 ;1540 ;2750 ;440  ;Visible=No;
+                                                 ParentControl=2;
+                                                 InPage=0;
+                                                 ForeColor=65535;
+                                                 SourceExpr=Text000 }
+    { 12  ;TextBox      ;9790 ;1540 ;2750 ;440  ;Visible=No;
+                                                 ParentControl=2;
+                                                 InPage=0;
+                                                 ForeColor=65535;
+                                                 SourceExpr=Text000 }
+    { 76  ;TextBox      ;12760;1540 ;2750 ;440  ;Visible=No;
+                                                 ParentControl=2;
+                                                 InPage=0;
+                                                 ForeColor=65535;
+                                                 SourceExpr=Text000 }
+    { 77  ;TextBox      ;3850 ;3300 ;2750 ;440  ;Visible=No;
+                                                 ParentControl=2;
+                                                 InPage=0;
+                                                 ForeColor=65535;
+                                                 CaptionML=[DEU=Nicht fakturierbar;
+                                                            ENU=Not Chargeable Usage];
+                                                 SourceExpr=Text000 }
+    { 78  ;TextBox      ;6820 ;3300 ;2750 ;440  ;Visible=No;
+                                                 ParentControl=2;
+                                                 InPage=0;
+                                                 ForeColor=65535;
+                                                 SourceExpr=Text000 }
+    { 79  ;TextBox      ;9790 ;3300 ;2750 ;440  ;Visible=No;
+                                                 ParentControl=2;
+                                                 InPage=0;
+                                                 ForeColor=65535;
+                                                 SourceExpr=Text000 }
+    { 80  ;TextBox      ;12760;3300 ;2750 ;440  ;Visible=No;
+                                                 ParentControl=2;
+                                                 InPage=0;
+                                                 ForeColor=65535;
+                                                 SourceExpr=Text000 }
+    { 81  ;TextBox      ;3850 ;5060 ;2750 ;440  ;Visible=No;
+                                                 ParentControl=2;
+                                                 InPage=0;
+                                                 ForeColor=65535;
+                                                 CaptionML=[DEU=Fakturierbar;
+                                                            ENU=Chargeable Usage];
+                                                 SourceExpr=Text000 }
+    { 82  ;TextBox      ;6820 ;5060 ;2750 ;440  ;Visible=No;
+                                                 ParentControl=2;
+                                                 InPage=0;
+                                                 ForeColor=65535;
+                                                 SourceExpr=Text000 }
+    { 83  ;TextBox      ;9790 ;5060 ;2750 ;440  ;Visible=No;
+                                                 ParentControl=2;
+                                                 InPage=0;
+                                                 ForeColor=65535;
+                                                 SourceExpr=Text000 }
+    { 84  ;TextBox      ;12760;5060 ;2750 ;440  ;Visible=No;
+                                                 ParentControl=2;
+                                                 InPage=0;
+                                                 ForeColor=65535;
+                                                 SourceExpr=Text000 }
+    { 54  ;Label        ;440  ;2090 ;3300 ;440  ;ParentControl=2;
+                                                 InPage=1;
+                                                 CaptionML=[DEU=Fakturiert;
+                                                            ENU=Invoiced] }
+    { 59  ;Label        ;440  ;2640 ;3300 ;440  ;ParentControl=2;
+                                                 InPage=1;
+                                                 CaptionML=[DEU=Fakturiert %;
+                                                            ENU=Invoiced %] }
+    { 50  ;TextBox      ;3850 ;2090 ;2750 ;440  ;ParentControl=2;
+                                                 InPage=1;
+                                                 CaptionML=[DEU=Fakturiert;
+                                                            ENU=Invoiced];
+                                                 SourceExpr=UnitPrice[1];
+                                                 AutoFormatType=1 }
+    { 55  ;TextBox      ;3850 ;2640 ;2750 ;440  ;ParentControl=2;
+                                                 InPage=1;
+                                                 CaptionML=[DEU=Fakturiert %;
+                                                            ENU=Invoiced %];
+                                                 DecimalPlaces=1:1;
+                                                 SourceExpr=InvoicedPct[1] }
+    { 51  ;TextBox      ;6820 ;2090 ;2750 ;440  ;ParentControl=2;
+                                                 InPage=1;
+                                                 CaptionML=[DEU=Fakturiert;
+                                                            ENU=Invoiced];
+                                                 SourceExpr=UnitPrice[2];
+                                                 AutoFormatType=1 }
+    { 56  ;TextBox      ;6820 ;2640 ;2750 ;440  ;ParentControl=2;
+                                                 InPage=1;
+                                                 CaptionML=[DEU=Fakturiert %;
+                                                            ENU=Invoiced %];
+                                                 DecimalPlaces=1:1;
+                                                 SourceExpr=InvoicedPct[2] }
+    { 52  ;TextBox      ;9790 ;2090 ;2750 ;440  ;ParentControl=2;
+                                                 InPage=1;
+                                                 CaptionML=[DEU=Fakturiert;
+                                                            ENU=Invoiced];
+                                                 SourceExpr=UnitPrice[3];
+                                                 AutoFormatType=1 }
+    { 57  ;TextBox      ;9790 ;2640 ;2750 ;440  ;ParentControl=2;
+                                                 InPage=1;
+                                                 CaptionML=[DEU=Fakturiert %;
+                                                            ENU=Invoiced %];
+                                                 DecimalPlaces=1:1;
+                                                 SourceExpr=InvoicedPct[3] }
+    { 53  ;TextBox      ;12760;2090 ;2750 ;440  ;ParentControl=2;
+                                                 InPage=1;
+                                                 CaptionML=[DEU=Fakturiert;
+                                                            ENU=Invoiced];
+                                                 SourceExpr=UnitPrice[4];
+                                                 AutoFormatType=1 }
+    { 58  ;TextBox      ;12760;2640 ;2750 ;440  ;ParentControl=2;
+                                                 InPage=1;
+                                                 CaptionML=[DEU=Fakturiert %;
+                                                            ENU=Invoiced %];
+                                                 DecimalPlaces=1:1;
+                                                 SourceExpr=InvoicedPct[4] }
+    { 63  ;TextBox      ;12760;3300 ;2750 ;440  ;ParentControl=2;
+                                                 InPage=1;
+                                                 CaptionML=[DEU=Verbrauch (Einst.-Betrag);
+                                                            ENU=Usage (Cost)];
+                                                 SourceExpr=ResGrUsageCost[4];
+                                                 AutoFormatType=1 }
+    { 61  ;TextBox      ;6820 ;3300 ;2750 ;440  ;ParentControl=2;
+                                                 InPage=1;
+                                                 CaptionML=[DEU=Verbrauch (Einst.-Betrag);
+                                                            ENU=Usage (Cost)];
+                                                 SourceExpr=ResGrUsageCost[2];
+                                                 AutoFormatType=1 }
+    { 62  ;TextBox      ;9790 ;3300 ;2750 ;440  ;ParentControl=2;
+                                                 InPage=1;
+                                                 CaptionML=[DEU=Verbrauch (Einst.-Betrag);
+                                                            ENU=Usage (Cost)];
+                                                 SourceExpr=ResGrUsageCost[3];
+                                                 AutoFormatType=1 }
+    { 60  ;TextBox      ;3850 ;3300 ;2750 ;440  ;ParentControl=2;
+                                                 InPage=1;
+                                                 CaptionML=[DEU=Verbrauch (Einst.-Betrag);
+                                                            ENU=Usage (Cost)];
+                                                 SourceExpr=ResGrUsageCost[1];
+                                                 AutoFormatType=1 }
+    { 64  ;Label        ;440  ;3300 ;3300 ;440  ;ParentControl=2;
+                                                 InPage=1;
+                                                 CaptionML=[DEU=Verbrauch (Einst.-Betrag);
+                                                            ENU=Usage (Cost)] }
+    { 69  ;Label        ;440  ;3960 ;3300 ;440  ;ParentControl=2;
+                                                 InPage=1;
+                                                 CaptionML=[DEU=DB;
+                                                            ENU=Profit] }
+    { 65  ;TextBox      ;3850 ;3960 ;2750 ;440  ;ParentControl=2;
+                                                 InPage=1;
+                                                 CaptionML=[DEU=DB;
+                                                            ENU=Profit];
+                                                 SourceExpr=Profit[1];
+                                                 AutoFormatType=1 }
+    { 66  ;TextBox      ;6820 ;3960 ;2750 ;440  ;ParentControl=2;
+                                                 InPage=1;
+                                                 CaptionML=[DEU=DB;
+                                                            ENU=Profit];
+                                                 SourceExpr=Profit[2];
+                                                 AutoFormatType=1 }
+    { 67  ;TextBox      ;9790 ;3960 ;2750 ;440  ;ParentControl=2;
+                                                 InPage=1;
+                                                 CaptionML=[DEU=DB;
+                                                            ENU=Profit];
+                                                 SourceExpr=Profit[3];
+                                                 AutoFormatType=1 }
+    { 68  ;TextBox      ;12760;3960 ;2750 ;440  ;ParentControl=2;
+                                                 InPage=1;
+                                                 CaptionML=[DEU=DB;
+                                                            ENU=Profit];
+                                                 SourceExpr=Profit[4];
+                                                 AutoFormatType=1 }
+    { 74  ;Label        ;440  ;4510 ;3300 ;440  ;ParentControl=2;
+                                                 InPage=1;
+                                                 CaptionML=[DEU=DB %;
+                                                            ENU=Profit %] }
+    { 70  ;TextBox      ;3850 ;4510 ;2750 ;440  ;ParentControl=2;
+                                                 InPage=1;
+                                                 CaptionML=[DEU=DB %;
+                                                            ENU=Profit %];
+                                                 DecimalPlaces=1:1;
+                                                 SourceExpr=ResGrProfitPct[1] }
+    { 71  ;TextBox      ;6820 ;4510 ;2750 ;440  ;ParentControl=2;
+                                                 InPage=1;
+                                                 CaptionML=[DEU=DB %;
+                                                            ENU=Profit %];
+                                                 DecimalPlaces=1:1;
+                                                 SourceExpr=ResGrProfitPct[2] }
+    { 72  ;TextBox      ;9790 ;4510 ;2750 ;440  ;ParentControl=2;
+                                                 InPage=1;
+                                                 CaptionML=[DEU=DB %;
+                                                            ENU=Profit %];
+                                                 DecimalPlaces=1:1;
+                                                 SourceExpr=ResGrProfitPct[3] }
+    { 73  ;TextBox      ;12760;4510 ;2750 ;440  ;ParentControl=2;
+                                                 InPage=1;
+                                                 CaptionML=[DEU=DB %;
+                                                            ENU=Profit %];
+                                                 DecimalPlaces=1:1;
+                                                 SourceExpr=ResGrProfitPct[4] }
+    { 3   ;TextBox      ;3850 ;1540 ;2750 ;440  ;Focusable=No;
+                                                 ParentControl=2;
+                                                 InPage=1;
+                                                 HorzAlign=Right;
+                                                 BackTransparent=Yes;
+                                                 Border=No;
+                                                 SourceExpr=ResGrDateName[1] }
+    { 4   ;Label        ;6820 ;990  ;2750 ;440  ;ParentControl=2;
+                                                 InPage=1;
+                                                 HorzAlign=Right;
+                                                 LeaderDots=No;
+                                                 CaptionML=[DEU=Dieses Jahr;
+                                                            ENU=This Year] }
+    { 5   ;Label        ;9790 ;990  ;2750 ;440  ;ParentControl=2;
+                                                 InPage=1;
+                                                 HorzAlign=Right;
+                                                 LeaderDots=No;
+                                                 CaptionML=[DEU=Vorjahr;
+                                                            ENU=Last Year] }
+    { 6   ;Label        ;12760;990  ;2750 ;440  ;ParentControl=2;
+                                                 InPage=1;
+                                                 HorzAlign=Right;
+                                                 LeaderDots=No;
+                                                 CaptionML=[DEU=Gesamt;
+                                                            ENU=Total] }
+    { 85  ;Label        ;3850 ;990  ;2750 ;440  ;ParentControl=2;
+                                                 InPage=1;
+                                                 HorzAlign=Right;
+                                                 LeaderDots=No;
+                                                 CaptionML=[DEU=Diese Periode;
+                                                            ENU=This Period] }
+    { 86  ;TextBox      ;6820 ;1540 ;2750 ;440  ;Visible=No;
+                                                 ParentControl=2;
+                                                 InPage=1;
+                                                 ForeColor=65535;
+                                                 SourceExpr=Text000 }
+    { 87  ;TextBox      ;9790 ;1540 ;2750 ;440  ;Visible=No;
+                                                 ParentControl=2;
+                                                 InPage=1;
+                                                 ForeColor=65535;
+                                                 SourceExpr=Text000 }
+    { 88  ;TextBox      ;12760;1540 ;2750 ;440  ;Visible=No;
+                                                 ParentControl=2;
+                                                 InPage=1;
+                                                 ForeColor=65535;
+                                                 SourceExpr=Text000 }
+  }
+  CODE
+  {
+    VAR
+      DateFilterCalc@1000 : Codeunit 358;
+      ResGrDateFilter@1001 : ARRAY [4] OF Text[30];
+      ResGrDateName@1002 : ARRAY [4] OF Text[30];
+      i@1003 : Integer;
+      j@1004 : Integer;
+      Chargeable@1005 : Boolean;
+      CurrentDate@1006 : Date;
+      ResGrCapacity@1007 : ARRAY [4] OF Decimal;
+      ResGrUsageCost@1008 : ARRAY [4] OF Decimal;
+      UnitPrice@1009 : ARRAY [4] OF Decimal;
+      TotalUsageUnits@1010 : ARRAY [4] OF Decimal;
+      UnusedCapacity@1011 : ARRAY [4] OF Decimal;
+      ResGrUsageUnits@1012 : ARRAY [4,2] OF Decimal;
+      ResGrUsagePrice@1013 : ARRAY [4,2] OF Decimal;
+      ChargeablePct@1014 : ARRAY [4] OF Decimal;
+      InvoicedPct@1015 : ARRAY [4] OF Decimal;
+      Profit@1016 : ARRAY [4] OF Decimal;
+      ResGrProfitPct@1017 : ARRAY [4] OF Decimal;
+      Text000@1018 : TextConst 'DEU=Platzhalter;ENU=Placeholder';
+
+    LOCAL PROCEDURE CalcPercentage@1(PartAmount@1000 : Decimal;Base@1001 : Decimal) : Decimal;
+    BEGIN
+      IF Base <> 0 THEN
+        EXIT(100 * PartAmount / Base)
+      ELSE
+        EXIT(0);
+    END;
+
+    BEGIN
+    END.
+  }
+}
+

@@ -1,0 +1,37 @@
+OBJECT Table 11001 Place of Receiver
+{
+  OBJECT-PROPERTIES
+  {
+    Date=05.11.08;
+    Time=12:00:00;
+    Version List=NAVDACH6.00;
+  }
+  PROPERTIES
+  {
+    CaptionML=[DEU=Sitz des Empf„ngers;
+               ENU=Place of Receiver];
+    LookupFormID=Form11001;
+  }
+  FIELDS
+  {
+    { 1   ;   ;Code                ;Code10        ;CaptionML=[DEU=Code;
+                                                              ENU=Code] }
+    { 2   ;   ;Text                ;Text80        ;CaptionML=[DEU=Text;
+                                                              ENU=Text] }
+  }
+  KEYS
+  {
+    {    ;Code                                    ;Clustered=Yes }
+  }
+  FIELDGROUPS
+  {
+    { 1   ;DropDown            ;Code,Text                                }
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

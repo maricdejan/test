@@ -1,0 +1,40 @@
+OBJECT Table 2000000069 Client Add-in
+{
+  OBJECT-PROPERTIES
+  {
+    Date=11.12.10;
+    Time=12:00:00;
+    Version List=;
+  }
+  PROPERTIES
+  {
+    DataPerCompany=No;
+    CaptionML=[DEU=Add-In fÅr Client;
+               ENU=Client Add-in];
+  }
+  FIELDS
+  {
+    { 1   ;   ;Control Add-in Name ;Text220       ;CaptionML=[DEU=Name fÅr Steuerelement-Add-In;
+                                                              ENU=Control Add-in Name] }
+    { 5   ;   ;Public Key Token    ;Text20        ;CaptionML=[DEU=Token fÅr îffentlichen SchlÅssel;
+                                                              ENU=Public Key Token] }
+    { 8   ;   ;Version             ;Text25        ;CaptionML=[DEU=Version;
+                                                              ENU=Version] }
+    { 20  ;   ;Description         ;Text250       ;CaptionML=[DEU=Beschreibung;
+                                                              ENU=Description] }
+  }
+  KEYS
+  {
+    {    ;Control Add-in Name,Public Key Token    ;Clustered=Yes }
+  }
+  FIELDGROUPS
+  {
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

@@ -1,0 +1,108 @@
+OBJECT Table 1018 Job WIP Buffer
+{
+  OBJECT-PROPERTIES
+  {
+    Date=05.11.08;
+    Time=12:00:00;
+    Version List=NAVW16.00;
+  }
+  PROPERTIES
+  {
+    CaptionML=[DEU=WIP-Projektpuffer;
+               ENU=Job WIP Buffer];
+  }
+  FIELDS
+  {
+    { 1   ;   ;Posting Group       ;Code20        ;CaptionML=[DEU=Buchungsgruppe;
+                                                              ENU=Posting Group] }
+    { 2   ;   ;Type                ;Option        ;CaptionML=[DEU=Art;
+                                                              ENU=Type];
+                                                   OptionCaptionML=[DEU=Unf. Arbeiten Verkauf,Unf. Arbeiten Kosten,Deaktivierte Kosten,Deaktivierter Verkauf,Aufgelaufene Kosten,Aufgelaufene Verk„ufe;
+                                                                    ENU=WIP Sales,WIP Costs,Recognized Costs,Recognized Sales,Accrued Costs,Accrued Sales];
+                                                   OptionString=WIP Sales,WIP Costs,Recognized Costs,Recognized Sales,Accrued Costs,Accrued Sales }
+    { 3   ;   ;WIP Entry Amount    ;Decimal       ;CaptionML=[DEU=WIP-Postenbetrag;
+                                                              ENU=WIP Entry Amount] }
+    { 4   ;   ;G/L Account No.     ;Code20        ;TableRelation="G/L Account";
+                                                   CaptionML=[DEU=Sachkontonr.;
+                                                              ENU=G/L Account No.] }
+    { 5   ;   ;Bal. G/L Account No.;Code20        ;TableRelation="G/L Account";
+                                                   CaptionML=[DEU=Sachgegenkontonr.;
+                                                              ENU=Bal. G/L Account No.] }
+    { 6   ;   ;WIP Method          ;Option        ;CaptionML=[DEU=WIP-Methode;
+                                                              ENU=WIP Method];
+                                                   OptionCaptionML=[DEU=" ,Einstandswert,Verkaufswert,Vertriebskosten,Prozentsatz der Fertigung,bei Abschluss";
+                                                                    ENU=" ,Cost Value,Sales Value,Cost of Sales,Percentage of Completion,Completed Contract"];
+                                                   OptionString=[ ,Cost Value,Sales Value,Cost of Sales,Percentage of Completion,Completed Contract];
+                                                   Editable=No }
+    { 7   ;   ;Job No.             ;Code20        ;TableRelation=Job;
+                                                   CaptionML=[DEU=Projektnr.;
+                                                              ENU=Job No.];
+                                                   NotBlank=Yes;
+                                                   Editable=No }
+    { 8   ;   ;Job Complete        ;Boolean       ;CaptionML=[DEU=Auftrag abgeschlossen;
+                                                              ENU=Job Complete] }
+    { 10  ;   ;WIP Schedule (Total Cost);Decimal  ;CaptionML=[DEU=WIP-Plan (Einstandsbetrag);
+                                                              ENU=WIP Schedule (Total Cost)];
+                                                   BlankZero=Yes;
+                                                   Editable=No;
+                                                   AutoFormatType=1 }
+    { 11  ;   ;WIP Schedule (Total Price);Decimal ;CaptionML=[DEU=WIP-Plan (Verkaufspreis);
+                                                              ENU=WIP Schedule (Total Price)];
+                                                   BlankZero=Yes;
+                                                   Editable=No;
+                                                   AutoFormatType=1 }
+    { 12  ;   ;WIP Usage (Total Cost);Decimal     ;CaptionML=[DEU=WIP-Verbrauch (Einstandsbetrag);
+                                                              ENU=WIP Usage (Total Cost)];
+                                                   BlankZero=Yes;
+                                                   Editable=No;
+                                                   AutoFormatType=1 }
+    { 13  ;   ;WIP Usage (Total Price);Decimal    ;CaptionML=[DEU=WIP-Verbrauch (Verkaufspreis);
+                                                              ENU=WIP Usage (Total Price)];
+                                                   BlankZero=Yes;
+                                                   Editable=No;
+                                                   AutoFormatType=1 }
+    { 14  ;   ;WIP Contract (Total Cost);Decimal  ;CaptionML=[DEU=WIP-Vertrag (Einstandsbetr.);
+                                                              ENU=WIP Contract (Total Cost)];
+                                                   BlankZero=Yes;
+                                                   Editable=No;
+                                                   AutoFormatType=1 }
+    { 15  ;   ;WIP Contract (Total Price);Decimal ;CaptionML=[DEU=WIP-Vertr. (Einstandsbetrag);
+                                                              ENU=WIP Contract (Total Price)];
+                                                   BlankZero=Yes;
+                                                   Editable=No;
+                                                   AutoFormatType=1 }
+    { 16  ;   ;WIP (Invoiced Price);Decimal       ;CaptionML=[DEU=WIP (Preis fakturiert);
+                                                              ENU=WIP (Invoiced Price)];
+                                                   BlankZero=Yes;
+                                                   Editable=No;
+                                                   AutoFormatType=1 }
+    { 17  ;   ;WIP (Invoiced Cost) ;Decimal       ;CaptionML=[DEU=WIP (Einstandsbetrag fakturiert);
+                                                              ENU=WIP (Invoiced Cost)];
+                                                   BlankZero=Yes;
+                                                   Editable=No;
+                                                   AutoFormatType=1 }
+    { 18  ;   ;WIP Posting Date Filter;Text250    ;CaptionML=[DEU=WIP-Buchungsdatumsfilter;
+                                                              ENU=WIP Posting Date Filter];
+                                                   Editable=No }
+    { 19  ;   ;WIP Planning Date Filter;Text250   ;CaptionML=[DEU=WIP-Planungsdatumsfilter;
+                                                              ENU=WIP Planning Date Filter];
+                                                   Editable=No }
+    { 71  ;   ;Dim Combination ID  ;Integer       ;CaptionML=[DEU=Dimensionskombinations-ID;
+                                                              ENU=Dim Combination ID] }
+  }
+  KEYS
+  {
+    {    ;Job No.,Posting Group,Type,G/L Account No.,Dim Combination ID;
+                                                   Clustered=Yes }
+  }
+  FIELDGROUPS
+  {
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

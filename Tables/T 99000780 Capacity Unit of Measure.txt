@@ -1,0 +1,43 @@
+OBJECT Table 99000780 Capacity Unit of Measure
+{
+  OBJECT-PROPERTIES
+  {
+    Date=05.11.08;
+    Time=12:00:00;
+    Version List=NAVW16.00;
+  }
+  PROPERTIES
+  {
+    CaptionML=[DEU=Kapazit„tseinheit;
+               ENU=Capacity Unit of Measure];
+    LookupFormID=Form99000802;
+    DrillDownFormID=Form99000802;
+  }
+  FIELDS
+  {
+    { 1   ;   ;Code                ;Code10        ;CaptionML=[DEU=Code;
+                                                              ENU=Code];
+                                                   NotBlank=Yes }
+    { 2   ;   ;Description         ;Text30        ;CaptionML=[DEU=Beschreibung;
+                                                              ENU=Description] }
+    { 3   ;   ;Type                ;Option        ;CaptionML=[DEU=Art;
+                                                              ENU=Type];
+                                                   OptionCaptionML=[DEU=" ,100/Stunde,Minuten,Stunden,Tage";
+                                                                    ENU=" ,100/Hour,Minutes,Hours,Days"];
+                                                   OptionString=[ ,100/Hour,Minutes,Hours,Days] }
+  }
+  KEYS
+  {
+    {    ;Code                                    ;Clustered=Yes }
+  }
+  FIELDGROUPS
+  {
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

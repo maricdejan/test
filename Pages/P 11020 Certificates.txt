@@ -1,0 +1,38 @@
+OBJECT Page 11020 Certificates
+{
+  OBJECT-PROPERTIES
+  {
+    Date=12.01.06;
+    Time=12:00:00;
+    Version List=NAVDACH4.00.02;
+  }
+  PROPERTIES
+  {
+    CaptionML=[DEU=Zertifikate;
+               ENU=Certificates];
+    SourceTable=Table11014;
+    PageType=List;
+  }
+  CONTROLS
+  {
+    { 1900000001;0;Container;
+                ContainerType=ContentArea }
+
+    { 1140000;1;Group     ;
+                GroupType=Repeater }
+
+    { 1140001;2;Field     ;
+                SourceExpr="User ID" }
+
+    { 1140003;2;Field     ;
+                SourceExpr="Certificate Ref." }
+
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

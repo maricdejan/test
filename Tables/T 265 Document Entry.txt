@@ -1,0 +1,59 @@
+OBJECT Table 265 Document Entry
+{
+  OBJECT-PROPERTIES
+  {
+    Date=05.11.08;
+    Time=12:00:00;
+    Version List=NAVW16.00;
+  }
+  PROPERTIES
+  {
+    CaptionML=[DEU=Belegeintrag;
+               ENU=Document Entry];
+  }
+  FIELDS
+  {
+    { 1   ;   ;Table ID            ;Integer       ;TableRelation=Object.ID WHERE (Type=CONST(Table));
+                                                   CaptionML=[DEU=Tabellen-ID;
+                                                              ENU=Table ID] }
+    { 2   ;   ;No. of Records      ;Integer       ;CaptionML=[DEU=Anzahl Datens„tze;
+                                                              ENU=No. of Records] }
+    { 3   ;   ;Document No.        ;Code20        ;FieldClass=FlowFilter;
+                                                   CaptionML=[DEU=Belegnr.;
+                                                              ENU=Document No.] }
+    { 4   ;   ;Posting Date        ;Date          ;FieldClass=FlowFilter;
+                                                   CaptionML=[DEU=Buchungsdatum;
+                                                              ENU=Posting Date] }
+    { 5   ;   ;Entry No.           ;Integer       ;CaptionML=[DEU=Lfd. Nr.;
+                                                              ENU=Entry No.] }
+    { 6   ;   ;Table Name          ;Text100       ;CaptionML=[DEU=Tabellenname;
+                                                              ENU=Table Name] }
+    { 7   ;   ;No. of Records 2    ;Integer       ;CaptionML=[DEU=Anzahl Datens„tze 2;
+                                                              ENU=No. of Records 2] }
+    { 8   ;   ;Document Type       ;Option        ;CaptionML=[DEU=Belegart;
+                                                              ENU=Document Type];
+                                                   OptionCaptionML=[DEU="Angebot/Anfrage,Auftrag/Bestellung,Rechnung,Gutschrift,R.-Auftrag/R.-Best.,Reklamation, ";
+                                                                    ENU="Quote,Order,Invoice,Credit Memo,Blanket Order,Return Order, "];
+                                                   OptionString=[Quote,Order,Invoice,Credit Memo,Blanket Order,Return Order, ] }
+    { 9   ;   ;Lot No. Filter      ;Code20        ;FieldClass=FlowFilter;
+                                                   CaptionML=[DEU=Chargennr. Filter;
+                                                              ENU=Lot No. Filter] }
+    { 10  ;   ;Serial No. Filter   ;Code20        ;FieldClass=FlowFilter;
+                                                   CaptionML=[DEU=Seriennr. Filter;
+                                                              ENU=Serial No. Filter] }
+  }
+  KEYS
+  {
+    {    ;Entry No.                               ;Clustered=Yes }
+  }
+  FIELDGROUPS
+  {
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

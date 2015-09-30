@@ -1,0 +1,38 @@
+OBJECT Table 823 Name/Value Buffer
+{
+  OBJECT-PROPERTIES
+  {
+    Date=11.12.10;
+    Time=12:00:00;
+    Version List=NAVW16.00.10;
+  }
+  PROPERTIES
+  {
+    CaptionML=[DEU=Name/Wert-Puffer;
+               ENU=Name/Value Buffer];
+  }
+  FIELDS
+  {
+    { 1   ;   ;ID                  ;Integer       ;AutoIncrement=Yes;
+                                                   CaptionML=[DEU=ID;
+                                                              ENU=ID] }
+    { 2   ;   ;Name                ;Text250       ;CaptionML=[DEU=Name;
+                                                              ENU=Name] }
+    { 3   ;   ;Value               ;Text250       ;CaptionML=[DEU=Wert;
+                                                              ENU=Value] }
+  }
+  KEYS
+  {
+    {    ;ID                                      ;Clustered=Yes }
+  }
+  FIELDGROUPS
+  {
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

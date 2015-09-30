@@ -1,0 +1,160 @@
+OBJECT Page 9014 Job Resource Manager RC
+{
+  OBJECT-PROPERTIES
+  {
+    Date=14.08.09;
+    Time=12:00:00;
+    Version List=NAVW16.00.01;
+  }
+  PROPERTIES
+  {
+    CaptionML=[DEU=Rollencenter;
+               ENU=Role Center];
+    PageType=RoleCenter;
+    ActionList=ACTIONS
+    {
+      { 1900000006;0 ;ActionContainer;
+                      ActionContainerType=Reports }
+      { 7       ;1   ;Action    ;
+                      CaptionML=[DEU=Ressourcen&statistik;
+                                 ENU=Resource &Statistics];
+                      RunObject=Report 1105 }
+      { 8       ;1   ;Action    ;
+                      CaptionML=[DEU=Ressourcen&verwendung;
+                                 ENU=Resource &Utilization];
+                      RunObject=Report 1106 }
+      { 9       ;1   ;Action    ;
+                      CaptionML=[DEU=Ressource - VK-&Preisliste;
+                                 ENU=Resource - &Price List];
+                      RunObject=Report 1101 }
+      { 11      ;1   ;Action    ;
+                      CaptionML=[DEU=Ressource - K&ostenanalyse;
+                                 ENU=Resource - Cost &Breakdown];
+                      RunObject=Report 1107 }
+      { 1900000011;0 ;ActionContainer;
+                      ActionContainerType=HomeItems }
+      { 13      ;1   ;Action    ;
+                      CaptionML=[DEU=Ressourcen;
+                                 ENU=Resources];
+                      RunObject=Page 77 }
+      { 14      ;1   ;Action    ;
+                      CaptionML=[DEU=Personen;
+                                 ENU=People];
+                      RunObject=Page 77;
+                      RunFormView=WHERE(Type=FILTER(Person)) }
+      { 15      ;1   ;Action    ;
+                      CaptionML=[DEU=Maschinen;
+                                 ENU=Machines];
+                      RunObject=Page 77;
+                      RunFormView=WHERE(Type=FILTER(Machine)) }
+      { 20      ;1   ;Action    ;
+                      CaptionML=[DEU=Ressourcengruppen;
+                                 ENU=Resource Groups];
+                      RunObject=Page 72 }
+      { 35      ;1   ;Action    ;
+                      CaptionML=[DEU=Ressourcen Buch.-BlÑtter;
+                                 ENU=Resource Journals];
+                      RunObject=Page 272;
+                      RunFormView=WHERE(Recurring=CONST(No)) }
+      { 36      ;1   ;Action    ;
+                      CaptionML=[DEU=Wiederk. Ressource Buch.-BlÑtter;
+                                 ENU=Recurring Resource Journals];
+                      RunObject=Page 272;
+                      RunFormView=WHERE(Recurring=CONST(Yes)) }
+      { 10      ;1   ;Action    ;
+                      CaptionML=[DEU=Projekte;
+                                 ENU=Jobs];
+                      RunObject=Page 89 }
+      { 1900000012;0 ;ActionContainer;
+                      ActionContainerType=ActivityButtons }
+      { 61      ;1   ;ActionGroup;
+                      CaptionML=[DEU=Verwaltung;
+                                 ENU=Administration];
+                      Image=Administration }
+      { 29      ;2   ;Action    ;
+                      CaptionML=[DEU=Ressourcen Einst.-Pr.;
+                                 ENU=Resource Costs];
+                      RunObject=Page 203 }
+      { 30      ;2   ;Action    ;
+                      CaptionML=[DEU=Ressourcen VK-Preise;
+                                 ENU=Resource Prices];
+                      RunObject=Page 204 }
+      { 32      ;2   ;Action    ;
+                      CaptionML=[DEU=Ressourcenservicegebiete;
+                                 ENU=Resource Service Zones];
+                      RunObject=Page 6021 }
+      { 33      ;2   ;Action    ;
+                      CaptionML=[DEU=Ressourcenlagerorte;
+                                 ENU=Resource Locations];
+                      RunObject=Page 6015 }
+      { 34      ;2   ;Action    ;
+                      CaptionML=[DEU=Arbeitstypen;
+                                 ENU=Work Types];
+                      RunObject=Page 208 }
+      { 1900000004;0 ;ActionContainer;
+                      ActionContainerType=ActionItems }
+      { 17      ;1   ;Separator ;
+                      CaptionML=[DEU=Aufgaben;
+                                 ENU=Tasks];
+                      IsHeader=Yes }
+      { 2       ;1   ;Action    ;
+                      CaptionML=[DEU=Ressourcenpreise ju&stieren;
+                                 ENU=Adjust R&esource Costs/Prices];
+                      RunObject=Report 1195 }
+      { 16      ;1   ;Action    ;
+                      CaptionML=[DEU=Ressourcen-VK-Preisv&orschlÑge;
+                                 ENU=Resource P&rice Changes];
+                      RunObject=Page 493 }
+      { 3       ;1   ;Action    ;
+                      CaptionML=[DEU=Res.-VK-Pre&isvorschlag von Ressource;
+                                 ENU=Resource Pr&ice Chg from Resource];
+                      RunObject=Report 1191 }
+      { 5       ;1   ;Action    ;
+                      CaptionML=[DEU=Res.-VK-Preisvorschlag &von VK-Preisen;
+                                 ENU=Resource Pri&ce Chg from Prices];
+                      RunObject=Report 1192 }
+      { 6       ;1   ;Action    ;
+                      CaptionML=[DEU=Res.-VK-PreisvorschlÑge Åbern&ehmen;
+                                 ENU=I&mplement Resource Price Changes];
+                      RunObject=Report 1193;
+                      Image=ImplementPriceChange }
+    }
+  }
+  CONTROLS
+  {
+    { 1900000008;0;Container;
+                ContainerType=RoleCenterArea }
+
+    { 1900724808;1;Group   }
+
+    { 1904257908;2;Part   ;
+                PagePartID=Page9067;
+                PartType=Page }
+
+    { 1901420308;2;Part   ;
+                PartType=System;
+                SystemPartID=Outlook }
+
+    { 1900724708;1;Group   }
+
+    { 1907692008;2;Part   ;
+                PagePartID=Page9150;
+                PartType=Page }
+
+    { 1903012608;2;Part   ;
+                PagePartID=Page9175;
+                PartType=Page }
+
+    { 1901377608;2;Part   ;
+                PartType=System;
+                SystemPartID=MyNotes }
+
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

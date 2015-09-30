@@ -1,0 +1,79 @@
+OBJECT Page 11015 GDPdU Table Relation Subform2
+{
+  OBJECT-PROPERTIES
+  {
+    Date=13.02.07;
+    Time=12:00:00;
+    Version List=NAVDACH5.00;
+  }
+  PROPERTIES
+  {
+    CaptionML=[DEU=" ";
+               ENU=" "];
+    SourceTable=Table11006;
+    DelayedInsert=Yes;
+    PopulateAllFields=Yes;
+    PageType=ListPart;
+    SourceTableTemporary=Yes;
+  }
+  CONTROLS
+  {
+    { 1900000001;0;Container;
+                ContainerType=ContentArea }
+
+    { 1140000;1;Group     ;
+                GroupType=Repeater }
+
+    { 1140001;2;Field     ;
+                SourceExpr="From Field No.";
+                LookupFormID=GDPdU Field List }
+
+    { 1140003;2;Field     ;
+                Lookup=No;
+                DrillDown=No;
+                SourceExpr="From Field Name" }
+
+    { 1140005;2;Field     ;
+                SourceExpr="To Field No." }
+
+    { 1140007;2;Field     ;
+                Lookup=No;
+                DrillDown=No;
+                SourceExpr="To Field Name" }
+
+  }
+  CODE
+  {
+
+    PROCEDURE SetTableRel@1140000(VAR TabRel@1140000 : Record 11006);
+    BEGIN
+      DELETEALL;
+
+      IF TabRel.FINDSET THEN
+        REPEAT
+          Rec := TabRel;
+          INSERT;
+        UNTIL TabRel.NEXT = 0;
+    END;
+
+    PROCEDURE GetTableRel@1140001(VAR TabRel@1140000 : Record 11006);
+    BEGIN
+      TabRel.DELETEALL;
+
+      IF FINDSET THEN
+        REPEAT
+          TabRel := Rec;
+          TabRel.INSERT;
+        UNTIL NEXT = 0;
+    END;
+
+    PROCEDURE UpdateForm@1140002();
+    BEGIN
+      CurrPage.UPDATE(FALSE);
+    END;
+
+    BEGIN
+    END.
+  }
+}
+

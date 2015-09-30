@@ -1,0 +1,42 @@
+OBJECT Codeunit 5005365 3-Tier Dataport Mgt.
+{
+  OBJECT-PROPERTIES
+  {
+    Date=14.08.09;
+    Time=12:00:00;
+    Version List=NAVDACH6.00.01;
+  }
+  PROPERTIES
+  {
+    OnRun=BEGIN
+          END;
+
+  }
+  CODE
+  {
+
+    PROCEDURE ExportPhysInvtRecLines@1101100000(PhysInvtRecordingHeader@1101100001 : Record 5005352);
+    VAR
+      ExportPhysInvtRecLines@1101100000 : Dataport 5005350;
+    BEGIN
+      IF NOT ISSERVICETIER THEN BEGIN
+        ExportPhysInvtRecLines.Def(PhysInvtRecordingHeader);
+        ExportPhysInvtRecLines.RUNMODAL;
+      END;
+    END;
+
+    PROCEDURE ImportPhysInvtRecLines@1140000(PhysInvtRecordingHeader@1140001 : Record 5005352);
+    VAR
+      ImportPhysInvtRecLines@1140000 : Dataport 5005351;
+    BEGIN
+      IF NOT ISSERVICETIER THEN BEGIN
+        ImportPhysInvtRecLines.Def(PhysInvtRecordingHeader);
+        ImportPhysInvtRecLines.RUNMODAL;
+      END;
+    END;
+
+    BEGIN
+    END.
+  }
+}
+

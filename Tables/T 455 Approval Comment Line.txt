@@ -1,0 +1,75 @@
+OBJECT Table 455 Approval Comment Line
+{
+  OBJECT-PROPERTIES
+  {
+    Date=05.11.08;
+    Time=12:00:00;
+    Version List=NAVW16.00;
+  }
+  PROPERTIES
+  {
+    OnInsert=BEGIN
+               "User ID" := USERID;
+               "Date and Time" := CREATEDATETIME(TODAY,TIME);
+               IF "Entry No." = 0 THEN
+                 "Entry No." := GetNextEntryNo;
+             END;
+
+    CaptionML=[DEU=Genehmigungskommentarzeile;
+               ENU=Approval Comment Line];
+    LookupFormID=Form660;
+    DrillDownFormID=Form660;
+  }
+  FIELDS
+  {
+    { 1   ;   ;Entry No.           ;Integer       ;CaptionML=[DEU=Lfd. Nr.;
+                                                              ENU=Entry No.];
+                                                   Editable=No }
+    { 2   ;   ;Table ID            ;Integer       ;CaptionML=[DEU=Tabellen-ID;
+                                                              ENU=Table ID];
+                                                   Editable=No }
+    { 3   ;   ;Document Type       ;Option        ;CaptionML=[DEU=Belegart;
+                                                              ENU=Document Type];
+                                                   OptionCaptionML=[DEU=Angebot,Auftrag,Rechnung,Gutschrift,Rahmenauftrag,Reklamation;
+                                                                    ENU=Quote,Order,Invoice,Credit Memo,Blanket Order,Return Order];
+                                                   OptionString=Quote,Order,Invoice,Credit Memo,Blanket Order,Return Order;
+                                                   Editable=No }
+    { 4   ;   ;Document No.        ;Code20        ;CaptionML=[DEU=Belegnr.;
+                                                              ENU=Document No.];
+                                                   Editable=No }
+    { 5   ;   ;User ID             ;Code20        ;CaptionML=[DEU=Benutzer-ID;
+                                                              ENU=User ID];
+                                                   Editable=No }
+    { 6   ;   ;Date and Time       ;DateTime      ;CaptionML=[DEU=Datum und Uhrzeit;
+                                                              ENU=Date and Time];
+                                                   Editable=No }
+    { 7   ;   ;Comment             ;Text80        ;CaptionML=[DEU=Bemerkung;
+                                                              ENU=Comment] }
+  }
+  KEYS
+  {
+    {    ;Entry No.                               ;Clustered=Yes }
+    {    ;Table ID,Document Type,Document No.      }
+  }
+  FIELDGROUPS
+  {
+  }
+  CODE
+  {
+
+    LOCAL PROCEDURE GetNextEntryNo@4() : Integer;
+    VAR
+      ApprovalCommentLine@1000 : Record 455;
+    BEGIN
+      ApprovalCommentLine.SETCURRENTKEY("Entry No.");
+      IF ApprovalCommentLine.FIND('+') THEN
+        EXIT(ApprovalCommentLine."Entry No." + 1)
+      ELSE
+        EXIT(1);
+    END;
+
+    BEGIN
+    END.
+  }
+}
+

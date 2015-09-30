@@ -1,0 +1,111 @@
+OBJECT Table 300 Reminder/Fin. Charge Entry
+{
+  OBJECT-PROPERTIES
+  {
+    Date=05.11.08;
+    Time=12:00:00;
+    Version List=NAVW16.00;
+  }
+  PROPERTIES
+  {
+    CaptionML=[DEU=Mahnungs-/Zinsrechnungsposten;
+               ENU=Reminder/Fin. Charge Entry];
+    LookupFormID=Form444;
+    DrillDownFormID=Form444;
+  }
+  FIELDS
+  {
+    { 1   ;   ;Entry No.           ;Integer       ;CaptionML=[DEU=Lfd. Nr.;
+                                                              ENU=Entry No.];
+                                                   NotBlank=Yes }
+    { 2   ;   ;Type                ;Option        ;CaptionML=[DEU=Art;
+                                                              ENU=Type];
+                                                   OptionCaptionML=[DEU=Mahnung,Zinsrechnung;
+                                                                    ENU=Reminder,Finance Charge Memo];
+                                                   OptionString=Reminder,Finance Charge Memo }
+    { 3   ;   ;No.                 ;Code20        ;TableRelation=IF (Type=CONST(Reminder)) "Issued Reminder Header"
+                                                                 ELSE IF (Type=CONST(Finance Charge Memo)) "Issued Fin. Charge Memo Header";
+                                                   CaptionML=[DEU=Nr.;
+                                                              ENU=No.] }
+    { 4   ;   ;Reminder Level      ;Integer       ;CaptionML=[DEU=Mahnstufe;
+                                                              ENU=Reminder Level] }
+    { 5   ;   ;Posting Date        ;Date          ;CaptionML=[DEU=Buchungsdatum;
+                                                              ENU=Posting Date] }
+    { 6   ;   ;Document Date       ;Date          ;CaptionML=[DEU=Belegdatum;
+                                                              ENU=Document Date] }
+    { 7   ;   ;Interest Posted     ;Boolean       ;CaptionML=[DEU=Zins gebucht;
+                                                              ENU=Interest Posted] }
+    { 8   ;   ;Interest Amount     ;Decimal       ;CaptionML=[DEU=Zinsbetrag;
+                                                              ENU=Interest Amount];
+                                                   AutoFormatType=1;
+                                                   AutoFormatExpr=GetCurrencyCode }
+    { 9   ;   ;Customer Entry No.  ;Integer       ;TableRelation="Cust. Ledger Entry";
+                                                   CaptionML=[DEU=Debitorenposten Lfd. Nr.;
+                                                              ENU=Customer Entry No.] }
+    { 10  ;   ;Document Type       ;Option        ;CaptionML=[DEU=Belegart;
+                                                              ENU=Document Type];
+                                                   OptionCaptionML=[DEU=" ,Zahlung,Rechnung,Gutschrift,Zinsrechnung,Mahnung,Erstattung";
+                                                                    ENU=" ,Payment,Invoice,Credit Memo,Finance Charge Memo,Reminder,Refund"];
+                                                   OptionString=[ ,Payment,Invoice,Credit Memo,Finance Charge Memo,Reminder,Refund] }
+    { 11  ;   ;Document No.        ;Code20        ;CaptionML=[DEU=Belegnr.;
+                                                              ENU=Document No.] }
+    { 12  ;   ;Remaining Amount    ;Decimal       ;CaptionML=[DEU=Restbetrag;
+                                                              ENU=Remaining Amount];
+                                                   AutoFormatType=1;
+                                                   AutoFormatExpr=GetCurrencyCode }
+    { 13  ;   ;Customer No.        ;Code20        ;TableRelation=Customer;
+                                                   CaptionML=[DEU=Debitorennr.;
+                                                              ENU=Customer No.] }
+    { 14  ;   ;User ID             ;Code20        ;TableRelation=User;
+                                                   OnLookup=VAR
+                                                              LoginMgt@1000 : Codeunit 418;
+                                                            BEGIN
+                                                              LoginMgt.LookupUserID("User ID");
+                                                            END;
+
+                                                   TestTableRelation=No;
+                                                   CaptionML=[DEU=Benutzer-ID;
+                                                              ENU=User ID] }
+    { 15  ;   ;Due Date            ;Date          ;CaptionML=[DEU=F„lligkeitsdatum;
+                                                              ENU=Due Date] }
+  }
+  KEYS
+  {
+    {    ;Entry No.                               ;Clustered=Yes }
+    {    ;Customer No.                             }
+    {    ;Customer Entry No.,Type                  }
+    {    ;Type,No.                                 }
+    {    ;Document No.,Posting Date                }
+  }
+  FIELDGROUPS
+  {
+  }
+  CODE
+  {
+
+    PROCEDURE Navigate@1();
+    VAR
+      NavigateForm@1000 : Form 344;
+    BEGIN
+      NavigateForm.SetDoc("Posting Date","No.");
+      NavigateForm.RUN;
+    END;
+
+    PROCEDURE GetCurrencyCode@2() : Code[10];
+    VAR
+      CustLedgEntry@1000 : Record 21;
+    BEGIN
+      IF ("Customer Entry No." = CustLedgEntry."Entry No.") THEN
+        EXIT(CustLedgEntry."Currency Code")
+      ELSE
+        IF CustLedgEntry.GET("Customer Entry No.") THEN
+          EXIT(CustLedgEntry."Currency Code")
+        ELSE
+          EXIT('');
+    END;
+
+    BEGIN
+    END.
+  }
+}
+

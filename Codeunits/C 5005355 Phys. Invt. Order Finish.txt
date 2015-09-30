@@ -1,0 +1,404 @@
+OBJECT Codeunit 5005355 Phys. Invt. Order Finish
+{
+  OBJECT-PROPERTIES
+  {
+    Date=07.08.06;
+    Time=12:00:00;
+    Version List=NAVDACH4.00.03;
+  }
+  PROPERTIES
+  {
+    TableNo=5005350;
+    OnRun=BEGIN
+            PhysInvtOrderHeader.COPY(Rec);
+            Code;
+            Rec := PhysInvtOrderHeader;
+          END;
+
+  }
+  CODE
+  {
+    VAR
+      Text1140000@1140000 : TextConst 'DEU=Beende Zeilen                #2######;ENU=Finishing lines              #2######';
+      PhysInvtOrderHeader@1140001 : Record 5005350;
+      PhysInvtOrderLine@1140002 : Record 5005351;
+      PhysInvtOrderLine2@1140003 : Record 5005351;
+      PhysInvtRecordingHeader@1140004 : Record 5005352;
+      Item@1140005 : Record 27;
+      ItemTrackingCode@1140006 : Record 6502;
+      Location@11140007 : Record 14;
+      TempPhysInvtTrackingBuffer@1140008 : TEMPORARY Record 5005360;
+      ItemLedgEntry@1140009 : Record 32;
+      PhysInvtRecordingLine@1140010 : Record 5005353;
+      ItemTrkgMgtPhysInvtLine@1140011 : Codeunit 5005364;
+      Window@1140012 : Dialog;
+      ErrorText@1140013 : Text[250];
+      LineCount@1140014 : Integer;
+      LastItemNo@1140016 : Code[20];
+      LastVariantCode@1140017 : Code[20];
+      LastLocationCode@1140018 : Code[20];
+
+    PROCEDURE Code@1140000();
+    BEGIN
+      WITH PhysInvtOrderHeader DO BEGIN
+        TESTFIELD("No.");
+        TESTFIELD(Status, Status::Open);
+        TESTFIELD("Posting Date");
+
+        PhysInvtRecordingHeader.RESET;
+        PhysInvtRecordingHeader.SETRANGE("Order No.", "No.");
+        IF PhysInvtRecordingHeader.FIND('-') THEN REPEAT
+          PhysInvtRecordingHeader.TESTFIELD(Status, PhysInvtRecordingHeader.Status::Finished);
+        UNTIL PhysInvtRecordingHeader.NEXT = 0;
+
+        CLEAR(Item);
+
+        Window.OPEN(
+          '#1#################################\\' +
+          Text1140000);
+        Window.UPDATE(1,STRSUBSTNO('%1 %2',TABLECAPTION, "No."));
+
+        PhysInvtOrderHeader.LOCKTABLE;
+        PhysInvtOrderLine.LOCKTABLE;
+
+        LineCount := 0;
+        PhysInvtOrderLine.RESET;
+        PhysInvtOrderLine.SETRANGE("Document No.", "No.");
+        IF PhysInvtOrderLine.FIND('-') THEN REPEAT
+          LineCount := LineCount + 1;
+          Window.UPDATE(2, LineCount);
+
+          IF NOT PhysInvtOrderLine.EmptyLine THEN BEGIN
+            PhysInvtOrderLine.TESTFIELD("Item No.");
+            Item.GET(PhysInvtOrderLine."Item No.");
+            Item.TESTFIELD(Blocked, FALSE);
+
+            PhysInvtOrderLine.TESTFIELD("Qty. Exp. Calculated", TRUE);
+            PhysInvtOrderLine.TestQtyExpected;
+
+            PhysInvtOrderLine.TESTFIELD("In Recording Lines", TRUE);
+            PhysInvtOrderLine.TestQtyRecorded;
+
+            IF GetSamePhysInvtOrderLine(
+              PhysInvtOrderLine."Item No.", PhysInvtOrderLine."Variant Code",
+              PhysInvtOrderLine."Location Code", PhysInvtOrderLine."Bin Code",
+              ErrorText,
+              PhysInvtOrderLine2) > 1
+            THEN
+              ERROR(
+                ErrorText);
+
+            IF PhysInvtOrderLine."Qty. Recorded (Base)" - PhysInvtOrderLine."Qty. Expected (Base)" >= 0 THEN BEGIN
+              PhysInvtOrderLine."Entry Type" := PhysInvtOrderLine."Entry Type"::"Positive Adjmt.";
+              PhysInvtOrderLine."Quantity (Base)" :=
+                PhysInvtOrderLine."Qty. Recorded (Base)" - PhysInvtOrderLine."Qty. Expected (Base)";
+              PhysInvtOrderLine."Without difference" := PhysInvtOrderLine."Quantity (Base)" = 0;
+            END ELSE BEGIN
+              PhysInvtOrderLine."Entry Type" := PhysInvtOrderLine."Entry Type"::"Negative Adjmt.";
+              PhysInvtOrderLine."Quantity (Base)" :=
+                PhysInvtOrderLine."Qty. Expected (Base)" - PhysInvtOrderLine."Qty. Recorded (Base)";
+            END;
+
+            IF PhysInvtOrderLine."Use Tracking Lines" THEN BEGIN
+              IF (NOT ItemTrkgMgtPhysInvtLine.LocationIsBinMandatory(PhysInvtOrderLine."Location Code")) OR
+                ItemTrkgMgtPhysInvtLine.GetTrackingNosFromWhse(Item)
+              THEN BEGIN
+                PhysInvtOrderLine."Pos. Qty. (Base)" := 0;
+                PhysInvtOrderLine."Neg. Qty. (Base)" := 0;
+                TempPhysInvtTrackingBuffer.RESET;
+                TempPhysInvtTrackingBuffer.DELETEALL;
+                CreateTrackingBufferLines(
+                  PhysInvtOrderLine."Document No.", PhysInvtOrderLine."Line No.");
+                CreateReservEntries(
+                  PhysInvtOrderLine."Document No.", PhysInvtOrderLine."Line No.",
+                  TRUE,     // TRUE = transfer all TrackingBufferLines in ReservEntries
+                  0);
+              END;
+            END ELSE BEGIN
+              IF PhysInvtOrderLine."Entry Type" = PhysInvtOrderLine."Entry Type"::"Positive Adjmt." THEN
+                PhysInvtOrderLine."Pos. Qty. (Base)" := PhysInvtOrderLine."Quantity (Base)"
+              ELSE
+                PhysInvtOrderLine."Neg. Qty. (Base)" := PhysInvtOrderLine."Quantity (Base)";
+            END;
+
+            PhysInvtOrderLine.CalcCosts;
+
+            PhysInvtOrderLine.MODIFY;
+          END;
+        UNTIL PhysInvtOrderLine.NEXT = 0;
+
+        // Navision must run a special process in the case of
+        //   ItemTrkgMgtPhysInvtLine.LocationIsBinMandatory("Location Code") = Yes and
+        //   ItemTrkgMgtPhysInvtLine.GetTrackingNosFromWhse(Item) = No
+        // Navision cannot create the records of table ExpectPhysInvtTrackLine
+        // In this case Navision must create the Reservation Enties by
+        // analyzing the ItemLedgerEntries and WhseEntries during the function to Finish the Order.
+
+        LastItemNo := '';
+        LastVariantCode := '';
+        LastLocationCode := '';
+        PhysInvtOrderLine.RESET;
+        PhysInvtOrderLine.SETCURRENTKEY(
+          "Document No.", "Item No.", "Variant Code", "Location Code");
+        PhysInvtOrderLine.SETRANGE("Document No.", "No.");
+        PhysInvtOrderLine.SETRANGE("Use Tracking Lines", TRUE);
+        IF PhysInvtOrderLine.FIND('-') THEN REPEAT
+          IF (PhysInvtOrderLine."Item No." <> LastItemNo) OR
+             (PhysInvtOrderLine."Variant Code" <> LastVariantCode) OR
+             (PhysInvtOrderLine."Location Code" <> LastLocationCode)
+          THEN BEGIN
+            LastItemNo := PhysInvtOrderLine."Item No.";
+            LastVariantCode := PhysInvtOrderLine."Variant Code";
+            LastLocationCode := PhysInvtOrderLine."Location Code";
+
+            Item.GET(PhysInvtOrderLine."Item No.");
+            IF ItemTrkgMgtPhysInvtLine.LocationIsBinMandatory(PhysInvtOrderLine."Location Code") AND
+               NOT ItemTrkgMgtPhysInvtLine.GetTrackingNosFromWhse(Item)
+            THEN BEGIN
+              TempPhysInvtTrackingBuffer.RESET;
+              TempPhysInvtTrackingBuffer.DELETEALL;
+
+              ItemLedgEntry.RESET;
+
+              ItemLedgEntry.SETCURRENTKEY(
+                "Item No.", "Entry Type", "Variant Code", "Drop Shipment", "Location Code", "Posting Date");
+              ItemLedgEntry.SETRANGE("Item No.", PhysInvtOrderLine."Item No.");
+              ItemLedgEntry.SETRANGE("Variant Code", PhysInvtOrderLine."Variant Code");
+              ItemLedgEntry.SETRANGE("Location Code", PhysInvtOrderLine."Location Code");
+              ItemLedgEntry.SETRANGE("Posting Date", 0D, PhysInvtOrderHeader."Posting Date");
+              IF ItemLedgEntry.FIND('-') THEN REPEAT
+                IF NOT
+                  TempPhysInvtTrackingBuffer.GET(
+                    ItemLedgEntry."Serial No.", ItemLedgEntry."Lot No.")
+                THEN BEGIN
+                  TempPhysInvtTrackingBuffer.INIT;
+                  TempPhysInvtTrackingBuffer."Serial No." := ItemLedgEntry."Serial No.";
+                  TempPhysInvtTrackingBuffer."Lot No" := ItemLedgEntry."Lot No.";
+                  TempPhysInvtTrackingBuffer."Qty. Expected (Base)" :=
+                    ItemLedgEntry.Quantity;
+                  TempPhysInvtTrackingBuffer.INSERT;
+                END ELSE BEGIN
+                  TempPhysInvtTrackingBuffer."Qty. Expected (Base)" :=
+                  TempPhysInvtTrackingBuffer."Qty. Expected (Base)" +
+                    ItemLedgEntry.Quantity;
+                  TempPhysInvtTrackingBuffer.MODIFY;
+                END;
+              UNTIL ItemLedgEntry.NEXT = 0;
+
+              PhysInvtOrderLine2.RESET;
+              PhysInvtOrderLine2.SETCURRENTKEY(
+                "Document No.", "Item No.", "Variant Code", "Location Code");
+              PhysInvtOrderLine2.SETRANGE("Document No.", PhysInvtOrderLine."Document No.");
+              PhysInvtOrderLine2.SETRANGE("Item No.", PhysInvtOrderLine."Item No.");
+              PhysInvtOrderLine2.SETRANGE("Variant Code", PhysInvtOrderLine."Variant Code");
+              PhysInvtOrderLine2.SETRANGE("Location Code", PhysInvtOrderLine."Location Code");
+              IF PhysInvtOrderLine2.FIND('-') THEN REPEAT
+                PhysInvtRecordingLine.RESET;
+                PhysInvtRecordingLine.SETCURRENTKEY("Order No.", "Order Line No.");
+                PhysInvtRecordingLine.SETRANGE("Order No.", PhysInvtOrderLine2."Document No.");
+                PhysInvtRecordingLine.SETRANGE("Order Line No.", PhysInvtOrderLine2."Line No.");
+                IF PhysInvtRecordingLine.FIND('-') THEN REPEAT
+                  IF PhysInvtRecordingLine."Quantity (Base)" <> 0 THEN BEGIN
+                    IF NOT
+                      TempPhysInvtTrackingBuffer.GET(
+                        PhysInvtRecordingLine."Serial No.", PhysInvtRecordingLine."Lot No.")
+                    THEN BEGIN
+                      TempPhysInvtTrackingBuffer.INIT;
+                      TempPhysInvtTrackingBuffer."Serial No." := PhysInvtRecordingLine."Serial No.";
+                      TempPhysInvtTrackingBuffer."Lot No" := PhysInvtRecordingLine."Lot No.";
+                      TempPhysInvtTrackingBuffer."Qty. Recorded (Base)" :=
+                        PhysInvtRecordingLine."Quantity (Base)";
+                      TempPhysInvtTrackingBuffer.INSERT;
+                    END ELSE BEGIN
+                      TempPhysInvtTrackingBuffer."Qty. Recorded (Base)" :=
+                      TempPhysInvtTrackingBuffer."Qty. Recorded (Base)" +
+                        PhysInvtRecordingLine."Quantity (Base)";
+                      TempPhysInvtTrackingBuffer.MODIFY;
+                    END;
+                  END;
+                UNTIL PhysInvtRecordingLine.NEXT = 0;
+              UNTIL PhysInvtOrderLine2.NEXT = 0;
+
+              TempPhysInvtTrackingBuffer.RESET;
+              IF TempPhysInvtTrackingBuffer.FIND('-') THEN REPEAT
+                TempPhysInvtTrackingBuffer."Qty. To Transfer" :=
+                  TempPhysInvtTrackingBuffer."Qty. Recorded (Base)" -
+                  TempPhysInvtTrackingBuffer."Qty. Expected (Base)";
+                TempPhysInvtTrackingBuffer."Outstanding Quantity" :=
+                  TempPhysInvtTrackingBuffer."Qty. To Transfer";
+                TempPhysInvtTrackingBuffer.Open :=
+                  TempPhysInvtTrackingBuffer."Outstanding Quantity" <> 0;
+                TempPhysInvtTrackingBuffer.MODIFY;
+              UNTIL TempPhysInvtTrackingBuffer.NEXT = 0;
+
+              IF PhysInvtOrderLine2.FIND('-') THEN REPEAT
+                IF PhysInvtOrderLine2."Entry Type" = PhysInvtOrderLine2."Entry Type"::"Positive Adjmt." THEN
+                  PhysInvtOrderLine2."Pos. Qty. (Base)" := PhysInvtOrderLine2."Quantity (Base)"
+                ELSE
+                  PhysInvtOrderLine2."Neg. Qty. (Base)" := PhysInvtOrderLine2."Quantity (Base)";
+                PhysInvtOrderLine2.MODIFY;
+                IF PhysInvtOrderLine2."Quantity (Base)" <> 0 THEN BEGIN
+                  CreateReservEntries(
+                    PhysInvtOrderLine2."Document No.", PhysInvtOrderLine2."Line No.",
+                    FALSE,        // FALSE = transfer not all TrackingBufferLines in ReservEntries
+                    PhysInvtOrderLine2."Quantity (Base)");
+                END;
+                PhysInvtOrderLine2.CalcCosts;
+                PhysInvtOrderLine2.MODIFY;
+              UNTIL PhysInvtOrderLine2.NEXT = 0;
+            END;
+          END;
+        UNTIL PhysInvtOrderLine.NEXT = 0;
+
+        Status := Status::Finished;
+        MODIFY;
+      END;
+    END;
+
+    PROCEDURE CreateTrackingBufferLines@1140001(DocNo@1140000 : Code[20];LineNo@1140001 : Integer);
+    VAR
+      ExpectPhysInvtTrackLine@1140002 : Record 5005361;
+    BEGIN
+      // Create TrackingBufferLines by using the tables
+      // PhysInvtRecordingLine and ExpectPhysInvtTrackLine as sources of the process
+
+      PhysInvtRecordingLine.RESET;
+      PhysInvtRecordingLine.SETCURRENTKEY("Order No.", "Order Line No.");
+      PhysInvtRecordingLine.SETRANGE("Order No.", DocNo);
+      PhysInvtRecordingLine.SETRANGE("Order Line No.", LineNo);
+      IF PhysInvtRecordingLine.FIND('-') THEN REPEAT
+        IF PhysInvtRecordingLine."Quantity (Base)" <> 0 THEN BEGIN
+          IF NOT
+            TempPhysInvtTrackingBuffer.GET(
+              PhysInvtRecordingLine."Serial No.", PhysInvtRecordingLine."Lot No.")
+          THEN BEGIN
+            TempPhysInvtTrackingBuffer.INIT;
+            TempPhysInvtTrackingBuffer."Serial No." := PhysInvtRecordingLine."Serial No.";
+            TempPhysInvtTrackingBuffer."Lot No" := PhysInvtRecordingLine."Lot No.";
+            TempPhysInvtTrackingBuffer."Qty. Recorded (Base)" :=
+              PhysInvtRecordingLine."Quantity (Base)";
+            TempPhysInvtTrackingBuffer.INSERT;
+          END ELSE BEGIN
+            TempPhysInvtTrackingBuffer."Qty. Recorded (Base)" :=
+              TempPhysInvtTrackingBuffer."Qty. Recorded (Base)" +
+              PhysInvtRecordingLine."Quantity (Base)";
+            TempPhysInvtTrackingBuffer.MODIFY;
+          END;
+        END;
+      UNTIL PhysInvtRecordingLine.NEXT = 0;
+
+      ExpectPhysInvtTrackLine.RESET;
+      ExpectPhysInvtTrackLine.SETRANGE("Order No", DocNo);
+      ExpectPhysInvtTrackLine.SETRANGE("Order Line No.", LineNo);
+      IF ExpectPhysInvtTrackLine.FIND('-') THEN REPEAT
+        IF NOT
+          TempPhysInvtTrackingBuffer.GET(
+            ExpectPhysInvtTrackLine."Serial No.", ExpectPhysInvtTrackLine."Lot No.")
+        THEN BEGIN
+          TempPhysInvtTrackingBuffer.INIT;
+          TempPhysInvtTrackingBuffer."Serial No." := ExpectPhysInvtTrackLine."Serial No.";
+          TempPhysInvtTrackingBuffer."Lot No" := ExpectPhysInvtTrackLine."Lot No.";
+          TempPhysInvtTrackingBuffer."Qty. Expected (Base)" :=
+            ExpectPhysInvtTrackLine."Quantity (Base)";
+          TempPhysInvtTrackingBuffer.INSERT;
+        END ELSE BEGIN
+          TempPhysInvtTrackingBuffer."Qty. Expected (Base)" :=
+            TempPhysInvtTrackingBuffer."Qty. Expected (Base)" +
+            ExpectPhysInvtTrackLine."Quantity (Base)";
+          TempPhysInvtTrackingBuffer.MODIFY;
+        END;
+      UNTIL ExpectPhysInvtTrackLine.NEXT = 0;
+
+      TempPhysInvtTrackingBuffer.RESET;
+      IF TempPhysInvtTrackingBuffer.FIND('-') THEN REPEAT
+        TempPhysInvtTrackingBuffer."Qty. To Transfer" :=
+          TempPhysInvtTrackingBuffer."Qty. Recorded (Base)" -
+          TempPhysInvtTrackingBuffer."Qty. Expected (Base)";
+        TempPhysInvtTrackingBuffer."Outstanding Quantity" :=
+          TempPhysInvtTrackingBuffer."Qty. To Transfer";
+        TempPhysInvtTrackingBuffer.Open :=
+          TempPhysInvtTrackingBuffer."Outstanding Quantity" <> 0;
+        TempPhysInvtTrackingBuffer.MODIFY;
+      UNTIL TempPhysInvtTrackingBuffer.NEXT = 0;
+    END;
+
+    LOCAL PROCEDURE CreateReservEntries@1140002(DocNo@1140000 : Code[20];LineNo@1140001 : Integer;AllBufferLines@1140002 : Boolean;MaxQtyToTransfer@1140003 : Decimal);
+    VAR
+      ReservEntry@1140004 : Record 337;
+      NextEntryNo@1140005 : Integer;
+      QtyToTransfer@1140006 : Decimal;
+    BEGIN
+      TempPhysInvtTrackingBuffer.RESET;
+      TempPhysInvtTrackingBuffer.SETCURRENTKEY(Open);
+      TempPhysInvtTrackingBuffer.SETRANGE(Open, TRUE);
+      IF TempPhysInvtTrackingBuffer.FIND('-') THEN BEGIN
+        ReservEntry.LOCKTABLE;
+        ReservEntry.RESET;
+        IF ReservEntry.FIND('+') THEN
+          NextEntryNo := ReservEntry."Entry No." + 1
+        ELSE
+          NextEntryNo := 1;
+        REPEAT
+          IF AllBufferLines THEN BEGIN
+            QtyToTransfer := TempPhysInvtTrackingBuffer."Outstanding Quantity";
+          END ELSE BEGIN
+            IF MaxQtyToTransfer > 0 THEN BEGIN
+              IF TempPhysInvtTrackingBuffer."Outstanding Quantity" <= MaxQtyToTransfer THEN
+                QtyToTransfer := TempPhysInvtTrackingBuffer."Outstanding Quantity"
+              ELSE
+                QtyToTransfer := MaxQtyToTransfer;
+            END ELSE BEGIN
+              IF TempPhysInvtTrackingBuffer."Outstanding Quantity" >= MaxQtyToTransfer THEN
+                QtyToTransfer := TempPhysInvtTrackingBuffer."Outstanding Quantity"
+              ELSE
+                QtyToTransfer := MaxQtyToTransfer;
+            END;
+          END;
+          IF QtyToTransfer <> 0 THEN BEGIN
+            ReservEntry.INIT;
+            ReservEntry."Entry No." := NextEntryNo;
+            ReservEntry.Positive := QtyToTransfer > 0;
+            ReservEntry.VALIDATE("Item No.", PhysInvtOrderLine."Item No.");
+            ReservEntry.VALIDATE("Variant Code", PhysInvtOrderLine."Variant Code");
+            ReservEntry.VALIDATE("Location Code", PhysInvtOrderLine."Location Code");
+            ReservEntry.VALIDATE("Serial No.", TempPhysInvtTrackingBuffer."Serial No.");
+            ReservEntry.VALIDATE("Lot No.", TempPhysInvtTrackingBuffer."Lot No");
+            ReservEntry.VALIDATE("Source Type", DATABASE::"Phys. Inventory Order Line");
+            ReservEntry.VALIDATE("Source ID", DocNo);
+            ReservEntry.VALIDATE("Source Ref. No.", LineNo);
+            ReservEntry.VALIDATE(Quantity, QtyToTransfer);
+            ReservEntry."Qty. per Unit of Measure" := 1;
+            ReservEntry."Quantity (Base)" := ReservEntry.Quantity;
+            ReservEntry."Qty. to Handle (Base)" := ReservEntry.Quantity;
+            ReservEntry."Qty. to Invoice (Base)" := ReservEntry.Quantity;
+            ReservEntry."Reservation Status" := ReservEntry."Reservation Status"::Prospect;
+            ReservEntry."Created By" := USERID;
+            ReservEntry.VALIDATE("Creation Date", WORKDATE);
+            IF QtyToTransfer > 0 THEN BEGIN
+              ReservEntry."Expected Receipt Date" := PhysInvtOrderHeader."Posting Date";
+              PhysInvtOrderLine."Pos. Qty. (Base)" :=
+                PhysInvtOrderLine."Pos. Qty. (Base)" +
+                ReservEntry.Quantity;
+            END ELSE BEGIN
+              ReservEntry."Shipment Date" := PhysInvtOrderHeader."Posting Date";
+              PhysInvtOrderLine."Neg. Qty. (Base)" :=
+                PhysInvtOrderLine."Neg. Qty. (Base)" -
+                ReservEntry.Quantity;
+            END;
+            ReservEntry.INSERT;
+            NextEntryNo := NextEntryNo + 1;
+          END;
+          TempPhysInvtTrackingBuffer."Outstanding Quantity" :=
+            TempPhysInvtTrackingBuffer."Outstanding Quantity" - QtyToTransfer;
+          TempPhysInvtTrackingBuffer.Open :=
+            TempPhysInvtTrackingBuffer."Outstanding Quantity" <> 0;
+          TempPhysInvtTrackingBuffer.MODIFY;
+        UNTIL TempPhysInvtTrackingBuffer.NEXT = 0;
+      END;
+    END;
+
+    BEGIN
+    END.
+  }
+}
+

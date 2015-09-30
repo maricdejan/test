@@ -1,0 +1,280 @@
+OBJECT Form 11004 GDPdU Record Def. Tables
+{
+  OBJECT-PROPERTIES
+  {
+    Date=14.08.09;
+    Time=12:00:00;
+    Version List=NAVDACH6.00.01;
+  }
+  PROPERTIES
+  {
+    Width=16500;
+    Height=6710;
+    CaptionML=[DEU=GDPdU Datens.-Def. Tabellen;
+               ENU=GDPdU Record Def. Tables];
+    TableBoxID=1140000;
+    SourceTable=Table11004;
+    AutoSplitKey=Yes;
+    DelayedInsert=Yes;
+    PopulateAllFields=Yes;
+    DataCaptionFields=Record Code,Record Code;
+    OnOpenForm=BEGIN
+                 ReportRun := TRUE;
+               END;
+
+    OnCloseForm=BEGIN
+                  KeyBuffer.RESET;
+                  KeyBuffer.DELETEALL;
+                END;
+
+  }
+  CONTROLS
+  {
+    { 1140000;TableBox  ;220  ;220  ;16060;5500 ;HorzGlue=Both;
+                                                 VertGlue=Both }
+    { 1140001;TextBox   ;0    ;0    ;1650 ;0    ;ParentControl=1140000;
+                                                 InColumn=Yes;
+                                                 SourceExpr="Table No.";
+                                                 LookupFormID=Objects;
+                                                 OnAfterValidate=BEGIN
+                                                                   // CALCFIELDS("Table Name");
+                                                                   // CurrForm.SAVERECORD;
+                                                                 END;
+                                                                  }
+    { 1140002;Label     ;0    ;0    ;0    ;0    ;ParentControl=1140001;
+                                                 InColumnHeading=Yes }
+    { 1140003;TextBox   ;0    ;0    ;4400 ;0    ;HorzGlue=Both;
+                                                 ParentControl=1140000;
+                                                 InColumn=Yes;
+                                                 DrillDown=No;
+                                                 SourceExpr="Table Name";
+                                                 OnFormat=BEGIN
+                                                            CurrForm."Table Name".UPDATEINDENT := Indentation * 220;
+                                                          END;
+                                                           }
+    { 1140004;Label     ;0    ;0    ;0    ;0    ;ParentControl=1140003;
+                                                 InColumnHeading=Yes }
+    { 1140005;TextBox   ;7218 ;550  ;1650 ;440  ;ParentControl=1140000;
+                                                 InColumn=Yes;
+                                                 SourceExpr="GDPdU Period Field No." }
+    { 1140006;Label     ;0    ;0    ;0    ;0    ;ParentControl=1140005;
+                                                 InColumnHeading=Yes }
+    { 1140007;TextBox   ;8128 ;440  ;4400 ;440  ;ParentControl=1140000;
+                                                 InColumn=Yes;
+                                                 DrillDown=No;
+                                                 SourceExpr="GDPdU Period Field Name" }
+    { 1140008;Label     ;0    ;0    ;0    ;0    ;ParentControl=1140007;
+                                                 InColumnHeading=Yes }
+    { 1140009;TextBox   ;5334 ;440  ;4400 ;440  ;ParentControl=1140000;
+                                                 InColumn=Yes;
+                                                 SourceExpr="Export File Name" }
+    { 1140010;Label     ;0    ;0    ;0    ;0    ;ParentControl=1140009;
+                                                 InColumnHeading=Yes }
+    { 1140011;TextBox   ;11409;440  ;1650 ;440  ;ParentControl=1140000;
+                                                 InColumn=Yes;
+                                                 Lookup=No;
+                                                 DrillDown=No;
+                                                 DropDown=No;
+                                                 SourceExpr="Fields Selected";
+                                                 OnAssistEdit=VAR
+                                                                GDPdUMgt@1140000 : Codeunit 11000;
+                                                              BEGIN
+                                                                CurrForm.UPDATE(TRUE);
+                                                                COMMIT;
+                                                                GDPdUMgt.SelectGDPdUFields(Rec);
+                                                                CurrForm.UPDATE(FALSE);
+                                                              END;
+                                                               }
+    { 1140012;Label     ;0    ;0    ;0    ;0    ;ParentControl=1140011;
+                                                 InColumnHeading=Yes }
+    { 1140013;TextBox   ;11538;220  ;1650 ;440  ;ParentControl=1140000;
+                                                 InColumn=Yes;
+                                                 Lookup=No;
+                                                 DrillDown=No;
+                                                 DropDown=No;
+                                                 SourceExpr="Table Relation Defined";
+                                                 OnAssistEdit=VAR
+                                                                GDPdUMgt@1140000 : Codeunit 11000;
+                                                              BEGIN
+                                                                CurrForm.UPDATE(TRUE);
+                                                                COMMIT;
+                                                                GDPdUMgt.UpdateTableRelation(Rec);
+                                                                CurrForm.UPDATE(FALSE);
+                                                              END;
+                                                               }
+    { 1140014;Label     ;7705 ;445  ;3300 ;440  ;ParentControl=1140013;
+                                                 InColumnHeading=Yes }
+    { 1140015;CommandButton;5500;5940;2200;550  ;HorzGlue=Right;
+                                                 VertGlue=Bottom;
+                                                 Default=Yes;
+                                                 PushAction=LookupOK;
+                                                 InvalidActionAppearance=Hide }
+    { 1140016;CommandButton;7920;5940;2200;550  ;HorzGlue=Right;
+                                                 VertGlue=Bottom;
+                                                 Cancel=Yes;
+                                                 PushAction=LookupCancel;
+                                                 InvalidActionAppearance=Hide }
+    { 1140017;CommandButton;14080;5940;2200;550 ;HorzGlue=Right;
+                                                 VertGlue=Bottom;
+                                                 PushAction=FormHelp }
+    { 1140018;MenuButton;11660;5940 ;2200 ;550  ;HorzGlue=Right;
+                                                 VertGlue=Bottom;
+                                                 CaptionML=[DEU=Da&tens.-Def. Tabelle;
+                                                            ENU=Re&cord Def. Table];
+                                                 Menu=MENUITEMS
+                                                 {
+                                                   { ID=1140019;
+                                                     CaptionML=[DEU=&Tabellenrelation;
+                                                                ENU=&Table Relation];
+                                                     OnPush=VAR
+                                                              GDPdUMgt@1140000 : Codeunit 11000;
+                                                            BEGIN
+                                                              GDPdUMgt.UpdateTableRelation(Rec);
+                                                              CurrForm.UPDATE(FALSE);
+                                                            END;
+                                                             }
+                                                   { ID=1140020;
+                                                     CaptionML=[DEU=&Feldauswahl;
+                                                                ENU=&Field Selection];
+                                                     OnPush=VAR
+                                                              GDPdUMgt@1140000 : Codeunit 11000;
+                                                            BEGIN
+                                                              GDPdUMgt.SelectGDPdUFields(Rec);
+                                                              CurrForm.UPDATE(FALSE);
+                                                            END;
+                                                             }
+                                                 }
+                                                  }
+    { 1140021;CommandButton;10890;5940;550;550  ;HorzGlue=Right;
+                                                 VertGlue=Bottom;
+                                                 FocusOnClick=No;
+                                                 ShowCaption=No;
+                                                 BitmapPos=Center;
+                                                 AutoRepeat=Yes;
+                                                 Bitmap=16;
+                                                 CaptionML=[DEU=EinrÅcken;
+                                                            ENU=Indent];
+                                                 ToolTipML=[DEU=EinrÅcken;
+                                                            ENU=Indent];
+                                                 OnPush=BEGIN
+                                                          VALIDATE(Indentation,Indentation+1);
+                                                          CurrForm.UPDATE;
+                                                        END;
+                                                         }
+    { 1140022;CommandButton;10340;5940;550;550  ;HorzGlue=Right;
+                                                 VertGlue=Bottom;
+                                                 FocusOnClick=No;
+                                                 ShowCaption=No;
+                                                 BitmapPos=Center;
+                                                 AutoRepeat=Yes;
+                                                 Bitmap=15;
+                                                 CaptionML=[DEU=AusrÅcken;
+                                                            ENU=Unindent];
+                                                 ToolTipML=[DEU=AusrÅcken;
+                                                            ENU=Unindent];
+                                                 OnPush=BEGIN
+                                                          VALIDATE(Indentation,Indentation-1);
+                                                          CurrForm.UPDATE;
+                                                        END;
+                                                         }
+    { 1140023;MenuButton;7920 ;5940 ;2200 ;550  ;HorzGlue=Right;
+                                                 VertGlue=Bottom;
+                                                 CaptionML=[DEU=&Funktion;
+                                                            ENU=&Functions];
+                                                 Menu=MENUITEMS
+                                                 {
+                                                   { ID=1140024;
+                                                     CaptionML=[DEU=Feldreihenfolge ÅberprÅfen;
+                                                                ENU=Check Field Order];
+                                                     OnPush=VAR
+                                                              Field@1140001 : Record 2000000041;
+                                                            BEGIN
+                                                              IF ReportRun THEN BEGIN
+                                                                REPORT.RUNMODAL(11017,FALSE,FALSE,Key);
+                                                                ReportRun := FALSE;
+                                                              END;
+                                                              IF FINDFIRST THEN
+                                                                REPEAT
+                                                                  Count1 := 0;
+                                                                  i := 1;
+                                                                  NoOfComma := 0;
+                                                                  PrimaryKeyText := '';
+                                                                  KeyBuffer.RESET;
+                                                                  KeyBuffer.SETRANGE("Table No","Table No.");
+                                                                  IF KeyBuffer.FINDFIRST THEN BEGIN
+                                                                    PrimaryKeyText := KeyBuffer.Key;
+                                                                    REPEAT
+                                                                      KeyArray[i] := SELECTSTR(1,PrimaryKeyText);
+                                                                      i := i + 1;
+                                                                      NoOfComma := STRPOS(PrimaryKeyText,',');
+                                                                      PrimaryKeyText := COPYSTR(PrimaryKeyText,NoOfComma+1,MAXSTRLEN(PrimaryKeyText));
+                                                                      Count1 := Count1 + 1;
+                                                                    UNTIL NoOfComma = 0;
+                                                                    Count2 := Count1;
+                                                                  END;
+
+                                                                  i := 1;
+                                                                  IsKey := TRUE;
+                                                                  IsPrimary := TRUE;
+                                                                  ShowMessage := TRUE;
+                                                                  GDPdURecordDefField.RESET;
+                                                                  GDPdURecordDefField.SETRANGE("Definition Group Code","Definition Group Code");
+                                                                  GDPdURecordDefField.SETRANGE("Record Code","Record Code");
+                                                                  GDPdURecordDefField.SETRANGE("Table No.","Table No.");
+                                                                  IF GDPdURecordDefField.FINDFIRST THEN
+                                                                    REPEAT
+                                                                      REPEAT
+                                                                        GDPdURecordDefField.CALCFIELDS("Field Name");
+                                                                        GDPdURecordDefField.CALCFIELDS("Table Name");
+                                                                        Field.RESET;
+                                                                        Field.SETRANGE(TableNo,GDPdURecordDefField."Table No.");
+                                                                        Field.SETRANGE("No.",GDPdURecordDefField."Field No.");
+                                                                        Field.FINDFIRST;
+                                                                        IF KeyArray[i] = Field.FieldName THEN BEGIN
+                                                                          IF IsPrimary AND NOT IsKey AND ShowMessage THEN BEGIN
+                                                                            MESSAGE(Text1140001,GDPdURecordDefField."Field Name",GDPdURecordDefField."Table Name");
+                                                                            ShowMessage := FALSE;
+                                                                          END ELSE BEGIN
+                                                                            IsPrimary := TRUE;
+                                                                            IsKey := TRUE;
+                                                                          END;
+                                                                          Count1 := 0;
+                                                                        END ELSE BEGIN
+                                                                          i := i + 1;
+                                                                          Count1 := Count1 - 1;
+                                                                          IF Count1 = 0 THEN
+                                                                            IsKey := FALSE;
+                                                                        END;
+                                                                      UNTIL Count1 = 0;
+                                                                      i := 1;
+                                                                      Count1 := Count2;
+                                                                    UNTIL GDPdURecordDefField.NEXT =0;
+                                                                UNTIL NEXT =0;
+                                                            END;
+                                                             }
+                                                 }
+                                                  }
+  }
+  CODE
+  {
+    VAR
+      Key@1140000 : Record 2000000063;
+      KeyBuffer@1140002 : Record 11015;
+      GDPdURecordDefField@1140003 : Record 11005;
+      KeyArray@1140004 : ARRAY [20] OF Text[250];
+      PrimaryKeyText@1140005 : Text[250];
+      i@1140006 : Integer;
+      Count1@1140007 : Integer;
+      Count2@1140008 : Integer;
+      NoOfComma@1140009 : Integer;
+      IsPrimary@1140010 : Boolean;
+      IsKey@1140011 : Boolean;
+      ReportRun@1140012 : Boolean;
+      Text1140001@1140001 : TextConst 'DEU="Das Feld ''%1'' des primÑren SchlÅssels muss oben in der Liste in ''%2'' ausgewÑhlt werden. ";ENU=Primay key field %1 should be selected at the top of the list in %2.';
+      ShowMessage@1140013 : Boolean;
+
+    BEGIN
+    END.
+  }
+}
+

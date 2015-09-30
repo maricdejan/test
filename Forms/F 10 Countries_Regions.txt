@@ -1,0 +1,91 @@
+OBJECT Form 10 Countries/Regions
+{
+  OBJECT-PROPERTIES
+  {
+    Date=13.02.07;
+    Time=12:00:00;
+    Version List=NAVW15.00;
+  }
+  PROPERTIES
+  {
+    Width=13200;
+    Height=6710;
+    CaptionML=[DEU=L„nder/Regionen;
+               ENU=Countries/Regions];
+    TableBoxID=1;
+    SourceTable=Table9;
+  }
+  CONTROLS
+  {
+    { 1   ;TableBox     ;220  ;220  ;12760;5500 ;HorzGlue=Both;
+                                                 VertGlue=Both }
+    { 2   ;TextBox      ;0    ;0    ;1650 ;0    ;ParentControl=1;
+                                                 InColumn=Yes;
+                                                 SourceExpr=Code }
+    { 3   ;Label        ;0    ;0    ;0    ;0    ;ParentControl=2;
+                                                 InColumnHeading=Yes }
+    { 4   ;TextBox      ;0    ;0    ;4400 ;0    ;HorzGlue=Both;
+                                                 ParentControl=1;
+                                                 InColumn=Yes;
+                                                 SourceExpr=Name }
+    { 5   ;Label        ;0    ;0    ;0    ;0    ;ParentControl=4;
+                                                 InColumnHeading=Yes }
+    { 6   ;TextBox      ;0    ;0    ;2750 ;0    ;ParentControl=1;
+                                                 InColumn=Yes;
+                                                 SourceExpr="Address Format" }
+    { 7   ;Label        ;0    ;0    ;0    ;0    ;ParentControl=6;
+                                                 InColumnHeading=Yes }
+    { 15  ;TextBox      ;7541 ;440  ;2750 ;440  ;ParentControl=1;
+                                                 InColumn=Yes;
+                                                 SourceExpr="Contact Address Format" }
+    { 16  ;Label        ;0    ;0    ;0    ;0    ;ParentControl=15;
+                                                 InColumnHeading=Yes }
+    { 11  ;TextBox      ;8599 ;770  ;1650 ;440  ;Visible=No;
+                                                 ParentControl=1;
+                                                 InColumn=Yes;
+                                                 SourceExpr="EU Country/Region Code" }
+    { 12  ;Label        ;0    ;0    ;0    ;0    ;ParentControl=11;
+                                                 InColumnHeading=Yes }
+    { 13  ;TextBox      ;11139;660  ;1650 ;440  ;Visible=No;
+                                                 ParentControl=1;
+                                                 InColumn=Yes;
+                                                 SourceExpr="Intrastat Code" }
+    { 14  ;Label        ;0    ;0    ;0    ;0    ;ParentControl=13;
+                                                 InColumnHeading=Yes }
+    { 8   ;CommandButton;3520 ;5940 ;2200 ;550  ;HorzGlue=Right;
+                                                 VertGlue=Bottom;
+                                                 Default=Yes;
+                                                 PushAction=LookupOK;
+                                                 InvalidActionAppearance=Hide }
+    { 9   ;CommandButton;5940 ;5940 ;2200 ;550  ;HorzGlue=Right;
+                                                 VertGlue=Bottom;
+                                                 Cancel=Yes;
+                                                 PushAction=LookupCancel;
+                                                 InvalidActionAppearance=Hide }
+    { 10  ;CommandButton;10780;5940 ;2200 ;550  ;HorzGlue=Right;
+                                                 VertGlue=Bottom;
+                                                 PushAction=FormHelp }
+    { 17  ;MenuButton   ;8360 ;5940 ;2200 ;550  ;HorzGlue=Right;
+                                                 VertGlue=Bottom;
+                                                 CaptionML=[DEU=&Land/Region;
+                                                            ENU=&Country/Region];
+                                                 Menu=MENUITEMS
+                                                 {
+                                                   { ID=18;
+                                                     PushAction=RunObject;
+                                                     CaptionML=[DEU=USt-IdNr.-Formate;
+                                                                ENU=VAT Reg. No. Formats];
+                                                     RunObject=Form 575;
+                                                     RunFormLinkType=OnUpdate;
+                                                     RunFormLink=Country/Region Code=FIELD(Code) }
+                                                 }
+                                                  }
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

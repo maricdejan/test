@@ -1,0 +1,97 @@
+OBJECT Page 7600 Base Calendar Card
+{
+  OBJECT-PROPERTIES
+  {
+    Date=05.11.08;
+    Time=12:00:00;
+    Version List=NAVW16.00;
+  }
+  PROPERTIES
+  {
+    CaptionML=[DEU=Basiskalenderkarte;
+               ENU=Base Calendar Card];
+    SourceTable=Table7600;
+    PageType=ListPlus;
+    OnAfterGetRecord=BEGIN
+                       CurrPage.BaseCalendarEntries.FORM.SetCalendarCode(Code);
+                     END;
+
+    ActionList=ACTIONS
+    {
+      { 1900000003;0 ;ActionContainer;
+                      ActionContainerType=RelatedInformation }
+      { 15      ;1   ;ActionGroup;
+                      CaptionML=[DEU=Ba&siskalender;
+                                 ENU=&Base Calendar] }
+      { 10      ;2   ;Action    ;
+                      CaptionML=[DEU=Ver&wendung;
+                                 ENU=&Where-Used List];
+                      OnAction=VAR
+                                 WhereUsedList@1001 : Form 7608;
+                                 CalendarMgt@1002 : Codeunit 7600;
+                               BEGIN
+                                 CalendarMgt.CreateWhereUsedEntries(Code);
+                                 WhereUsedList.RUNMODAL;
+                                 CLEAR(WhereUsedList);
+                               END;
+                                }
+      { 1900000004;0 ;ActionContainer;
+                      ActionContainerType=ActionItems }
+      { 8       ;1   ;ActionGroup;
+                      CaptionML=[DEU=F&unktion;
+                                 ENU=F&unctions] }
+      { 9       ;2   ;Action    ;
+                      CaptionML=[DEU=&Basiskalender pflegen;
+                                 ENU=&Maintain Base Calendar Changes];
+                      RunObject=Page 7602;
+                      RunFormLink=Base Calendar Code=FIELD(Code) }
+    }
+  }
+  CONTROLS
+  {
+    { 1900000001;0;Container;
+                ContainerType=ContentArea }
+
+    { 1   ;1   ;Group     ;
+                CaptionML=[DEU=Allgemein;
+                           ENU=General] }
+
+    { 2   ;2   ;Field     ;
+                CaptionML=[DEU=Code;
+                           ENU=Code];
+                SourceExpr=Code }
+
+    { 4   ;2   ;Field     ;
+                SourceExpr=Name }
+
+    { 6   ;2   ;Field     ;
+                CaptionML=[DEU=Spezifische Žnderungen vorh.;
+                           ENU=Customized Changes Exist];
+                SourceExpr="Customized Changes Exist" }
+
+    { 23  ;1   ;Part      ;
+                Name=BaseCalendarEntries;
+                PagePartID=Page7604 }
+
+    { 1900000007;0;Container;
+                ContainerType=FactBoxArea }
+
+    { 1900383207;1;Part   ;
+                Visible=FALSE;
+                PartType=System;
+                SystemPartID=RecordLinks }
+
+    { 1905767507;1;Part   ;
+                Visible=FALSE;
+                PartType=System;
+                SystemPartID=Notes }
+
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

@@ -1,0 +1,191 @@
+OBJECT Page 5005354 Phys. Inventory Recording
+{
+  OBJECT-PROPERTIES
+  {
+    Date=05.11.08;
+    Time=12:00:00;
+    Version List=NAVDACH6.00;
+  }
+  PROPERTIES
+  {
+    CaptionML=[DEU=Inventurerfassung;
+               ENU=Phys. Inventory Recording];
+    SourceTable=Table5005352;
+    PageType=Document;
+    ActionList=ACTIONS
+    {
+      { 1900000003;0 ;ActionContainer;
+                      ActionContainerType=RelatedInformation }
+      { 1140025 ;1   ;ActionGroup;
+                      CaptionML=[DEU=Erfa&ssung;
+                                 ENU=&Recording] }
+      { 1140027 ;2   ;Action    ;
+                      CaptionML=[DEU=Be&merkungen;
+                                 ENU=Co&mments];
+                      RunObject=Page 5005366;
+                      RunFormLink=Document Type=CONST(Recording),
+                                  Order No.=FIELD(Order No.),
+                                  Recording No.=FIELD(Recording No.);
+                      Image=ViewComments }
+      { 1900000004;0 ;ActionContainer;
+                      ActionContainerType=ActionItems }
+      { 1140028 ;1   ;ActionGroup;
+                      CaptionML=[DEU=F&unktion;
+                                 ENU=F&unctions] }
+      { 1140029 ;2   ;Action    ;
+                      Ellipsis=Yes;
+                      CaptionML=[DEU=Erfassungszeilen e&xportieren;
+                                 ENU=E&xport Recording Lines];
+                      Promoted=Yes;
+                      Image=Export;
+                      PromotedCategory=Process;
+                      OnAction=VAR
+                                 DataportMgt@1101100001 : Codeunit 5005365;
+                               BEGIN
+                                 PhysInvtRecordingHeader.COPY(Rec);
+
+
+                                 CASE ISSERVICETIER OF
+                                   TRUE:
+                                     BEGIN
+                                       ExportPhysInvtRecLines2.Def(PhysInvtRecordingHeader);
+                                       ExportPhysInvtRecLines2.IMPORTFILE := FALSE;
+                                       ExportPhysInvtRecLines2.RUN;
+                                       CLEAR(ExportPhysInvtRecLines2);
+                                     END;
+                                   FALSE:
+                                     BEGIN
+                                       DataportMgt.ExportPhysInvtRecLines(PhysInvtRecordingHeader);
+                                     END;
+                                 END;
+                               END;
+                                }
+      { 1140030 ;2   ;Action    ;
+                      Ellipsis=Yes;
+                      CaptionML=[DEU=Erfassungszeilen i&mportieren;
+                                 ENU=I&mport Recording Lines];
+                      Promoted=Yes;
+                      Image=Import;
+                      PromotedCategory=Process;
+                      OnAction=VAR
+                                 DataportMgt@1140001 : Codeunit 5005365;
+                               BEGIN
+                                 PhysInvtRecordingHeader.COPY(Rec);
+
+
+                                 CASE ISSERVICETIER OF
+                                   TRUE:
+                                     BEGIN
+                                       ImportPhysInvtRecLines2.Def(PhysInvtRecordingHeader);
+                                       ImportPhysInvtRecLines2.IMPORTFILE := TRUE;
+                                       ImportPhysInvtRecLines2.RUN;
+                                       CLEAR(ImportPhysInvtRecLines2);
+                                     END;
+                                   FALSE:
+                                     BEGIN
+                                       DataportMgt.ImportPhysInvtRecLines(PhysInvtRecordingHeader);
+                                     END;
+                                 END;
+                               END;
+                                }
+      { 1140031 ;2   ;Separator  }
+      { 1140034 ;2   ;Action    ;
+                      ShortCutKey=Ctrl+F9;
+                      Ellipsis=Yes;
+                      CaptionML=[DEU=Bee&nden;
+                                 ENU=Fi&nish];
+                      RunObject=Codeunit 5005350;
+                      Promoted=Yes;
+                      Image=ReleaseDoc;
+                      PromotedCategory=Process }
+      { 1140035 ;2   ;Action    ;
+                      Ellipsis=Yes;
+                      CaptionML=[DEU=Stat&us zurÅcksetzen;
+                                 ENU=Reo&pen];
+                      RunObject=Codeunit 5005352;
+                      Promoted=Yes;
+                      Image=ReOpen;
+                      PromotedCategory=Process }
+      { 1140036 ;1   ;Action    ;
+                      Ellipsis=Yes;
+                      CaptionML=[DEU=D&rucken;
+                                 ENU=&Print];
+                      Promoted=Yes;
+                      Image=Print;
+                      PromotedCategory=Process;
+                      OnAction=VAR
+                                 DocPrint@1140000 : Codeunit 229;
+                               BEGIN
+                                 PrintDocumentComfort.PhysInvtRecPrint(Rec,TRUE);
+                               END;
+                                }
+    }
+  }
+  CONTROLS
+  {
+    { 1900000001;0;Container;
+                ContainerType=ContentArea }
+
+    { 1140000;1;Group     ;
+                CaptionML=[DEU=Allgemein;
+                           ENU=General] }
+
+    { 1140014;2;Field     ;
+                SourceExpr="Order No." }
+
+    { 1140016;2;Field     ;
+                SourceExpr="Recording No." }
+
+    { 1140019;2;Field     ;
+                SourceExpr=Description }
+
+    { 1140012;2;Field     ;
+                SourceExpr="Location Code" }
+
+    { 1140002;2;Field     ;
+                SourceExpr="Person Responsible" }
+
+    { 1140010;2;Field     ;
+                SourceExpr=Status }
+
+    { 1140008;2;Field     ;
+                SourceExpr="Person Recorded" }
+
+    { 1140004;2;Field     ;
+                SourceExpr="Date Recorded" }
+
+    { 1140006;2;Field     ;
+                SourceExpr="Time Recorded" }
+
+    { 1140021;2;Field     ;
+                SourceExpr="Recording without order permit" }
+
+    { 1140024;1;Part      ;
+                Name=Lines;
+                SubFormView=SORTING(Order No.,Recording No.,Line No.);
+                SubFormLink=Order No.=FIELD(Order No.),
+                            Recording No.=FIELD(Recording No.);
+                PagePartID=Page5005356 }
+
+    { 1900000007;0;Container;
+                ContainerType=FactBoxArea }
+
+    { 1905767507;1;Part   ;
+                Visible=TRUE;
+                PartType=System;
+                SystemPartID=Notes }
+
+  }
+  CODE
+  {
+    VAR
+      PhysInvtRecordingHeader@1140000 : Record 5005352;
+      PrintDocumentComfort@1140001 : Codeunit 5005396;
+      ExportPhysInvtRecLines2@1461000 : XMLport 5005350;
+      ImportPhysInvtRecLines2@1461001 : XMLport 5005351;
+
+    BEGIN
+    END.
+  }
+}
+

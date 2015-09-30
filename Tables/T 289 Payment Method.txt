@@ -1,0 +1,78 @@
+OBJECT Table 289 Payment Method
+{
+  OBJECT-PROPERTIES
+  {
+    Date=11.12.10;
+    Time=12:00:00;
+    Version List=NAVW16.00.10;
+  }
+  PROPERTIES
+  {
+    DataCaptionFields=Code,Description;
+    CaptionML=[DEU=Zahlungsform;
+               ENU=Payment Method];
+    LookupFormID=Form427;
+    DrillDownFormID=Form427;
+  }
+  FIELDS
+  {
+    { 1   ;   ;Code                ;Code10        ;CaptionML=[DEU=Code;
+                                                              ENU=Code];
+                                                   NotBlank=Yes }
+    { 2   ;   ;Description         ;Text30        ;CaptionML=[DEU=Beschreibung;
+                                                              ENU=Description] }
+    { 3   ;   ;Bal. Account Type   ;Option        ;OnValidate=BEGIN
+                                                                "Bal. Account No." := '';
+                                                              END;
+
+                                                   CaptionML=[DEU=Gegenkontoart;
+                                                              ENU=Bal. Account Type];
+                                                   OptionCaptionML=[DEU=Sachkonto,Bankkonto;
+                                                                    ENU=G/L Account,Bank Account];
+                                                   OptionString=G/L Account,Bank Account }
+    { 4   ;   ;Bal. Account No.    ;Code20        ;TableRelation=IF (Bal. Account Type=CONST(G/L Account)) "G/L Account"
+                                                                 ELSE IF (Bal. Account Type=CONST(Bank Account)) "Bank Account";
+                                                   OnValidate=BEGIN
+                                                                IF "Bal. Account Type" = "Bal. Account Type"::"G/L Account" THEN
+                                                                  CheckGLAcc("Bal. Account No.");
+                                                              END;
+
+                                                   CaptionML=[DEU=Gegenkontonr.;
+                                                              ENU=Bal. Account No.] }
+    { 5   ;   ;Payment Processor   ;Option        ;OnValidate=BEGIN
+                                                                IF "Payment Processor" = "Payment Processor"::"Dynamics Online" THEN
+                                                                  TESTFIELD("Bal. Account Type","Bal. Account Type"::"Bank Account");
+                                                              END;
+
+                                                   CaptionML=[DEU=Zahlungsverarbeitung;
+                                                              ENU=Payment Processor];
+                                                   OptionCaptionML=[DEU=" ,Dynamics Online";
+                                                                    ENU=" ,Dynamics Online"];
+                                                   OptionString=[ ,Dynamics Online] }
+  }
+  KEYS
+  {
+    {    ;Code                                    ;Clustered=Yes }
+  }
+  FIELDGROUPS
+  {
+  }
+  CODE
+  {
+
+    LOCAL PROCEDURE CheckGLAcc@2(AccNo@1000 : Code[20]);
+    VAR
+      GLAcc@1001 : Record 15;
+    BEGIN
+      IF AccNo <> '' THEN BEGIN
+        GLAcc.GET(AccNo);
+        GLAcc.CheckGLAcc;
+        GLAcc.TESTFIELD("Direct Posting",TRUE);
+      END;
+    END;
+
+    BEGIN
+    END.
+  }
+}
+

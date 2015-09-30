@@ -1,0 +1,1236 @@
+OBJECT Report 11101 Fixed Assets - IFB List
+{
+  OBJECT-PROPERTIES
+  {
+    Date=05.11.08;
+    Time=12:00:00;
+    Version List=NAVDACH6.00;
+  }
+  PROPERTIES
+  {
+    CaptionML=[DEU=Anlagen - IFB-Liste;
+               ENU=Fixed Assets - IFB List];
+    OnPreReport=BEGIN
+                  IFBSetup.GET;
+                  IFBSetup.TESTFIELD("Depreciation Book Code IFB");
+                  PeriodFilter := "Fixed Asset".GETFILTERS;
+                  TotalDissAmountProf := STRSUBSTNO(Text000,StartDate,EndingDate);
+                END;
+
+  }
+  DATAITEMS
+  {
+    { PROPERTIES
+      {
+        DataItemTable=Table5600;
+        OnPreDataItem=BEGIN
+                        DissAmountProf := 0;
+                        TotalDotAmount := 0;
+                        TotalDissAmountCap := 0;
+                      END;
+
+        ReqFilterFields=No.,FA Class Code,FA Posting Date Filter,Start of Use Date;
+      }
+      SECTIONS
+      {
+        { PROPERTIES
+          {
+            SectionType=Header;
+            PrintOnEveryPage=Yes;
+            SectionWidth=18150;
+            SectionHeight=3384;
+          }
+          CONTROLS
+          {
+            { 3   ;TextBox      ;0    ;423  ;7500 ;423  ;SourceExpr=COMPANYNAME;
+                                                         DataSetFieldName=COMPANYNAME }
+            { 6   ;TextBox      ;15900;846  ;2250 ;423  ;HorzAlign=Right;
+                                                         SourceExpr=USERID;
+                                                         DataSetFieldName=USERID }
+            { 2   ;TextBox      ;15000;0    ;3150 ;423  ;HorzAlign=Right;
+                                                         SourceExpr=FORMAT(TODAY,0,4);
+                                                         DataSetFieldName=FORMAT_TODAY_0_4_ }
+            { 1   ;Label        ;0    ;0    ;7500 ;423  ;FontSize=8;
+                                                         FontBold=Yes;
+                                                         CaptionML=[DEU=IFB-Liste;
+                                                                    ENU=IFB List];
+                                                         DataSetFieldName=IFB_ListCaption }
+            { 4   ;TextBox      ;17700;423  ;450  ;423  ;CaptionML=[DEU=Seite;
+                                                                    ENU=Page];
+                                                         SourceExpr=CurrReport.PAGENO;
+                                                         DataSetFieldName=CurrReport_PAGENO }
+            { 5   ;Label        ;16950;423  ;750  ;423  ;ParentControl=4;
+                                                         DataSetFieldName=CurrReport_PAGENOCaption }
+            { 20  ;TextBox      ;1950 ;1269 ;7500 ;423  ;SourceExpr=TotalDissAmountProf;
+                                                         DataSetFieldName=TotalDissAmountProf }
+            { 22  ;Label        ;0    ;1269 ;1800 ;423  ;CaptionML=[DEU=Periode:;
+                                                                    ENU=Period:];
+                                                         DataSetFieldName=Period_Caption }
+            { 23  ;TextBox      ;1950 ;1692 ;7500 ;423  ;SourceExpr=PeriodFilter;
+                                                         DataSetFieldName=PeriodFilter }
+            { 31  ;Label        ;0    ;1692 ;1800 ;423  ;CaptionML=[DEU=FA-Filter:;
+                                                                    ENU=FA Filter:];
+                                                         DataSetFieldName=FA_Filter_Caption }
+            { 12  ;Label        ;1650 ;2115 ;4650 ;846  ;VertAlign=Bottom;
+                                                         FontBold=Yes;
+                                                         MultiLine=Yes;
+                                                         CaptionML=[DEU=Beschreibung;
+                                                                    ENU=Description];
+                                                         DataSetFieldName=DescriptionCaption }
+            { 9   ;Label        ;0    ;2115 ;1500 ;846  ;VertAlign=Bottom;
+                                                         FontBold=Yes;
+                                                         MultiLine=Yes;
+                                                         CaptionML=[DEU=FA-Nr.;
+                                                                    ENU=FA Nr.];
+                                                         DataSetFieldName=FA_Nr_Caption }
+            { 13  ;Label        ;6450 ;2115 ;1200 ;846  ;ParentControl=11;
+                                                         HorzAlign=Right;
+                                                         VertAlign=Bottom;
+                                                         FontBold=Yes;
+                                                         MultiLine=Yes;
+                                                         DataSetFieldName=FA_Depreciation_Book__Acquisition_Date_Caption }
+            { 8   ;Label        ;7800 ;2115 ;1800 ;846  ;ParentControl=7;
+                                                         HorzAlign=Right;
+                                                         VertAlign=Bottom;
+                                                         FontBold=Yes;
+                                                         MultiLine=Yes;
+                                                         DataSetFieldName=FA_Depreciation_Book__Acquisition_Cost_Caption }
+            { 32  ;Label        ;9750 ;2115 ;1200 ;846  ;ParentControl=30;
+                                                         HorzAlign=Center;
+                                                         VertAlign=Bottom;
+                                                         FontBold=Yes;
+                                                         MultiLine=Yes;
+                                                         CaptionML=[DEU=Startdatum IFB;
+                                                                    ENU=Starting Date IFB];
+                                                         DataSetFieldName=Starting_Date_IFBCaption }
+            { 26  ;Label        ;11100;2115 ;1200 ;846  ;HorzAlign=Center;
+                                                         VertAlign=Bottom;
+                                                         FontBold=Yes;
+                                                         MultiLine=Yes;
+                                                         CaptionML=[DEU=Verrechnungsdatum IFB;
+                                                                    ENU=Dissolv. Date Ifb];
+                                                         DataSetFieldName=Dissolv__Date_IfbCaption }
+            { 10  ;Label        ;12450;2538 ;1800 ;423  ;HorzAlign=Right;
+                                                         VertAlign=Bottom;
+                                                         FontBold=Yes;
+                                                         MultiLine=Yes;
+                                                         CaptionML=[DEU=Dotierung;
+                                                                    ENU=Dotation];
+                                                         DataSetFieldName=DotationCaption }
+            { 24  ;Label        ;14400;2538 ;1800 ;423  ;HorzAlign=Right;
+                                                         VertAlign=Bottom;
+                                                         FontBold=Yes;
+                                                         MultiLine=Yes;
+                                                         CaptionML=[DEU=Kapital;
+                                                                    ENU=capital];
+                                                         DataSetFieldName=capitalCaption }
+            { 21  ;Label        ;16350;2538 ;1800 ;423  ;HorzAlign=Right;
+                                                         VertAlign=Bottom;
+                                                         FontBold=Yes;
+                                                         MultiLine=Yes;
+                                                         CaptionML=[DEU=Gewinn;
+                                                                    ENU=profit];
+                                                         DataSetFieldName=profitCaption }
+            { 25  ;Label        ;14400;2115 ;3750 ;423  ;HorzAlign=Center;
+                                                         VertAlign=Bottom;
+                                                         FontBold=Yes;
+                                                         MultiLine=Yes;
+                                                         CaptionML=[DEU=Verrechnung gegen;
+                                                                    ENU=Dissolving against];
+                                                         DataSetFieldName=Dissolving_againstCaption }
+          }
+           }
+        { PROPERTIES
+          {
+            SectionType=Footer;
+            SectionWidth=18150;
+            SectionHeight=846;
+          }
+          CONTROLS
+          {
+            { 14  ;TextBox      ;16350;0    ;1800 ;423  ;SourceExpr=TotalDissAmountCap;
+                                                         DataSetFieldName=TotalDissAmountCap }
+            { 15  ;TextBox      ;14400;0    ;1800 ;423  ;SourceExpr=TotalDotAmount;
+                                                         DataSetFieldName=TotalDotAmount }
+            { 17  ;TextBox      ;12450;0    ;1800 ;423  ;SourceExpr=DissAmountProf;
+                                                         DataSetFieldName=DissAmountProf }
+            { 18  ;Label        ;9450 ;0    ;2850 ;423  ;HorzAlign=Right;
+                                                         VertAlign=Center;
+                                                         FontBold=Yes;
+                                                         MultiLine=Yes;
+                                                         CaptionML=[DEU=Totalbetrag;
+                                                                    ENU=Total Amount];
+                                                         DataSetFieldName=Total_AmountCaption }
+          }
+           }
+      }
+       }
+    { PROPERTIES
+      {
+        DataItemIndent=1;
+        DataItemTable=Table5612;
+        DataItemTableView=SORTING(FA No.,Depreciation Book Code);
+        OnAfterGetRecord=BEGIN
+                           CLEAR(Postingdate);
+
+                           FALedgEntries.RESET;
+                           FALedgEntries.SETCURRENTKEY("FA No.","Depreciation Book Code","FA Posting Category",
+                             "FA Posting Type","Posting Date","IFB Postingtype");
+
+                           FALedgEntries.SETRANGE(FALedgEntries."FA No.","Fixed Asset"."No.");
+                           FALedgEntries.SETRANGE("Depreciation Book Code","Depreciation Book Code");
+                           FALedgEntries.SETRANGE(FALedgEntries."Posting Date",StartDate,EndingDate);
+                           IF NOT FALedgEntries.FIND('-') THEN
+                             CurrReport.SKIP;
+
+                           FALedgEntries.SETRANGE("FA Posting Type",FALedgEntries."FA Posting Type"::"Custom 2");
+                           IF NOT FALedgEntries.FIND('-') THEN
+                             CurrReport.SKIP;
+
+                           FALedgEntries.SETRANGE("IFB Postingtype",FALedgEntries."IFB Postingtype"::Dotation);
+
+                           FALedgEntries.CALCSUMS(Amount);
+                           IFBAmount := FALedgEntries.Amount;
+                           DissAmountProf := DissAmountProf + IFBAmount;
+
+                           FALedgEntries.SETRANGE("IFB Postingtype",FALedgEntries."IFB Postingtype"::"Dissolving against capital");
+                           FALedgEntries.CALCSUMS(Amount);
+                           DotAmount := FALedgEntries.Amount;
+                           TotalDotAmount := TotalDotAmount + DotAmount;
+                           IF FALedgEntries.FIND('+') THEN
+                             Postingdate := FALedgEntries."Posting Date";
+
+                           FALedgEntries.SETRANGE("IFB Postingtype",FALedgEntries."IFB Postingtype"::"Dissolving against profit");
+                           FALedgEntries.CALCSUMS(Amount);
+                           DissAmountCap := FALedgEntries.Amount;
+                           TotalDissAmountCap := TotalDissAmountCap + DissAmountCap;
+                           IF FALedgEntries.FIND('+') THEN
+                             Postingdate := FALedgEntries."Posting Date";
+                         END;
+
+        DataItemLink=FA No.=FIELD(No.);
+      }
+      SECTIONS
+      {
+        { PROPERTIES
+          {
+            SectionType=Body;
+            SectionWidth=18150;
+            SectionHeight=423;
+          }
+          CONTROLS
+          {
+            { 30  ;TextBox      ;9750 ;0    ;1200 ;423  ;SourceExpr="Depr. Starting Date (Custom 1)";
+                                                         DataSetFieldName=FA_Depreciation_Book__Depr__Starting_Date__Custom_1__ }
+            { 27  ;TextBox      ;11100;0    ;1200 ;423  ;SourceExpr=Postingdate;
+                                                         DataSetFieldName=Postingdate }
+            { 29  ;TextBox      ;12450;0    ;1800 ;423  ;SourceExpr=IFBAmount;
+                                                         DataSetFieldName=IFBAmount }
+            { 28  ;TextBox      ;14400;0    ;1800 ;423  ;SourceExpr=DotAmount;
+                                                         DataSetFieldName=DotAmount }
+            { 19  ;TextBox      ;16350;0    ;1800 ;423  ;SourceExpr=DissAmountCap;
+                                                         DataSetFieldName=DissAmountCap }
+            { 16  ;TextBox      ;1650 ;0    ;4650 ;423  ;HorzAlign=Left;
+                                                         SourceExpr="Fixed Asset".Description;
+                                                         DataSetFieldName=Fixed_Asset__Description }
+            { 35  ;TextBox      ;0    ;0    ;1500 ;423  ;HorzAlign=Left;
+                                                         SourceExpr="Fixed Asset"."No.";
+                                                         DataSetFieldName=Fixed_Asset___No__ }
+            { 7   ;TextBox      ;7800 ;0    ;1800 ;423  ;SourceExpr="Acquisition Cost";
+                                                         DataSetFieldName=FA_Depreciation_Book__Acquisition_Cost_ }
+            { 11  ;TextBox      ;6450 ;0    ;1200 ;423  ;SourceExpr="Acquisition Date";
+                                                         DataSetFieldName=FA_Depreciation_Book__Acquisition_Date_ }
+          }
+           }
+      }
+       }
+  }
+  REQUESTFORM
+  {
+    PROPERTIES
+    {
+      Width=6160;
+      Height=1540;
+      OnOpenForm=BEGIN
+                   IF DeprBookCode = '' THEN BEGIN
+                     IFBSetup.GET;
+                     DeprBookCode := IFBSetup."Depreciation Book Code IFB";
+                   END;
+                 END;
+
+    }
+    CONTROLS
+    {
+      { 1   ;Label        ;0    ;0    ;3300 ;440  ;ParentControl=4 }
+      { 2   ;Label        ;0    ;550  ;3300 ;440  ;ParentControl=3 }
+      { 3   ;TextBox      ;3410 ;550  ;1650 ;440  ;CaptionML=[DEU=Startdatum;
+                                                              ENU=Starting Date];
+                                                   SourceExpr=StartDate }
+      { 4   ;TextBox      ;3410 ;0    ;2750 ;440  ;CaptionML=[DEU=Abschreibungsbuch;
+                                                              ENU=Depriciation Book];
+                                                   SourceExpr=DeprBookCode;
+                                                   TableRelation="Depreciation Book" }
+      { 5   ;Label        ;0    ;1100 ;3300 ;440  ;ParentControl=6 }
+      { 6   ;TextBox      ;3410 ;1100 ;1650 ;440  ;CaptionML=[DEU=Enddatum;
+                                                              ENU=Ending Date];
+                                                   SourceExpr=EndingDate }
+    }
+  }
+  REQUESTPAGE
+  {
+    PROPERTIES
+    {
+      OnOpenPage=BEGIN
+                   IF DeprBookCode = '' THEN BEGIN
+                     IFBSetup.GET;
+                     DeprBookCode := IFBSetup."Depreciation Book Code IFB";
+                   END;
+                 END;
+
+    }
+    CONTROLS
+    {
+      { 1900000001;0;Container;
+                  ContainerType=ContentArea }
+
+      { 1900000002;1;Group  ;
+                  CaptionML=[DEU=Optionen;
+                             ENU=Options] }
+
+      { 4   ;2   ;Field     ;
+                  CaptionML=[DEU=Abschreibungsbuch;
+                             ENU=Depriciation Book];
+                  SourceExpr=DeprBookCode;
+                  TableRelation="Depreciation Book" }
+
+      { 3   ;2   ;Field     ;
+                  CaptionML=[DEU=Startdatum;
+                             ENU=Starting Date];
+                  SourceExpr=StartDate }
+
+      { 6   ;2   ;Field     ;
+                  CaptionML=[DEU=Enddatum;
+                             ENU=Ending Date];
+                  SourceExpr=EndingDate }
+
+    }
+  }
+  CODE
+  {
+    VAR
+      Text000@1160000 : TextConst 'DEU=von %1 bis %2;ENU=from %1 to %2';
+      IFBSetup@1160001 : Record 11100;
+      FALedgEntries@1160002 : Record 5601;
+      DeprBookingGroup@1160003 : Record 5606;
+      GLAcc@1160004 : Record 15;
+      Accountingperiod@1160005 : Record 50;
+      StartDate@1160007 : Date;
+      Postingdate@1160008 : Date;
+      EndingDate@1160009 : Date;
+      DeprBookCode@1160010 : Code[20];
+      IFBAmount@1160011 : Decimal;
+      DotAmount@1160012 : Decimal;
+      DissAmountCap@1160013 : Decimal;
+      DissAmountProf@1160014 : Decimal;
+      TotalDotAmount@1160015 : Decimal;
+      TotalDissAmountCap@1160016 : Decimal;
+      TotalDissAmountProf@1160017 : Text[100];
+      PeriodFilter@1160018 : Text[100];
+
+    BEGIN
+    END.
+  }
+  RDLDATA
+  {
+    <?xml version="1.0" encoding="utf-8"?>
+<Report xmlns="http://schemas.microsoft.com/sqlserver/reporting/2005/01/reportdefinition" xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner">
+  <Body>
+    <Height>3.384cm</Height>
+    <ReportItems>
+      <Table Name="Table1">
+        <DataSetName>DataSet_Result</DataSetName>
+        <Details>
+          <TableRows>
+            <TableRow>
+              <Height>0.423cm</Height>
+              <TableCells>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="Fixed_Asset___No__">
+                      <Style>
+                        <FontSize>7pt</FontSize>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <TextAlign>Left</TextAlign>
+                        <VerticalAlign>Middle</VerticalAlign>
+                      </Style>
+                      <Value>=Fields!Fixed_Asset___No__.Value</Value>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="Fixed_Asset__Description">
+                      <Style>
+                        <FontSize>7pt</FontSize>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <TextAlign>Left</TextAlign>
+                        <VerticalAlign>Middle</VerticalAlign>
+                      </Style>
+                      <Value>=Fields!Fixed_Asset__Description.Value</Value>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="FA_Depreciation_Book__Acquisition_Date_">
+                      <Style>
+                        <FontSize>7pt</FontSize>
+                        <Format>d</Format>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <VerticalAlign>Middle</VerticalAlign>
+                      </Style>
+                      <Value>=Fields!FA_Depreciation_Book__Acquisition_Date_.Value</Value>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="FA_Depreciation_Book__Acquisition_Cost_">
+                      <Style>
+                        <FontSize>7pt</FontSize>
+                        <Format>=Fields!FA_Depreciation_Book__Acquisition_Cost_Format.Value</Format>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <VerticalAlign>Middle</VerticalAlign>
+                      </Style>
+                      <Value>=Fields!FA_Depreciation_Book__Acquisition_Cost_.Value</Value>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="FA_Depreciation_Book__Depr__Starting_Date__Custom_1__">
+                      <Style>
+                        <FontSize>7pt</FontSize>
+                        <Format>d</Format>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <VerticalAlign>Middle</VerticalAlign>
+                      </Style>
+                      <Value>=Fields!FA_Depreciation_Book__Depr__Starting_Date__Custom_1__.Value</Value>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="Postingdate">
+                      <Style>
+                        <FontSize>7pt</FontSize>
+                        <Format>d</Format>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <VerticalAlign>Middle</VerticalAlign>
+                      </Style>
+                      <Value>=Fields!Postingdate.Value</Value>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="IFBAmount">
+                      <Style>
+                        <FontSize>7pt</FontSize>
+                        <Format>=Fields!IFBAmountFormat.Value</Format>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <VerticalAlign>Middle</VerticalAlign>
+                      </Style>
+                      <Value>=Fields!IFBAmount.Value</Value>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="DotAmount">
+                      <Style>
+                        <FontSize>7pt</FontSize>
+                        <Format>=Fields!DotAmountFormat.Value</Format>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <VerticalAlign>Middle</VerticalAlign>
+                      </Style>
+                      <Value>=Fields!DotAmount.Value</Value>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="DissAmountCap">
+                      <Style>
+                        <FontSize>7pt</FontSize>
+                        <Format>=Fields!DissAmountCapFormat.Value</Format>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <VerticalAlign>Middle</VerticalAlign>
+                      </Style>
+                      <Value>=Fields!DissAmountCap.Value</Value>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+              </TableCells>
+            </TableRow>
+          </TableRows>
+        </Details>
+        <Footer>
+          <TableRows>
+            <TableRow>
+              <Height>0.423cm</Height>
+              <TableCells>
+                <TableCell>
+                  <ColSpan>4</ColSpan>
+                  <ReportItems>
+                    <Textbox Name="TextBox143">
+                      <Style>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <VerticalAlign>Middle</VerticalAlign>
+                      </Style>
+                      <Value />
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ColSpan>2</ColSpan>
+                  <ReportItems>
+                    <Textbox Name="Total_AmountCaption">
+                      <Style>
+                        <FontSize>7pt</FontSize>
+                        <FontWeight>700</FontWeight>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <TextAlign>Right</TextAlign>
+                        <VerticalAlign>Middle</VerticalAlign>
+                      </Style>
+                      <Value>=First(Fields!Total_AmountCaption.Value)</Value>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="DissAmountProf">
+                      <Style>
+                        <FontSize>7pt</FontSize>
+                        <Format>=First(Fields!DissAmountProfFormat.Value)</Format>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <VerticalAlign>Middle</VerticalAlign>
+                      </Style>
+                      <Value>=Sum(Fields!DissAmountProf.Value)</Value>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="TotalDotAmount">
+                      <Style>
+                        <FontSize>7pt</FontSize>
+                        <Format>=First(Fields!TotalDotAmountFormat.Value)</Format>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <VerticalAlign>Middle</VerticalAlign>
+                      </Style>
+                      <Value>=Sum(Fields!TotalDotAmount.Value)</Value>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="TotalDissAmountCap">
+                      <Style>
+                        <FontSize>7pt</FontSize>
+                        <Format>=First(Fields!TotalDissAmountCapFormat.Value)</Format>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <VerticalAlign>Middle</VerticalAlign>
+                      </Style>
+                      <Value>=Sum(Fields!TotalDissAmountCap.Value)</Value>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+              </TableCells>
+            </TableRow>
+            <TableRow>
+              <Height>0.423cm</Height>
+              <TableCells>
+                <TableCell>
+                  <ColSpan>9</ColSpan>
+                  <ReportItems>
+                    <Textbox Name="textbox3">
+                      <Style>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <VerticalAlign>Middle</VerticalAlign>
+                      </Style>
+                      <Value />
+                      <rd:DefaultName>textbox3</rd:DefaultName>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+              </TableCells>
+            </TableRow>
+          </TableRows>
+        </Footer>
+        <Header>
+          <RepeatOnNewPage>true</RepeatOnNewPage>
+          <TableRows>
+            <TableRow>
+              <Height>0.846cm</Height>
+              <TableCells>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="FA_Nr_Caption1">
+                      <Style>
+                        <FontSize>7pt</FontSize>
+                        <FontWeight>700</FontWeight>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <VerticalAlign>Bottom</VerticalAlign>
+                      </Style>
+                      <Value>=First(Fields!FA_Nr_Caption.Value)</Value>
+                      <Visibility>
+                        <Hidden>true</Hidden>
+                      </Visibility>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="DescriptionCaption1">
+                      <Style>
+                        <FontSize>7pt</FontSize>
+                        <FontWeight>700</FontWeight>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <VerticalAlign>Bottom</VerticalAlign>
+                      </Style>
+                      <Value>=First(Fields!DescriptionCaption.Value)</Value>
+                      <Visibility>
+                        <Hidden>true</Hidden>
+                      </Visibility>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="FA_Depreciation_Book__Acquisition_Date_Caption1">
+                      <Style>
+                        <FontSize>7pt</FontSize>
+                        <FontWeight>700</FontWeight>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <TextAlign>Right</TextAlign>
+                        <VerticalAlign>Bottom</VerticalAlign>
+                      </Style>
+                      <Value>=First(Fields!FA_Depreciation_Book__Acquisition_Date_Caption.Value)</Value>
+                      <Visibility>
+                        <Hidden>true</Hidden>
+                      </Visibility>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="FA_Depreciation_Book__Acquisition_Cost_Caption1">
+                      <Style>
+                        <FontSize>7pt</FontSize>
+                        <FontWeight>700</FontWeight>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <TextAlign>Right</TextAlign>
+                        <VerticalAlign>Bottom</VerticalAlign>
+                      </Style>
+                      <Value>=First(Fields!FA_Depreciation_Book__Acquisition_Cost_Caption.Value)</Value>
+                      <Visibility>
+                        <Hidden>true</Hidden>
+                      </Visibility>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="Starting_Date_IFBCaption1">
+                      <Style>
+                        <FontSize>7pt</FontSize>
+                        <FontWeight>700</FontWeight>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <TextAlign>Center</TextAlign>
+                        <VerticalAlign>Bottom</VerticalAlign>
+                      </Style>
+                      <Value>=First(Fields!Starting_Date_IFBCaption.Value)</Value>
+                      <Visibility>
+                        <Hidden>true</Hidden>
+                      </Visibility>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="Dissolv__Date_IfbCaption1">
+                      <Style>
+                        <FontSize>7pt</FontSize>
+                        <FontWeight>700</FontWeight>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <TextAlign>Center</TextAlign>
+                        <VerticalAlign>Bottom</VerticalAlign>
+                      </Style>
+                      <Value>=First(Fields!Dissolv__Date_IfbCaption.Value)</Value>
+                      <Visibility>
+                        <Hidden>true</Hidden>
+                      </Visibility>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="DotationCaption1">
+                      <Style>
+                        <FontSize>7pt</FontSize>
+                        <FontWeight>700</FontWeight>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <TextAlign>Right</TextAlign>
+                        <VerticalAlign>Bottom</VerticalAlign>
+                      </Style>
+                      <Value>=First(Fields!DotationCaption.Value)</Value>
+                      <Visibility>
+                        <Hidden>true</Hidden>
+                      </Visibility>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ColSpan>2</ColSpan>
+                  <ReportItems>
+                    <Rectangle Name="rectangle1">
+                      <ReportItems>
+                        <Textbox Name="textbox37">
+                          <Height>0.423cm</Height>
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <FontWeight>700</FontWeight>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <TextAlign>Center</TextAlign>
+                            <VerticalAlign>Bottom</VerticalAlign>
+                          </Style>
+                          <Value>=First(Fields!Dissolving_againstCaption.Value)</Value>
+                          <ZIndex>2</ZIndex>
+                        </Textbox>
+                        <Textbox Name="textbox16">
+                          <Left>1.95cm</Left>
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <FontWeight>700</FontWeight>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <TextAlign>Right</TextAlign>
+                            <VerticalAlign>Bottom</VerticalAlign>
+                          </Style>
+                          <Top>0.423cm</Top>
+                          <Value>=First(Fields!profitCaption.Value)</Value>
+                          <ZIndex>1</ZIndex>
+                        </Textbox>
+                        <Textbox Name="textbox15">
+                          <Style>
+                            <FontSize>7pt</FontSize>
+                            <FontWeight>700</FontWeight>
+                            <PaddingBottom>2pt</PaddingBottom>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <TextAlign>Right</TextAlign>
+                            <VerticalAlign>Bottom</VerticalAlign>
+                          </Style>
+                          <Top>0.423cm</Top>
+                          <Value>=First(Fields!capitalCaption.Value)</Value>
+                          <Width>1.8cm</Width>
+                          <rd:DefaultName>textbox15</rd:DefaultName>
+                        </Textbox>
+                      </ReportItems>
+                    </Rectangle>
+                  </ReportItems>
+                </TableCell>
+              </TableCells>
+            </TableRow>
+            <TableRow>
+              <Height>0.423cm</Height>
+              <TableCells>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="COMPANYNAME1">
+                      <Style>
+                        <Color>#ff0000</Color>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <VerticalAlign>Middle</VerticalAlign>
+                      </Style>
+                      <Value>=Fields!COMPANYNAME.Value</Value>
+                      <Visibility>
+                        <Hidden>true</Hidden>
+                      </Visibility>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ReportItems>
+                    <Textbox Name="IFB_ListCaption1">
+                      <Style>
+                        <Color>#ff0000</Color>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <VerticalAlign>Middle</VerticalAlign>
+                      </Style>
+                      <Value>=Fields!IFB_ListCaption.Value</Value>
+                      <Visibility>
+                        <Hidden>true</Hidden>
+                      </Visibility>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+                <TableCell>
+                  <ColSpan>7</ColSpan>
+                  <ReportItems>
+                    <Textbox Name="CurrReport_PAGENOCaption1">
+                      <Style>
+                        <Color>#ff0000</Color>
+                        <PaddingBottom>2pt</PaddingBottom>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <VerticalAlign>Middle</VerticalAlign>
+                      </Style>
+                      <Value>=Fields!CurrReport_PAGENOCaption.Value</Value>
+                      <Visibility>
+                        <Hidden>true</Hidden>
+                      </Visibility>
+                    </Textbox>
+                  </ReportItems>
+                </TableCell>
+              </TableCells>
+            </TableRow>
+          </TableRows>
+        </Header>
+        <TableColumns>
+          <TableColumn>
+            <Width>1.65cm</Width>
+          </TableColumn>
+          <TableColumn>
+            <Width>4.8cm</Width>
+          </TableColumn>
+          <TableColumn>
+            <Width>1.35cm</Width>
+          </TableColumn>
+          <TableColumn>
+            <Width>1.95cm</Width>
+          </TableColumn>
+          <TableColumn>
+            <Width>1.35cm</Width>
+          </TableColumn>
+          <TableColumn>
+            <Width>1.35cm</Width>
+          </TableColumn>
+          <TableColumn>
+            <Width>1.95cm</Width>
+          </TableColumn>
+          <TableColumn>
+            <Width>1.95cm</Width>
+          </TableColumn>
+          <TableColumn>
+            <Width>1.8cm</Width>
+          </TableColumn>
+        </TableColumns>
+        <Top>0.846cm</Top>
+        <ZIndex>4</ZIndex>
+      </Table>
+      <Textbox Name="PeriodFilter11">
+        <Height>0.423cm</Height>
+        <Left>1.95cm</Left>
+        <Style>
+          <FontSize>7pt</FontSize>
+          <VerticalAlign>Middle</VerticalAlign>
+        </Style>
+        <Top>0.423cm</Top>
+        <Value>=Fields!PeriodFilter.Value</Value>
+        <Width>7.5cm</Width>
+        <ZIndex>3</ZIndex>
+      </Textbox>
+      <Textbox Name="TotalDissAmountProf11">
+        <Height>0.423cm</Height>
+        <Left>1.95cm</Left>
+        <Style>
+          <FontSize>7pt</FontSize>
+          <VerticalAlign>Middle</VerticalAlign>
+        </Style>
+        <Value>=Fields!TotalDissAmountProf.Value</Value>
+        <Width>7.5cm</Width>
+        <ZIndex>2</ZIndex>
+      </Textbox>
+      <Textbox Name="Period_Caption11">
+        <Height>0.423cm</Height>
+        <Style>
+          <FontSize>7pt</FontSize>
+          <VerticalAlign>Middle</VerticalAlign>
+        </Style>
+        <Value>=Fields!Period_Caption.Value</Value>
+        <Width>1.8cm</Width>
+        <ZIndex>1</ZIndex>
+      </Textbox>
+      <Textbox Name="FA_Filter_Caption11">
+        <Height>0.423cm</Height>
+        <Style>
+          <FontSize>7pt</FontSize>
+          <VerticalAlign>Middle</VerticalAlign>
+        </Style>
+        <Top>0.423cm</Top>
+        <Value>=Fields!FA_Filter_Caption.Value</Value>
+        <Width>1.8cm</Width>
+      </Textbox>
+    </ReportItems>
+  </Body>
+  <BottomMargin>2cm</BottomMargin>
+  <Code>Public Function BlankZero(ByVal Value As Decimal)
+    if Value = 0 then
+        Return ""
+    end if
+    Return Value
+End Function
+
+Public Function BlankPos(ByVal Value As Decimal)
+    if Value &gt; 0 then
+        Return ""
+    end if
+    Return Value
+End Function
+
+Public Function BlankZeroAndPos(ByVal Value As Decimal)
+    if Value &gt;= 0 then
+        Return ""
+    end if
+    Return Value
+End Function
+
+Public Function BlankNeg(ByVal Value As Decimal)
+    if Value &lt; 0 then
+        Return ""
+    end if
+    Return Value
+End Function
+
+Public Function BlankNegAndZero(ByVal Value As Decimal)
+    if Value &lt;= 0 then
+        Return ""
+    end if
+    Return Value
+End Function
+</Code>
+  <DataSets>
+    <DataSet Name="DataSet_Result">
+      <Fields>
+        <Field Name="COMPANYNAME">
+          <DataField>COMPANYNAME</DataField>
+        </Field>
+        <Field Name="USERID">
+          <DataField>USERID</DataField>
+        </Field>
+        <Field Name="FORMAT_TODAY_0_4_">
+          <DataField>FORMAT_TODAY_0_4_</DataField>
+        </Field>
+        <Field Name="IFB_ListCaption">
+          <DataField>IFB_ListCaption</DataField>
+        </Field>
+        <Field Name="CurrReport_PAGENO">
+          <DataField>CurrReport_PAGENO</DataField>
+        </Field>
+        <Field Name="CurrReport_PAGENOCaption">
+          <DataField>CurrReport_PAGENOCaption</DataField>
+        </Field>
+        <Field Name="TotalDissAmountProf">
+          <DataField>TotalDissAmountProf</DataField>
+        </Field>
+        <Field Name="Period_Caption">
+          <DataField>Period_Caption</DataField>
+        </Field>
+        <Field Name="PeriodFilter">
+          <DataField>PeriodFilter</DataField>
+        </Field>
+        <Field Name="FA_Filter_Caption">
+          <DataField>FA_Filter_Caption</DataField>
+        </Field>
+        <Field Name="DescriptionCaption">
+          <DataField>DescriptionCaption</DataField>
+        </Field>
+        <Field Name="FA_Nr_Caption">
+          <DataField>FA_Nr_Caption</DataField>
+        </Field>
+        <Field Name="FA_Depreciation_Book__Acquisition_Date_Caption">
+          <DataField>FA_Depreciation_Book__Acquisition_Date_Caption</DataField>
+        </Field>
+        <Field Name="FA_Depreciation_Book__Acquisition_Cost_Caption">
+          <DataField>FA_Depreciation_Book__Acquisition_Cost_Caption</DataField>
+        </Field>
+        <Field Name="Starting_Date_IFBCaption">
+          <DataField>Starting_Date_IFBCaption</DataField>
+        </Field>
+        <Field Name="Dissolv__Date_IfbCaption">
+          <DataField>Dissolv__Date_IfbCaption</DataField>
+        </Field>
+        <Field Name="DotationCaption">
+          <DataField>DotationCaption</DataField>
+        </Field>
+        <Field Name="capitalCaption">
+          <DataField>capitalCaption</DataField>
+        </Field>
+        <Field Name="profitCaption">
+          <DataField>profitCaption</DataField>
+        </Field>
+        <Field Name="Dissolving_againstCaption">
+          <DataField>Dissolving_againstCaption</DataField>
+        </Field>
+        <Field Name="TotalDissAmountCap">
+          <DataField>TotalDissAmountCap</DataField>
+        </Field>
+        <Field Name="TotalDissAmountCapFormat">
+          <DataField>TotalDissAmountCapFormat</DataField>
+        </Field>
+        <Field Name="TotalDotAmount">
+          <DataField>TotalDotAmount</DataField>
+        </Field>
+        <Field Name="TotalDotAmountFormat">
+          <DataField>TotalDotAmountFormat</DataField>
+        </Field>
+        <Field Name="DissAmountProf">
+          <DataField>DissAmountProf</DataField>
+        </Field>
+        <Field Name="DissAmountProfFormat">
+          <DataField>DissAmountProfFormat</DataField>
+        </Field>
+        <Field Name="Total_AmountCaption">
+          <DataField>Total_AmountCaption</DataField>
+        </Field>
+        <Field Name="Fixed_Asset_No_">
+          <DataField>Fixed_Asset_No_</DataField>
+        </Field>
+        <Field Name="FA_Depreciation_Book__Depr__Starting_Date__Custom_1__">
+          <DataField>FA_Depreciation_Book__Depr__Starting_Date__Custom_1__</DataField>
+        </Field>
+        <Field Name="Postingdate">
+          <DataField>Postingdate</DataField>
+        </Field>
+        <Field Name="IFBAmount">
+          <DataField>IFBAmount</DataField>
+        </Field>
+        <Field Name="IFBAmountFormat">
+          <DataField>IFBAmountFormat</DataField>
+        </Field>
+        <Field Name="DotAmount">
+          <DataField>DotAmount</DataField>
+        </Field>
+        <Field Name="DotAmountFormat">
+          <DataField>DotAmountFormat</DataField>
+        </Field>
+        <Field Name="DissAmountCap">
+          <DataField>DissAmountCap</DataField>
+        </Field>
+        <Field Name="DissAmountCapFormat">
+          <DataField>DissAmountCapFormat</DataField>
+        </Field>
+        <Field Name="Fixed_Asset__Description">
+          <DataField>Fixed_Asset__Description</DataField>
+        </Field>
+        <Field Name="Fixed_Asset___No__">
+          <DataField>Fixed_Asset___No__</DataField>
+        </Field>
+        <Field Name="FA_Depreciation_Book__Acquisition_Cost_">
+          <DataField>FA_Depreciation_Book__Acquisition_Cost_</DataField>
+        </Field>
+        <Field Name="FA_Depreciation_Book__Acquisition_Cost_Format">
+          <DataField>FA_Depreciation_Book__Acquisition_Cost_Format</DataField>
+        </Field>
+        <Field Name="FA_Depreciation_Book__Acquisition_Date_">
+          <DataField>FA_Depreciation_Book__Acquisition_Date_</DataField>
+        </Field>
+        <Field Name="FA_Depreciation_Book_FA_No_">
+          <DataField>FA_Depreciation_Book_FA_No_</DataField>
+        </Field>
+        <Field Name="FA_Depreciation_Book_Depreciation_Book_Code">
+          <DataField>FA_Depreciation_Book_Depreciation_Book_Code</DataField>
+        </Field>
+      </Fields>
+      <Query>
+        <CommandText />
+        <DataSourceName>DummyDataSource</DataSourceName>
+      </Query>
+      <rd:DataSetInfo>
+        <rd:DataSetName>DataSet</rd:DataSetName>
+        <rd:TableName>Result</rd:TableName>
+      </rd:DataSetInfo>
+    </DataSet>
+  </DataSets>
+  <DataSources>
+    <DataSource Name="DummyDataSource">
+      <ConnectionProperties>
+        <ConnectString />
+        <DataProvider>SQL</DataProvider>
+      </ConnectionProperties>
+      <rd:DataSourceID>dcf35899-144a-48d6-b75e-a5a08dd73c30</rd:DataSourceID>
+    </DataSource>
+  </DataSources>
+  <InteractiveHeight>11in</InteractiveHeight>
+  <InteractiveWidth>8.5in</InteractiveWidth>
+  <Language>=User!Language</Language>
+  <LeftMargin>1.5cm</LeftMargin>
+  <PageHeader>
+    <Height>1.269cm</Height>
+    <PrintOnFirstPage>true</PrintOnFirstPage>
+    <PrintOnLastPage>true</PrintOnLastPage>
+    <ReportItems>
+      <Textbox Name="PageNumberTextBox">
+        <Height>0.423cm</Height>
+        <Left>17.7cm</Left>
+        <Style>
+          <FontSize>7pt</FontSize>
+          <TextAlign>Right</TextAlign>
+          <VerticalAlign>Middle</VerticalAlign>
+        </Style>
+        <Top>0.423cm</Top>
+        <Value>=Globals!PageNumber</Value>
+        <ZIndex>5</ZIndex>
+      </Textbox>
+      <Textbox Name="UserIdTextBox">
+        <Left>14.9cm</Left>
+        <Style>
+          <FontSize>7pt</FontSize>
+          <TextAlign>Right</TextAlign>
+          <VerticalAlign>Middle</VerticalAlign>
+        </Style>
+        <Top>0.846cm</Top>
+        <Value>=User!UserID</Value>
+        <ZIndex>4</ZIndex>
+      </Textbox>
+      <Textbox Name="ExecutionTimeTextBox">
+        <Height>0.423cm</Height>
+        <Left>13.33333cm</Left>
+        <Style>
+          <FontSize>7pt</FontSize>
+          <Format>D</Format>
+          <TextAlign>Right</TextAlign>
+          <VerticalAlign>Middle</VerticalAlign>
+        </Style>
+        <Value>=Globals!ExecutionTime</Value>
+        <ZIndex>3</ZIndex>
+      </Textbox>
+      <Textbox Name="COMPANYNAME11">
+        <Height>0.423cm</Height>
+        <Style>
+          <FontSize>7pt</FontSize>
+          <VerticalAlign>Middle</VerticalAlign>
+        </Style>
+        <Top>0.423cm</Top>
+        <Value>=ReportItems!COMPANYNAME1.Value</Value>
+        <Width>7.5cm</Width>
+        <ZIndex>2</ZIndex>
+      </Textbox>
+      <Textbox Name="IFB_ListCaption11">
+        <Height>0.423cm</Height>
+        <Style>
+          <FontSize>8pt</FontSize>
+          <FontWeight>700</FontWeight>
+          <VerticalAlign>Middle</VerticalAlign>
+        </Style>
+        <Value>=ReportItems!IFB_ListCaption1.Value</Value>
+        <Width>7.5cm</Width>
+        <ZIndex>1</ZIndex>
+      </Textbox>
+      <Textbox Name="CurrReport_PAGENOCaption11">
+        <Height>0.423cm</Height>
+        <Left>16.95cm</Left>
+        <Style>
+          <FontSize>7pt</FontSize>
+          <VerticalAlign>Middle</VerticalAlign>
+        </Style>
+        <Top>0.423cm</Top>
+        <Value>=ReportItems!CurrReport_PAGENOCaption1.Value</Value>
+        <Width>0.75cm</Width>
+      </Textbox>
+    </ReportItems>
+  </PageHeader>
+  <PageHeight>29.7cm</PageHeight>
+  <PageWidth>21cm</PageWidth>
+  <RightMargin>0cm</RightMargin>
+  <TopMargin>2cm</TopMargin>
+  <Width>18.15cm</Width>
+  <rd:DrawGrid>true</rd:DrawGrid>
+  <rd:ReportID>5dfa3144-a6ae-4e79-8e11-b66a32497ebc</rd:ReportID>
+  <rd:SnapToGrid>true</rd:SnapToGrid>
+</Report>
+    END_OF_RDLDatA
+  }
+}
+

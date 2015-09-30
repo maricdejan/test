@@ -1,0 +1,38 @@
+OBJECT Table 284 Area
+{
+  OBJECT-PROPERTIES
+  {
+    Date=05.11.08;
+    Time=12:00:00;
+    Version List=NAVW16.00;
+  }
+  PROPERTIES
+  {
+    CaptionML=[DEU=Bundesland;
+               ENU=Area];
+    LookupFormID=Form405;
+  }
+  FIELDS
+  {
+    { 1   ;   ;Code                ;Code10        ;CaptionML=[DEU=Code;
+                                                              ENU=Code];
+                                                   NotBlank=Yes }
+    { 2   ;   ;Text                ;Text50        ;CaptionML=[DEU=Text;
+                                                              ENU=Text] }
+  }
+  KEYS
+  {
+    {    ;Code                                    ;Clustered=Yes }
+  }
+  FIELDGROUPS
+  {
+    { 1   ;DropDown            ;Code,Text                                }
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

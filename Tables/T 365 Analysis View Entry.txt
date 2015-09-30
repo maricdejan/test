@@ -1,0 +1,119 @@
+OBJECT Table 365 Analysis View Entry
+{
+  OBJECT-PROPERTIES
+  {
+    Date=05.11.08;
+    Time=12:00:00;
+    Version List=NAVW16.00;
+  }
+  PROPERTIES
+  {
+    CaptionML=[DEU=Analyseansichtsposten;
+               ENU=Analysis View Entry];
+  }
+  FIELDS
+  {
+    { 1   ;   ;Analysis View Code  ;Code10        ;TableRelation="Analysis View";
+                                                   CaptionML=[DEU=Analyseansichtscode;
+                                                              ENU=Analysis View Code];
+                                                   NotBlank=Yes }
+    { 2   ;   ;Business Unit Code  ;Code10        ;TableRelation="Business Unit";
+                                                   CaptionML=[DEU=Konzernmandantencode;
+                                                              ENU=Business Unit Code] }
+    { 3   ;   ;G/L Account No.     ;Code20        ;TableRelation="G/L Account";
+                                                   CaptionML=[DEU=Sachkontonr.;
+                                                              ENU=G/L Account No.] }
+    { 4   ;   ;Dimension 1 Value Code;Code20      ;CaptionML=[DEU=Dimensionswertcode 1;
+                                                              ENU=Dimension 1 Value Code];
+                                                   CaptionClass=GetCaptionClass(1) }
+    { 5   ;   ;Dimension 2 Value Code;Code20      ;CaptionML=[DEU=Dimensionswertcode 2;
+                                                              ENU=Dimension 2 Value Code];
+                                                   CaptionClass=GetCaptionClass(2) }
+    { 6   ;   ;Dimension 3 Value Code;Code20      ;CaptionML=[DEU=Dimensionswertcode 3;
+                                                              ENU=Dimension 3 Value Code];
+                                                   CaptionClass=GetCaptionClass(3) }
+    { 7   ;   ;Dimension 4 Value Code;Code20      ;CaptionML=[DEU=Dimensionswertcode 4;
+                                                              ENU=Dimension 4 Value Code];
+                                                   CaptionClass=GetCaptionClass(4) }
+    { 8   ;   ;Posting Date        ;Date          ;CaptionML=[DEU=Buchungsdatum;
+                                                              ENU=Posting Date] }
+    { 9   ;   ;Entry No.           ;Integer       ;CaptionML=[DEU=Lfd. Nr.;
+                                                              ENU=Entry No.] }
+    { 10  ;   ;Amount              ;Decimal       ;CaptionML=[DEU=Betrag;
+                                                              ENU=Amount];
+                                                   AutoFormatType=1 }
+    { 11  ;   ;Debit Amount        ;Decimal       ;CaptionML=[DEU=Sollbetrag;
+                                                              ENU=Debit Amount];
+                                                   AutoFormatType=1 }
+    { 12  ;   ;Credit Amount       ;Decimal       ;CaptionML=[DEU=Habenbetrag;
+                                                              ENU=Credit Amount];
+                                                   AutoFormatType=1 }
+    { 13  ;   ;Add.-Curr. Amount   ;Decimal       ;CaptionML=[DEU=Betrag (BW);
+                                                              ENU=Add.-Curr. Amount];
+                                                   AutoFormatType=1 }
+    { 14  ;   ;Add.-Curr. Debit Amount;Decimal    ;CaptionML=[DEU=Sollbetrag (BW);
+                                                              ENU=Add.-Curr. Debit Amount];
+                                                   AutoFormatType=1 }
+    { 15  ;   ;Add.-Curr. Credit Amount;Decimal   ;CaptionML=[DEU=Habenbetrag (BW);
+                                                              ENU=Add.-Curr. Credit Amount];
+                                                   AutoFormatType=1 }
+  }
+  KEYS
+  {
+    {    ;Analysis View Code,G/L Account No.,Dimension 1 Value Code,Dimension 2 Value Code,Dimension 3 Value Code,Dimension 4 Value Code,Business Unit Code,Posting Date,Entry No.;
+                                                   SumIndexFields=Amount,Debit Amount,Credit Amount,Add.-Curr. Amount,Add.-Curr. Debit Amount,Add.-Curr. Credit Amount;
+                                                   Clustered=Yes }
+  }
+  FIELDGROUPS
+  {
+  }
+  CODE
+  {
+    VAR
+      Text000@1000 : TextConst 'DEU=1,5,,Dimensionswertcode 1;ENU=1,5,,Dimension 1 Value Code';
+      Text001@1001 : TextConst 'DEU=1,5,,Dimensionswertcode 2;ENU=1,5,,Dimension 2 Value Code';
+      Text002@1002 : TextConst 'DEU=1,5,,Dimensionswertcode 3;ENU=1,5,,Dimension 3 Value Code';
+      Text003@1003 : TextConst 'DEU=1,5,,Dimensionswertcode 4;ENU=1,5,,Dimension 4 Value Code';
+      AnalysisView@1004 : Record 363;
+
+    PROCEDURE GetCaptionClass@7(AnalysisViewDimType@1000 : Integer) : Text[250];
+    BEGIN
+      IF AnalysisView.Code <> "Analysis View Code" THEN
+        AnalysisView.GET("Analysis View Code");
+      CASE AnalysisViewDimType OF
+        1:
+          BEGIN
+            IF AnalysisView."Dimension 1 Code" <> '' THEN
+              EXIT('1,5,' + AnalysisView."Dimension 1 Code")
+            ELSE
+              EXIT(Text000);
+          END;
+        2:
+          BEGIN
+            IF AnalysisView."Dimension 2 Code" <> '' THEN
+              EXIT('1,5,' + AnalysisView."Dimension 2 Code")
+            ELSE
+              EXIT(Text001);
+          END;
+        3:
+          BEGIN
+            IF AnalysisView."Dimension 3 Code" <> '' THEN
+              EXIT('1,5,' + AnalysisView."Dimension 3 Code")
+            ELSE
+              EXIT(Text002);
+          END;
+        4:
+          BEGIN
+            IF AnalysisView."Dimension 4 Code" <> '' THEN
+              EXIT('1,5,' + AnalysisView."Dimension 4 Code")
+            ELSE
+              EXIT(Text003);
+          END;
+      END;
+    END;
+
+    BEGIN
+    END.
+  }
+}
+

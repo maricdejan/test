@@ -1,0 +1,193 @@
+OBJECT Form 5005360 Posted Phys. Invt. Order Subf.
+{
+  OBJECT-PROPERTIES
+  {
+    Date=01.10.04;
+    Time=12:00:00;
+    Version List=NAVDACH4.00;
+  }
+  PROPERTIES
+  {
+    Width=16060;
+    Height=3300;
+    Editable=No;
+    CaptionML=[DEU=Geb. Inventurauftrag Subform;
+               ENU=Posted Phys. Invt. Order Subf.];
+    MultipleNewLines=Yes;
+    TableBoxID=1140000;
+    SourceTable=Table5005355;
+    AutoSplitKey=Yes;
+    DelayedInsert=Yes;
+    OnAfterGetCurrRecord=BEGIN
+                           CurrForm.UPDATECONTROLS;
+                         END;
+
+  }
+  CONTROLS
+  {
+    { 1140000;TableBox  ;0    ;0    ;16060;3300 ;HorzGlue=Both;
+                                                 VertGlue=Both }
+    { 1140001;TextBox   ;0    ;0    ;1650 ;0    ;ParentControl=1140000;
+                                                 InColumn=Yes;
+                                                 SourceExpr="Item No." }
+    { 1140002;Label     ;0    ;0    ;0    ;0    ;ParentControl=1140001;
+                                                 InColumnHeading=Yes }
+    { 1140003;TextBox   ;0    ;0    ;1650 ;0    ;Visible=No;
+                                                 ParentControl=1140000;
+                                                 InColumn=Yes;
+                                                 SourceExpr="Variant Code" }
+    { 1140004;Label     ;0    ;0    ;0    ;0    ;ParentControl=1140003;
+                                                 InColumnHeading=Yes }
+    { 1140005;TextBox   ;0    ;0    ;4400 ;0    ;HorzGlue=Both;
+                                                 ParentControl=1140000;
+                                                 InColumn=Yes;
+                                                 SourceExpr=Description }
+    { 1140006;Label     ;0    ;0    ;0    ;0    ;ParentControl=1140005;
+                                                 InColumnHeading=Yes }
+    { 1140007;TextBox   ;0    ;0    ;4400 ;0    ;Visible=No;
+                                                 ParentControl=1140000;
+                                                 InColumn=Yes;
+                                                 SourceExpr="Description 2" }
+    { 1140008;Label     ;0    ;0    ;0    ;0    ;ParentControl=1140007;
+                                                 InColumnHeading=Yes }
+    { 1140009;TextBox   ;0    ;0    ;1650 ;0    ;ParentControl=1140000;
+                                                 InColumn=Yes;
+                                                 SourceExpr="Location Code" }
+    { 1140010;Label     ;0    ;0    ;0    ;0    ;ParentControl=1140009;
+                                                 InColumnHeading=Yes }
+    { 1140011;TextBox   ;3414 ;110  ;1700 ;440  ;Visible=No;
+                                                 ParentControl=1140000;
+                                                 InColumn=Yes;
+                                                 SourceExpr="Bin Code" }
+    { 1140012;Label     ;0    ;0    ;0    ;0    ;ParentControl=1140011;
+                                                 InColumnHeading=Yes }
+    { 1140013;TextBox   ;0    ;0    ;1650 ;0    ;Visible=No;
+                                                 ParentControl=1140000;
+                                                 InColumn=Yes;
+                                                 SourceExpr="Unit of Measure" }
+    { 1140014;Label     ;0    ;0    ;0    ;0    ;ParentControl=1140013;
+                                                 InColumnHeading=Yes }
+    { 1140015;TextBox   ;0    ;0    ;1650 ;0    ;ParentControl=1140000;
+                                                 InColumn=Yes;
+                                                 SourceExpr="Base Unit of Measure Code" }
+    { 1140016;Label     ;0    ;0    ;0    ;0    ;ParentControl=1140015;
+                                                 InColumnHeading=Yes }
+    { 1140017;TextBox   ;0    ;0    ;1650 ;0    ;Visible=No;
+                                                 ParentControl=1140000;
+                                                 InColumn=Yes;
+                                                 SourceExpr="Shelf/Bin No." }
+    { 1140018;Label     ;0    ;0    ;0    ;0    ;ParentControl=1140017;
+                                                 InColumnHeading=Yes }
+    { 1140019;TextBox   ;0    ;0    ;1650 ;0    ;ParentControl=1140000;
+                                                 InColumn=Yes;
+                                                 SourceExpr="Qty. Expected (Base)" }
+    { 1140020;Label     ;0    ;0    ;0    ;0    ;ParentControl=1140019;
+                                                 InColumnHeading=Yes }
+    { 1140021;TextBox   ;10663;110  ;1650 ;440  ;ParentControl=1140000;
+                                                 InColumn=Yes;
+                                                 SourceExpr="Qty. Exp. Track. Lines (Base)" }
+    { 1140022;Label     ;0    ;0    ;0    ;0    ;ParentControl=1140021;
+                                                 InColumnHeading=Yes }
+    { 1140023;CheckBox  ;12863;110  ;1650 ;440  ;ParentControl=1140000;
+                                                 InColumn=Yes;
+                                                 ShowCaption=No;
+                                                 SourceExpr="Use Tracking Lines" }
+    { 1140024;Label     ;0    ;0    ;0    ;0    ;ParentControl=1140023;
+                                                 InColumnHeading=Yes }
+    { 1140025;TextBox   ;0    ;0    ;1650 ;0    ;ParentControl=1140000;
+                                                 InColumn=Yes;
+                                                 SourceExpr="Qty. Recorded (Base)" }
+    { 1140026;Label     ;0    ;0    ;0    ;0    ;ParentControl=1140025;
+                                                 InColumnHeading=Yes }
+    { 1140027;TextBox   ;0    ;0    ;1650 ;0    ;ParentControl=1140000;
+                                                 InColumn=Yes;
+                                                 BlankZero=Yes;
+                                                 SourceExpr="No. Finished Rec.-Lines" }
+    { 1140028;Label     ;0    ;0    ;0    ;0    ;ParentControl=1140027;
+                                                 InColumnHeading=Yes }
+    { 1140029;CheckBox  ;8017 ;110  ;1650 ;440  ;Visible=No;
+                                                 ParentControl=1140000;
+                                                 InColumn=Yes;
+                                                 ShowCaption=No;
+                                                 SourceExpr="Recorded without Order" }
+    { 1140030;Label     ;0    ;0    ;0    ;0    ;ParentControl=1140029;
+                                                 InColumnHeading=Yes }
+    { 1140031;TextBox   ;23178;110  ;550  ;440  ;Visible=No;
+                                                 ParentControl=1140000;
+                                                 InColumn=Yes;
+                                                 SourceExpr="Entry Type" }
+    { 1140032;Label     ;0    ;0    ;0    ;0    ;ParentControl=1140031;
+                                                 InColumnHeading=Yes }
+    { 1140033;TextBox   ;0    ;0    ;1650 ;0    ;Visible=No;
+                                                 ParentControl=1140000;
+                                                 InColumn=Yes;
+                                                 SourceExpr="Quantity (Base)" }
+    { 1140034;Label     ;0    ;0    ;0    ;0    ;ParentControl=1140033;
+                                                 InColumnHeading=Yes }
+    { 1140035;TextBox   ;27649;110  ;1650 ;440  ;ParentControl=1140000;
+                                                 InColumn=Yes;
+                                                 BlankZero=Yes;
+                                                 SourceExpr="Pos. Qty. (Base)" }
+    { 1140036;Label     ;0    ;0    ;0    ;0    ;ParentControl=1140035;
+                                                 InColumnHeading=Yes }
+    { 1140037;TextBox   ;29849;110  ;1650 ;440  ;ParentControl=1140000;
+                                                 InColumn=Yes;
+                                                 BlankZero=Yes;
+                                                 SourceExpr="Neg. Qty. (Base)" }
+    { 1140038;Label     ;0    ;0    ;0    ;0    ;ParentControl=1140037;
+                                                 InColumnHeading=Yes }
+    { 1140039;TextBox   ;0    ;0    ;1650 ;0    ;Visible=No;
+                                                 ParentControl=1140000;
+                                                 InColumn=Yes;
+                                                 SourceExpr="Unit Amount" }
+    { 1140040;Label     ;0    ;0    ;0    ;0    ;ParentControl=1140039;
+                                                 InColumnHeading=Yes }
+    { 1140041;TextBox   ;0    ;0    ;1650 ;0    ;Visible=No;
+                                                 ParentControl=1140000;
+                                                 InColumn=Yes;
+                                                 SourceExpr="Unit Cost" }
+    { 1140042;Label     ;0    ;0    ;0    ;0    ;ParentControl=1140041;
+                                                 InColumnHeading=Yes }
+    { 1140043;TextBox   ;0    ;0    ;1650 ;0    ;Visible=No;
+                                                 ParentControl=1140000;
+                                                 InColumn=Yes;
+                                                 SourceExpr="Shortcut Dimension 1 Code" }
+    { 1140044;Label     ;0    ;0    ;0    ;0    ;ParentControl=1140043;
+                                                 InColumnHeading=Yes }
+    { 1140045;TextBox   ;0    ;0    ;1640 ;0    ;Visible=No;
+                                                 ParentControl=1140000;
+                                                 InColumn=Yes;
+                                                 SourceExpr="Shortcut Dimension 2 Code" }
+    { 1140046;Label     ;0    ;0    ;0    ;0    ;ParentControl=1140045;
+                                                 InColumnHeading=Yes }
+  }
+  CODE
+  {
+    VAR
+      ShortcutDimCode@1140000 : ARRAY [8] OF Code[20];
+
+    PROCEDURE ShowDimensions@1140000();
+    BEGIN
+      Rec.ShowDimensions;
+    END;
+
+    PROCEDURE ShowPostPhysInvtRecordingLines@1140001();
+    BEGIN
+      Rec.ShowPostPhysInvtRecordingLines;
+    END;
+
+    PROCEDURE ShowPostedItemTrackingLines@1140002();
+    BEGIN
+      Rec.ShowPostedItemTrackingLines;
+    END;
+
+    PROCEDURE ShowPostExpPhysInvtTrackLines@1140003();
+    BEGIN
+      Rec.ShowPostExpPhysInvtTrackLines
+    END;
+
+    BEGIN
+    END.
+  }
+}
+

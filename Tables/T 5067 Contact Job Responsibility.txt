@@ -1,0 +1,88 @@
+OBJECT Table 5067 Contact Job Responsibility
+{
+  OBJECT-PROPERTIES
+  {
+    Date=05.11.08;
+    Time=12:00:00;
+    Version List=NAVW16.00;
+  }
+  PROPERTIES
+  {
+    OnInsert=BEGIN
+               TouchContact("Contact No.");
+             END;
+
+    OnModify=BEGIN
+               TouchContact("Contact No.");
+             END;
+
+    OnDelete=BEGIN
+               TouchContact("Contact No.");
+             END;
+
+    OnRename=BEGIN
+               IF xRec."Contact No." = "Contact No." THEN
+                 TouchContact("Contact No.")
+               ELSE BEGIN
+                 TouchContact("Contact No.");
+                 TouchContact(xRec."Contact No.");
+               END;
+             END;
+
+    CaptionML=[DEU=Kontakt Verantwortlichkeit;
+               ENU=Contact Job Responsibility];
+    DrillDownFormID=Form5081;
+  }
+  FIELDS
+  {
+    { 1   ;   ;Contact No.         ;Code20        ;TableRelation=Contact WHERE (Type=CONST(Person));
+                                                   CaptionML=[DEU=Kontaktnr.;
+                                                              ENU=Contact No.];
+                                                   NotBlank=Yes }
+    { 2   ;   ;Job Responsibility Code;Code10     ;TableRelation="Job Responsibility";
+                                                   CaptionML=[DEU=Verantwortlichkeitscode;
+                                                              ENU=Job Responsibility Code];
+                                                   NotBlank=Yes }
+    { 3   ;   ;Job Responsibility Description;Text30;
+                                                   FieldClass=FlowField;
+                                                   CalcFormula=Lookup("Job Responsibility".Description WHERE (Code=FIELD(Job Responsibility Code)));
+                                                   CaptionML=[DEU=Verantwortlichk.-Beschreibung;
+                                                              ENU=Job Responsibility Description];
+                                                   Editable=No }
+    { 4   ;   ;Contact Name        ;Text50        ;FieldClass=FlowField;
+                                                   CalcFormula=Lookup(Contact.Name WHERE (No.=FIELD(Contact No.)));
+                                                   CaptionML=[DEU=Kontaktname;
+                                                              ENU=Contact Name];
+                                                   Editable=No }
+    { 5   ;   ;Contact Company Name;Text50        ;FieldClass=FlowField;
+                                                   CalcFormula=Lookup(Contact."Company Name" WHERE (No.=FIELD(Contact No.)));
+                                                   CaptionML=[DEU=Kontakt Unternehmensname;
+                                                              ENU=Contact Company Name];
+                                                   Editable=No }
+  }
+  KEYS
+  {
+    {    ;Contact No.,Job Responsibility Code     ;Clustered=Yes }
+    {    ;Job Responsibility Code                  }
+  }
+  FIELDGROUPS
+  {
+  }
+  CODE
+  {
+    VAR
+      Cont@1000 : Record 5050;
+
+    PROCEDURE TouchContact@1(ContactNo@1000 : Code[20]);
+    BEGIN
+      Cont.LOCKTABLE;
+      Cont.GET(ContactNo);
+      Cont."Last Date Modified" := TODAY;
+      Cont.MODIFY;
+    END;
+
+    BEGIN
+    END.
+  }
+}
+

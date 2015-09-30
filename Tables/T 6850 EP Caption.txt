@@ -1,0 +1,48 @@
+OBJECT Table 6850 EP Caption
+{
+  OBJECT-PROPERTIES
+  {
+    Date=05.11.08;
+    Time=12:00:00;
+    Version List=NAVW16.00;
+  }
+  PROPERTIES
+  {
+    CaptionML=[DEU=EP Caption;
+               ENU=EP Caption];
+  }
+  FIELDS
+  {
+    { 1   ;   ;Caption ID          ;Integer       ;AutoIncrement=No;
+                                                   CaptionML=[DEU=Caption-ID;
+                                                              ENU=Caption ID];
+                                                   Editable=Yes }
+    { 2   ;   ;Table No.           ;Integer       ;CaptionML=[DEU=Tabellennr.;
+                                                              ENU=Table No.] }
+    { 3   ;   ;Language ID         ;Integer       ;TableRelation="Windows Language" WHERE (STX File Exist=CONST(Yes),
+                                                                                           ETX File Exist=CONST(Yes));
+                                                   CaptionML=[DEU=Sprach-ID;
+                                                              ENU=Language ID] }
+    { 4   ;   ;Caption             ;Text80        ;CaptionML=[DEU=Caption;
+                                                              ENU=Caption] }
+    { 5   ;   ;Language Name       ;Text80        ;FieldClass=FlowField;
+                                                   CalcFormula=Lookup("Windows Language".Name WHERE (Language ID=FIELD(Language ID)));
+                                                   CaptionML=[DEU=Sprachenname;
+                                                              ENU=Language Name];
+                                                   Editable=No }
+  }
+  KEYS
+  {
+    {    ;Caption ID,Table No.,Language ID        ;Clustered=Yes }
+  }
+  FIELDGROUPS
+  {
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

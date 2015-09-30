@@ -1,0 +1,469 @@
+OBJECT Table 79 Company Information
+{
+  OBJECT-PROPERTIES
+  {
+    Date=11.12.10;
+    Time=12:00:00;
+    Version List=NAVW16.00.10,NAVDACH6.00;
+  }
+  PROPERTIES
+  {
+    CaptionML=[DEU=Firmendaten;
+               ENU=Company Information];
+  }
+  FIELDS
+  {
+    { 1   ;   ;Primary Key         ;Code10        ;CaptionML=[DEU=PrimÑrschlÅssel;
+                                                              ENU=Primary Key] }
+    { 2   ;   ;Name                ;Text50        ;CaptionML=[DEU=Name;
+                                                              ENU=Name] }
+    { 3   ;   ;Name 2              ;Text50        ;CaptionML=[DEU=Name 2;
+                                                              ENU=Name 2] }
+    { 4   ;   ;Address             ;Text50        ;CaptionML=[DEU=Adresse;
+                                                              ENU=Address] }
+    { 5   ;   ;Address 2           ;Text50        ;CaptionML=[DEU=Adresse 2;
+                                                              ENU=Address 2] }
+    { 6   ;   ;City                ;Text30        ;OnValidate=BEGIN
+                                                                PostCode.ValidateCity(City,"Post Code");
+                                                              END;
+
+                                                   OnLookup=BEGIN
+                                                              PostCode.LookUpCity(City,"Post Code",TRUE);
+                                                            END;
+
+                                                   CaptionML=[DEU=Ort;
+                                                              ENU=City] }
+    { 7   ;   ;Phone No.           ;Text30        ;ExtendedDatatype=Phone No.;
+                                                   CaptionML=[DEU=Telefonnr.;
+                                                              ENU=Phone No.] }
+    { 8   ;   ;Phone No. 2         ;Text30        ;ExtendedDatatype=Phone No.;
+                                                   CaptionML=[DEU=Telefonnr. 2;
+                                                              ENU=Phone No. 2] }
+    { 9   ;   ;Telex No.           ;Text30        ;CaptionML=[DEU=Telexnr.;
+                                                              ENU=Telex No.] }
+    { 10  ;   ;Fax No.             ;Text30        ;CaptionML=[DEU=Faxnr.;
+                                                              ENU=Fax No.] }
+    { 11  ;   ;Giro No.            ;Text20        ;CaptionML=[DEU=Postgirokontonr.;
+                                                              ENU=Giro No.] }
+    { 12  ;   ;Bank Name           ;Text50        ;CaptionML=[DEU=Bankname;
+                                                              ENU=Bank Name] }
+    { 13  ;   ;Bank Branch No.     ;Text20        ;CaptionML=[DEU=BLZ;
+                                                              ENU=Bank Branch No.] }
+    { 14  ;   ;Bank Account No.    ;Text30        ;CaptionML=[DEU=Bankkontonummer;
+                                                              ENU=Bank Account No.] }
+    { 15  ;   ;Payment Routing No. ;Text20        ;CaptionML=[DEU=Zahlungsauftragsnr.;
+                                                              ENU=Payment Routing No.] }
+    { 17  ;   ;Customs Permit No.  ;Text10        ;CaptionML=[DEU=Zollabfertigungsnr.;
+                                                              ENU=Customs Permit No.] }
+    { 18  ;   ;Customs Permit Date ;Date          ;CaptionML=[DEU=Zollabfertigungsdatum;
+                                                              ENU=Customs Permit Date] }
+    { 19  ;   ;VAT Registration No.;Text20        ;OnValidate=VAR
+                                                                VATRegNoFormat@1000 : Record 381;
+                                                              BEGIN
+                                                                VATRegNoFormat.Test("VAT Registration No.","Country/Region Code",'',DATABASE::"Company Information");
+                                                              END;
+
+                                                   CaptionML=[DEU=USt-IdNr.;
+                                                              ENU=VAT Registration No.] }
+    { 20  ;   ;Registration No.    ;Text20        ;CaptionML=[DEU=Steuernummer;
+                                                              ENU=Registration No.] }
+    { 21  ;   ;Telex Answer Back   ;Text20        ;CaptionML=[DEU=Telex Namengeber;
+                                                              ENU=Telex Answer Back] }
+    { 22  ;   ;Ship-to Name        ;Text50        ;CaptionML=[DEU=Lief. an Name;
+                                                              ENU=Ship-to Name] }
+    { 23  ;   ;Ship-to Name 2      ;Text50        ;CaptionML=[DEU=Lief. an Name 2;
+                                                              ENU=Ship-to Name 2] }
+    { 24  ;   ;Ship-to Address     ;Text50        ;CaptionML=[DEU=Lief. an Adresse;
+                                                              ENU=Ship-to Address] }
+    { 25  ;   ;Ship-to Address 2   ;Text50        ;CaptionML=[DEU=Lief. an Adresse 2;
+                                                              ENU=Ship-to Address 2] }
+    { 26  ;   ;Ship-to City        ;Text30        ;OnValidate=BEGIN
+                                                                PostCode.ValidateCity("Ship-to City","Ship-to Post Code");
+                                                              END;
+
+                                                   OnLookup=BEGIN
+                                                              PostCode.LookUpCity("Ship-to City","Ship-to Post Code",TRUE);
+                                                            END;
+
+                                                   CaptionML=[DEU=Lief. an Ort;
+                                                              ENU=Ship-to City] }
+    { 27  ;   ;Ship-to Contact     ;Text50        ;CaptionML=[DEU=Lief. an Kontakt;
+                                                              ENU=Ship-to Contact] }
+    { 28  ;   ;Location Code       ;Code10        ;TableRelation=Location WHERE (Use As In-Transit=CONST(No));
+                                                   CaptionML=[DEU=Lagerortcode;
+                                                              ENU=Location Code] }
+    { 29  ;   ;Picture             ;BLOB          ;CaptionML=[DEU=Bild;
+                                                              ENU=Picture];
+                                                   SubType=Bitmap }
+    { 30  ;   ;Post Code           ;Code20        ;TableRelation="Post Code";
+                                                   OnValidate=BEGIN
+                                                                PostCode.ValidatePostCode(City,"Post Code");
+                                                              END;
+
+                                                   OnLookup=BEGIN
+                                                              PostCode.LookUpPostCode(City,"Post Code",TRUE);
+                                                            END;
+
+                                                   ValidateTableRelation=No;
+                                                   TestTableRelation=No;
+                                                   CaptionML=[DEU=PLZ-Code;
+                                                              ENU=Post Code] }
+    { 31  ;   ;County              ;Text30        ;CaptionML=[DEU=Bundesregion;
+                                                              ENU=County] }
+    { 32  ;   ;Ship-to Post Code   ;Code20        ;TableRelation="Post Code";
+                                                   OnValidate=BEGIN
+                                                                PostCode.ValidatePostCode("Ship-to City","Ship-to Post Code");
+                                                              END;
+
+                                                   OnLookup=BEGIN
+                                                              PostCode.LookUpPostCode("Ship-to City","Ship-to Post Code",TRUE);
+                                                            END;
+
+                                                   ValidateTableRelation=No;
+                                                   TestTableRelation=No;
+                                                   CaptionML=[DEU=Lief. an PLZ-Code;
+                                                              ENU=Ship-to Post Code] }
+    { 33  ;   ;Ship-to County      ;Text30        ;CaptionML=[DEU=Lief. an Bundesregion;
+                                                              ENU=Ship-to County] }
+    { 34  ;   ;E-Mail              ;Text80        ;ExtendedDatatype=E-Mail;
+                                                   CaptionML=[DEU=E-Mail;
+                                                              ENU=E-Mail] }
+    { 35  ;   ;Home Page           ;Text80        ;ExtendedDatatype=URL;
+                                                   CaptionML=[DEU=Homepage;
+                                                              ENU=Home Page] }
+    { 36  ;   ;Country/Region Code ;Code10        ;TableRelation=Country/Region;
+                                                   CaptionML=[DEU=LÑnder-/Regionscode;
+                                                              ENU=Country/Region Code] }
+    { 37  ;   ;Ship-to Country/Region Code;Code10 ;TableRelation=Country/Region;
+                                                   CaptionML=[DEU=Lief. an LÑnder-/Regionscode;
+                                                              ENU=Ship-to Country/Region Code] }
+    { 38  ;   ;IBAN                ;Code50        ;OnValidate=BEGIN
+                                                                CheckIBAN(IBAN);
+                                                              END;
+
+                                                   CaptionML=[DEU=IBAN;
+                                                              ENU=IBAN] }
+    { 39  ;   ;SWIFT Code          ;Code20        ;CaptionML=[DEU=SWIFT-Code;
+                                                              ENU=SWIFT Code] }
+    { 40  ;   ;Industrial Classification;Text30   ;CaptionML=[DEU=Branchencode;
+                                                              ENU=Industrial Classification] }
+    { 41  ;   ;IC Partner Code     ;Code20        ;CaptionML=[DEU=IC-Partnercode;
+                                                              ENU=IC Partner Code] }
+    { 42  ;   ;IC Inbox Type       ;Option        ;OnValidate=BEGIN
+                                                                IF "IC Inbox Type" = "IC Inbox Type"::Database THEN
+                                                                  "IC Inbox Details" := '';
+                                                              END;
+
+                                                   CaptionML=[DEU=IC-Eingangsart;
+                                                              ENU=IC Inbox Type];
+                                                   OptionCaptionML=[DEU=Dateispeicherort,Datenbank;
+                                                                    ENU=File Location,Database];
+                                                   OptionString=File Location,Database }
+    { 43  ;   ;IC Inbox Details    ;Text250       ;OnLookup=VAR
+                                                              CmDlgMgt@1001 : Codeunit 412;
+                                                              i@1000 : Integer;
+                                                              FileName@1002 : Text[1024];
+                                                            BEGIN
+                                                              TESTFIELD("IC Partner Code");
+                                                              CASE "IC Inbox Type" OF
+                                                                "IC Inbox Type"::"File Location":
+                                                                  BEGIN
+                                                                    IF "IC Inbox Details" = '' THEN BEGIN
+                                                                      FileName := STRSUBSTNO('%1.xml',"IC Partner Code");
+                                                                      "IC Inbox Details" := CmDlgMgt.OpenFile(Text001,FileName,4,'*.xml|*.xml',1)
+                                                                    END ELSE BEGIN
+                                                                      FileName := "IC Inbox Details" + STRSUBSTNO('\%1.xml',"IC Partner Code");
+                                                                      "IC Inbox Details" := CmDlgMgt.OpenFile(Text001,FileName,4,'*.xml|*.xml',1);
+                                                                    END;
+                                                                    IF STRLEN("IC Inbox Details") > 4 THEN BEGIN
+                                                                      i := STRLEN("IC Inbox Details") - 4;
+                                                                      WHILE (i > 1) AND ("IC Inbox Details"[i] <> '\') DO
+                                                                        i := i - 1;
+                                                                      IF i > 1 THEN
+                                                                        "IC Inbox Details" := COPYSTR("IC Inbox Details",1,i - 1);
+                                                                    END;
+                                                                  END;
+                                                              END;
+                                                            END;
+
+                                                   CaptionML=[DEU=IC-Eingangsdetails;
+                                                              ENU=IC Inbox Details] }
+    { 44  ;   ;Abbreviated Name    ;Text4         ;CaptionML=[DEU=AbgekÅrzter Name;
+                                                              ENU=Abbreviated Name] }
+    { 45  ;   ;Show Abbreviated Name;Boolean      ;CaptionML=[DEU=AbgekÅrzten Namen anzeigen;
+                                                              ENU=Show Abbreviated Name] }
+    { 46  ;   ;System Indicator    ;Option        ;CaptionML=[DEU=Systemindikator;
+                                                              ENU=System Indicator];
+                                                   OptionCaptionML=[DEU=Keine,Benutzerdefinierter Text,Firmendaten,Unternehmen,Datenbank,Unternehmen+Datenbank;
+                                                                    ENU=None,Custom Text,Company Information,Company,Database,Company+Database];
+                                                   OptionString=None,Custom Text,Company Information,Company,Database,Company+Database }
+    { 47  ;   ;Custom System Indicator Text;Text250;
+                                                   CaptionML=[DEU=Benutzerdefinierter Systemindikatortext;
+                                                              ENU=Custom System Indicator Text] }
+    { 48  ;   ;System Indicator Style;Option      ;CaptionML=[DEU=Systemindikatorstil;
+                                                              ENU=System Indicator Style];
+                                                   OptionCaptionML=[DEU=Standard,Accent1,Accent2,Accent3,Accent4,Accent5,Accent6,Accent7,Accent8,Accent9;
+                                                                    ENU=Standard,Accent1,Accent2,Accent3,Accent4,Accent5,Accent6,Accent7,Accent8,Accent9];
+                                                   OptionString=Standard,Accent1,Accent2,Accent3,Accent4,Accent5,Accent6,Accent7,Accent8,Accent9 }
+    { 5700;   ;Responsibility Center;Code10       ;TableRelation="Responsibility Center".Code;
+                                                   ValidateTableRelation=Yes;
+                                                   CaptionML=[DEU=ZustÑndigkeitseinheitencode;
+                                                              ENU=Responsibility Center] }
+    { 5791;   ;Check-Avail. Period Calc.;DateFormula;
+                                                   CaptionML=[DEU=VerfÅgbarkeitsber. - Periode;
+                                                              ENU=Check-Avail. Period Calc.] }
+    { 5792;   ;Check-Avail. Time Bucket;Option    ;CaptionML=[DEU=VerfÅgbarkeitsber. -Zeitrahmen;
+                                                              ENU=Check-Avail. Time Bucket];
+                                                   OptionCaptionML=[DEU=Tag,Woche,Monat,Quartal,Jahr;
+                                                                    ENU=Day,Week,Month,Quarter,Year];
+                                                   OptionString=Day,Week,Month,Quarter,Year }
+    { 7600;   ;Base Calendar Code  ;Code10        ;TableRelation="Base Calendar";
+                                                   CaptionML=[DEU=Basiskalendercode;
+                                                              ENU=Base Calendar Code] }
+    { 7601;   ;Cal. Convergence Time Frame;DateFormula;
+                                                   InitValue=1Y;
+                                                   CaptionML=[DEU=Kalender öbereinst.-Zeitraum;
+                                                              ENU=Cal. Convergence Time Frame] }
+    { 11000;  ;Area                ;Code10        ;TableRelation=Area;
+                                                   CaptionML=[DEU=Bundesland;
+                                                              ENU=Area] }
+    { 11001;  ;Place of Dispatcher ;Code10        ;TableRelation="Place of Dispatcher";
+                                                   CaptionML=[DEU=Sitz des Versenders;
+                                                              ENU=Place of Dispatcher] }
+    { 11002;  ;Place of Receiver   ;Code10        ;TableRelation="Place of Receiver";
+                                                   CaptionML=[DEU=Sitz des EmpfÑngers;
+                                                              ENU=Place of Receiver] }
+    { 11003;  ;Sales Authorized No.;Code8         ;CaptionML=[DEU=Verk.-Material Nummer;
+                                                              ENU=Sales Authorized No.] }
+    { 11004;  ;Purch. Authorized No.;Code8        ;CaptionML=[DEU=Eink.-Material Nummer;
+                                                              ENU=Purch. Authorized No.] }
+    { 11005;  ;Company No.         ;Text10        ;CaptionML=[DEU=Unternehmensnr.;
+                                                              ENU=Company No.] }
+    { 11006;  ;Special Agreement   ;Text20        ;CaptionML=[DEU=Sonderverfahrennr.;
+                                                              ENU=Special Agreement] }
+    { 11007;  ;Agency No.          ;Text10        ;CaptionML=[DEU=Unternehmen;
+                                                              ENU=Agency No.] }
+    { 11008;  ;Tax Office Name     ;Text50        ;CaptionML=[DEU=Finanzamt Name;
+                                                              ENU=Tax Office Name] }
+    { 11009;  ;Tax Office Name 2   ;Text50        ;CaptionML=[DEU=Finanzamt Name 2;
+                                                              ENU=Tax Office Name 2] }
+    { 11010;  ;Tax Office Address  ;Text50        ;CaptionML=[DEU=Finanzamt Adresse;
+                                                              ENU=Tax Office Address] }
+    { 11011;  ;Tax Office Address 2;Text50        ;CaptionML=[DEU=Finanzamt Adresse 2;
+                                                              ENU=Tax Office Address 2] }
+    { 11012;  ;Tax Office City     ;Text50        ;OnValidate=BEGIN
+                                                                PostCode.ValidateCity("Tax Office City","Tax Office Post Code");
+                                                              END;
+
+                                                   OnLookup=BEGIN
+                                                              PostCode.LookUpCity("Tax Office City","Tax Office Post Code",TRUE);
+                                                            END;
+
+                                                   CaptionML=[DEU=Finanzamt Ort;
+                                                              ENU=Tax Office City] }
+    { 11013;  ;Tax Office Post Code;Code20        ;TableRelation="Post Code";
+                                                   OnValidate=BEGIN
+                                                                PostCode.ValidatePostCode("Tax Office City","Tax Office Post Code");
+                                                              END;
+
+                                                   OnLookup=BEGIN
+                                                              PostCode.LookUpPostCode("Tax Office City","Tax Office Post Code",TRUE);
+                                                            END;
+
+                                                   ValidateTableRelation=No;
+                                                   TestTableRelation=No;
+                                                   CaptionML=[DEU=Finanzamt PLZ Code;
+                                                              ENU=Tax Office Post Code] }
+    { 11014;  ;Tax Office Country/Region Code;Code10;
+                                                   TableRelation=Country/Region;
+                                                   CaptionML=[DEU=Finanzamt LÑnder-/Regionscode;
+                                                              ENU=Tax Office Country/Region Code] }
+    { 11015;  ;Tax Office County   ;Text30        ;CaptionML=[DEU=Finanzamt Bundesregion;
+                                                              ENU=Tax Office County] }
+    { 11016;  ;Tax Office Area     ;Option        ;CaptionML=[DEU=Finanzamt Bundesland;
+                                                              ENU=Tax Office Area];
+                                                   OptionCaptionML=[DEU=" ,Schleswig-Holstein,Hamburg,Niedersachsen,Bremen,Nordrhein-Westfalen,Hessen,Rheinland-Pfalz,Baden-WÅrttemberg,Bayern,Saarland,Brandenburg,Mecklenburg-Vorpommern,Sachsen,Sachsen-Anhalt,ThÅringen,Berlin";
+                                                                    ENU=" ,Schleswig-Holstein,Hamburg,Niedersachsen,Bremen,Nordrhein-Westfalen,Hessen,Rheinland-Pfalz,Baden-WÔøΩrttemberg,Bayern,Saarland,Brandenburg,Mecklenburg-Vorpommern,Sachsen,Sachsen-Anhalt,ThÔøΩringen,Berlin"];
+                                                   OptionString=[ ,Schleswig-Holstein,Hamburg,Niedersachsen,Bremen,Nordrhein-Westfalen,Hessen,Rheinland-Pfalz,Baden-WÔøΩrttemberg,Bayern,Saarland,Brandenburg,Mecklenburg-Vorpommern,Sachsen,Sachsen-Anhalt,ThÔøΩringen,Berlin] }
+    { 11017;  ;Check Transport Method;Boolean     ;InitValue=Yes;
+                                                   CaptionML=[DEU=Verkehrszweig prÅfen;
+                                                              ENU=Check Transport Method] }
+    { 11018;  ;Check Transaction Specific.;Boolean;InitValue=Yes;
+                                                   CaptionML=[DEU=Verfahren prÅfen;
+                                                              ENU=Check Transaction Specific.] }
+    { 11019;  ;VAT Representative  ;Text45        ;CaptionML=[DEU=SteuerbevollmÑchtigter;
+                                                              ENU=VAT Representative] }
+    { 11050;  ;Participant No.     ;Text10        ;CaptionML=[DEU=Teilnehmernr.;
+                                                              ENU=Participant No.] }
+    { 11100;  ;Statistic No.       ;Code20        ;CaptionML=[DEU=Statistiknr.;
+                                                              ENU=Statistic No.] }
+    { 11101;  ;Control No.         ;Code20        ;CaptionML=[DEU=Kontrollnr.;
+                                                              ENU=Control No.] }
+    { 11102;  ;DVR Number          ;Code20        ;CaptionML=[DEU=DVR-Nummer;
+                                                              ENU=DVR Number] }
+    { 11103;  ;Tax Office Number   ;Code4         ;CaptionML=[DEU=Finanzamtsnr.;
+                                                              ENU=Tax Office Number];
+                                                   Numeric=Yes }
+  }
+  KEYS
+  {
+    {    ;Primary Key                             ;Clustered=Yes }
+  }
+  FIELDGROUPS
+  {
+  }
+  CODE
+  {
+    VAR
+      PostCode@1000 : Record 225;
+      Text000@1001 : TextConst 'DEU=Die von Ihnen eingegebene Nummer ist keine gÅltige IBAN.;ENU=The number you entered is not a valid IBAN.';
+      Text001@1002 : TextConst 'DEU=Speicherort fÅr IC-Dateien;ENU=File Location for IC files';
+      Text002@1003 : TextConst 'DEU=Bevor Sie Online Map verwenden kînnen, mÅssen Sie die Felder des Fensters ''Online Map-Einrichtung'' ausfÅllen.\Informationen hierzu finden Sie in der Hilfe zum Einrichten von Online Map.;ENU=Before you can use Online Map, you must fill in the Online Map Setup window.\See Setting Up Online Map in Help.';
+
+    PROCEDURE CheckIBAN@1(IBANCode@1000 : Code[100]);
+    VAR
+      Modulus97@1001 : Integer;
+      I@1002 : Integer;
+    BEGIN
+      IF IBANCode = '' THEN
+        EXIT;
+      IBANCode := DELCHR(IBANCode);
+      Modulus97 := 97;
+      IF (STRLEN(IBANCode) <= 5) OR (STRLEN(IBANCode) > 34) THEN
+        IBANError;
+      ConvertIBAN(IBANCode);
+      WHILE STRLEN(IBANCode) > 6 DO
+        IBANCode := CalcModulus(COPYSTR(IBANCode,1,6),Modulus97) + COPYSTR(IBANCode,7);
+      EVALUATE(I,IBANCode);
+      IF (I MOD Modulus97) <> 1 THEN
+        IBANError;
+    END;
+
+    LOCAL PROCEDURE ConvertIBAN@4(VAR IBANCode@1000 : Code[100]);
+    VAR
+      I@1002 : Integer;
+    BEGIN
+      IBANCode := COPYSTR(IBANCode,5) + COPYSTR(IBANCode,1,4);
+      I := 0;
+      WHILE I < STRLEN(IBANCode) DO BEGIN
+        I := I + 1;
+        IF ConvertLetter(IBANCode,COPYSTR(IBANCode,I,1),I) THEN
+          I := 0;
+      END;
+    END;
+
+    LOCAL PROCEDURE CalcModulus@3(Number@1000 : Code[10];Modulus97@1001 : Integer) : Code[10];
+    VAR
+      I@1002 : Integer;
+    BEGIN
+      EVALUATE(I,Number);
+      I := I MOD Modulus97;
+      IF I = 0 THEN
+        EXIT('');
+      EXIT(FORMAT(I));
+    END;
+
+    LOCAL PROCEDURE ConvertLetter@5(VAR IBANCode@1000 : Code[100];Letter@1001 : Code[1];LetterPlace@1002 : Integer) : Boolean;
+    VAR
+      Letter2@1003 : Code[2];
+    BEGIN
+      IF (Letter >= 'A') AND (Letter <= 'Z') THEN BEGIN
+        CASE Letter OF
+          'A': Letter2 := '10';
+          'B': Letter2 := '11';
+          'C': Letter2 := '12';
+          'D': Letter2 := '13';
+          'E': Letter2 := '14';
+          'F': Letter2 := '15';
+          'G': Letter2 := '16';
+          'H': Letter2 := '17';
+          'I': Letter2 := '18';
+          'J': Letter2 := '19';
+          'K': Letter2 := '20';
+          'L': Letter2 := '21';
+          'M': Letter2 := '22';
+          'N': Letter2 := '23';
+          'O': Letter2 := '24';
+          'P': Letter2 := '25';
+          'Q': Letter2 := '26';
+          'R': Letter2 := '27';
+          'S': Letter2 := '28';
+          'T': Letter2 := '29';
+          'U': Letter2 := '30';
+          'V': Letter2 := '31';
+          'W': Letter2 := '32';
+          'X': Letter2 := '33';
+          'Y': Letter2 := '34';
+          'Z': Letter2 := '35';
+        END;
+        IF LetterPlace = 1 THEN
+          IBANCode := Letter2 + COPYSTR(IBANCode,2)
+        ELSE BEGIN
+          IF LetterPlace = STRLEN(IBANCode) THEN
+            IBANCode := COPYSTR(IBANCode,1,LetterPlace - 1) + Letter2
+          ELSE
+            IBANCode :=
+              COPYSTR(IBANCode,1,LetterPlace - 1) + Letter2 + COPYSTR(IBANCode,LetterPlace + 1);
+        END;
+        EXIT(TRUE);
+      END;
+      IF (Letter >= '0') AND (Letter <= '9') THEN
+        EXIT(FALSE);
+
+      IBANError;
+    END;
+
+    LOCAL PROCEDURE IBANError@12();
+    BEGIN
+      ERROR(Text000);
+    END;
+
+    PROCEDURE DisplayMap@7();
+    VAR
+      MapPoint@1001 : Record 800;
+      MapMgt@1000 : Codeunit 802;
+    BEGIN
+      IF MapPoint.FIND('-') THEN
+        MapMgt.MakeSelection(DATABASE::"Company Information",GETPOSITION)
+      ELSE MESSAGE(Text002);
+    END;
+
+    PROCEDURE GetSystemIndicator@8(VAR Text@1000 : Text[250];VAR Style@1001 : 'Standard,Accent1,Accent2,Accent3,Accent4,Accent5,Accent6,Accent7,Accent8,Accent9');
+    BEGIN
+      Style := "System Indicator Style";
+      CASE "System Indicator" OF
+        "System Indicator"::None:
+          Text := '';
+        "System Indicator"::"Custom Text":
+          Text := "Custom System Indicator Text";
+        "System Indicator"::"Company Information":
+          Text := Name;
+        "System Indicator"::Company:
+          Text := COMPANYNAME;
+        "System Indicator"::Database:
+          Text := GetDatabaseIndicatorText(FALSE);
+        "System Indicator"::"Company+Database":
+          Text := GetDatabaseIndicatorText(TRUE);
+      END
+    END;
+
+    LOCAL PROCEDURE GetDatabaseIndicatorText@9(IncludeCompany@1003 : Boolean) : Text[250];
+    VAR
+      Session@1000 : Record 2000000009;
+      Text@1002 : Text[1024];
+    BEGIN
+      Session.SETRANGE("My Session",TRUE);
+      Session.FINDFIRST;
+      Text := Session."Database Name" + ' - ' + Session."Host Name";
+      IF IncludeCompany THEN
+        Text := COMPANYNAME + ' - ' + Text;
+      IF STRLEN(Text) > 250 THEN
+        EXIT(COPYSTR(Text,1,247) + '...');
+      EXIT(Text)
+    END;
+
+    BEGIN
+    END.
+  }
+}
+

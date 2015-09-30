@@ -1,0 +1,55 @@
+OBJECT Table 410 IC G/L Account
+{
+  OBJECT-PROPERTIES
+  {
+    Date=05.11.08;
+    Time=12:00:00;
+    Version List=NAVW16.00;
+  }
+  PROPERTIES
+  {
+    CaptionML=[DEU=IC-Sachkonto;
+               ENU=IC G/L Account];
+    LookupFormID=Form607;
+  }
+  FIELDS
+  {
+    { 1   ;   ;No.                 ;Code20        ;CaptionML=[DEU=Nr.;
+                                                              ENU=No.];
+                                                   NotBlank=Yes }
+    { 2   ;   ;Name                ;Text30        ;CaptionML=[DEU=Name;
+                                                              ENU=Name] }
+    { 3   ;   ;Account Type        ;Option        ;CaptionML=[DEU=Kontoart;
+                                                              ENU=Account Type];
+                                                   OptionCaptionML=[DEU=Konto,öberschrift,Summe,Von-Summe,Bis-Summe;
+                                                                    ENU=Posting,Heading,Total,Begin-Total,End-Total];
+                                                   OptionString=Posting,Heading,Total,Begin-Total,End-Total }
+    { 4   ;   ;Income/Balance      ;Option        ;CaptionML=[DEU=GuV/Bilanz;
+                                                              ENU=Income/Balance];
+                                                   OptionCaptionML=[DEU=GuV,Bilanz;
+                                                                    ENU=Income Statement,Balance Sheet];
+                                                   OptionString=Income Statement,Balance Sheet }
+    { 5   ;   ;Blocked             ;Boolean       ;CaptionML=[DEU=Gesperrt;
+                                                              ENU=Blocked] }
+    { 6   ;   ;Map-to G/L Acc. No. ;Code20        ;TableRelation="G/L Account".No.;
+                                                   CaptionML=[DEU=Zuordnen zu Sachkontonr.;
+                                                              ENU=Map-to G/L Acc. No.] }
+    { 7   ;   ;Indentation         ;Integer       ;CaptionML=[DEU=EinrÅckung;
+                                                              ENU=Indentation] }
+  }
+  KEYS
+  {
+    {    ;No.                                     ;Clustered=Yes }
+  }
+  FIELDGROUPS
+  {
+    { 1   ;DropDown            ;No.,Name,Income/Balance,Blocked,Map-to G/L Acc. No. }
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

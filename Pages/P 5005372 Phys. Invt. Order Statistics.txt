@@ -1,0 +1,220 @@
+OBJECT Page 5005372 Phys. Invt. Order Statistics
+{
+  OBJECT-PROPERTIES
+  {
+    Date=05.11.08;
+    Time=12:00:00;
+    Version List=NAVDACH6.00;
+  }
+  PROPERTIES
+  {
+    Editable=No;
+    CaptionML=[DEU=Inventurauftragsstatistik;
+               ENU=Phys. Invt. Order Statistics];
+    SourceTable=Table5005350;
+    PageType=Card;
+    OnAfterGetRecord=BEGIN
+                       TESTFIELD(Status, Status::Finished);
+
+                       CLEARALL;
+
+                       PhysInvtOrderLine.RESET;
+                       PhysInvtOrderLine.SETRANGE("Document No.", "No.");
+                       IF PhysInvtOrderLine.FIND('-') THEN REPEAT
+                         IF NOT PhysInvtOrderLine.EmptyLine THEN BEGIN
+                           NoAllLines := NoAllLines + 1;
+                           ExpAmountAllLines :=
+                             ExpAmountAllLines +
+                             PhysInvtOrderLine."Qty. Expected (Base)" * PhysInvtOrderLine."Unit Amount";
+                           RecAmountAllLines :=
+                             RecAmountAllLines +
+                             PhysInvtOrderLine."Qty. Recorded (Base)" * PhysInvtOrderLine."Unit Amount";
+                           DiffAmountAllLines :=
+                             DiffAmountAllLines +
+                             (PhysInvtOrderLine."Qty. Recorded (Base)" - PhysInvtOrderLine."Qty. Expected (Base)") * PhysInvtOrderLine."Unit Amount";
+                           CASE PhysInvtOrderLine."Entry Type" OF
+                             PhysInvtOrderLine."Entry Type"::"Positive Adjmt.":
+                               BEGIN
+                                 IF PhysInvtOrderLine."Quantity (Base)" = 0 THEN BEGIN
+                                   NoCorrectLines := NoCorrectLines +1;
+                                   ExpAmountCorrectLines :=
+                                     ExpAmountCorrectLines +
+                                     PhysInvtOrderLine."Qty. Expected (Base)" * PhysInvtOrderLine."Unit Amount";
+                                   RecAmountCorrectLines :=
+                                     RecAmountCorrectLines +
+                                     PhysInvtOrderLine."Qty. Recorded (Base)" * PhysInvtOrderLine."Unit Amount";
+                                 END ELSE BEGIN
+                                   NoPosDiffLines := NoPosDiffLines +1;
+                                   ExpAmountPosDiffLines :=
+                                     ExpAmountPosDiffLines +
+                                     PhysInvtOrderLine."Qty. Expected (Base)" * PhysInvtOrderLine."Unit Amount";
+                                   RecAmountPosDiffLines :=
+                                     RecAmountPosDiffLines +
+                                     PhysInvtOrderLine."Qty. Recorded (Base)" * PhysInvtOrderLine."Unit Amount";
+                                   DiffAmountPosDiffLines :=
+                                     DiffAmountPosDiffLines +
+                                     PhysInvtOrderLine."Quantity (Base)" * PhysInvtOrderLine."Unit Amount";
+                                 END;
+                               END;
+                             PhysInvtOrderLine."Entry Type"::"Negative Adjmt.":
+                               BEGIN
+                                 NoNegDiffLines := NoNegDiffLines +1;
+                                 ExpAmountNegDiffLines :=
+                                   ExpAmountNegDiffLines +
+                                   PhysInvtOrderLine."Qty. Expected (Base)" * PhysInvtOrderLine."Unit Amount";
+                                 RecAmountNegDiffLines :=
+                                   RecAmountNegDiffLines +
+                                   PhysInvtOrderLine."Qty. Recorded (Base)" * PhysInvtOrderLine."Unit Amount";
+                                 DiffAmountNegDiffLines :=
+                                   DiffAmountNegDiffLines +
+                                   PhysInvtOrderLine."Quantity (Base)" * PhysInvtOrderLine."Unit Amount";
+                               END;
+                             ELSE
+                               ERROR(
+                                 Text1140000);
+                           END;
+                         END;
+                       UNTIL PhysInvtOrderLine.NEXT = 0;
+                     END;
+
+  }
+  CONTROLS
+  {
+    { 1900000001;0;Container;
+                ContainerType=ContentArea }
+
+    { 1140000;1;Group     ;
+                CaptionML=[DEU=Allgemein;
+                           ENU=General] }
+
+    { 1905583001;2;Group  ;
+                GroupType=FixedLayout }
+
+    { 1905483601;3;Group  ;
+                CaptionML=[DEU=Anzahl Zeilen;
+                           ENU=No. of lines] }
+
+    { 1140002;4;Field     ;
+                CaptionML=[DEU=Alle Zeilen;
+                           ENU=All Lines];
+                SourceExpr=NoAllLines }
+
+    { 1140004;4;Field     ;
+                CaptionML=[DEU=Zeilen ohne Differenz;
+                           ENU=Lines Without Difference];
+                SourceExpr=NoCorrectLines;
+                OnDrillDown=BEGIN
+                              PhysInvtOrderLine2.RESET;
+                              PhysInvtOrderLine2.SETCURRENTKEY("Document No.", "Entry Type", "Without difference");
+                              PhysInvtOrderLine2.SETRANGE("Document No.", "No.");
+                              PhysInvtOrderLine2.SETRANGE("Entry Type", PhysInvtOrderLine2."Entry Type"::"Positive Adjmt.");
+                              PhysInvtOrderLine2.SETRANGE("Without difference", TRUE);
+                              FORM.RUNMODAL(0, PhysInvtOrderLine2);
+                            END;
+                             }
+
+    { 1140006;4;Field     ;
+                CaptionML=[DEU=Zeilen mit positiver Differenz;
+                           ENU=Lines Pos. Difference];
+                SourceExpr=NoPosDiffLines;
+                OnDrillDown=BEGIN
+                              PhysInvtOrderLine2.RESET;
+                              PhysInvtOrderLine2.SETCURRENTKEY("Document No.", "Entry Type", "Without difference");
+                              PhysInvtOrderLine2.SETRANGE("Document No.", "No.");
+                              PhysInvtOrderLine2.SETRANGE("Entry Type", PhysInvtOrderLine2."Entry Type"::"Positive Adjmt.");
+                              PhysInvtOrderLine2.SETRANGE("Without difference", FALSE);
+                              FORM.RUNMODAL(0, PhysInvtOrderLine2);
+                            END;
+                             }
+
+    { 1140008;4;Field     ;
+                CaptionML=[DEU=Zeilen mit negativer Differenz;
+                           ENU=Lines Neg. Difference];
+                SourceExpr=NoNegDiffLines;
+                OnDrillDown=BEGIN
+                              PhysInvtOrderLine2.RESET;
+                              PhysInvtOrderLine2.SETCURRENTKEY("Document No.", "Entry Type", "Without difference");
+                              PhysInvtOrderLine2.SETRANGE("Document No.", "No.");
+                              PhysInvtOrderLine2.SETRANGE("Entry Type", PhysInvtOrderLine2."Entry Type"::"Negative Adjmt.");
+                              FORM.RUNMODAL(0, PhysInvtOrderLine2);
+                            END;
+                             }
+
+    { 1901630501;3;Group  ;
+                CaptionML=[DEU=Erfasster Betrag;
+                           ENU=Recorded  Amount] }
+
+    { 1140019;4;Field     ;
+                SourceExpr=RecAmountAllLines }
+
+    { 1140020;4;Field     ;
+                SourceExpr=RecAmountCorrectLines }
+
+    { 1140021;4;Field     ;
+                SourceExpr=RecAmountPosDiffLines }
+
+    { 1140022;4;Field     ;
+                SourceExpr=RecAmountNegDiffLines }
+
+    { 1902594501;3;Group  ;
+                CaptionML=[DEU=Erwarteter Betrag;
+                           ENU=Expected Amount] }
+
+    { 1140011;4;Field     ;
+                SourceExpr=ExpAmountAllLines }
+
+    { 1140012;4;Field     ;
+                SourceExpr=ExpAmountCorrectLines }
+
+    { 1140013;4;Field     ;
+                SourceExpr=ExpAmountPosDiffLines }
+
+    { 1140014;4;Field     ;
+                SourceExpr=ExpAmountNegDiffLines }
+
+    { 1907835401;3;Group  ;
+                CaptionML=[DEU=Differenzbetrag;
+                           ENU=Difference Amount] }
+
+    { 1140023;4;Field     ;
+                SourceExpr=DiffAmountAllLines }
+
+    { 1140025;4;Field     ;
+                SourceExpr=Text1140001;
+                Visible=FALSE }
+
+    { 1140015;4;Field     ;
+                SourceExpr=DiffAmountPosDiffLines }
+
+    { 1140016;4;Field     ;
+                SourceExpr=DiffAmountNegDiffLines }
+
+  }
+  CODE
+  {
+    VAR
+      Text1140000@1140000 : TextConst 'DEU=Unbekannte Postenart.;ENU=Unknown Entry type.';
+      PhysInvtOrderLine@1140001 : Record 5005351;
+      PhysInvtOrderLine2@1140002 : Record 5005351;
+      NoAllLines@1140003 : Integer;
+      NoCorrectLines@1140004 : Integer;
+      NoPosDiffLines@1140005 : Integer;
+      NoNegDiffLines@1140006 : Integer;
+      ExpAmountAllLines@1140007 : Decimal;
+      ExpAmountCorrectLines@1140008 : Decimal;
+      ExpAmountPosDiffLines@1140009 : Decimal;
+      ExpAmountNegDiffLines@1140010 : Decimal;
+      RecAmountAllLines@1140011 : Decimal;
+      RecAmountCorrectLines@1140012 : Decimal;
+      RecAmountPosDiffLines@1140013 : Decimal;
+      RecAmountNegDiffLines@1140014 : Decimal;
+      DiffAmountAllLines@1140015 : Decimal;
+      DiffAmountPosDiffLines@1140016 : Decimal;
+      DiffAmountNegDiffLines@1140017 : Decimal;
+      Text1140001@1140018 : TextConst 'DEU=Platzhalter;ENU=Placeholder';
+
+    BEGIN
+    END.
+  }
+}
+

@@ -1,0 +1,85 @@
+OBJECT Form 5611 Depreciation Book List
+{
+  OBJECT-PROPERTIES
+  {
+    Date=08.06.01;
+    Time=12:00:00;
+    Version List=NAVW13.00;
+  }
+  PROPERTIES
+  {
+    Width=9900;
+    Height=6710;
+    Editable=No;
+    CaptionML=[DEU=AfA-Buch šbersicht;
+               ENU=Depreciation Book List];
+    TableBoxID=1;
+    SourceTable=Table5611;
+  }
+  CONTROLS
+  {
+    { 1   ;TableBox     ;220  ;220  ;9460 ;5500 ;HorzGlue=Both;
+                                                 VertGlue=Both }
+    { 2   ;TextBox      ;0    ;0    ;1650 ;0    ;ParentControl=1;
+                                                 InColumn=Yes;
+                                                 SourceExpr=Code }
+    { 3   ;Label        ;0    ;0    ;0    ;0    ;ParentControl=2;
+                                                 InColumnHeading=Yes }
+    { 4   ;TextBox      ;0    ;0    ;4400 ;0    ;HorzGlue=Both;
+                                                 ParentControl=1;
+                                                 InColumn=Yes;
+                                                 SourceExpr=Description }
+    { 5   ;Label        ;0    ;0    ;0    ;0    ;ParentControl=4;
+                                                 InColumnHeading=Yes }
+    { 6   ;CommandButton;220  ;5940 ;2200 ;550  ;HorzGlue=Right;
+                                                 VertGlue=Bottom;
+                                                 Default=Yes;
+                                                 PushAction=LookupOK;
+                                                 InvalidActionAppearance=Hide }
+    { 7   ;CommandButton;2640 ;5940 ;2200 ;550  ;HorzGlue=Right;
+                                                 VertGlue=Bottom;
+                                                 Cancel=Yes;
+                                                 PushAction=LookupCancel;
+                                                 InvalidActionAppearance=Hide }
+    { 8   ;CommandButton;7480 ;5940 ;2200 ;550  ;HorzGlue=Right;
+                                                 VertGlue=Bottom;
+                                                 PushAction=FormHelp }
+    { 9   ;MenuButton   ;5060 ;5940 ;2200 ;550  ;HorzGlue=Right;
+                                                 VertGlue=Bottom;
+                                                 CaptionML=[DEU=AfA-Bu&ch;
+                                                            ENU=&Depr. Book];
+                                                 Menu=MENUITEMS
+                                                 {
+                                                   { ID=13;
+                                                     PushAction=RunObject;
+                                                     ShortCutKey=Shift+F5;
+                                                     CaptionML=[DEU=Karte;
+                                                                ENU=Card];
+                                                     RunObject=Form 5610;
+                                                     RunFormLinkType=OnUpdate;
+                                                     RunFormLink=Code=FIELD(Code) }
+                                                   { ID=14;
+                                                     PushAction=RunObject;
+                                                     CaptionML=[DEU=Anlagenbuchungsart Einr.;
+                                                                ENU=FA Posting Type Setup];
+                                                     RunObject=Form 5608;
+                                                     RunFormLinkType=OnUpdate;
+                                                     RunFormLink=Depreciation Book Code=FIELD(Code) }
+                                                   { ID=15;
+                                                     PushAction=RunObject;
+                                                     CaptionML=[DEU=Anlagen &Buch.-Blatt Einrichtung;
+                                                                ENU=FA &Journal Setup];
+                                                     RunObject=Form 5609;
+                                                     RunFormLinkType=OnUpdate;
+                                                     RunFormLink=Depreciation Book Code=FIELD(Code) }
+                                                 }
+                                                  }
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

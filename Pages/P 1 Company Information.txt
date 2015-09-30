@@ -1,0 +1,375 @@
+OBJECT Page 1 Company Information
+{
+  OBJECT-PROPERTIES
+  {
+    Date=11.12.10;
+    Time=12:00:00;
+    Version List=NAVW16.00.10,NAVDACH6.00;
+  }
+  PROPERTIES
+  {
+    CaptionML=[DEU=Firmendaten;
+               ENU=Company Information];
+    InsertAllowed=No;
+    DeleteAllowed=No;
+    SourceTable=Table79;
+    PageType=Card;
+    OnInit=BEGIN
+             "System Indicator TextEditable" := TRUE;
+             MapPointVisible := TRUE;
+           END;
+
+    OnOpenPage=VAR
+                 MapMgt@1000 : Codeunit 802;
+               BEGIN
+                 RESET;
+                 IF NOT GET THEN BEGIN
+                   INIT;
+                   INSERT;
+                 END;
+
+                 IF NOT MapMgt.TestSetup THEN
+                   MapPointVisible := FALSE;
+               END;
+
+    OnAfterGetRecord=BEGIN
+                       OnAfterGetCurrRecord;
+                     END;
+
+    OnNewRecord=BEGIN
+                  OnAfterGetCurrRecord;
+                END;
+
+    ActionList=ACTIONS
+    {
+      { 1900000003;0 ;ActionContainer;
+                      ActionContainerType=RelatedInformation }
+      { 66      ;1   ;ActionGroup;
+                      CaptionML=[DEU=Fir&ma;
+                                 ENU=&Company] }
+      { 70      ;2   ;Action    ;
+                      CaptionML=[DEU=Zust„ndigkeitseinheiten;
+                                 ENU=Responsibility Centers];
+                      RunObject=Page 5715 }
+      { 91      ;2   ;Separator  }
+      { 92      ;2   ;Action    ;
+                      CaptionML=[DEU=Online Map;
+                                 ENU=Online Map];
+                      OnAction=BEGIN
+                                 DisplayMap;
+                               END;
+                                }
+    }
+  }
+  CONTROLS
+  {
+    { 1900000001;0;Container;
+                ContainerType=ContentArea }
+
+    { 1   ;1   ;Group     ;
+                CaptionML=[DEU=Allgemein;
+                           ENU=General] }
+
+    { 2   ;2   ;Field     ;
+                SourceExpr=Name }
+
+    { 4   ;2   ;Field     ;
+                SourceExpr=Address }
+
+    { 6   ;2   ;Field     ;
+                SourceExpr="Address 2" }
+
+    { 34  ;2   ;Field     ;
+                SourceExpr="Post Code" }
+
+    { 8   ;2   ;Field     ;
+                SourceExpr=City }
+
+    { 42  ;2   ;Field     ;
+                SourceExpr="Country/Region Code" }
+
+    { 10  ;2   ;Field     ;
+                SourceExpr="Phone No." }
+
+    { 14  ;2   ;Field     ;
+                SourceExpr="VAT Registration No." }
+
+    { 1140035;2;Field     ;
+                SourceExpr="VAT Representative" }
+
+    { 76  ;2   ;Field     ;
+                SourceExpr="Industrial Classification" }
+
+    { 1140050;2;Field     ;
+                SourceExpr="Participant No." }
+
+    { 33  ;2   ;Field     ;
+                SourceExpr=Picture }
+
+    { 1902768601;1;Group  ;
+                CaptionML=[DEU=Kommunikation;
+                           ENU=Communication] }
+
+    { 50  ;2   ;Field     ;
+                SourceExpr="Phone No." }
+
+    { 54  ;2   ;Field     ;
+                SourceExpr="Fax No." }
+
+    { 56  ;2   ;Field     ;
+                SourceExpr="E-Mail" }
+
+    { 58  ;2   ;Field     ;
+                SourceExpr="Home Page" }
+
+    { 78  ;2   ;Field     ;
+                SourceExpr="IC Partner Code" }
+
+    { 80  ;2   ;Field     ;
+                SourceExpr="IC Inbox Type" }
+
+    { 82  ;2   ;Field     ;
+                SourceExpr="IC Inbox Details" }
+
+    { 1901677601;1;Group  ;
+                CaptionML=[DEU=Zahlungen;
+                           ENU=Payments] }
+
+    { 16  ;2   ;Field     ;
+                SourceExpr="Bank Name" }
+
+    { 18  ;2   ;Field     ;
+                SourceExpr="Bank Branch No." }
+
+    { 20  ;2   ;Field     ;
+                SourceExpr="Bank Account No." }
+
+    { 22  ;2   ;Field     ;
+                SourceExpr="Payment Routing No." }
+
+    { 24  ;2   ;Field     ;
+                SourceExpr="Giro No." }
+
+    { 72  ;2   ;Field     ;
+                SourceExpr="SWIFT Code" }
+
+    { 74  ;2   ;Field     ;
+                SourceExpr=IBAN }
+
+    { 1906801201;1;Group  ;
+                CaptionML=[DEU=Lieferung;
+                           ENU=Shipping] }
+
+    { 35  ;2   ;Field     ;
+                SourceExpr="Ship-to Name" }
+
+    { 37  ;2   ;Field     ;
+                SourceExpr="Ship-to Address" }
+
+    { 39  ;2   ;Field     ;
+                SourceExpr="Ship-to Address 2" }
+
+    { 51  ;2   ;Field     ;
+                SourceExpr="Ship-to Post Code" }
+
+    { 49  ;2   ;Field     ;
+                SourceExpr="Ship-to City" }
+
+    { 60  ;2   ;Field     ;
+                SourceExpr="Ship-to Country/Region Code" }
+
+    { 43  ;2   ;Field     ;
+                SourceExpr="Ship-to Contact" }
+
+    { 47  ;2   ;Field     ;
+                SourceExpr="Location Code" }
+
+    { 13  ;2   ;Field     ;
+                SourceExpr="Responsibility Center" }
+
+    { 62  ;2   ;Field     ;
+                SourceExpr="Check-Avail. Period Calc." }
+
+    { 64  ;2   ;Field     ;
+                SourceExpr="Check-Avail. Time Bucket" }
+
+    { 67  ;2   ;Field     ;
+                DrillDown=No;
+                SourceExpr="Base Calendar Code" }
+
+    { 69  ;2   ;Field     ;
+                Name=Customized Calendar;
+                DrillDown=Yes;
+                CaptionML=[DEU=Spezifischer Kalender;
+                           ENU=Customized Calendar];
+                SourceExpr=CalendarMgmt.CustomizedCalendarExistText(CustomizedCalendar."Source Type"::Company,'','',"Base Calendar Code");
+                Editable=FALSE;
+                OnDrillDown=BEGIN
+                              CurrPage.SAVERECORD;
+                              TESTFIELD("Base Calendar Code");
+                              CalendarMgmt.ShowCustomizedCalendar(CustomizedCalEntry."Source Type"::Company,'','',"Base Calendar Code");
+                            END;
+                             }
+
+    { 84  ;2   ;Field     ;
+                SourceExpr="Cal. Convergence Time Frame" }
+
+    { 1904604101;1;Group  ;
+                CaptionML=[DEU=Systemindikator;
+                           ENU=System Indicator] }
+
+    { 100 ;2   ;Field     ;
+                SourceExpr="System Indicator";
+                OnValidate=BEGIN
+                             SystemIndicatorOnAfterValidate;
+                           END;
+                            }
+
+    { 104 ;2   ;Field     ;
+                SourceExpr="System Indicator Style" }
+
+    { 102 ;2   ;Field     ;
+                Name=System Indicator Text;
+                CaptionML=[DEU=Systemindikatortext;
+                           ENU=System Indicator Text];
+                SourceExpr=SystemIndicatorText;
+                Editable="System Indicator TextEditable";
+                OnValidate=BEGIN
+                             "Custom System Indicator Text" := SystemIndicatorText;
+                               SystemIndicatorTextOnAfterVali;
+                           END;
+                            }
+
+    { 1904933501;1;Group  ;
+                CaptionML=[DEU=Intrastat;
+                           ENU=Intrastat] }
+
+    { 1140000;2;Field     ;
+                SourceExpr=Area }
+
+    { 1140002;2;Field     ;
+                SourceExpr="Place of Dispatcher" }
+
+    { 1140004;2;Field     ;
+                SourceExpr="Place of Receiver" }
+
+    { 1140006;2;Field     ;
+                SourceExpr="Company No." }
+
+    { 1140008;2;Field     ;
+                SourceExpr="Agency No." }
+
+    { 1140010;2;Field     ;
+                SourceExpr="Special Agreement" }
+
+    { 1140031;2;Field     ;
+                SourceExpr="Check Transport Method" }
+
+    { 1140033;2;Field     ;
+                SourceExpr="Check Transaction Specific." }
+
+    { 1140012;2;Field     ;
+                SourceExpr="Sales Authorized No." }
+
+    { 1140014;2;Field     ;
+                SourceExpr="Purch. Authorized No." }
+
+    { 1160000;2;Field     ;
+                SourceExpr="Statistic No." }
+
+    { 1160002;2;Field     ;
+                SourceExpr="Control No." }
+
+    { 1160004;2;Field     ;
+                SourceExpr="DVR Number" }
+
+    { 1904094301;1;Group  ;
+                CaptionML=[DEU=Steuerbeh”rde;
+                           ENU=Tax Office] }
+
+    { 1160006;2;Field     ;
+                SourceExpr="Tax Office Number" }
+
+    { 1140016;2;Field     ;
+                SourceExpr="Registration No." }
+
+    { 1140018;2;Field     ;
+                SourceExpr="Tax Office Name" }
+
+    { 1140020;2;Field     ;
+                SourceExpr="Tax Office Address" }
+
+    { 1140022;2;Field     ;
+                SourceExpr="Tax Office Address 2" }
+
+    { 1140025;2;Field     ;
+                CaptionML=[DEU=Finanzamt PLZ Code/Ort;
+                           ENU=Tax Office Post Code/City];
+                SourceExpr="Tax Office Post Code" }
+
+    { 1140024;2;Field     ;
+                SourceExpr="Tax Office City" }
+
+    { 1140029;2;Field     ;
+                SourceExpr="Tax Office Country/Region Code" }
+
+    { 1140027;2;Field     ;
+                SourceExpr="Tax Office Area" }
+
+    { 1900000007;0;Container;
+                ContainerType=FactBoxArea }
+
+    { 1900383207;1;Part   ;
+                Visible=FALSE;
+                PartType=System;
+                SystemPartID=RecordLinks }
+
+    { 1905767507;1;Part   ;
+                Visible=FALSE;
+                PartType=System;
+                SystemPartID=Notes }
+
+  }
+  CODE
+  {
+    VAR
+      Text001@1000 : TextConst 'DEU=M”chten Sie das Bild ersetzen?;ENU=Do you want to replace the existing picture?';
+      Text002@1001 : TextConst 'DEU=M”chten Sie das Bild l”schen?;ENU=Do you want to delete the picture?';
+      CustomizedCalEntry@1007 : Record 7603;
+      CustomizedCalendar@1005 : Record 7602;
+      CalendarMgmt@1004 : Codeunit 7600;
+      Mail@1002 : Codeunit 397;
+      PictureExists@1003 : Boolean;
+      SystemIndicatorText@1006 : Text[250];
+      MapPointVisible@19022708 : Boolean INDATASET;
+      "System Indicator TextEditable"@19043996 : Boolean INDATASET;
+
+    PROCEDURE UpdateSystemIndicator@1008();
+    VAR
+      IndicatorStyle@1000 : Option;
+    BEGIN
+      GetSystemIndicator(SystemIndicatorText,IndicatorStyle); // IndicatorStyle is not used
+      "System Indicator TextEditable" := "System Indicator" = "System Indicator"::"Custom Text"
+    END;
+
+    LOCAL PROCEDURE SystemIndicatorTextOnAfterVali@19070270();
+    BEGIN
+      UpdateSystemIndicator
+    END;
+
+    LOCAL PROCEDURE SystemIndicatorOnAfterValidate@19079461();
+    BEGIN
+      UpdateSystemIndicator
+    END;
+
+    LOCAL PROCEDURE OnAfterGetCurrRecord@19077479();
+    BEGIN
+      xRec := Rec;
+      UpdateSystemIndicator
+    END;
+
+    BEGIN
+    END.
+  }
+}
+

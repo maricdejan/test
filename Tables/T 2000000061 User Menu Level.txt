@@ -1,0 +1,48 @@
+OBJECT Table 2000000061 User Menu Level
+{
+  OBJECT-PROPERTIES
+  {
+    Date=25.05.05;
+    Time=12:00:00;
+    Version List=;
+  }
+  PROPERTIES
+  {
+    DataPerCompany=No;
+    CaptionML=[DEU=BenutzermenÅebene;
+               ENU=User Menu Level];
+  }
+  FIELDS
+  {
+    { 1   ;   ;ID                  ;Text132       ;CaptionML=[DEU=ID;
+                                                              ENU=ID] }
+    { 2   ;   ;ID Type             ;Option        ;CaptionML=[DEU=ID-Typ;
+                                                              ENU=ID Type];
+                                                   OptionCaptionML=[DEU=,Datenbank,Windows;
+                                                                    ENU=,Database,Windows];
+                                                   OptionString=,Database,Windows }
+    { 3   ;   ;Level               ;Option        ;CaptionML=[DEU=Ebene;
+                                                              ENU=Level];
+                                                   OptionCaptionML=[DEU=,,,,,,,,,,BenutzereinschrÑnkg.,,,,,,,,,,BenutzerÑnderungen;
+                                                                    ENU=,,,,,,,,,,User Restrictions,,,,,,,,,,User Changes];
+                                                   OptionString=,,,,,,,,,,User Restrictions,,,,,,,,,,User Changes }
+    { 4   ;   ;Object              ;BLOB          ;CaptionML=[DEU=Objekt;
+                                                              ENU=Object] }
+    { 5   ;   ;Modified            ;DateTime      ;CaptionML=[DEU=GeÑndert;
+                                                              ENU=Modified] }
+  }
+  KEYS
+  {
+    {    ;ID,ID Type,Level                        ;Clustered=Yes }
+  }
+  FIELDGROUPS
+  {
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

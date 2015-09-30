@@ -1,0 +1,49 @@
+OBJECT Page 696 All Objects
+{
+  OBJECT-PROPERTIES
+  {
+    Date=14.08.09;
+    Time=12:00:00;
+    Version List=NAVW16.00.01;
+  }
+  PROPERTIES
+  {
+    Editable=No;
+    CaptionML=[DEU=Alle Objekte;
+               ENU=All Objects];
+    SourceTable=Table2000000038;
+    DataCaptionFields=Object Type;
+    PageType=List;
+  }
+  CONTROLS
+  {
+    { 1900000001;0;Container;
+                ContainerType=ContentArea }
+
+    { 1   ;1   ;Group     ;
+                GroupType=Repeater }
+
+    { 2   ;2   ;Field     ;
+                CaptionML=[DEU=Objektart;
+                           ENU=Object Type];
+                SourceExpr="Object Type" }
+
+    { 4   ;2   ;Field     ;
+                CaptionML=[DEU=Objekt-ID;
+                           ENU=Object ID];
+                SourceExpr="Object ID" }
+
+    { 6   ;2   ;Field     ;
+                CaptionML=[DEU=Objektname;
+                           ENU=Object Name];
+                SourceExpr="Object Name" }
+
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

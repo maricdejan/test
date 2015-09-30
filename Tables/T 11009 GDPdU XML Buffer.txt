@@ -1,0 +1,37 @@
+OBJECT Table 11009 GDPdU XML Buffer
+{
+  OBJECT-PROPERTIES
+  {
+    Date=12.01.06;
+    Time=12:00:00;
+    Version List=NAVDACH4.00.02;
+  }
+  PROPERTIES
+  {
+    CaptionML=[DEU=GDPdU XML-Puffer;
+               ENU=GDPdU XML Buffer];
+  }
+  FIELDS
+  {
+    { 1   ;   ;Media Name          ;Text30        ;CaptionML=[DEU=Medienname;
+                                                              ENU=Media Name] }
+    { 2   ;   ;File Name           ;Text200       ;CaptionML=[DEU=Dateiname;
+                                                              ENU=File Name] }
+    { 3   ;   ;Table No.           ;Integer       ;CaptionML=[DEU=Tabellennr.;
+                                                              ENU=Table No.] }
+  }
+  KEYS
+  {
+    {    ;Media Name,File Name                    ;Clustered=Yes }
+  }
+  FIELDGROUPS
+  {
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

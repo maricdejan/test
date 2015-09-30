@@ -1,0 +1,60 @@
+OBJECT Table 180 G/L Account Where-Used
+{
+  OBJECT-PROPERTIES
+  {
+    Date=05.11.08;
+    Time=12:00:00;
+    Version List=NAVW16.00;
+  }
+  PROPERTIES
+  {
+    CaptionML=[DEU=Sachkontoverwendung;
+               ENU=G/L Account Where-Used];
+    LookupFormID=Form99;
+  }
+  FIELDS
+  {
+    { 1   ;   ;Entry No.           ;Integer       ;CaptionML=[DEU=Lfd. Nr.;
+                                                              ENU=Entry No.] }
+    { 2   ;   ;Table ID            ;Integer       ;CaptionML=[DEU=Tabellen-ID;
+                                                              ENU=Table ID] }
+    { 3   ;   ;Table Name          ;Text150       ;CaptionML=[DEU=Tabellenname;
+                                                              ENU=Table Name] }
+    { 5   ;   ;Field Name          ;Text150       ;CaptionML=[DEU=Feldname;
+                                                              ENU=Field Name] }
+    { 6   ;   ;Line                ;Text250       ;CaptionML=[DEU=Zeile;
+                                                              ENU=Line] }
+    { 7   ;   ;G/L Account No.     ;Code20        ;CaptionML=[DEU=Sachkontonr.;
+                                                              ENU=G/L Account No.] }
+    { 8   ;   ;G/L Account Name    ;Text30        ;CaptionML=[DEU=Sachkontoname;
+                                                              ENU=G/L Account Name] }
+    { 9   ;   ;Key 1               ;Text50        ;CaptionML=[DEU=Schl《sel 1;
+                                                              ENU=Key 1] }
+    { 10  ;   ;Key 2               ;Text50        ;CaptionML=[DEU=Schl《sel 2;
+                                                              ENU=Key 2] }
+    { 11  ;   ;Key 3               ;Text50        ;CaptionML=[DEU=Schl《sel 3;
+                                                              ENU=Key 3] }
+    { 12  ;   ;Key 4               ;Text50        ;CaptionML=[DEU=Schl《sel 4;
+                                                              ENU=Key 4] }
+  }
+  KEYS
+  {
+    {    ;Entry No.                               ;Clustered=Yes }
+    {    ;Table Name                               }
+  }
+  FIELDGROUPS
+  {
+  }
+  CODE
+  {
+
+    PROCEDURE Caption@1() : Text[100];
+    BEGIN
+      EXIT(STRSUBSTNO('%1 %2',"G/L Account No.","G/L Account Name"));
+    END;
+
+    BEGIN
+    END.
+  }
+}
+

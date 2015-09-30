@@ -1,0 +1,151 @@
+OBJECT Page 589 XBRL Linkbases
+{
+  OBJECT-PROPERTIES
+  {
+    Date=05.11.08;
+    Time=12:00:00;
+    Version List=NAVW16.00;
+  }
+  PROPERTIES
+  {
+    CaptionML=[DEU=XBRL-Linkbases;
+               ENU=XBRL Linkbases];
+    SourceTable=Table400;
+    DataCaptionFields=XBRL Taxonomy Name,XBRL Schema Line No.;
+    PageType=List;
+    AutoSplitKey=Yes;
+    ActionList=ACTIONS
+    {
+      { 1900000003;0 ;ActionContainer;
+                      ActionContainerType=RelatedInformation }
+      { 11      ;1   ;ActionGroup;
+                      CaptionML=[DEU=&Linkbase;
+                                 ENU=&Linkbase] }
+      { 15      ;2   ;Action    ;
+                      Ellipsis=Yes;
+                      CaptionML=[DEU=Importieren;
+                                 ENU=Import];
+                      OnAction=VAR
+                                 XMLExists@1000 : Boolean;
+                                 XBRLImport@1002 : Codeunit 422;
+                                 RBAutoMgt@1004 : Codeunit 419;
+                                 BLOBRef@1005 : Record 99008535;
+                               BEGIN
+                                 CALCFIELDS(XML);
+                                 XMLExists := XML.HASVALUE;
+                                 IF RBAutoMgt.BLOBImport(BLOBRef,'*.xml',TRUE) = '' THEN
+                                   EXIT;
+                                 XML := BLOBRef.Blob;
+                                 IF XMLExists THEN
+                                   IF NOT CONFIRM(Text001,FALSE) THEN
+                                     EXIT;
+                                 CurrPage.SAVERECORD;
+                                 COMMIT;
+                                 IF CONFIRM(Text002,FALSE) THEN
+                                   CASE Type OF
+                                     Type::Label:
+                                       XBRLImport.ImportLabels(Rec);
+                                     Type::Presentation:
+                                       XBRLImport.ImportPresentation(Rec);
+                                     Type::Calculation:
+                                       XBRLImport.ImportCalculation(Rec);
+                                     Type::Reference:
+                                       XBRLImport.ImportReference(Rec);
+                                   END;
+                               END;
+                                }
+      { 16      ;2   ;Action    ;
+                      Ellipsis=Yes;
+                      CaptionML=[DEU=E&xportieren;
+                                 ENU=E&xport];
+                      OnAction=VAR
+                                 RBAutoMgt@1002 : Codeunit 419;
+                                 BLOBRef@1001 : Record 99008535;
+                               BEGIN
+                                 CALCFIELDS(XML);
+                                 IF XML.HASVALUE THEN BEGIN
+                                   BLOBRef.Blob := XML;
+                                   RBAutoMgt.BLOBExport(BLOBRef,'*.xml',TRUE);
+                                 END;
+                               END;
+                                }
+      { 1900000004;0 ;ActionContainer;
+                      ActionContainerType=ActionItems }
+      { 14      ;1   ;ActionGroup;
+                      CaptionML=[DEU=F&unktion;
+                                 ENU=F&unctions] }
+      { 20      ;2   ;Action    ;
+                      CaptionML=[DEU=Auf Taxonomie anwenden;
+                                 ENU=Apply to Taxonomy];
+                      OnAction=VAR
+                                 XBRLLinkbase@1002 : Record 400;
+                                 XBRLImportTaxonomySpec2@1000 : Codeunit 422;
+                               BEGIN
+                                 IF CONFIRM(STRSUBSTNO(Text003,"XBRL Taxonomy Name"),FALSE) THEN BEGIN
+                                   XBRLLinkbase := Rec;
+                                   CurrPage.SETSELECTIONFILTER(XBRLLinkbase);
+                                   WITH XBRLLinkbase DO
+                                     IF FIND('-') THEN
+                                       REPEAT
+                                         CASE Type OF
+                                           Type::Label:
+                                             XBRLImportTaxonomySpec2.ImportLabels(XBRLLinkbase);
+                                           Type::Calculation:
+                                             XBRLImportTaxonomySpec2.ImportCalculation(XBRLLinkbase);
+                                           Type::Presentation:
+                                             XBRLImportTaxonomySpec2.ImportPresentation(XBRLLinkbase);
+                                           Type::Reference:
+                                             XBRLImportTaxonomySpec2.ImportReference(XBRLLinkbase);
+                                         END;
+                                       UNTIL NEXT = 0;
+                                 END;
+                               END;
+                                }
+    }
+  }
+  CONTROLS
+  {
+    { 1900000001;0;Container;
+                ContainerType=ContentArea }
+
+    { 1   ;1   ;Group     ;
+                GroupType=Repeater }
+
+    { 4   ;2   ;Field     ;
+                SourceExpr=Type }
+
+    { 2   ;2   ;Field     ;
+                SourceExpr=Description }
+
+    { 12  ;2   ;Field     ;
+                CaptionML=[DEU=XML-Datei importiert;
+                           ENU=XML File Imported];
+                SourceExpr=XML.HASVALUE;
+                Editable=FALSE }
+
+    { 1900000007;0;Container;
+                ContainerType=FactBoxArea }
+
+    { 1900383207;1;Part   ;
+                Visible=FALSE;
+                PartType=System;
+                SystemPartID=RecordLinks }
+
+    { 1905767507;1;Part   ;
+                Visible=FALSE;
+                PartType=System;
+                SystemPartID=Notes }
+
+  }
+  CODE
+  {
+    VAR
+      Text001@1000 : TextConst 'DEU=M”chten Sie die vorhandene Linkbase ersetzen?;ENU=Do you want to replace the existing linkbase?';
+      Text002@1001 : TextConst 'DEU=M”chten Sie die Linkbase jetzt auf die Taxonomie anwenden?;ENU=Do you want to apply the linkbase to the taxonomy now?';
+      Text003@1002 : TextConst 'DEU=M”chten Sie die ausgew„hlte(n) Linkbase(s) auf die Taxonomie %1 anwenden?;ENU=Do you want to apply the selected linkbase(s) to taxonomy %1?';
+
+    BEGIN
+    END.
+  }
+}
+

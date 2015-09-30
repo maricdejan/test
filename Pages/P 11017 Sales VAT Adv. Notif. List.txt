@@ -1,0 +1,154 @@
+OBJECT Page 11017 Sales VAT Adv. Notif. List
+{
+  OBJECT-PROPERTIES
+  {
+    Date=12.01.06;
+    Time=12:00:00;
+    Version List=NAVDACH4.00.02;
+  }
+  PROPERTIES
+  {
+    Editable=No;
+    CaptionML=[DEU=USt.-VoranmeldungsÅbersicht;
+               ENU=Sales VAT Adv. Notification List];
+    SourceTable=Table11011;
+    PageType=List;
+    CardFormID=Page11016;
+    ActionList=ACTIONS
+    {
+      { 1900000003;0 ;ActionContainer;
+                      ActionContainerType=RelatedInformation }
+      { 1140018 ;1   ;ActionGroup;
+                      CaptionML=[DEU=U&msatzsteuervoranmeldung;
+                                 ENU=S&ales VAT Adv. Notification] }
+      { 1140020 ;2   ;Action    ;
+                      ShortCutKey=Ctrl+F7;
+                      CaptionML=[DEU=MwSt.-öbertragungsprotokollposten;
+                                 ENU=VAT Transmission Log Entries];
+                      RunObject=Page 11018;
+                      RunFormView=SORTING(Sales VAT Adv. Notif. No.);
+                      RunFormLink=Sales VAT Adv. Notif. No.=FIELD(No.) }
+      { 1900000004;0 ;ActionContainer;
+                      ActionContainerType=ActionItems }
+      { 1140021 ;1   ;ActionGroup;
+                      CaptionML=[DEU=F&unktion;
+                                 ENU=F&unctions] }
+      { 1140022 ;2   ;Action    ;
+                      Ellipsis=Yes;
+                      CaptionML=[DEU=XML-Datei &erstellen;
+                                 ENU=&Create XML-File];
+                      Image=ElectronicDoc;
+                      OnAction=VAR
+                                 SalesVATAdvNotif@1140000 : Record 11011;
+                               BEGIN
+                                 SalesVATAdvNotif.SETRANGE("No.","No.");
+                                 REPORT.RUNMODAL(REPORT::"Create XML-File VAT Adv.Notif.",TRUE,FALSE,SalesVATAdvNotif);
+                               END;
+                                }
+      { 1140023 ;2   ;Action    ;
+                      Ellipsis=Yes;
+                      CaptionML=[DEU=&XML-Datei Åbertragen;
+                                 ENU=Transmit &XML-File];
+                      Image=TransmitElectronicDoc;
+                      OnAction=BEGIN
+                                 CODEUNIT.RUN(CODEUNIT::"Sales VAT Adv. Notif.-Transmit",Rec);
+                               END;
+                                }
+      { 1140024 ;2   ;Action    ;
+                      Ellipsis=Yes;
+                      CaptionML=[DEU=XML-Datei &lîschen;
+                                 ENU=&Delete XML-File];
+                      OnAction=BEGIN
+                                 DeleteXMLSubDoc;
+                               END;
+                                }
+      { 1140025 ;2   ;Separator  }
+      { 1140026 ;2   ;Action    ;
+                      CaptionML=[DEU=&Vorschau;
+                                 ENU=P&review];
+                      RunObject=Page 474;
+                      RunFormLink=Statement Template Name=FIELD(Statement Template Name),
+                                  Name=FIELD(Statement Name);
+                      Image=View }
+      { 1140027 ;2   ;Separator  }
+      { 1140028 ;2   ;Action    ;
+                      Ellipsis=Yes;
+                      CaptionML=[DEU=Drucken;
+                                 ENU=Print];
+                      Image=Print;
+                      OnAction=BEGIN
+                                 VATStmtName.GET("Statement Template Name", "Statement Name");
+                                 ReportPrint.PrintVATStmtName(VATStmtName);
+                               END;
+                                }
+      { 1140029 ;2   ;Action    ;
+                      Ellipsis=Yes;
+                      CaptionML=[DEU=&MwSt. abrechnen und buchen;
+                                 ENU=Calc. and Post &VAT Settlement];
+                      RunObject=Report 20 }
+      { 1140030 ;2   ;Action    ;
+                      Ellipsis=Yes;
+                      CaptionML=[DEU=UVA &Kontennachweis;
+                                 ENU=Sales VAT &Adv. Not. Acc. Proof];
+                      OnAction=BEGIN
+                                 VATStmtName.SETFILTER(Name,"Statement Name");
+                                 VATStmtName.FIND('-');
+                                 VATStmtName.SETRECFILTER;
+                                 REPORT.RUN(REPORT::"Sales VAT Adv. Not. Acc. Proof",TRUE,FALSE,VATStmtName);
+                               END;
+                                }
+      { 1140031 ;1   ;Action    ;
+                      CaptionML=[DEU=An&zeigen;
+                                 ENU=&Show];
+                      Promoted=Yes;
+                      Image=View;
+                      PromotedCategory=Process;
+                      OnAction=BEGIN
+                                 Show;
+                               END;
+                                }
+    }
+  }
+  CONTROLS
+  {
+    { 1900000001;0;Container;
+                ContainerType=ContentArea }
+
+    { 1140000;1;Group     ;
+                GroupType=Repeater }
+
+    { 1140001;2;Field     ;
+                SourceExpr="No." }
+
+    { 1140003;2;Field     ;
+                SourceExpr=Description }
+
+    { 1140005;2;Field     ;
+                SourceExpr="Starting Date" }
+
+    { 1140007;2;Field     ;
+                SourceExpr=Period;
+                Visible=FALSE }
+
+    { 1140009;2;Field     ;
+                SourceExpr="XSL-Filename";
+                Visible=FALSE }
+
+    { 1140011;2;Field     ;
+                SourceExpr="XML-File Creation Date" }
+
+    { 1140013;2;Field     ;
+                SourceExpr="Transmission successful" }
+
+  }
+  CODE
+  {
+    VAR
+      VATStmtName@1140000 : Record 257;
+      ReportPrint@1140001 : Codeunit 228;
+
+    BEGIN
+    END.
+  }
+}
+

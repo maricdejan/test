@@ -1,0 +1,192 @@
+OBJECT Form 11017 Sales VAT Adv. Notif. List
+{
+  OBJECT-PROPERTIES
+  {
+    Date=12.01.06;
+    Time=12:00:00;
+    Version List=NAVDACH4.00.02;
+  }
+  PROPERTIES
+  {
+    Width=17600;
+    Height=6710;
+    Editable=No;
+    CaptionML=[DEU=USt.-VoranmeldungsÅbersicht;
+               ENU=Sales VAT Adv. Notification List];
+    TableBoxID=1140000;
+    SourceTable=Table11011;
+  }
+  CONTROLS
+  {
+    { 1140000;TableBox  ;220  ;220  ;17160;5500 ;HorzGlue=Both;
+                                                 VertGlue=Both }
+    { 1140001;TextBox   ;0    ;0    ;1700 ;0    ;ParentControl=1140000;
+                                                 InColumn=Yes;
+                                                 SourceExpr="No." }
+    { 1140002;Label     ;0    ;0    ;0    ;0    ;ParentControl=1140001;
+                                                 InColumnHeading=Yes }
+    { 1140003;TextBox   ;0    ;0    ;4400 ;0    ;HorzGlue=Both;
+                                                 ParentControl=1140000;
+                                                 InColumn=Yes;
+                                                 SourceExpr=Description }
+    { 1140004;Label     ;0    ;0    ;0    ;0    ;ParentControl=1140003;
+                                                 InColumnHeading=Yes }
+    { 1140005;TextBox   ;0    ;0    ;1700 ;0    ;ParentControl=1140000;
+                                                 InColumn=Yes;
+                                                 SourceExpr="Starting Date" }
+    { 1140006;Label     ;0    ;0    ;0    ;0    ;ParentControl=1140005;
+                                                 InColumnHeading=Yes }
+    { 1140007;TextBox   ;0    ;0    ;550  ;0    ;Visible=No;
+                                                 ParentControl=1140000;
+                                                 InColumn=Yes;
+                                                 SourceExpr=Period }
+    { 1140008;Label     ;0    ;0    ;0    ;0    ;ParentControl=1140007;
+                                                 InColumnHeading=Yes }
+    { 1140009;TextBox   ;11980;440  ;4400 ;440  ;Visible=No;
+                                                 ParentControl=1140000;
+                                                 InColumn=Yes;
+                                                 SourceExpr="XSL-Filename" }
+    { 1140010;Label     ;0    ;0    ;0    ;0    ;ParentControl=1140009;
+                                                 InColumnHeading=Yes }
+    { 1140011;TextBox   ;13335;550  ;1700 ;440  ;ParentControl=1140000;
+                                                 InColumn=Yes;
+                                                 SourceExpr="XML-File Creation Date" }
+    { 1140012;Label     ;0    ;0    ;0    ;0    ;ParentControl=1140011;
+                                                 InColumnHeading=Yes }
+    { 1140013;CheckBox  ;17653;330  ;1700 ;440  ;ParentControl=1140000;
+                                                 InColumn=Yes;
+                                                 ShowCaption=No;
+                                                 SourceExpr="Transmission successful" }
+    { 1140014;Label     ;0    ;0    ;0    ;0    ;ParentControl=1140013;
+                                                 InColumnHeading=Yes }
+    { 1140015;CommandButton;3080;5940;2200;550  ;HorzGlue=Right;
+                                                 VertGlue=Bottom;
+                                                 Default=Yes;
+                                                 PushAction=LookupOK;
+                                                 InvalidActionAppearance=Hide }
+    { 1140016;CommandButton;5500;5940;2200;550  ;HorzGlue=Right;
+                                                 VertGlue=Bottom;
+                                                 Cancel=Yes;
+                                                 PushAction=LookupCancel;
+                                                 InvalidActionAppearance=Hide }
+    { 1140017;CommandButton;15180;5940;2200;550 ;HorzGlue=Right;
+                                                 VertGlue=Bottom;
+                                                 PushAction=FormHelp }
+    { 1140018;MenuButton;7920 ;5940 ;2200 ;550  ;HorzGlue=Right;
+                                                 VertGlue=Bottom;
+                                                 CaptionML=[DEU=U&msatzsteuervoranmeldung;
+                                                            ENU=S&ales VAT Adv. Notification];
+                                                 Menu=MENUITEMS
+                                                 {
+                                                   { ID=1140019;
+                                                     PushAction=RunObject;
+                                                     ShortCutKey=Shift+F5;
+                                                     CaptionML=[DEU=Karte;
+                                                                ENU=Card];
+                                                     RunObject=Form 11016;
+                                                     RunFormLinkType=OnUpdate;
+                                                     RunFormLink=No.=FIELD(No.) }
+                                                   { ID=1140020;
+                                                     PushAction=RunObject;
+                                                     ShortCutKey=Ctrl+F5;
+                                                     CaptionML=[DEU=MwSt.-öbertragungsprotokollposten;
+                                                                ENU=VAT Transmission Log Entries];
+                                                     RunObject=Form 11018;
+                                                     RunFormLinkType=OnUpdate;
+                                                     RunFormView=SORTING(Sales VAT Adv. Notif. No.);
+                                                     RunFormLink=Sales VAT Adv. Notif. No.=FIELD(No.) }
+                                                 }
+                                                  }
+    { 1140021;MenuButton;10340;5940 ;2200 ;550  ;HorzGlue=Right;
+                                                 VertGlue=Bottom;
+                                                 CaptionML=[DEU=F&unktion;
+                                                            ENU=F&unctions];
+                                                 Menu=MENUITEMS
+                                                 {
+                                                   { ID=1140022;
+                                                     Ellipsis=Yes;
+                                                     CaptionML=[DEU=XML-Datei &erstellen;
+                                                                ENU=&Create XML-File];
+                                                     OnPush=VAR
+                                                              SalesVATAdvNotif@1140000 : Record 11011;
+                                                            BEGIN
+                                                              SalesVATAdvNotif.SETRANGE("No.","No.");
+                                                              REPORT.RUNMODAL(REPORT::"Create XML-File VAT Adv.Notif.",TRUE,FALSE,SalesVATAdvNotif);
+                                                            END;
+                                                             }
+                                                   { ID=1140023;
+                                                     Ellipsis=Yes;
+                                                     CaptionML=[DEU=&XML-Datei Åbertragen;
+                                                                ENU=Transmit &XML-File];
+                                                     OnPush=BEGIN
+                                                              CODEUNIT.RUN(CODEUNIT::"Sales VAT Adv. Notif.-Transmit",Rec);
+                                                            END;
+                                                             }
+                                                   { ID=1140024;
+                                                     Ellipsis=Yes;
+                                                     CaptionML=[DEU=XML-Datei &lîschen;
+                                                                ENU=&Delete XML-File];
+                                                     OnPush=BEGIN
+                                                              DeleteXMLSubDoc;
+                                                            END;
+                                                             }
+                                                   { ID=1140025;
+                                                     MenuItemType=Separator }
+                                                   { ID=1140026;
+                                                     PushAction=RunObject;
+                                                     CaptionML=[DEU=&Vorschau;
+                                                                ENU=P&review];
+                                                     RunObject=Form 474;
+                                                     RunFormLinkType=OnUpdate;
+                                                     RunFormLink=Statement Template Name=FIELD(Statement Template Name),
+                                                                 Name=FIELD(Statement Name) }
+                                                   { ID=1140027;
+                                                     MenuItemType=Separator }
+                                                   { ID=1140028;
+                                                     Ellipsis=Yes;
+                                                     CaptionML=[DEU=Drucken;
+                                                                ENU=Print];
+                                                     OnPush=BEGIN
+                                                              VATStmtName.GET("Statement Template Name", "Statement Name");
+                                                              ReportPrint.PrintVATStmtName(VATStmtName);
+                                                            END;
+                                                             }
+                                                   { ID=1140029;
+                                                     PushAction=RunObject;
+                                                     Ellipsis=Yes;
+                                                     CaptionML=[DEU=&MwSt. abrechnen und buchen;
+                                                                ENU=Calc. and Post &VAT Settlement];
+                                                     RunObject=Report 20 }
+                                                   { ID=1140030;
+                                                     Ellipsis=Yes;
+                                                     CaptionML=[DEU=UVA &Kontennachweis;
+                                                                ENU=Sales VAT &Adv. Not. Acc. Proof];
+                                                     OnPush=BEGIN
+                                                              VATStmtName.SETFILTER(Name,"Statement Name");
+                                                              VATStmtName.FIND('-');
+                                                              VATStmtName.SETRECFILTER;
+                                                              REPORT.RUN(REPORT::"Sales VAT Adv. Not. Acc. Proof",TRUE,FALSE,VATStmtName);
+                                                            END;
+                                                             }
+                                                 }
+                                                  }
+    { 1140031;CommandButton;12760;5940;2200;550 ;HorzGlue=Right;
+                                                 VertGlue=Bottom;
+                                                 CaptionML=[DEU=An&zeigen;
+                                                            ENU=&Show];
+                                                 OnPush=BEGIN
+                                                          Show;
+                                                        END;
+                                                         }
+  }
+  CODE
+  {
+    VAR
+      VATStmtName@1140000 : Record 257;
+      ReportPrint@1140001 : Codeunit 228;
+
+    BEGIN
+    END.
+  }
+}
+

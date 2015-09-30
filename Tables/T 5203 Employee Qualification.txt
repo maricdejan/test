@@ -1,0 +1,96 @@
+OBJECT Table 5203 Employee Qualification
+{
+  OBJECT-PROPERTIES
+  {
+    Date=05.11.08;
+    Time=12:00:00;
+    Version List=NAVW16.00;
+  }
+  PROPERTIES
+  {
+    DataCaptionFields=Employee No.;
+    OnInsert=BEGIN
+               Employee.GET("Employee No.");
+               "Employee Status" := Employee.Status;
+             END;
+
+    OnDelete=BEGIN
+               IF Comment THEN
+                 ERROR(Text000);
+             END;
+
+    CaptionML=[DEU=Mitarbeiter Qualifikation;
+               ENU=Employee Qualification];
+    LookupFormID=Form5206;
+    DrillDownFormID=Form5207;
+  }
+  FIELDS
+  {
+    { 1   ;   ;Employee No.        ;Code20        ;TableRelation=Employee;
+                                                   CaptionML=[DEU=Mitarbeiternr.;
+                                                              ENU=Employee No.];
+                                                   NotBlank=Yes }
+    { 2   ;   ;Line No.            ;Integer       ;CaptionML=[DEU=Zeilennr.;
+                                                              ENU=Line No.] }
+    { 3   ;   ;Qualification Code  ;Code10        ;TableRelation=Qualification;
+                                                   OnValidate=BEGIN
+                                                                Qualification.GET("Qualification Code");
+                                                                Description := Qualification.Description;
+                                                              END;
+
+                                                   CaptionML=[DEU=Qualifikationscode;
+                                                              ENU=Qualification Code] }
+    { 4   ;   ;From Date           ;Date          ;CaptionML=[DEU=Von Datum;
+                                                              ENU=From Date] }
+    { 5   ;   ;To Date             ;Date          ;CaptionML=[DEU=Bis Datum;
+                                                              ENU=To Date] }
+    { 6   ;   ;Type                ;Option        ;CaptionML=[DEU=Art;
+                                                              ENU=Type];
+                                                   OptionCaptionML=[DEU=" ,Intern,Extern,Vorherige Position";
+                                                                    ENU=" ,Internal,External,Previous Position"];
+                                                   OptionString=[ ,Internal,External,Previous Position] }
+    { 7   ;   ;Description         ;Text30        ;CaptionML=[DEU=Beschreibung;
+                                                              ENU=Description] }
+    { 8   ;   ;Institution/Company ;Text30        ;CaptionML=[DEU=Institution/Firma;
+                                                              ENU=Institution/Company] }
+    { 9   ;   ;Cost                ;Decimal       ;CaptionML=[DEU=Einstandspreis;
+                                                              ENU=Cost];
+                                                   AutoFormatType=1 }
+    { 10  ;   ;Course Grade        ;Text30        ;CaptionML=[DEU=Ausbildungsgrad;
+                                                              ENU=Course Grade] }
+    { 11  ;   ;Employee Status     ;Option        ;CaptionML=[DEU=Mitarbeiterstatus;
+                                                              ENU=Employee Status];
+                                                   OptionCaptionML=[DEU=Aktiv,Inaktiv,Beendet;
+                                                                    ENU=Active,Inactive,Terminated];
+                                                   OptionString=Active,Inactive,Terminated;
+                                                   Editable=No }
+    { 12  ;   ;Comment             ;Boolean       ;FieldClass=FlowField;
+                                                   CalcFormula=Exist("Human Resource Comment Line" WHERE (Table Name=CONST(Employee Qualification),
+                                                                                                          No.=FIELD(Employee No.),
+                                                                                                          Table Line No.=FIELD(Line No.)));
+                                                   CaptionML=[DEU=Bemerkung;
+                                                              ENU=Comment];
+                                                   Editable=No }
+    { 13  ;   ;Expiration Date     ;Date          ;CaptionML=[DEU=Ablaufdatum;
+                                                              ENU=Expiration Date] }
+  }
+  KEYS
+  {
+    {    ;Employee No.,Line No.                   ;Clustered=Yes }
+    {    ;Qualification Code                       }
+  }
+  FIELDGROUPS
+  {
+  }
+  CODE
+  {
+    VAR
+      Text000@1000 : TextConst 'DEU=Sie k”nnen die Mitarbeiter Qualifikation nicht l”schen, solange Bemerkungen zugeordnet sind.;ENU=You cannot delete employee qualification information if there are comments associated with it.';
+      Qualification@1001 : Record 5202;
+      Employee@1002 : Record 5200;
+
+    BEGIN
+    END.
+  }
+}
+

@@ -1,0 +1,446 @@
+OBJECT Form 11010 GDPdU Create Record Definition
+{
+  OBJECT-PROPERTIES
+  {
+    Date=14.08.09;
+    Time=12:00:00;
+    Version List=NAVDACH6.00.01;
+  }
+  PROPERTIES
+  {
+    Width=36080;
+    Height=26510;
+    CaptionML=[DEU=GDPdU Datensatzdef. erstellen;
+               ENU=GDPdU Create Record Definition];
+    Sizeable=No;
+    SavePosAndSize=No;
+    InsertAllowed=No;
+    DeleteAllowed=No;
+    SourceTable=Table11002;
+    DataCaptionExpr=Caption;
+    OnOpenForm=BEGIN
+                 CurrForm.Step1.XPOS := 4400;
+                 CurrForm.Step1.YPOS := 0;
+                 CurrForm.Step2.XPOS := 4400;
+                 CurrForm.Step2.YPOS := 0;
+                 CurrForm.Step3.XPOS := 4400;
+                 CurrForm.Step3.YPOS := 0;
+                 CurrForm.Step4.XPOS := 4400;
+                 CurrForm.Step4.YPOS := 0;
+                 CurrForm.Step5.XPOS := 4400;
+                 CurrForm.Step5.YPOS := 0;
+                 CurrForm.Step6.XPOS := 4400;
+                 CurrForm.Step6.YPOS := 0;
+                 FormWidth := CurrForm.Cancel.XPOS + CurrForm.Cancel.WIDTH + 220;
+                 CurrForm.XPOS := ROUND((CurrForm.WIDTH - FormWidth) / 2,1) + CurrForm.XPOS;
+                 CurrForm.YPOS := 3000;
+                 CurrForm.HEIGHT := CurrForm.Cancel.YPOS + CurrForm.Cancel.HEIGHT + 220;
+                 CurrForm.WIDTH := FormWidth;
+                 ShowStep(TRUE);
+               END;
+
+    OnCloseForm=BEGIN
+                  DeleteData
+                END;
+
+  }
+  CONTROLS
+  {
+    { 1140003;Frame     ;14960;0    ;10560;8250 ;Name=Step1;
+                                                 Visible=No;
+                                                 ShowCaption=No;
+                                                 Border=No }
+    { 1140004;Label     ;15400;220  ;8140 ;770  ;ParentControl=1140003;
+                                                 InFrame=Yes;
+                                                 VertAlign=Top;
+                                                 MultiLine=Yes;
+                                                 LeaderDots=No;
+                                                 CaptionML=[DEU=Dieser Assistent hilft Ihnen bei der Erstellung von GDPdU Datensatzdefinitionen.;
+                                                            ENU=This wizard helps you to create GDPdU record definitions.] }
+    { 1140005;TextBox   ;15400;2970 ;2750 ;440  ;ParentControl=1140003;
+                                                 InFrame=Yes;
+                                                 CaptionML=[DEU=Welcher GDPdU Datensatzcode soll verwendet werden?;
+                                                            ENU=Which GDPdU record definition shall be used?];
+                                                 NextControl=1140011;
+                                                 SourceExpr="Record Code";
+                                                 TableRelation="GDPdU Record Code" }
+    { 1140006;Label     ;15400;2530 ;8140 ;440  ;ParentControl=1140005;
+                                                 LeaderDots=No }
+    { 1140007;TextBox   ;15400;4070 ;5500 ;440  ;ParentControl=1140003;
+                                                 InFrame=Yes;
+                                                 CaptionML=[DEU=Beschreiben Sie die GDPdU Datensatzdefinition.;
+                                                            ENU=Describe your GDPdU record definition.];
+                                                 SourceExpr=["Record Description" ] }
+    { 1140008;Label     ;15400;3630 ;8140 ;440  ;ParentControl=1140007;
+                                                 LeaderDots=No }
+    { 1140009;TextBox   ;15400;1870 ;2750 ;440  ;Editable=No;
+                                                 Focusable=No;
+                                                 ParentControl=1140003;
+                                                 InFrame=Yes;
+                                                 CaptionML=[DEU=GDPdU Definitionsgruppencode;
+                                                            ENU=GDPdU Definition Group Code];
+                                                 SourceExpr=Code }
+    { 1140010;Label     ;15400;1430 ;8140 ;440  ;ParentControl=1140009;
+                                                 LeaderDots=No }
+    { 1140011;TextBox   ;15400;5170 ;5500 ;440  ;ParentControl=1140003;
+                                                 InFrame=Yes;
+                                                 CaptionML=[DEU=Geben Sie einen Pfad fÅr den Export an.;
+                                                            ENU=Please enter a path for the export.];
+                                                 NextControl=1140016;
+                                                 SourceExpr="Export Path" }
+    { 1140012;Label     ;15400;4730 ;8140 ;440  ;ParentControl=1140011;
+                                                 LeaderDots=No }
+    { 1140013;Frame     ;0    ;8250 ;14960;110  ;ShowCaption=No;
+                                                 TopLineOnly=Yes }
+    { 1140014;Image     ;0    ;0    ;4400 ;8250 ;BackColor=8388608;
+                                                 BackTransparent=No;
+                                                 Bitmap=25 }
+    { 1140015;CommandButton;5500;8580;2200;550  ;Name=Back;
+                                                 Enabled=No;
+                                                 CaptionML=[DEU=< &ZurÅck;
+                                                            ENU=< &Back];
+                                                 OnPush=BEGIN
+                                                          ShowStep(FALSE);
+                                                          PerformPrevWizardStatus(AdditionalTableSelection);
+                                                          CurrForm.UPDATE(TRUE);
+                                                          ShowStep(TRUE);
+                                                        END;
+                                                         }
+    { 1140016;CommandButton;7700;8580;2200;550  ;Name=Next;
+                                                 CaptionML=[DEU=&Weiter >;
+                                                            ENU=&Next >];
+                                                 NextControl=1140018;
+                                                 OnPush=BEGIN
+                                                          CASE "Wizard Step" OF
+                                                            "Wizard Step"::"3":
+                                                              BEGIN
+                                                                CurrForm.GDPdUFieldList.FORM.GetField(FieldTemp);
+                                                                SetField(FieldTemp);
+                                                              END;
+                                                            "Wizard Step"::"6":
+                                                              BEGIN
+                                                                CurrForm.GDPdUTableRelation.FORM.GetTableRel(TableRelTemp);
+                                                                SetTableRel(TableRelTemp);
+                                                              END;
+                                                          END;
+
+                                                          CheckStatus;
+                                                          ShowStep(FALSE);
+                                                          PerformNextWizardStatus;
+                                                          CurrForm.UPDATE(TRUE);
+                                                          ShowStep(TRUE);
+                                                        END;
+                                                         }
+    { 1140017;CommandButton;10120;8580;2200;550 ;Name=Finish;
+                                                 Enabled=No;
+                                                 CaptionML=[DEU=B&eenden;
+                                                            ENU=&Finish];
+                                                 OnPush=BEGIN
+                                                          CheckStatus;
+                                                          FinishWizard;
+                                                          CurrForm.CLOSE;
+                                                        END;
+                                                         }
+    { 1140018;CommandButton;12540;8580;2200;550 ;Name=Cancel;
+                                                 PushAction=Cancel;
+                                                 CaptionML=[DEU=Abbrechen;
+                                                            ENU=Cancel] }
+    { 1140022;Label     ;0    ;5940 ;4400 ;660  ;HorzAlign=Right;
+                                                 VertAlign=Bottom;
+                                                 ForeColor=12632256;
+                                                 FontSize=16;
+                                                 LeaderDots=No;
+                                                 CaptionML=[DEU=GDPdU;
+                                                            ENU=GDPdU] }
+    { 1140026;Frame     ;25520;0    ;10560;8250 ;Name=Step2;
+                                                 Visible=No;
+                                                 ShowCaption=No;
+                                                 Border=No }
+    { 1140027;Label     ;25960;220  ;8140 ;1430 ;ParentControl=1140026;
+                                                 InFrame=Yes;
+                                                 VertAlign=Top;
+                                                 MultiLine=Yes;
+                                                 LeaderDots=No;
+                                                 CaptionML=[DEU=Sie mÅssen jetzt eine Tabelle fÅr den Export von GDPdU-Daten auswÑhlen und den Dateinamen fÅr den Export eingeben.\ZusÑtzlich kînnen Sie ein Feld als Datumsfilter fÅr den Export auswÑhlen.;
+                                                            ENU=You have to choose a table for the export of GDPdU data\and enter the file name for the export now.\Additionally you can choose a field as a date filter for the export.] }
+    { 1140028;TextBox   ;28820;2200 ;5280 ;440  ;ParentControl=1140026;
+                                                 InFrame=Yes;
+                                                 BlankZero=Yes;
+                                                 SourceExpr="Table Name" }
+    { 1140032;TextBox   ;25960;3300 ;5500 ;440  ;ParentControl=1140026;
+                                                 InFrame=Yes;
+                                                 CaptionML=[DEU=Geben Sie einen Dateinamen fÅr den Export an.;
+                                                            ENU=Enter a file name for the export.];
+                                                 SourceExpr="Export File Name" }
+    { 1140033;Label     ;25960;2860 ;8140 ;440  ;ParentControl=1140032;
+                                                 LeaderDots=No }
+    { 1140050;TextBox   ;25960;4400 ;2750 ;440  ;ParentControl=1140026;
+                                                 InFrame=Yes;
+                                                 CaptionML=[DEU=WÑhlen Sie ein Feld als Datumsfilter aus.;
+                                                            ENU=Choose a field as Date Filter.];
+                                                 BlankZero=Yes;
+                                                 NextControl=1140016;
+                                                 SourceExpr="GDPdU Period Field No.";
+                                                 OnAfterValidate=VAR
+                                                                   Field@1140000 : Record 2000000041;
+                                                                 BEGIN
+                                                                 END;
+                                                                  }
+    { 1140031;Label     ;25960;3960 ;8140 ;440  ;ParentControl=1140050;
+                                                 LeaderDots=No }
+    { 1140051;TextBox   ;25960;2200 ;2750 ;440  ;ParentControl=1140026;
+                                                 InFrame=Yes;
+                                                 CaptionML=[DEU=WÑhlen Sie eine Tabelle fÅr den Export der GDPdU-Daten aus.;
+                                                            ENU=Choose a table for the export of GDPdU data.];
+                                                 SourceExpr="Table No." }
+    { 1140061;Label     ;25960;1760 ;8140 ;440  ;ParentControl=1140051;
+                                                 LeaderDots=No }
+    { 1140062;TextBox   ;28930;4400 ;5170 ;440  ;ParentControl=1140026;
+                                                 InFrame=Yes;
+                                                 SourceExpr="GDPdU Period Field Name" }
+    { 1140034;Frame     ;14960;17710;10560;8250 ;Name=Step6;
+                                                 Visible=No;
+                                                 ShowCaption=No;
+                                                 Border=No }
+    { 1140035;Label     ;15400;17930;8140 ;770  ;ParentControl=1140034;
+                                                 InFrame=Yes;
+                                                 VertAlign=Top;
+                                                 MultiLine=Yes;
+                                                 LeaderDots=No;
+                                                 CaptionML=[DEU=Sie mÅssen nun die Relation zur vorigen Tabelle definieren.;
+                                                            ENU=You must define the relation to the previous table now.] }
+    { 1140036;SubForm   ;15400;21560;9790 ;4180 ;Name=GDPdUTableRelation;
+                                                 ParentControl=1140034;
+                                                 InFrame=Yes;
+                                                 Border=No;
+                                                 NextControl=1140016;
+                                                 SubFormID=Form11015;
+                                                 SubFormView=SORTING(Definition Group Code,Record Code,From Table No.,From Field No.,To Table No.,To Field No.) }
+    { 1140037;TextBox   ;18810;19030;1650 ;440  ;Editable=No;
+                                                 ParentControl=1140034;
+                                                 InFrame=Yes;
+                                                 Lookup=No;
+                                                 CaptionML=[DEU=Von Tabellennr.;
+                                                            ENU=From Table No.];
+                                                 SourceExpr="Relation To Table No." }
+    { 1140038;Label     ;15400;19030;3300 ;440  ;ParentControl=1140037 }
+    { 1140039;TextBox   ;18810;19580;5500 ;440  ;Editable=No;
+                                                 ParentControl=1140034;
+                                                 InFrame=Yes;
+                                                 DrillDown=No;
+                                                 CaptionML=[DEU=Von Tabellenname;
+                                                            ENU=From Table Name];
+                                                 SourceExpr="Relation To Table Name" }
+    { 1140040;Label     ;15400;19580;3300 ;440  ;ParentControl=1140039 }
+    { 1140041;TextBox   ;18810;20240;1650 ;440  ;Editable=No;
+                                                 ParentControl=1140034;
+                                                 InFrame=Yes;
+                                                 Lookup=No;
+                                                 CaptionML=[DEU=Zu Tabellennr.;
+                                                            ENU=To Table No.];
+                                                 SourceExpr="Table No.";
+                                                 TableRelation=Object.ID WHERE (Type=CONST(Table));
+                                                 LookupFormID=Objects }
+    { 1140042;Label     ;15400;20240;3300 ;440  ;ParentControl=1140041 }
+    { 1140043;TextBox   ;18810;20790;5500 ;440  ;Editable=No;
+                                                 ParentControl=1140034;
+                                                 InFrame=Yes;
+                                                 DrillDown=No;
+                                                 CaptionML=[DEU=Zu Tabellenname;
+                                                            ENU=To Table Name];
+                                                 SourceExpr="Table Name" }
+    { 1140044;Label     ;15400;20790;3300 ;440  ;ParentControl=1140043 }
+    { 1140052;Frame     ;4400 ;17710;10560;8250 ;Name=Step5;
+                                                 Visible=No;
+                                                 ShowCaption=No;
+                                                 Border=No }
+    { 1140053;Label     ;4840 ;17930;8140 ;1430 ;ParentControl=1140052;
+                                                 InFrame=Yes;
+                                                 VertAlign=Top;
+                                                 MultiLine=Yes;
+                                                 LeaderDots=No;
+                                                 CaptionML=[DEU=Sie kînnen eine andere Tabelle fÅr den Export der GDPdU-Daten auswÑhlen\und einen Dateinamen fÅr den Export eingeben.\Au·erdem kînnen Sie ein Feld als Datumsfilter fÅr den Export auswÑhlen.;
+                                                            ENU=You can choose another table for the export of GDPdU data\and enter the file name for the export.\Additionally you can choose a field as a date filter for the export.] }
+    { 1140054;TextBox   ;7700 ;19910;5280 ;440  ;ParentControl=1140052;
+                                                 InFrame=Yes;
+                                                 BlankZero=Yes;
+                                                 SourceExpr="Table Name" }
+    { 1140055;TextBox   ;4840 ;21010;5500 ;440  ;ParentControl=1140052;
+                                                 InFrame=Yes;
+                                                 CaptionML=[DEU=Geben Sie einen Dateinamen fÅr den Export an.;
+                                                            ENU=Enter a file name for the export.];
+                                                 SourceExpr="Export File Name" }
+    { 1140056;Label     ;4840 ;20570;8140 ;440  ;ParentControl=1140055;
+                                                 LeaderDots=No }
+    { 1140057;TextBox   ;4840 ;22110;2750 ;440  ;ParentControl=1140052;
+                                                 InFrame=Yes;
+                                                 CaptionML=[DEU=WÑhlen Sie ein Feld als Datumsfilter aus.;
+                                                            ENU=Choose a field as Date Filter.];
+                                                 BlankZero=Yes;
+                                                 NextControl=1140016;
+                                                 SourceExpr="GDPdU Period Field No.";
+                                                 OnAfterValidate=VAR
+                                                                   Field@1140000 : Record 2000000041;
+                                                                 BEGIN
+                                                                 END;
+                                                                  }
+    { 1140058;Label     ;4840 ;21670;8140 ;440  ;ParentControl=1140057;
+                                                 LeaderDots=No }
+    { 1140059;TextBox   ;4840 ;19910;2750 ;440  ;Name=TableNoStep5;
+                                                 ParentControl=1140052;
+                                                 InFrame=Yes;
+                                                 CaptionML=[DEU=WÑhlen Sie eine Tabelle fÅr den Export der GDPdU-Daten aus.;
+                                                            ENU=Choose a table for the export of GDPdU data.];
+                                                 SourceExpr="Table No." }
+    { 1140060;Label     ;4840 ;19470;8140 ;440  ;ParentControl=1140059;
+                                                 LeaderDots=No }
+    { 1140063;TextBox   ;7810 ;22110;5170 ;440  ;ParentControl=1140052;
+                                                 InFrame=Yes;
+                                                 SourceExpr="GDPdU Period Field Name" }
+    { 1140000;Frame     ;4400 ;9460 ;10560;8250 ;Name=Step3;
+                                                 Visible=No;
+                                                 ShowCaption=No;
+                                                 Border=No }
+    { 1140001;Label     ;4840 ;9690 ;8140 ;770  ;ParentControl=1140000;
+                                                 InFrame=Yes;
+                                                 VertAlign=Top;
+                                                 MultiLine=Yes;
+                                                 LeaderDots=No;
+                                                 CaptionML=[DEU=Sie mÅssen nun die Felder der Tabelle auswÑhlen, die exportiert werden sollen.;
+                                                            ENU=You must choose the fields of the table which should be exported now.] }
+    { 1140002;SubForm   ;4840 ;10450;9790 ;7040 ;Name=GDPdUFieldList;
+                                                 ParentControl=1140000;
+                                                 InFrame=Yes;
+                                                 Border=No;
+                                                 NextControl=1140016;
+                                                 SubFormID=Form11012;
+                                                 SubFormView=SORTING(TableNo,No.);
+                                                 SubFormLink=Type=FILTER(Option|Code|Text|Decimal|Integer|Date|Boolean),
+                                                             Class=FILTER(Normal|FlowField),
+                                                             TableNo=FIELD(Table No.) }
+    { 1140045;Frame     ;14960;9460 ;10560;8250 ;Name=Step4;
+                                                 Visible=No;
+                                                 ShowCaption=No;
+                                                 Border=No }
+    { 1140046;Label     ;15400;9690 ;8140 ;760  ;ParentControl=1140045;
+                                                 InFrame=Yes;
+                                                 VertAlign=Top;
+                                                 MultiLine=Yes;
+                                                 LeaderDots=No;
+                                                 CaptionML=[DEU=Die Eingaben zur GDPdU Datensatzdefinition kînnen nun gespeichert werden.;
+                                                            ENU=The GDPdU record definition you have entered can now be saved.] }
+    { 1140047;Label     ;15400;10670;8140 ;1100 ;ParentControl=1140045;
+                                                 InFrame=Yes;
+                                                 VertAlign=Top;
+                                                 MultiLine=Yes;
+                                                 LeaderDots=No;
+                                                 CaptionML=[DEU=Wenn Sie auf Weiter klicken, werden die Eingaben gespeichert und der Assistent zur Erfassung einer weiteren Datensatzdefinitionstabelle fortgesetzt.;
+                                                            ENU=If you click Next, your entries will be saved, and the wizard will be ready to set up another record definition.] }
+    { 1140048;Label     ;15400;11990;8140 ;760  ;ParentControl=1140045;
+                                                 InFrame=Yes;
+                                                 VertAlign=Top;
+                                                 MultiLine=Yes;
+                                                 LeaderDots=No;
+                                                 CaptionML=[DEU=Wenn Sie auf Beenden klicken, werden die Eingaben gespeichert und der Assistent beendet.;
+                                                            ENU=If you click Finish, your entries will be saved, and the wizard will close.] }
+  }
+  CODE
+  {
+    VAR
+      FieldTemp@1140001 : TEMPORARY Record 2000000041;
+      TableRelTemp@1140000 : TEMPORARY Record 11006;
+      FormWidth@1140012 : Integer;
+      AdditionalTableSelection@1140014 : Boolean;
+
+    LOCAL PROCEDURE ShowStep@1140000(Visible@1140001 : Boolean);
+    BEGIN
+      CASE "Wizard Step" OF
+        "Wizard Step"::"1":
+          BEGIN
+            CurrForm.Step1.VISIBLE := Visible;
+            IF Visible THEN BEGIN
+              CurrForm.Finish.ENABLED(FALSE);
+              CurrForm.Back.ENABLED(FALSE);
+              CurrForm.Next.ENABLED(TRUE);
+            END;
+          END;
+        "Wizard Step"::"2":
+          BEGIN
+            CurrForm.Step2.VISIBLE := Visible;
+            IF Visible THEN BEGIN
+              CurrForm.Finish.ENABLED(FALSE);
+              CurrForm.Back.ENABLED(TRUE);
+              CurrForm.Next.ENABLED(TRUE);
+            END;
+          END;
+        "Wizard Step"::"3":
+          BEGIN
+            CurrForm.Step3.VISIBLE := Visible;
+            CurrForm.GDPdUFieldList.VISIBLE := Visible;
+
+            IF Visible THEN BEGIN
+              FilterField(FieldTemp,TRUE);
+              GetField(FieldTemp);
+              // CurrForm.GDPdUFieldList.FORM.SETTABLEVIEW(FieldTemp); // dach0003
+              CurrForm.GDPdUFieldList.FORM.SetField(FieldTemp);
+              CurrForm.GDPdUFieldList.FORM.UpdateForm;
+              CurrForm.Finish.ENABLED(FALSE);
+              CurrForm.Back.ENABLED(TRUE);
+              CurrForm.Next.ENABLED(TRUE);
+            END ELSE BEGIN
+              CurrForm.GDPdUFieldList.FORM.GetField(FieldTemp);
+              SetField(FieldTemp);
+            END;
+          END;
+        "Wizard Step"::"4":
+          BEGIN
+            CurrForm.Step4.VISIBLE := Visible;
+            IF Visible THEN BEGIN
+              CurrForm.Finish.ENABLED(TRUE);
+              CurrForm.Back.ENABLED(TRUE);
+              CurrForm.Next.ENABLED(TRUE);
+            END;
+          END;
+        "Wizard Step"::"5":
+          BEGIN
+            CurrForm.Step5.VISIBLE := Visible;
+            IF Visible THEN BEGIN
+              CurrForm.Finish.ENABLED(FALSE);
+              CurrForm.Back.ENABLED(FALSE);
+              CurrForm.Next.ENABLED(TRUE);
+              AdditionalTableSelection := TRUE;
+            END;
+          END;
+        "Wizard Step"::"6":
+          BEGIN
+            CurrForm.Step6.VISIBLE := Visible;
+            CurrForm.GDPdUTableRelation.VISIBLE := Visible;
+
+            IF Visible THEN BEGIN
+              FilterTableRel(TableRelTemp,TRUE);
+              GetTableRel(TableRelTemp);
+              CurrForm.GDPdUTableRelation.FORM.SETTABLEVIEW(TableRelTemp);
+              CurrForm.GDPdUTableRelation.FORM.SetTableRel(TableRelTemp);
+              CurrForm.GDPdUTableRelation.FORM.UpdateForm;
+              CurrForm.Finish.ENABLED(FALSE);
+              CurrForm.Back.ENABLED(TRUE);
+              CurrForm.Next.ENABLED(TRUE);
+            END ELSE BEGIN
+              CurrForm.GDPdUTableRelation.FORM.GetTableRel(TableRelTemp);
+              SetTableRel(TableRelTemp);
+            END;
+          END;
+      END;
+    END;
+
+    PROCEDURE Caption@1140001() : Text[260];
+    VAR
+      CaptionStr@1140000 : Text[260];
+    BEGIN
+    END;
+
+    BEGIN
+    END.
+  }
+}
+

@@ -1,0 +1,63 @@
+OBJECT Table 201 Resource Price
+{
+  OBJECT-PROPERTIES
+  {
+    Date=05.11.08;
+    Time=12:00:00;
+    Version List=NAVW16.00;
+  }
+  PROPERTIES
+  {
+    CaptionML=[DEU=Ressourcen-VK-Preis;
+               ENU=Resource Price];
+    LookupFormID=Form204;
+    DrillDownFormID=Form204;
+  }
+  FIELDS
+  {
+    { 1   ;   ;Job No.             ;Code20        ;TableRelation=Job;
+                                                   CaptionML=[DEU=Projektnr.;
+                                                              ENU=Job No.] }
+    { 2   ;   ;Type                ;Option        ;CaptionML=[DEU=Art;
+                                                              ENU=Type];
+                                                   OptionCaptionML=[DEU=Ressource,Ressourcengruppe,Alle;
+                                                                    ENU=Resource,Group(Resource),All];
+                                                   OptionString=Resource,Group(Resource),All }
+    { 3   ;   ;Code                ;Code20        ;TableRelation=IF (Type=CONST(Resource)) Resource
+                                                                 ELSE IF (Type=CONST("Group(Resource)")) "Resource Group";
+                                                   OnValidate=BEGIN
+                                                                IF (Code <> '') AND (Type = Type::All) THEN
+                                                                  FIELDERROR(Code,STRSUBSTNO(Text000,FIELDCAPTION(Type),FORMAT(Type)));
+                                                              END;
+
+                                                   CaptionML=[DEU=Code;
+                                                              ENU=Code] }
+    { 4   ;   ;Work Type Code      ;Code10        ;TableRelation="Work Type";
+                                                   CaptionML=[DEU=Arbeitstypencode;
+                                                              ENU=Work Type Code] }
+    { 5   ;   ;Unit Price          ;Decimal       ;CaptionML=[DEU=VK-Preis;
+                                                              ENU=Unit Price];
+                                                   AutoFormatType=2;
+                                                   AutoFormatExpr="Currency Code" }
+    { 6   ;   ;Currency Code       ;Code10        ;TableRelation=Currency;
+                                                   CaptionML=[DEU=W„hrungscode;
+                                                              ENU=Currency Code] }
+  }
+  KEYS
+  {
+    {    ;Job No.,Type,Code,Work Type Code,Currency Code;
+                                                   Clustered=Yes }
+  }
+  FIELDGROUPS
+  {
+  }
+  CODE
+  {
+    VAR
+      Text000@1000 : TextConst 'DEU=darf nicht angegeben werden wenn %1 %2 ist;ENU=cannot be specified when %1 is %2';
+
+    BEGIN
+    END.
+  }
+}
+

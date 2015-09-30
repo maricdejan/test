@@ -1,0 +1,148 @@
+OBJECT Dataport 5051 Export Segment Contact
+{
+  OBJECT-PROPERTIES
+  {
+    Date=13.02.07;
+    Time=12:00:00;
+    Version List=NAVW15.00,NAVDACH4.00;
+  }
+  PROPERTIES
+  {
+    CaptionML=[DEU=Kontakte nach Segmenten exp.;
+               ENU=Export Segment Contact];
+    Import=No;
+    FieldSeparator=[;];
+    DataItemSeparator=<NewLine>;
+  }
+  DATAITEMS
+  {
+    { PROPERTIES
+      {
+        DataItemTable=Table2000000026;
+        DataItemTableView=SORTING(Number)
+                          WHERE(Number=CONST(1));
+      }
+      FIELDS
+      {
+        {      ;     ;GM.Ascii2Ansi(Cont.FIELDCAPTION("No.")) }
+        {      ;     ;GM.Ascii2Ansi(Cont.FIELDCAPTION("External ID")) }
+        {      ;     ;GM.Ascii2Ansi(Cont.FIELDCAPTION(Name)) }
+        {      ;     ;GM.Ascii2Ansi(Cont.FIELDCAPTION("Name 2")) }
+        {      ;     ;GM.Ascii2Ansi(Cont.FIELDCAPTION(Address)) }
+        {      ;     ;GM.Ascii2Ansi(Cont.FIELDCAPTION("Address 2")) }
+        {      ;     ;GM.Ascii2Ansi(Cont.FIELDCAPTION(County)) }
+        {      ;     ;GM.Ascii2Ansi(Cont.FIELDCAPTION("Post Code")) }
+        {      ;     ;GM.Ascii2Ansi(Cont.FIELDCAPTION(City)) }
+        {      ;     ;GM.Ascii2Ansi(Cont.FIELDCAPTION("Country/Region Code")) }
+        {      ;     ;GM.Ascii2Ansi(Cont.FIELDCAPTION("Phone No.")) }
+        {      ;     ;GM.Ascii2Ansi(Cont.FIELDCAPTION("Telex No.")) }
+        {      ;     ;GM.Ascii2Ansi(Cont.FIELDCAPTION("Fax No.")) }
+        {      ;     ;GM.Ascii2Ansi(Cont.FIELDCAPTION("Telex Answer Back")) }
+        {      ;     ;GM.Ascii2Ansi(Cont.FIELDCAPTION("Territory Code")) }
+        {      ;     ;GM.Ascii2Ansi(Cont.FIELDCAPTION("Currency Code")) }
+        {      ;     ;GM.Ascii2Ansi(Cont.FIELDCAPTION("Language Code")) }
+        {      ;     ;GM.Ascii2Ansi(Cont.FIELDCAPTION("Salesperson Code")) }
+        {      ;     ;GM.Ascii2Ansi(Cont.FIELDCAPTION("VAT Registration No.")) }
+        {      ;     ;GM.Ascii2Ansi(Cont.FIELDCAPTION("E-Mail")) }
+        {      ;     ;GM.Ascii2Ansi(Cont.FIELDCAPTION("Home Page")) }
+        {      ;     ;GM.Ascii2Ansi(Cont.FIELDCAPTION(Type)) }
+        {      ;     ;GM.Ascii2Ansi(Cont.FIELDCAPTION("Company Name")) }
+        {      ;     ;GM.Ascii2Ansi(Cont.FIELDCAPTION("Company No.")) }
+        {      ;     ;GM.Ascii2Ansi(Cont.FIELDCAPTION("First Name")) }
+        {      ;     ;GM.Ascii2Ansi(Cont.FIELDCAPTION("Middle Name")) }
+        {      ;     ;GM.Ascii2Ansi(Cont.FIELDCAPTION(Surname)) }
+        {      ;     ;GM.Ascii2Ansi(Cont.FIELDCAPTION("Job Title")) }
+        {      ;     ;GM.Ascii2Ansi(Cont.FIELDCAPTION(Initials)) }
+        {      ;     ;GM.Ascii2Ansi(Cont.FIELDCAPTION("Extension No.")) }
+        {      ;     ;GM.Ascii2Ansi(Cont.FIELDCAPTION("Mobile Phone No.")) }
+        {      ;     ;GM.Ascii2Ansi(Cont.FIELDCAPTION(Pager)) }
+        {      ;     ;GM.Ascii2Ansi(Cont.FIELDCAPTION("Organizational Level Code")) }
+        {      ;     ;GM.Ascii2Ansi(Cont.FIELDCAPTION("Exclude from Segment")) }
+        {      ;     ;GM.Ascii2Ansi(Cont.FIELDCAPTION("Correspondence Type")) }
+        {      ;     ;GM.Ascii2Ansi(Text001) }
+      }
+       }
+    { PROPERTIES
+      {
+        DataItemTable=Table5077;
+        AutoSave=No;
+        DataItemTableView=SORTING(Segment No.,Line No.);
+        OnBeforeExportRecord=VAR
+                               SalFormula@1150000 : Record 5069;
+                             BEGIN
+                               Cont.GET("Contact No.");
+
+                               SalFormula.SETRANGE("Salutation Code",Cont."Salutation Code");
+                               SalFormula.SETRANGE("Language Code",Cont."Language Code");
+                               IF SalFormula.FIND('-') THEN
+                                 Salutation := Cont.GetSalutation(SalFormula."Salutation Type",SalFormula."Language Code")
+                               ELSE
+                                 Salutation := '';
+                             END;
+
+      }
+      FIELDS
+      {
+        {      ;     ;GM.Ascii2Ansi(Cont."No.") }
+        {      ;     ;GM.Ascii2Ansi(Cont."External ID") }
+        {      ;     ;GM.Ascii2Ansi(Cont.Name) }
+        {      ;     ;GM.Ascii2Ansi(Cont."Name 2") }
+        {      ;     ;GM.Ascii2Ansi(Cont.Address) }
+        {      ;     ;GM.Ascii2Ansi(Cont."Address 2") }
+        {      ;     ;GM.Ascii2Ansi(Cont.County) }
+        {      ;     ;Cont."Post Code"     }
+        {      ;     ;GM.Ascii2Ansi(Cont.City) }
+        {      ;     ;GM.Ascii2Ansi(Cont."Country/Region Code") }
+        {      ;     ;Cont."Phone No."     }
+        {      ;     ;Cont."Telex No."     }
+        {      ;     ;Cont."Fax No."       }
+        {      ;     ;Cont."Telex Answer Back" }
+        {      ;     ;GM.Ascii2Ansi(Cont."Territory Code") }
+        {      ;     ;GM.Ascii2Ansi(Cont."Currency Code") }
+        {      ;     ;GM.Ascii2Ansi(Cont."Language Code") }
+        {      ;     ;GM.Ascii2Ansi(Cont."Salesperson Code") }
+        {      ;     ;Cont."VAT Registration No." }
+        {      ;     ;Cont."E-Mail"        }
+        {      ;     ;Cont."Home Page"     }
+        {      ;     ;Cont.Type            }
+        {      ;     ;GM.Ascii2Ansi(Cont."Company Name") }
+        {      ;     ;GM.Ascii2Ansi(Cont."Company No.") }
+        {      ;     ;GM.Ascii2Ansi(Cont."First Name") }
+        {      ;     ;GM.Ascii2Ansi(Cont."Middle Name") }
+        {      ;     ;GM.Ascii2Ansi(Cont.Surname) }
+        {      ;     ;GM.Ascii2Ansi(Cont."Job Title") }
+        {      ;     ;GM.Ascii2Ansi(Cont.Initials) }
+        {      ;     ;GM.Ascii2Ansi(Cont."Extension No.") }
+        {      ;     ;Cont."Mobile Phone No." }
+        {      ;     ;Cont.Pager           }
+        {      ;     ;GM.Ascii2Ansi(Cont."Organizational Level Code") }
+        {      ;     ;Cont."Exclude from Segment" }
+        {      ;     ;Cont."Correspondence Type" }
+        {      ;     ;GM.Ascii2Ansi(Salutation) }
+      }
+       }
+  }
+  REQUESTFORM
+  {
+    PROPERTIES
+    {
+      Width=9020;
+      Height=3410;
+    }
+    CONTROLS
+    {
+    }
+  }
+  CODE
+  {
+    VAR
+      Cont@1000 : Record 5050;
+      GM@1150001 : Codeunit 11501;
+      Salutation@1150000 : Text[250];
+      Text001@1150002 : TextConst 'DEU=Anrede;ENU=Salutation';
+
+    BEGIN
+    END.
+  }
+}
+

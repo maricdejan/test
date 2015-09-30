@@ -1,0 +1,75 @@
+OBJECT Table 343 Item Application Entry History
+{
+  OBJECT-PROPERTIES
+  {
+    Date=14.08.09;
+    Time=12:00:00;
+    Version List=NAVW16.00.01;
+  }
+  PROPERTIES
+  {
+    CaptionML=[DEU=Historie Artikelausgleichsposten;
+               ENU=Item Application Entry History];
+    LookupFormID=Form523;
+    DrillDownFormID=Form523;
+  }
+  FIELDS
+  {
+    { 1   ;   ;Entry No.           ;Integer       ;CaptionML=[DEU=Lfd. Nr.;
+                                                              ENU=Entry No.] }
+    { 2   ;   ;Item Ledger Entry No.;Integer      ;TableRelation="Item Ledger Entry";
+                                                   CaptionML=[DEU=Artikelposten Lfd. Nr.;
+                                                              ENU=Item Ledger Entry No.] }
+    { 3   ;   ;Inbound Item Entry No.;Integer     ;TableRelation="Item Ledger Entry";
+                                                   CaptionML=[DEU=Eingeh. Artikelposten Lfd. Nr.;
+                                                              ENU=Inbound Item Entry No.] }
+    { 4   ;   ;Outbound Item Entry No.;Integer    ;TableRelation="Item Ledger Entry";
+                                                   CaptionML=[DEU=Ausgeh. Artikelposten Lfd. Nr.;
+                                                              ENU=Outbound Item Entry No.] }
+    { 11  ;   ;Quantity            ;Decimal       ;CaptionML=[DEU=Menge;
+                                                              ENU=Quantity];
+                                                   DecimalPlaces=0:5 }
+    { 21  ;   ;Posting Date        ;Date          ;CaptionML=[DEU=Buchungsdatum;
+                                                              ENU=Posting Date] }
+    { 23  ;   ;Transferred-from Entry No.;Integer ;TableRelation="Item Ledger Entry";
+                                                   CaptionML=[DEU=Umgelagert von Lfd. Nr.;
+                                                              ENU=Transferred-from Entry No.] }
+    { 25  ;   ;Creation Date       ;DateTime      ;CaptionML=[DEU=Errichtungsdatum;
+                                                              ENU=Creation Date] }
+    { 26  ;   ;Created By User     ;Code20        ;TableRelation=User;
+                                                   TestTableRelation=No;
+                                                   CaptionML=[DEU=Erstellt von Benutzer;
+                                                              ENU=Created By User] }
+    { 27  ;   ;Last Modified Date  ;DateTime      ;CaptionML=[DEU=Datum der letzten Žnderung;
+                                                              ENU=Last Modified Date] }
+    { 28  ;   ;Last Modified By User;Code20       ;TableRelation=User;
+                                                   TestTableRelation=No;
+                                                   CaptionML=[DEU=Zuletzt ge„ndert von Benutzer;
+                                                              ENU=Last Modified By User] }
+    { 29  ;   ;Deleted Date        ;DateTime      ;CaptionML=[DEU=L”schdatum;
+                                                              ENU=Deleted Date] }
+    { 30  ;   ;Deleted By User     ;Code20        ;CaptionML=[DEU=Gel”scht von Benutzer;
+                                                              ENU=Deleted By User] }
+    { 5800;   ;Cost Application    ;Boolean       ;CaptionML=[DEU=Ausgleich Lagerwert reguliert;
+                                                              ENU=Cost Application] }
+    { 5804;   ;Output Completely Invd. Date;Date  ;CaptionML=[DEU=FA-Istmeld. komplett fakt. am;
+                                                              ENU=Output Completely Invd. Date] }
+    { 99999;  ;Primary Entry No.   ;Integer       ;CaptionML=[DEU=Prim„re Lfd. Nr.;
+                                                              ENU=Primary Entry No.] }
+  }
+  KEYS
+  {
+    {    ;Primary Entry No.                       ;Clustered=Yes }
+    {    ;Entry No.                                }
+  }
+  FIELDGROUPS
+  {
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

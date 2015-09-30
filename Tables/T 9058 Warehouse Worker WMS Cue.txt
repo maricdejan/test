@@ -1,0 +1,81 @@
+OBJECT Table 9058 Warehouse Worker WMS Cue
+{
+  OBJECT-PROPERTIES
+  {
+    Date=05.11.08;
+    Time=12:00:00;
+    Version List=NAVW16.00;
+  }
+  PROPERTIES
+  {
+    CaptionML=[DEU=Lagermitarbeiter-LOG-Stapel;
+               ENU=Warehouse Worker WMS Cue];
+  }
+  FIELDS
+  {
+    { 1   ;   ;Primary Key         ;Code10        ;CaptionML=[DEU=PrimÑrschlÅssel;
+                                                              ENU=Primary Key] }
+    { 2   ;   ;Unassigned Picks    ;Integer       ;FieldClass=FlowField;
+                                                   CalcFormula=Count("Warehouse Activity Header" WHERE (Type=FILTER(Pick),
+                                                                                                        Assigned User ID=FILTER(''),
+                                                                                                        Location Code=FIELD(Location Filter)));
+                                                   CaptionML=[DEU=Nicht zugewiesene Kommissionierungen;
+                                                              ENU=Unassigned Picks];
+                                                   Editable=No }
+    { 3   ;   ;My Picks            ;Integer       ;FieldClass=FlowField;
+                                                   CalcFormula=Count("Warehouse Activity Header" WHERE (Type=FILTER(Pick),
+                                                                                                        Assigned User ID=FIELD(User ID Filter),
+                                                                                                        Location Code=FIELD(Location Filter)));
+                                                   CaptionML=[DEU=Meine Kommissionierungen;
+                                                              ENU=My Picks];
+                                                   Editable=No }
+    { 4   ;   ;Unassigned Put-aways;Integer       ;FieldClass=FlowField;
+                                                   CalcFormula=Count("Warehouse Activity Header" WHERE (Type=FILTER(Put-away),
+                                                                                                        Assigned User ID=FILTER(''),
+                                                                                                        Location Code=FIELD(Location Filter)));
+                                                   CaptionML=[DEU=Nicht zugewiesene Einlagerungen;
+                                                              ENU=Unassigned Put-aways];
+                                                   Editable=No }
+    { 5   ;   ;My Put-aways        ;Integer       ;FieldClass=FlowField;
+                                                   CalcFormula=Count("Warehouse Activity Header" WHERE (Type=FILTER(Put-away),
+                                                                                                        Assigned User ID=FIELD(User ID Filter),
+                                                                                                        Location Code=FIELD(Location Filter)));
+                                                   CaptionML=[DEU=Meine Einlagerungen;
+                                                              ENU=My Put-aways];
+                                                   Editable=No }
+    { 6   ;   ;Unassigned Movements;Integer       ;FieldClass=FlowField;
+                                                   CalcFormula=Count("Warehouse Activity Header" WHERE (Type=FILTER(Movement),
+                                                                                                        Assigned User ID=FILTER(''),
+                                                                                                        Location Code=FIELD(Location Filter)));
+                                                   CaptionML=[DEU=Nicht zugewiesene Umlagerungen;
+                                                              ENU=Unassigned Movements];
+                                                   Editable=No }
+    { 7   ;   ;My Movements        ;Integer       ;FieldClass=FlowField;
+                                                   CalcFormula=Count("Warehouse Activity Header" WHERE (Type=FILTER(Movement),
+                                                                                                        Assigned User ID=FIELD(User ID Filter),
+                                                                                                        Location Code=FIELD(Location Filter)));
+                                                   CaptionML=[DEU=Meine Umlagerungen;
+                                                              ENU=My Movements];
+                                                   Editable=No }
+    { 22  ;   ;User ID Filter      ;Code20        ;FieldClass=FlowFilter;
+                                                   CaptionML=[DEU=Benutzer-ID-Filter;
+                                                              ENU=User ID Filter] }
+    { 23  ;   ;Location Filter     ;Code10        ;FieldClass=FlowFilter;
+                                                   CaptionML=[DEU=Lagerortfilter;
+                                                              ENU=Location Filter] }
+  }
+  KEYS
+  {
+    {    ;Primary Key                             ;Clustered=Yes }
+  }
+  FIELDGROUPS
+  {
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

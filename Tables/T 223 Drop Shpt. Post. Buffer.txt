@@ -1,0 +1,43 @@
+OBJECT Table 223 Drop Shpt. Post. Buffer
+{
+  OBJECT-PROPERTIES
+  {
+    Date=05.11.08;
+    Time=12:00:00;
+    Version List=NAVW16.00;
+  }
+  PROPERTIES
+  {
+    CaptionML=[DEU=Direktlieferungsbuch.-Puffer;
+               ENU=Drop Shpt. Post. Buffer];
+  }
+  FIELDS
+  {
+    { 1   ;   ;Order No.           ;Code20        ;CaptionML=[DEU=Bestellnummer;
+                                                              ENU=Order No.] }
+    { 2   ;   ;Order Line No.      ;Integer       ;CaptionML=[DEU=Bestellzeilennr.;
+                                                              ENU=Order Line No.] }
+    { 3   ;   ;Item Shpt. Entry No.;Integer       ;CaptionML=[DEU=Artikellief. Lfd. Nr.;
+                                                              ENU=Item Shpt. Entry No.] }
+    { 4   ;   ;Quantity            ;Decimal       ;CaptionML=[DEU=Menge;
+                                                              ENU=Quantity];
+                                                   DecimalPlaces=0:5 }
+    { 5   ;   ;Quantity (Base)     ;Decimal       ;CaptionML=[DEU=Menge (Basis);
+                                                              ENU=Quantity (Base)];
+                                                   DecimalPlaces=0:5 }
+  }
+  KEYS
+  {
+    {    ;Order No.,Order Line No.                ;Clustered=Yes }
+  }
+  FIELDGROUPS
+  {
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

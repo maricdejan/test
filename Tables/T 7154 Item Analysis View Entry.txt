@@ -1,0 +1,138 @@
+OBJECT Table 7154 Item Analysis View Entry
+{
+  OBJECT-PROPERTIES
+  {
+    Date=05.11.08;
+    Time=12:00:00;
+    Version List=NAVW16.00;
+  }
+  PROPERTIES
+  {
+    CaptionML=[DEU=Artikelanalyseansichtsposten;
+               ENU=Item Analysis View Entry];
+    LookupFormID=Form7153;
+    DrillDownFormID=Form7153;
+  }
+  FIELDS
+  {
+    { 1   ;   ;Analysis Area       ;Option        ;CaptionML=[DEU=Analysebereich;
+                                                              ENU=Analysis Area];
+                                                   OptionCaptionML=[DEU=Verkauf,Einkauf,Lager;
+                                                                    ENU=Sales,Purchase,Inventory];
+                                                   OptionString=Sales,Purchase,Inventory }
+    { 2   ;   ;Analysis View Code  ;Code10        ;TableRelation="Item Analysis View".Code WHERE (Analysis Area=FIELD(Analysis Area),
+                                                                                                  Code=FIELD(Analysis View Code));
+                                                   CaptionML=[DEU=Analyseansichtscode;
+                                                              ENU=Analysis View Code];
+                                                   NotBlank=Yes }
+    { 3   ;   ;Item No.            ;Code20        ;TableRelation=Item;
+                                                   CaptionML=[DEU=Artikelnr.;
+                                                              ENU=Item No.] }
+    { 4   ;   ;Source Type         ;Option        ;CaptionML=[DEU=Herkunftsart;
+                                                              ENU=Source Type];
+                                                   OptionCaptionML=[DEU=" ,Debitor,Kreditor,Artikel";
+                                                                    ENU=" ,Customer,Vendor,Item"];
+                                                   OptionString=[ ,Customer,Vendor,Item] }
+    { 5   ;   ;Source No.          ;Code20        ;TableRelation=IF (Source Type=CONST(Customer)) Customer
+                                                                 ELSE IF (Source Type=CONST(Vendor)) Vendor
+                                                                 ELSE IF (Source Type=CONST(Item)) Item;
+                                                   CaptionML=[DEU=Herkunftsnr.;
+                                                              ENU=Source No.] }
+    { 8   ;   ;Location Code       ;Code10        ;TableRelation=Location;
+                                                   CaptionML=[DEU=Lagerortcode;
+                                                              ENU=Location Code] }
+    { 9   ;   ;Dimension 1 Value Code;Code20      ;CaptionML=[DEU=Dimensionswertcode 1;
+                                                              ENU=Dimension 1 Value Code];
+                                                   CaptionClass=GetCaptionClass(1) }
+    { 10  ;   ;Dimension 2 Value Code;Code20      ;CaptionML=[DEU=Dimensionswertcode 2;
+                                                              ENU=Dimension 2 Value Code];
+                                                   CaptionClass=GetCaptionClass(2) }
+    { 11  ;   ;Dimension 3 Value Code;Code20      ;CaptionML=[DEU=Dimensionswertcode 3;
+                                                              ENU=Dimension 3 Value Code];
+                                                   CaptionClass=GetCaptionClass(3) }
+    { 12  ;   ;Posting Date        ;Date          ;CaptionML=[DEU=Buchungsdatum;
+                                                              ENU=Posting Date] }
+    { 13  ;   ;Entry No.           ;Integer       ;CaptionML=[DEU=Lfd. Nr.;
+                                                              ENU=Entry No.] }
+    { 14  ;   ;Item Ledger Entry Type;Option      ;CaptionML=[DEU=Artikelpostenart;
+                                                              ENU=Item Ledger Entry Type];
+                                                   OptionCaptionML=[DEU="Einkauf,Verkauf,Zugang,Abgang,Umlagerung,Verbrauch,Istmeldung, ";
+                                                                    ENU="Purchase,Sale,Positive Adjmt.,Negative Adjmt.,Transfer,Consumption,Output, "];
+                                                   OptionString=[Purchase,Sale,Positive Adjmt.,Negative Adjmt.,Transfer,Consumption,Output, ] }
+    { 15  ;   ;Entry Type          ;Option        ;CaptionML=[DEU=Postenart;
+                                                              ENU=Entry Type];
+                                                   OptionCaptionML=[DEU=EK-Preis,Neubewertung,Rundung,Kosten,Abweichung;
+                                                                    ENU=Direct Cost,Revaluation,Rounding,Indirect Cost,Variance];
+                                                   OptionString=Direct Cost,Revaluation,Rounding,Indirect Cost,Variance }
+    { 21  ;   ;Invoiced Quantity   ;Decimal       ;CaptionML=[DEU=Fakturierte Menge;
+                                                              ENU=Invoiced Quantity];
+                                                   AutoFormatType=2 }
+    { 22  ;   ;Sales Amount (Actual);Decimal      ;CaptionML=[DEU=Verkaufsbetrag (tats„chl.);
+                                                              ENU=Sales Amount (Actual)];
+                                                   AutoFormatType=1 }
+    { 23  ;   ;Cost Amount (Actual);Decimal       ;CaptionML=[DEU=Einstandsbetrag (tats„chl.);
+                                                              ENU=Cost Amount (Actual)];
+                                                   AutoFormatType=1 }
+    { 24  ;   ;Cost Amount (Non-Invtbl.);Decimal  ;CaptionML=[DEU=Einst.-Betr. (lagerwertunabh.);
+                                                              ENU=Cost Amount (Non-Invtbl.)];
+                                                   AutoFormatType=1 }
+    { 31  ;   ;Quantity            ;Decimal       ;CaptionML=[DEU=Menge;
+                                                              ENU=Quantity];
+                                                   AutoFormatType=2 }
+    { 32  ;   ;Sales Amount (Expected);Decimal    ;CaptionML=[DEU=Verkaufsbetrag (erwartet);
+                                                              ENU=Sales Amount (Expected)];
+                                                   AutoFormatType=1 }
+    { 33  ;   ;Cost Amount (Expected);Decimal     ;CaptionML=[DEU=Einstandsbetrag (erwartet);
+                                                              ENU=Cost Amount (Expected)];
+                                                   AutoFormatType=1 }
+  }
+  KEYS
+  {
+    {    ;Analysis Area,Analysis View Code,Item No.,Item Ledger Entry Type,Entry Type,Source Type,Source No.,Dimension 1 Value Code,Dimension 2 Value Code,Dimension 3 Value Code,Location Code,Posting Date,Entry No.;
+                                                   SumIndexFields=Sales Amount (Actual),Sales Amount (Expected),Cost Amount (Actual),Cost Amount (Expected),Quantity,Invoiced Quantity,Cost Amount (Non-Invtbl.);
+                                                   Clustered=Yes }
+  }
+  FIELDGROUPS
+  {
+  }
+  CODE
+  {
+    VAR
+      Text000@1000 : TextConst 'DEU=1,5,,Dimensionswertcode 1;ENU=1,5,,Dimension 1 Value Code';
+      Text001@1001 : TextConst 'DEU=1,5,,Dimensionswertcode 2;ENU=1,5,,Dimension 2 Value Code';
+      Text002@1002 : TextConst 'DEU=1,5,,Dimensionswertcode 3;ENU=1,5,,Dimension 3 Value Code';
+      ItemAnalysisView@1004 : Record 7152;
+
+    PROCEDURE GetCaptionClass@7(AnalysisViewDimType@1000 : Integer) : Text[250];
+    BEGIN
+      IF (ItemAnalysisView."Analysis Area" <> "Analysis Area") OR
+         (ItemAnalysisView.Code <> "Analysis View Code")
+      THEN
+        ItemAnalysisView.GET("Analysis Area","Analysis View Code");
+      CASE AnalysisViewDimType OF
+        1:
+          BEGIN
+            IF ItemAnalysisView."Dimension 1 Code" <> '' THEN
+              EXIT('1,5,' + ItemAnalysisView."Dimension 1 Code");
+            EXIT(Text000);
+          END;
+        2:
+          BEGIN
+            IF ItemAnalysisView."Dimension 2 Code" <> '' THEN
+              EXIT('1,5,' + ItemAnalysisView."Dimension 2 Code");
+            EXIT(Text001);
+          END;
+        3:
+          BEGIN
+            IF ItemAnalysisView."Dimension 3 Code" <> '' THEN
+              EXIT('1,5,' + ItemAnalysisView."Dimension 3 Code");
+            EXIT(Text002);
+          END;
+      END;
+    END;
+
+    BEGIN
+    END.
+  }
+}
+

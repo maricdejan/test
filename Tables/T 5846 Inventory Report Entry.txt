@@ -1,0 +1,122 @@
+OBJECT Table 5846 Inventory Report Entry
+{
+  OBJECT-PROPERTIES
+  {
+    Date=05.11.08;
+    Time=12:00:00;
+    Version List=NAVW16.00;
+  }
+  PROPERTIES
+  {
+    CaptionML=[DEU=Lagerberichtsposten;
+               ENU=Inventory Report Entry];
+    LookupFormID=Form5846;
+    DrillDownFormID=Form5846;
+  }
+  FIELDS
+  {
+    { 1   ;   ;Entry No.           ;Integer       ;CaptionML=[DEU=Lfd. Nr.;
+                                                              ENU=Entry No.] }
+    { 3   ;   ;No.                 ;Code20        ;CaptionML=[DEU=Nr.;
+                                                              ENU=No.] }
+    { 5   ;   ;Location Filter     ;Code10        ;FieldClass=FlowFilter;
+                                                   CaptionML=[DEU=Lagerortfilter;
+                                                              ENU=Location Filter] }
+    { 6   ;   ;Posting Date Filter ;Date          ;FieldClass=FlowFilter;
+                                                   CaptionML=[DEU=Buchungsdatumsfilter;
+                                                              ENU=Posting Date Filter] }
+    { 8   ;   ;Inventory           ;Decimal       ;CaptionML=[DEU=Lagerbestand;
+                                                              ENU=Inventory] }
+    { 9   ;   ;Inventory (Interim) ;Decimal       ;CaptionML=[DEU=Lager (Interim);
+                                                              ENU=Inventory (Interim)] }
+    { 10  ;   ;WIP Inventory       ;Decimal       ;CaptionML=[DEU=Aktiviert Lager;
+                                                              ENU=WIP Inventory] }
+    { 11  ;   ;Direct Cost Applied Actual;Decimal ;CaptionML=[DEU=Ausgegl. direkte Ist-Kosten;
+                                                              ENU=Direct Cost Applied Actual] }
+    { 12  ;   ;Overhead Applied Actual;Decimal    ;CaptionML=[DEU=Ausgeglichene Ist-Gemeinkosten;
+                                                              ENU=Overhead Applied Actual] }
+    { 13  ;   ;Purchase Variance   ;Decimal       ;CaptionML=[DEU=Einkaufsabweichung;
+                                                              ENU=Purchase Variance] }
+    { 14  ;   ;Inventory Adjmt.    ;Decimal       ;CaptionML=[DEU=Lagerkorrektur;
+                                                              ENU=Inventory Adjmt.] }
+    { 16  ;   ;Invt. Accrual (Interim);Decimal    ;CaptionML=[DEU=Lagerzugang (Interim);
+                                                              ENU=Invt. Accrual (Interim)] }
+    { 17  ;   ;COGS                ;Decimal       ;CaptionML=[DEU=LAGERVERBR;
+                                                              ENU=COGS] }
+    { 18  ;   ;COGS (Interim)      ;Decimal       ;CaptionML=[DEU=LAGERVERBR (Interim);
+                                                              ENU=COGS (Interim)] }
+    { 19  ;   ;Material Variance   ;Decimal       ;CaptionML=[DEU=Materialabweichung;
+                                                              ENU=Material Variance] }
+    { 20  ;   ;Capacity Variance   ;Decimal       ;CaptionML=[DEU=Abweichung KapazitÑt;
+                                                              ENU=Capacity Variance] }
+    { 21  ;   ;Subcontracted Variance;Decimal     ;CaptionML=[DEU=Abweichung Fremdarbeit;
+                                                              ENU=Subcontracted Variance] }
+    { 22  ;   ;Capacity Overhead Variance;Decimal ;CaptionML=[DEU=Abw. KapazitÑtsgemeinkosten;
+                                                              ENU=Capacity Overhead Variance] }
+    { 23  ;   ;Mfg. Overhead Variance;Decimal     ;CaptionML=[DEU=Abweichung Prod.-Gemeinkosten;
+                                                              ENU=Mfg. Overhead Variance] }
+    { 28  ;   ;Total               ;Decimal       ;CaptionML=[DEU=Gesamt;
+                                                              ENU=Total] }
+    { 29  ;   ;G/L Total           ;Decimal       ;CaptionML=[DEU=Fibu gesamt;
+                                                              ENU=G/L Total] }
+    { 30  ;   ;Difference          ;Decimal       ;CaptionML=[DEU=Abweichung;
+                                                              ENU=Difference] }
+    { 31  ;   ;Type                ;Option        ;CaptionML=[DEU=Art;
+                                                              ENU=Type];
+                                                   OptionCaptionML=[DEU=" ,Sachkonto,Artikel";
+                                                                    ENU=" ,G/L Account,Item"];
+                                                   OptionString=[ ,G/L Account,Item] }
+    { 32  ;   ;Direct Cost Applied WIP;Decimal    ;CaptionML=[DEU=Ausgegl. direkte Kosten WIP;
+                                                              ENU=Direct Cost Applied WIP] }
+    { 33  ;   ;Overhead Applied WIP;Decimal       ;CaptionML=[DEU=Gemeinkosten verrechnet WIP;
+                                                              ENU=Overhead Applied WIP] }
+    { 35  ;   ;Inventory To WIP    ;Decimal       ;CaptionML=[DEU=Lager auf WIP;
+                                                              ENU=Inventory To WIP] }
+    { 36  ;   ;WIP To Interim      ;Decimal       ;CaptionML=[DEU=WIP auf Interim;
+                                                              ENU=WIP To Interim] }
+    { 37  ;   ;Direct Cost Applied ;Decimal       ;CaptionML=[DEU=Direkte Kosten verrechnet;
+                                                              ENU=Direct Cost Applied] }
+    { 38  ;   ;Overhead Applied    ;Decimal       ;CaptionML=[DEU=Gemeinkosten verrechnet;
+                                                              ENU=Overhead Applied] }
+    { 39  ;   ;Description         ;Text50        ;CaptionML=[DEU=Beschreibung;
+                                                              ENU=Description] }
+    { 40  ;   ;Warning             ;Text50        ;CaptionML=[DEU=Warnung;
+                                                              ENU=Warning] }
+    { 61  ;   ;Cost is Posted to G/L Warning;Boolean;
+                                                   CaptionML=[DEU=Einstandspreis ist auf Sachkonten gebucht - Warnung;
+                                                              ENU=Cost is Posted to G/L Warning] }
+    { 62  ;   ;Expected Cost Posting Warning;Boolean;
+                                                   CaptionML=[DEU=Soll-Kosten buchen - Warnung;
+                                                              ENU=Expected Cost Posting Warning] }
+    { 63  ;   ;Compression Warning ;Boolean       ;CaptionML=[DEU=Komprimierung - Warnung;
+                                                              ENU=Compression Warning] }
+    { 64  ;   ;Posting Group Warning;Boolean      ;CaptionML=[DEU=Buchungsgruppe - Warnung;
+                                                              ENU=Posting Group Warning] }
+    { 65  ;   ;Direct Postings Warning;Boolean    ;CaptionML=[DEU=Direktbuchungen - Warnung;
+                                                              ENU=Direct Postings Warning] }
+    { 66  ;   ;Posting Date Warning;Boolean       ;CaptionML=[DEU=Buchungsdatum - Warnung;
+                                                              ENU=Posting Date Warning] }
+    { 67  ;   ;Closing Period Overlap Warning;Boolean;
+                                                   CaptionML=[DEU=PeriodenabschlussÅberschneidung - Warnung;
+                                                              ENU=Closing Period Overlap Warning] }
+    { 68  ;   ;Similar Accounts Warning;Boolean   ;CaptionML=[DEU=éhnliche Konten - Warnung;
+                                                              ENU=Similar Accounts Warning] }
+    { 69  ;   ;Deleted G/L Accounts Warning;Boolean;
+                                                   CaptionML=[DEU=Gelîschte Sachkonten - Warnung;
+                                                              ENU=Deleted G/L Accounts Warning] }
+  }
+  KEYS
+  {
+    {    ;Type,Entry No.                          ;Clustered=Yes }
+  }
+  FIELDGROUPS
+  {
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

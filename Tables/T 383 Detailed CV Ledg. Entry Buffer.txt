@@ -1,0 +1,188 @@
+OBJECT Table 383 Detailed CV Ledg. Entry Buffer
+{
+  OBJECT-PROPERTIES
+  {
+    Date=05.11.08;
+    Time=12:00:00;
+    Version List=NAVW16.00;
+  }
+  PROPERTIES
+  {
+    CaptionML=[DEU=Det. Deb.-/Kred.-Postenpuffer;
+               ENU=Detailed CV Ledg. Entry Buffer];
+    LookupFormID=Form573;
+    DrillDownFormID=Form573;
+  }
+  FIELDS
+  {
+    { 1   ;   ;Entry No.           ;Integer       ;CaptionML=[DEU=Lfd. Nr.;
+                                                              ENU=Entry No.] }
+    { 2   ;   ;Cust. Ledger Entry No.;Integer     ;TableRelation="Cust. Ledger Entry";
+                                                   CaptionML=[DEU=Debitorenposten Lfd. Nr.;
+                                                              ENU=Cust. Ledger Entry No.] }
+    { 3   ;   ;Entry Type          ;Option        ;CaptionML=[DEU=Postenart;
+                                                              ENU=Entry Type];
+                                                   OptionCaptionML=[DEU=,Urspr. Posten,Ausgleich,Unrealisierter Verlust,Unrealisierter Gewinn,Realisierter Verlust,Realisierter Gewinn,Skonto,Skonto (ohne MwSt.),Skonto (MwSt.-Regulierung),Ausgl. Rundung,Restbetrag Korrektur,Zahlungstoleranz,Skontotoleranz,Zahlungstoleranz (ohne MwSt.),Zahlungstoleranz (MwSt.-Regulierung),Skontotoleranz (ohne MwSt.),Skontotoleranz (MwSt.-Regulierung);
+                                                                    ENU=,Initial Entry,Application,Unrealized Loss,Unrealized Gain,Realized Loss,Realized Gain,Payment Discount,Payment Discount (VAT Excl.),Payment Discount (VAT Adjustment),Appln. Rounding,Correction of Remaining Amount,Payment Tolerance,Payment Discount Tolerance,Payment Tolerance (VAT Excl.),Payment Tolerance (VAT Adjustment),Payment Discount Tolerance (VAT Excl.),Payment Discount Tolerance (VAT Adjustment)];
+                                                   OptionString=,Initial Entry,Application,Unrealized Loss,Unrealized Gain,Realized Loss,Realized Gain,Payment Discount,Payment Discount (VAT Excl.),Payment Discount (VAT Adjustment),Appln. Rounding,Correction of Remaining Amount,Payment Tolerance,Payment Discount Tolerance,Payment Tolerance (VAT Excl.),Payment Tolerance (VAT Adjustment),Payment Discount Tolerance (VAT Excl.),Payment Discount Tolerance (VAT Adjustment) }
+    { 4   ;   ;Posting Date        ;Date          ;CaptionML=[DEU=Buchungsdatum;
+                                                              ENU=Posting Date] }
+    { 5   ;   ;Document Type       ;Option        ;CaptionML=[DEU=Belegart;
+                                                              ENU=Document Type];
+                                                   OptionCaptionML=[DEU=" ,Zahlung,Rechnung,Gutschrift,Zinsrechnung,Mahnung,Erstattung";
+                                                                    ENU=" ,Payment,Invoice,Credit Memo,Finance Charge Memo,Reminder,Refund"];
+                                                   OptionString=[ ,Payment,Invoice,Credit Memo,Finance Charge Memo,Reminder,Refund] }
+    { 6   ;   ;Document No.        ;Code20        ;CaptionML=[DEU=Belegnr.;
+                                                              ENU=Document No.] }
+    { 7   ;   ;Amount              ;Decimal       ;CaptionML=[DEU=Betrag;
+                                                              ENU=Amount];
+                                                   AutoFormatType=1;
+                                                   AutoFormatExpr="Currency Code" }
+    { 8   ;   ;Amount (LCY)        ;Decimal       ;CaptionML=[DEU=Betrag (MW);
+                                                              ENU=Amount (LCY)];
+                                                   AutoFormatType=1 }
+    { 9   ;   ;Customer No.        ;Code20        ;TableRelation=Customer;
+                                                   CaptionML=[DEU=Debitorennr.;
+                                                              ENU=Customer No.] }
+    { 10  ;   ;Currency Code       ;Code10        ;TableRelation=Currency;
+                                                   CaptionML=[DEU=W„hrungscode;
+                                                              ENU=Currency Code] }
+    { 11  ;   ;User ID             ;Code20        ;TableRelation=User;
+                                                   OnLookup=VAR
+                                                              LoginMgt@1000 : Codeunit 418;
+                                                            BEGIN
+                                                              LoginMgt.LookupUserID("User ID");
+                                                            END;
+
+                                                   TestTableRelation=No;
+                                                   CaptionML=[DEU=Benutzer-ID;
+                                                              ENU=User ID] }
+    { 12  ;   ;Source Code         ;Code10        ;TableRelation="Source Code";
+                                                   CaptionML=[DEU=Herkunftscode;
+                                                              ENU=Source Code] }
+    { 13  ;   ;Transaction No.     ;Integer       ;CaptionML=[DEU=Transaktionsnr.;
+                                                              ENU=Transaction No.] }
+    { 14  ;   ;Journal Batch Name  ;Code10        ;TestTableRelation=No;
+                                                   CaptionML=[DEU=Buch.-Blattname;
+                                                              ENU=Journal Batch Name] }
+    { 15  ;   ;Reason Code         ;Code10        ;TableRelation="Reason Code";
+                                                   CaptionML=[DEU=Ursachencode;
+                                                              ENU=Reason Code] }
+    { 16  ;   ;Debit Amount        ;Decimal       ;CaptionML=[DEU=Sollbetrag;
+                                                              ENU=Debit Amount];
+                                                   BlankZero=Yes;
+                                                   AutoFormatType=1;
+                                                   AutoFormatExpr="Currency Code" }
+    { 17  ;   ;Credit Amount       ;Decimal       ;CaptionML=[DEU=Habenbetrag;
+                                                              ENU=Credit Amount];
+                                                   BlankZero=Yes;
+                                                   AutoFormatType=1;
+                                                   AutoFormatExpr="Currency Code" }
+    { 18  ;   ;Debit Amount (LCY)  ;Decimal       ;CaptionML=[DEU=Sollbetrag (MW);
+                                                              ENU=Debit Amount (LCY)];
+                                                   BlankZero=Yes;
+                                                   AutoFormatType=1 }
+    { 19  ;   ;Credit Amount (LCY) ;Decimal       ;CaptionML=[DEU=Habenbetrag (MW);
+                                                              ENU=Credit Amount (LCY)];
+                                                   BlankZero=Yes;
+                                                   AutoFormatType=1 }
+    { 20  ;   ;Initial Entry Due Date;Date        ;CaptionML=[DEU=Urspr. Posten F„lligk.-Datum;
+                                                              ENU=Initial Entry Due Date] }
+    { 21  ;   ;Initial Entry Global Dim. 1;Code20 ;CaptionML=[DEU=Urspr. Posten Globale Dim. 1;
+                                                              ENU=Initial Entry Global Dim. 1] }
+    { 22  ;   ;Initial Entry Global Dim. 2;Code20 ;CaptionML=[DEU=Urspr. Posten Globale Dim. 2;
+                                                              ENU=Initial Entry Global Dim. 2] }
+    { 23  ;   ;Gen. Posting Type   ;Option        ;CaptionML=[DEU=Buchungsart;
+                                                              ENU=Gen. Posting Type];
+                                                   OptionCaptionML=[DEU=" ,Einkauf,Verkauf,Ausgleich";
+                                                                    ENU=" ,Purchase,Sale,Settlement"];
+                                                   OptionString=[ ,Purchase,Sale,Settlement] }
+    { 24  ;   ;Gen. Bus. Posting Group;Code10     ;TableRelation="Gen. Business Posting Group";
+                                                   CaptionML=[DEU=Gesch„ftsbuchungsgruppe;
+                                                              ENU=Gen. Bus. Posting Group] }
+    { 25  ;   ;Gen. Prod. Posting Group;Code10    ;TableRelation="Gen. Product Posting Group";
+                                                   CaptionML=[DEU=Produktbuchungsgruppe;
+                                                              ENU=Gen. Prod. Posting Group] }
+    { 26  ;   ;Tax Area Code       ;Code20        ;TableRelation="Tax Area";
+                                                   CaptionML=[DEU=Steuergebietscode;
+                                                              ENU=Tax Area Code] }
+    { 27  ;   ;Tax Liable          ;Boolean       ;CaptionML=[DEU=Steuerpflichtig;
+                                                              ENU=Tax Liable] }
+    { 28  ;   ;Tax Group Code      ;Code10        ;TableRelation="Tax Group";
+                                                   CaptionML=[DEU=Steuergruppencode;
+                                                              ENU=Tax Group Code] }
+    { 29  ;   ;Use Tax             ;Boolean       ;CaptionML=[DEU=Verbrauchssteuer;
+                                                              ENU=Use Tax] }
+    { 30  ;   ;VAT Bus. Posting Group;Code10      ;TableRelation="VAT Business Posting Group";
+                                                   CaptionML=[DEU=MwSt.-Gesch„ftsbuchungsgruppe;
+                                                              ENU=VAT Bus. Posting Group] }
+    { 31  ;   ;VAT Prod. Posting Group;Code10     ;TableRelation="VAT Product Posting Group";
+                                                   CaptionML=[DEU=MwSt.-Produktbuchungsgruppe;
+                                                              ENU=VAT Prod. Posting Group] }
+    { 32  ;   ;Additional-Currency Amount;Decimal ;CaptionML=[DEU=Betrag (BW);
+                                                              ENU=Additional-Currency Amount];
+                                                   AutoFormatType=1 }
+    { 33  ;   ;VAT Amount (LCY)    ;Decimal       ;CaptionML=[DEU=MwSt.-Betrag (MW);
+                                                              ENU=VAT Amount (LCY)];
+                                                   AutoFormatType=1 }
+    { 34  ;   ;Use Additional-Currency Amount;Boolean;
+                                                   CaptionML=[DEU=Betrag (BW) verwenden;
+                                                              ENU=Use Additional-Currency Amount] }
+    { 35  ;   ;Initial Document Type;Option       ;CaptionML=[DEU=Urspr. Belegart;
+                                                              ENU=Initial Document Type];
+                                                   OptionCaptionML=[DEU=" ,Zahlung,Rechnung,Gutschrift,Zinsrechnung,Mahnung,Erstattung";
+                                                                    ENU=" ,Payment,Invoice,Credit Memo,Finance Charge Memo,Reminder,Refund"];
+                                                   OptionString=[ ,Payment,Invoice,Credit Memo,Finance Charge Memo,Reminder,Refund] }
+    { 36  ;   ;Applied CV Ledger Entry No.;Integer;CaptionML=[DEU=Ausgegl. D/K Lfd. Nr.;
+                                                              ENU=Applied CV Ledger Entry No.] }
+    { 39  ;   ;Remaining Pmt. Disc. Possible;Decimal;
+                                                   CaptionML=[DEU=Restskonto m”glich;
+                                                              ENU=Remaining Pmt. Disc. Possible];
+                                                   AutoFormatType=1;
+                                                   AutoFormatExpr="Currency Code" }
+    { 40  ;   ;Max. Payment Tolerance;Decimal     ;CaptionML=[DEU=Max. Zahlungstoleranz;
+                                                              ENU=Max. Payment Tolerance];
+                                                   AutoFormatType=1;
+                                                   AutoFormatExpr="Currency Code" }
+    { 41  ;   ;Tax Jurisdiction Code;Code10       ;TableRelation="Tax Jurisdiction";
+                                                   CaptionML=[DEU=Steuerzust„ndigkeitscode;
+                                                              ENU=Tax Jurisdiction Code];
+                                                   Editable=No }
+  }
+  KEYS
+  {
+    {    ;Entry No.                               ;Clustered=Yes }
+    {    ;Cust. Ledger Entry No.,Entry Type       ;SumIndexFields=Amount,Amount (LCY),Debit Amount,Credit Amount,Debit Amount (LCY),Credit Amount (LCY) }
+    {    ;Customer No.,Initial Entry Due Date,Posting Date,Currency Code;
+                                                   SumIndexFields=Amount,Amount (LCY),Debit Amount,Credit Amount,Debit Amount (LCY),Credit Amount (LCY) }
+    {    ;Customer No.,Posting Date,Entry Type,Currency Code;
+                                                   SumIndexFields=Amount,Amount (LCY) }
+    {    ;Customer No.,Initial Document Type,Document Type;
+                                                   SumIndexFields=Amount,Amount (LCY) }
+    {    ;Document Type,Document No.,Posting Date  }
+    {    ;Initial Document Type,Customer No.,Posting Date,Currency Code,Entry Type;
+                                                   SumIndexFields=Amount,Amount (LCY) }
+    { No ;Customer No.,Initial Entry Due Date,Posting Date,Initial Entry Global Dim. 1,Initial Entry Global Dim. 2,Currency Code;
+                                                   SumIndexFields=Amount,Amount (LCY),Debit Amount,Credit Amount,Debit Amount (LCY),Credit Amount (LCY);
+                                                   KeyGroups=Cust(Dim),Vend(Dim) }
+    { No ;Customer No.,Posting Date,Entry Type,Initial Entry Global Dim. 1,Initial Entry Global Dim. 2,Currency Code;
+                                                   SumIndexFields=Amount,Amount (LCY);
+                                                   KeyGroups=Cust(Dim),Vend(Dim) }
+    { No ;Customer No.,Initial Document Type,Document Type,Initial Entry Global Dim. 1,Initial Entry Global Dim. 2;
+                                                   SumIndexFields=Amount,Amount (LCY);
+                                                   KeyGroups=Cust(Dim),Vend(Dim) }
+    { No ;Initial Document Type,Customer No.,Posting Date,Currency Code,Entry Type,Initial Entry Global Dim. 1,Initial Entry Global Dim. 2;
+                                                   SumIndexFields=Amount,Amount (LCY);
+                                                   KeyGroups=Cust(Dim),Vend(Dim) }
+  }
+  FIELDGROUPS
+  {
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

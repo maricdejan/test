@@ -1,0 +1,58 @@
+OBJECT Table 331 Adjust Exchange Rate Buffer
+{
+  OBJECT-PROPERTIES
+  {
+    Date=05.11.08;
+    Time=12:00:00;
+    Version List=NAVW16.00;
+  }
+  PROPERTIES
+  {
+    CaptionML=[DEU=Kursregulierungspuffer;
+               ENU=Adjust Exchange Rate Buffer];
+  }
+  FIELDS
+  {
+    { 1   ;   ;Currency Code       ;Code10        ;TableRelation=Currency;
+                                                   CaptionML=[DEU=W„hrungscode;
+                                                              ENU=Currency Code] }
+    { 2   ;   ;Posting Group       ;Code10        ;CaptionML=[DEU=Buchungsgruppe;
+                                                              ENU=Posting Group] }
+    { 3   ;   ;AdjBase             ;Decimal       ;CaptionML=[DEU=RegBasis;
+                                                              ENU=AdjBase];
+                                                   AutoFormatType=1 }
+    { 4   ;   ;AdjBaseLCY          ;Decimal       ;CaptionML=[DEU=RegBasisMW;
+                                                              ENU=AdjBaseLCY];
+                                                   AutoFormatType=1 }
+    { 5   ;   ;AdjAmount           ;Decimal       ;CaptionML=[DEU=RegBetrag;
+                                                              ENU=AdjAmount];
+                                                   AutoFormatType=1 }
+    { 6   ;   ;TotalGainsAmount    ;Decimal       ;CaptionML=[DEU=TotalGewinnBetrag;
+                                                              ENU=TotalGainsAmount];
+                                                   AutoFormatType=1 }
+    { 7   ;   ;TotalLossesAmount   ;Decimal       ;CaptionML=[DEU=TotalVerlustBetrag;
+                                                              ENU=TotalLossesAmount];
+                                                   AutoFormatType=1 }
+    { 8   ;   ;Dimension Entry No. ;Integer       ;CaptionML=[DEU=Dimension Lfd. Nr.;
+                                                              ENU=Dimension Entry No.] }
+    { 9   ;   ;Posting Date        ;Date          ;CaptionML=[DEU=Buchungsdatum;
+                                                              ENU=Posting Date] }
+    { 10  ;   ;IC Partner Code     ;Code20        ;CaptionML=[DEU=IC-Partnercode;
+                                                              ENU=IC Partner Code] }
+  }
+  KEYS
+  {
+    {    ;Currency Code,Posting Group,Dimension Entry No.,Posting Date,IC Partner Code;
+                                                   Clustered=Yes }
+  }
+  FIELDGROUPS
+  {
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

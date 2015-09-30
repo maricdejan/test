@@ -1,0 +1,146 @@
+OBJECT Table 5051 Contact Alt. Address
+{
+  OBJECT-PROPERTIES
+  {
+    Date=05.11.08;
+    Time=12:00:00;
+    Version List=NAVW16.00;
+  }
+  PROPERTIES
+  {
+    DataCaptionFields=Contact No.,Code,Company Name;
+    OnInsert=BEGIN
+               TouchContact("Contact No.");
+             END;
+
+    OnModify=BEGIN
+               "Last Date Modified" := TODAY;
+               TouchContact("Contact No.");
+             END;
+
+    OnDelete=VAR
+               ContAltAddrDateRange@1000 : Record 5052;
+             BEGIN
+               TouchContact("Contact No.");
+
+               ContAltAddrDateRange.SETRANGE("Contact No.","Contact No.");
+               ContAltAddrDateRange.SETRANGE("Contact Alt. Address Code",Code);
+               ContAltAddrDateRange.DELETEALL;
+             END;
+
+    OnRename=BEGIN
+               IF xRec."Contact No." = "Contact No." THEN
+                 TouchContact("Contact No.")
+               ELSE BEGIN
+                 TouchContact("Contact No.");
+                 TouchContact(xRec."Contact No.");
+               END;
+             END;
+
+    CaptionML=[DEU=Alternative Kontaktadresse;
+               ENU=Contact Alt. Address];
+    LookupFormID=Form5057;
+  }
+  FIELDS
+  {
+    { 1   ;   ;Contact No.         ;Code20        ;TableRelation=Contact;
+                                                   CaptionML=[DEU=Kontaktnr.;
+                                                              ENU=Contact No.] }
+    { 2   ;   ;Code                ;Code10        ;CaptionML=[DEU=Code;
+                                                              ENU=Code];
+                                                   NotBlank=Yes }
+    { 3   ;   ;Company Name        ;Text50        ;CaptionML=[DEU=Unternehmensname;
+                                                              ENU=Company Name] }
+    { 4   ;   ;Company Name 2      ;Text50        ;CaptionML=[DEU=Unternehmensname 2;
+                                                              ENU=Company Name 2] }
+    { 5   ;   ;Address             ;Text50        ;CaptionML=[DEU=Adresse;
+                                                              ENU=Address] }
+    { 6   ;   ;Address 2           ;Text50        ;CaptionML=[DEU=Adresse 2;
+                                                              ENU=Address 2] }
+    { 7   ;   ;City                ;Text30        ;OnValidate=BEGIN
+                                                                PostCode.ValidateCity(City,"Post Code");
+                                                              END;
+
+                                                   OnLookup=BEGIN
+                                                              PostCode.LookUpCity(City,"Post Code",TRUE);
+                                                            END;
+
+                                                   CaptionML=[DEU=Ort;
+                                                              ENU=City] }
+    { 8   ;   ;Post Code           ;Code20        ;TableRelation="Post Code";
+                                                   OnValidate=BEGIN
+                                                                PostCode.ValidatePostCode(City,"Post Code");
+                                                              END;
+
+                                                   OnLookup=BEGIN
+                                                              PostCode.LookUpPostCode(City,"Post Code",TRUE);
+                                                            END;
+
+                                                   ValidateTableRelation=No;
+                                                   TestTableRelation=No;
+                                                   CaptionML=[DEU=PLZ-Code;
+                                                              ENU=Post Code] }
+    { 9   ;   ;County              ;Text30        ;CaptionML=[DEU=Bundesregion;
+                                                              ENU=County] }
+    { 10  ;   ;Country/Region Code ;Code10        ;TableRelation=Country/Region;
+                                                   CaptionML=[DEU=L„nder-/Regionscode;
+                                                              ENU=Country/Region Code] }
+    { 12  ;   ;Phone No.           ;Text30        ;ExtendedDatatype=Phone No.;
+                                                   CaptionML=[DEU=Telefonnr.;
+                                                              ENU=Phone No.] }
+    { 13  ;   ;Telex No.           ;Text20        ;CaptionML=[DEU=Telexnr.;
+                                                              ENU=Telex No.] }
+    { 14  ;   ;Extension No.       ;Text30        ;CaptionML=[DEU=Durchwahl;
+                                                              ENU=Extension No.] }
+    { 15  ;   ;Mobile Phone No.    ;Text30        ;ExtendedDatatype=Phone No.;
+                                                   CaptionML=[DEU=Mobiltelefonnr.;
+                                                              ENU=Mobile Phone No.] }
+    { 16  ;   ;Pager               ;Text30        ;CaptionML=[DEU=Pager;
+                                                              ENU=Pager] }
+    { 17  ;   ;E-Mail              ;Text80        ;OnValidate=BEGIN
+                                                                IF ("Search E-Mail" = UPPERCASE(xRec."E-Mail")) OR ("Search E-Mail" = '') THEN
+                                                                  "Search E-Mail" := "E-Mail";
+                                                              END;
+
+                                                   ExtendedDatatype=E-Mail;
+                                                   CaptionML=[DEU=E-Mail;
+                                                              ENU=E-Mail] }
+    { 18  ;   ;Home Page           ;Text80        ;ExtendedDatatype=URL;
+                                                   CaptionML=[DEU=Homepage;
+                                                              ENU=Home Page] }
+    { 19  ;   ;Fax No.             ;Text30        ;CaptionML=[DEU=Faxnr.;
+                                                              ENU=Fax No.] }
+    { 20  ;   ;Telex Answer Back   ;Text20        ;CaptionML=[DEU=Telex Namengeber;
+                                                              ENU=Telex Answer Back] }
+    { 21  ;   ;Last Date Modified  ;Date          ;CaptionML=[DEU=Korrigiert am;
+                                                              ENU=Last Date Modified] }
+    { 22  ;   ;Search E-Mail       ;Code80        ;CaptionML=[DEU=E-Mail-Suchbegriff;
+                                                              ENU=Search E-Mail] }
+  }
+  KEYS
+  {
+    {    ;Contact No.,Code                        ;Clustered=Yes }
+    {    ;Search E-Mail                            }
+  }
+  FIELDGROUPS
+  {
+  }
+  CODE
+  {
+    VAR
+      PostCode@1001 : Record 225;
+      Cont@1000 : Record 5050;
+
+    PROCEDURE TouchContact@1(ContactNo@1000 : Code[20]);
+    BEGIN
+      Cont.LOCKTABLE;
+      Cont.GET(ContactNo);
+      Cont."Last Date Modified" := TODAY;
+      Cont.MODIFY;
+    END;
+
+    BEGIN
+    END.
+  }
+}
+

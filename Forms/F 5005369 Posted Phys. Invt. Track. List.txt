@@ -1,0 +1,94 @@
+OBJECT Form 5005369 Posted Phys. Invt. Track. List
+{
+  OBJECT-PROPERTIES
+  {
+    Date=01.10.04;
+    Time=12:00:00;
+    Version List=NAVDACH4.00;
+  }
+  PROPERTIES
+  {
+    Width=16500;
+    Height=6710;
+    Editable=No;
+    CaptionML=[DEU=Geb. Inventurverfolg.-šbers.;
+               ENU=Posted Phys. Invt. Track. List];
+    TableBoxID=1140000;
+    SourceTable=Table5005359;
+  }
+  CONTROLS
+  {
+    { 1140000;TableBox  ;220  ;220  ;16060;5500 ;HorzGlue=Both;
+                                                 VertGlue=Both }
+    { 1140001;TextBox   ;0    ;0    ;1650 ;0    ;ParentControl=1140000;
+                                                 InColumn=Yes;
+                                                 SourceExpr="Document No." }
+    { 1140002;Label     ;0    ;0    ;0    ;0    ;ParentControl=1140001;
+                                                 InColumnHeading=Yes }
+    { 1140003;TextBox   ;0    ;0    ;1650 ;0    ;ParentControl=1140000;
+                                                 InColumn=Yes;
+                                                 SourceExpr="Item Tracking No." }
+    { 1140004;Label     ;0    ;0    ;0    ;0    ;ParentControl=1140003;
+                                                 InColumnHeading=Yes }
+    { 1140005;TextBox   ;0    ;0    ;1650 ;0    ;ParentControl=1140000;
+                                                 InColumn=Yes;
+                                                 SourceExpr="Item No." }
+    { 1140006;Label     ;0    ;0    ;0    ;0    ;ParentControl=1140005;
+                                                 InColumnHeading=Yes }
+    { 1140007;TextBox   ;0    ;0    ;1650 ;0    ;ParentControl=1140000;
+                                                 InColumn=Yes;
+                                                 SourceExpr="Variant Code" }
+    { 1140008;Label     ;0    ;0    ;0    ;0    ;ParentControl=1140007;
+                                                 InColumnHeading=Yes }
+    { 1140009;TextBox   ;0    ;0    ;1650 ;0    ;ParentControl=1140000;
+                                                 InColumn=Yes;
+                                                 SourceExpr="Location Code" }
+    { 1140010;Label     ;0    ;0    ;0    ;0    ;ParentControl=1140009;
+                                                 InColumnHeading=Yes }
+    { 1140011;TextBox   ;0    ;0    ;1650 ;0    ;ParentControl=1140000;
+                                                 InColumn=Yes;
+                                                 SourceExpr="Bin Code" }
+    { 1140012;Label     ;0    ;0    ;0    ;0    ;ParentControl=1140011;
+                                                 InColumnHeading=Yes }
+    { 1140013;TextBox   ;0    ;0    ;1650 ;0    ;ParentControl=1140000;
+                                                 InColumn=Yes;
+                                                 SourceExpr="Serial No." }
+    { 1140014;Label     ;0    ;0    ;0    ;0    ;ParentControl=1140013;
+                                                 InColumnHeading=Yes }
+    { 1140015;TextBox   ;0    ;0    ;1650 ;0    ;ParentControl=1140000;
+                                                 InColumn=Yes;
+                                                 SourceExpr="Lot No." }
+    { 1140016;Label     ;0    ;0    ;0    ;0    ;ParentControl=1140015;
+                                                 InColumnHeading=Yes }
+    { 1140017;TextBox   ;12383;330  ;550  ;440  ;ParentControl=1140000;
+                                                 InColumn=Yes;
+                                                 SourceExpr="Entry Type" }
+    { 1140018;Label     ;0    ;0    ;0    ;0    ;ParentControl=1140017;
+                                                 InColumnHeading=Yes }
+    { 1140019;TextBox   ;0    ;0    ;2200 ;0    ;ParentControl=1140000;
+                                                 InColumn=Yes;
+                                                 SourceExpr=Quantity }
+    { 1140020;Label     ;0    ;0    ;0    ;0    ;ParentControl=1140019;
+                                                 InColumnHeading=Yes }
+    { 1140021;CommandButton;9240;5940;2200;550  ;HorzGlue=Right;
+                                                 VertGlue=Bottom;
+                                                 Default=Yes;
+                                                 PushAction=LookupOK;
+                                                 InvalidActionAppearance=Hide }
+    { 1140022;CommandButton;11660;5940;2200;550 ;HorzGlue=Right;
+                                                 VertGlue=Bottom;
+                                                 Cancel=Yes;
+                                                 PushAction=LookupCancel;
+                                                 InvalidActionAppearance=Hide }
+    { 1140023;CommandButton;14080;5940;2200;550 ;HorzGlue=Right;
+                                                 VertGlue=Bottom;
+                                                 PushAction=FormHelp }
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+
