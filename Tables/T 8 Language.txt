@@ -3,7 +3,7 @@ OBJECT Table 8 Language
   OBJECT-PROPERTIES
   {
     Date=02.10.15;
-    Time=10:31:38;
+    Time=17:47:11;
     Modified=Yes;
     Version List=NAVW16.00.01;
   }
@@ -67,6 +67,7 @@ OBJECT Table 8 Language
     {
       TEMP
       TEMP - TEST01
+      TEMP - TEST02
     }
     END.
   }
