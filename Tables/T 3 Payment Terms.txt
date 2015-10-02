@@ -3,7 +3,7 @@ OBJECT Table 3 Payment Terms
   OBJECT-PROPERTIES
   {
     Date=02.10.15;
-    Time=15:43:44;
+    Time=15:44:49;
     Modified=Yes;
     Version List=NAVW16.00;
   }
@@ -68,6 +68,7 @@ OBJECT Table 3 Payment Terms
       TEST
       Branch test
       Branch test 01
+      Branch test 02
     }
     END.
   }
