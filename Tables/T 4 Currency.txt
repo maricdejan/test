@@ -3,7 +3,7 @@ OBJECT Table 4 Currency
   OBJECT-PROPERTIES
   {
     Date=02.10.15;
-    Time=11:33:22;
+    Time=17:57:02;
     Modified=Yes;
     Version List=NAVW16.00;
   }
@@ -408,6 +408,7 @@ OBJECT Table 4 Currency
     {
       TEST
       TEST - 20151002
+      TEST - NEWEST ONE
     }
     END.
   }
