@@ -2,8 +2,9 @@ OBJECT Table 6 Customer Price Group
 {
   OBJECT-PROPERTIES
   {
-    Date=05.11.08;
-    Time=12:00:00;
+    Date=02.10.15;
+    Time=15:03:49;
+    Modified=Yes;
     Version List=NAVW16.00;
   }
   PROPERTIES
@@ -43,6 +44,9 @@ OBJECT Table 6 Customer Price Group
   {
 
     BEGIN
+    {
+      MY TEST
+    }
     END.
   }
 }
